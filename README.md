@@ -1,0 +1,1 @@
+This repo contains code for the frontend application where Volunteers are conducting community risk assessment and Screening using probe.
