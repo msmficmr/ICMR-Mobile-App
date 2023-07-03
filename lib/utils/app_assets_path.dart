@@ -1,3 +1,0 @@
-class AppAssetsPath {
-  AppAssetsPath._();
-}

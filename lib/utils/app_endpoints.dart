@@ -1,3 +1,0 @@
-class AppEndpoints {
-  AppEndpoints._();
-}

@@ -1,1 +1,0 @@
-export 'package:mhealth/views/splash/splash_screen.dart';
