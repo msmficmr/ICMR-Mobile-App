@@ -1,0 +1,42 @@
+name: mhealth
+description: M Health.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.2 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+flutter:
+
+  uses-material-design: true
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-100.ttf
+          weight: 100
+        - asset: assets/fonts/Montserrat-200.ttf
+          weight: 200
+        - asset: assets/fonts/Montserrat-300.ttf
+          weight: 300
+        - asset: assets/fonts/Montserrat-400.ttf
+          weight: 400
+        - asset: assets/fonts/Montserrat-500.ttf
+          weight: 500
+        - asset: assets/fonts/Montserrat-600.ttf
+          weight: 600
+        - asset: assets/fonts/Montserrat-700.ttf
+          weight: 700
+        - asset: assets/fonts/Montserrat-800.ttf
+          weight: 800
+        - asset: assets/fonts/Montserrat-900.ttf
+          weight: 900
