@@ -1,0 +1,6 @@
+{
+  "BASE_URL" : "",
+  "ENV" : "sit",
+  "APP_NAME" : "SIT m-health",
+  "APP_SUFFIX" : ".sit"
+}
