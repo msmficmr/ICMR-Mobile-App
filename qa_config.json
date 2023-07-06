@@ -1,0 +1,6 @@
+{
+  "BASE_URL" : "",
+  "ENV" : "qa",
+  "APP_NAME" : "QA m-health",
+  "APP_SUFFIX" : ".qa"
+}

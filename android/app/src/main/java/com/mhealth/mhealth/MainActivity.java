@@ -1,4 +1,4 @@
-package com.karkinos.mhealth;
+package com.mhealth.mhealth;
 
 import io.flutter.embedding.android.FlutterActivity;
 
