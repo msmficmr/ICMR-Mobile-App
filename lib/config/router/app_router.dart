@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 
 class AppRouter {
+  LoginViewModel loginViewModel;
   late GoRouter goRouter;
 
-  AppRouter() {
+  /// List of routes which can be accessed without login in app
+  List<String> unProtectedRoutes = [
+    LoginScreen.routerPath,
+    SplashScreen.routerPath,
+  ];
+
+  AppRouter(this.loginViewModel) {
     goRouter = GoRouter(
+      /// GoRouter will keep listening to LoginViewModel.
+      /// we have declared [isLoggedIn] variable if we change state of variable
+      /// it will call redirect callback and screen will be redirected to [LoginScreen]
+      refreshListenable: loginViewModel,
       routerNeglect: true,
       initialLocation: SplashScreen.routerPath,
       routes: [
@@ -25,9 +37,29 @@ class AppRouter {
               path: SplashScreen.routerPath,
               builder: (context, state) => const SplashScreen(),
             ),
+            GoRoute(
+              path: LoginScreen.routerPath,
+              builder: (context, state) => const LoginScreen(),
+            ),
           ],
         )
       ],
+
+      /// this callback will called on every time when we are trying to navigate from one screen to another
+      redirect: (BuildContext context, GoRouterState state) async {
+        // [state.matchedLocation] will return navigation route passed to push/go method
+        String navigationRoute = state.matchedLocation;
+
+        /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
+        /// navigating to login screen
+        if (!loginViewModel.isLoggedIn) {
+          return unProtectedRoutes.contains(navigationRoute) ? null : LoginScreen.routerPath;
+        }
+
+        /// if user is logged we are null so that it will navigate from one screen to another without any redirect
+
+        return null;
+      },
     );
   }
 }
