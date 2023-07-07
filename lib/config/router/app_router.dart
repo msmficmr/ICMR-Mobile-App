@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/config/router/router_transition.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 
 class AppRouter {
@@ -39,7 +40,10 @@ class AppRouter {
             ),
             GoRoute(
               path: LoginScreen.routerPath,
-              builder: (context, state) => const LoginScreen(),
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const LoginScreen(),
+              ),
             ),
           ],
         )
