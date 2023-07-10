@@ -26,6 +26,7 @@ class AppStyles {
 
   /// used to give style to text of TextFormField, dropdowns items
   static TextStyle bodyMedium = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColorScheme.kGrayColor.shade800);
+  static TextStyle bodyMediumUnderline = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColorScheme.kGrayColor.shade800, decoration: TextDecoration.underline);
 
   /// used to give style for title for TextFormField dropdown items
   static TextStyle titleSmall = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColorScheme.kGrayColor.shade700);
