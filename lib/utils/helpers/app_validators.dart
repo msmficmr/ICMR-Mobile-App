@@ -23,7 +23,7 @@ class AppValidators {
 
   static String? validateOTP(value) {
     const String kEmptyValidator = "Enter Valid OTP.";
-    const String kValidValidator = "OTP must be of 7 digit.";
+    const String kValidValidator = "OTP must be of 6 digit.";
     if (value == null || value.isEmpty) {
       return kEmptyValidator;
     }

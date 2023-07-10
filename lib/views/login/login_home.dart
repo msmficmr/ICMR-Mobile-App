@@ -44,7 +44,7 @@ class _LoginHomeState extends State<LoginHome> {
             return const LoginOtpScreen();
           case LoginScreenTypes.MOBILE_NUMBER:
           default:
-            return const LoginScreen();
+            return const LoginMobileScreen();
         }
       },
     ),),);

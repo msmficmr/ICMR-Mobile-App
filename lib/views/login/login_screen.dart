@@ -5,24 +5,24 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
-import 'package:mhealth/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/privacy_policy_widget.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const String routerPath = "/login";
+class LoginMobileScreen extends StatefulWidget {
+  static const String routerPath = "/login-mobile";
 
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginMobileScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginMobileScreen> createState() => _LoginMobileScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginMobileScreenState extends State<LoginMobileScreen> {
   late ValueNotifier<bool> _isValidMobile;
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> _buttonEnabled;
