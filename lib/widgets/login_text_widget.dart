@@ -21,22 +21,25 @@ class LoginTextWidget extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  final String LOGIN_1 = "Login with your ";
+  final String LOGIN_2 = " account ";
+
   @override
   Widget build(BuildContext context) {
     return RichText(
       key: Key(widgetKey),
       text: TextSpan(style: AppStyles.bodyMedium.copyWith(height: 1.5, fontFamily: AppConstant.FONT_FAMILY), children: [
-        const TextSpan(text: "Login with your "),
+        TextSpan(text: LOGIN_1),
         WidgetSpan(
           child: InkWell(
             onTap: () {},
             child: Text(
               loginType,
-              style: AppStyles.bodyMediumUnderline.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
+              style: AppStyles.bodyMedium.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500, decoration: TextDecoration.underline),
             ),
           ),
         ),
-        const TextSpan(text: " account ")
+        TextSpan(text: LOGIN_2)
       ]),
     );
   }

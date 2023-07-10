@@ -40,6 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final String KEY_TITLE_MOBILE = "key_title_mobile";
   final String KEY_LOGIN_TYPE = "key_login_type";
 
+
+  static const List<String> loginTypes = ["Email", "Mobile Number"];
+
   @override
   void initState() {
     super.initState();
@@ -129,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: AppConstant.loginTypes[0], onTap: (){},),
+                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginTypes[0], onTap: (){},),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,
