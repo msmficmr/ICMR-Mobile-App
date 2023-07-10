@@ -6,7 +6,7 @@ import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
-import 'package:mhealth/widgets/login_text_widget.dart';
+import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/privacy_policy_widget.dart';
 import 'package:mhealth/widgets/space_widget.dart';
