@@ -20,4 +20,20 @@ class AppValidators {
     }
     return null;
   }
+
+  static String? validateOTP(value) {
+    const String kEmptyValidator = "Enter Valid OTP.";
+    const String kValidValidator = "OTP must be of 7 digit.";
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    String pattern = r"^\d{6}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
 }

@@ -42,7 +42,7 @@ class AppRouter {
               path: LoginScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const LoginScreen(),
+                child: const LoginHome(),
               ),
             ),
           ],

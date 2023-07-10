@@ -10,6 +10,7 @@ class AppConstant {
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
 
-  // Login Types
-  static const List<String> loginTypes = ["Email", "Mobile Number"];
+  /// ERRORS
+  static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
+
 }

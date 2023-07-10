@@ -5,3 +5,6 @@ enum CustomAppBarTrailingType { NONE, SINGLE, MULTIPLE }
 enum TextFieldPrefixSuffixType { TEXT, SVG_ASSET, IMAGE_ASSET }
 
 enum MaskAutoCompletionType { lazy, eager }
+
+/// These enums are used on login home to switch between mobile number and verification.
+enum LoginScreenTypes { MOBILE_NUMBER, OTP_SCREEN }

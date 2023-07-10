@@ -8,6 +8,9 @@ class AppValues {
   AppValues._();
 
   static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   static TextInputFormatter get numberInputFormatter => CustomInputFormatter(regx: r'^[0-9]*$');
   static TextInputFormatter get mobileInputFormatter => MaskTextInputFormatter(mask: '##########');
+
+  static int get kOtpTimer => 30;
 }
