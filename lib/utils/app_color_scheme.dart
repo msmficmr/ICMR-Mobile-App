@@ -6,10 +6,11 @@ class AppColorScheme {
   static Color get errorTextColor => const Color(0xffF16063);
   static Color get kLightGreen => const Color(0xFFE9F6E8);
   static Color get kLightRed => const Color(0xFFFDEAEA);
+  static Color get kGreen => const Color(0xFF4DC85B);
 
   static Color get kPrimaryIconColor => Colors.white;
 
-  static const Color selectedBackgroundColor =  Color(0xffF6FBFE);
+  static const Color selectedBackgroundColor =  Color(0xFFF6FBFE);
 
   static const MaterialColor kPrimaryColor = MaterialColor(
     0xFF3042EE,
