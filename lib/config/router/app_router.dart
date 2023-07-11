@@ -40,7 +40,7 @@ class AppRouter {
               builder: (context, state) => const SplashScreen(),
             ),
             GoRoute(
-              path: LoginMobileScreen.routerPath,
+              path: LoginHome.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const LoginHome(),
@@ -65,7 +65,7 @@ class AppRouter {
         /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
         /// navigating to login screen
         if (!loginViewModel.isLoggedIn) {
-          return unProtectedRoutes.contains(navigationRoute) ? null : LoginMobileScreen.routerPath;
+          return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
         }
         if (loginViewModel.isLoggedIn) {
           if (navigationRoute == LoginMobileScreen.routerPath || navigationRoute == LoginEmailScreen.routerPath) {
