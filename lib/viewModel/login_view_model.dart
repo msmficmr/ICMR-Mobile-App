@@ -16,12 +16,14 @@ class LoginViewModel extends ChangeNotifier {
 
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+  LoginScreenTypes _authFlow = LoginScreenTypes.MOBILE_NUMBER;
   String _mobileNo = "";
   bool _isLoading = false;
   bool _isOTPValidating = false;
 
   bool get isLoggedIn => _isLoggedIn;
   LoginScreenTypes get loginScreenType => _loginScreenType;
+  LoginScreenTypes get authFlow => _authFlow;
   String get mobileNo => _mobileNo;
   bool get isLoading => _isLoading;
   bool get isOTPValidating => _isOTPValidating;
@@ -50,9 +52,18 @@ class LoginViewModel extends ChangeNotifier {
     _mobileNo = value;
   }
 
+  set authFlow(LoginScreenTypes value) {
+    _authFlow = value;
+  }
+
   resetProvider() {
     _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
     _mobileNo = "";
+  }
+
+  loginUser() {
+    _isLoggedIn = true;
+    notifyListeners();
   }
 
   Future<bool> sendOtp({required String mobileNo}) async {
@@ -72,6 +83,7 @@ class LoginViewModel extends ChangeNotifier {
   Future<void> validateOtp({required String otp}) async {
     try {
       isOTPValidating = true;
+      loginUser();
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     } finally {

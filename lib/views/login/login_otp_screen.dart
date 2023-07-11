@@ -58,7 +58,11 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
 
   Future<bool> onBackPress() async {
     _cancelTimer();
-    loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+    if (loginViewModel.authFlow == LoginScreenTypes.MOBILE_NUMBER) {
+      loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+    } else {
+      loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
+    }
     return false;
   }
 

@@ -6,6 +6,8 @@ import 'package:mhealth/views/login/login_otp_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoginHome extends StatefulWidget {
+  static const String routerPath = "/login-home";
+
   const LoginHome({Key? key}) : super(key: key);
 
   @override
@@ -13,7 +15,6 @@ class LoginHome extends StatefulWidget {
 }
 
 class _LoginHomeState extends State<LoginHome> {
-
   late LoginViewModel loginViewModel;
 
   @override
@@ -30,23 +31,34 @@ class _LoginHomeState extends State<LoginHome> {
   }
 
   Future<bool> onBackPress() async {
-    loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+    if (loginViewModel.authFlow == LoginScreenTypes.MOBILE_NUMBER) {
+      loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+    } else {
+      loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
+    }
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(onWillPop: onBackPress, child: Material(child: Selector<LoginViewModel, LoginScreenTypes>(
-      selector: (_, provider) => provider.loginScreenType,
-      builder: (context, LoginScreenTypes value, child) {
-        switch (value) {
-          case LoginScreenTypes.OTP_SCREEN:
-            return const LoginOtpScreen();
-          case LoginScreenTypes.MOBILE_NUMBER:
-          default:
-            return const LoginMobileScreen();
-        }
-      },
-    ),),);
+    return WillPopScope(
+      onWillPop: onBackPress,
+      child: Material(
+        child: Selector<LoginViewModel, LoginScreenTypes>(
+          selector: (_, provider) => provider.loginScreenType,
+          builder: (context, LoginScreenTypes value, child) {
+            switch (value) {
+              case LoginScreenTypes.OTP_SCREEN:
+                return const LoginOtpScreen();
+              case LoginScreenTypes.EMAIL:
+                return const LoginEmailScreen();
+              case LoginScreenTypes.MOBILE_NUMBER:
+              default:
+                return const LoginMobileScreen();
+            }
+          },
+        ),
+      ),
+    );
   }
 }

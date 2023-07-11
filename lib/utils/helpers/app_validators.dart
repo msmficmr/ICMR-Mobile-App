@@ -36,4 +36,23 @@ class AppValidators {
     return null;
   }
 
+  static String? validateEmail(value, {bool allowEmpty = false}) {
+    const String kEmptyValidator = "Email can't be empty.";
+    const String kValidValidator = "Email is invalid.";
+    if (value == null || value.isEmpty && !allowEmpty) {
+      return kEmptyValidator;
+    }
+    if ((value == null || value.isEmpty) && allowEmpty) {
+      return null;
+    }
+    String pattern = r'^[a-zA-Z0-9-._@]*$';
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
+
 }

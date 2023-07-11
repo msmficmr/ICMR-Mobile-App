@@ -4,7 +4,6 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 
 class LoginTextWidget extends StatelessWidget {
-
   /// [widgetKey] is assigned to [LoginTextWidget] so that it can used for automation
   final String widgetKey;
 
@@ -28,19 +27,23 @@ class LoginTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return RichText(
       key: Key(widgetKey),
-      text: TextSpan(style: AppStyles.bodyMedium.copyWith(height: 1.5, fontFamily: AppConstant.FONT_FAMILY), children: [
-        TextSpan(text: LOGIN_1),
-        WidgetSpan(
-          child: InkWell(
-            onTap: () {},
-            child: Text(
-              loginType,
-              style: AppStyles.bodyMedium.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500, decoration: TextDecoration.underline),
+      text: TextSpan(
+        style: AppStyles.bodyMedium.copyWith(height: 1.5, fontFamily: AppConstant.FONT_FAMILY),
+        children: [
+          TextSpan(text: LOGIN_1),
+          WidgetSpan(
+            child: InkWell(
+              onTap: onTap,
+              child: Text(
+                loginType,
+                style: AppStyles.bodyMedium.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500, decoration: TextDecoration.underline),
+              ),
             ),
           ),
-        ),
-        TextSpan(text: LOGIN_2)
-      ]),
+          if (loginType == "Email")
+            TextSpan(text: LOGIN_2)
+        ],
+      ),
     );
   }
 }

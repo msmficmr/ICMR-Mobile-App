@@ -13,4 +13,7 @@ class AppConstant {
   /// ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
 
+
+  static const List<String> loginTypes = ["Email", "mobile number"];
+
 }

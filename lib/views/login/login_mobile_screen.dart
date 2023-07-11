@@ -43,8 +43,6 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
   final String KEY_TITLE_MOBILE = "key_title_mobile";
   final String KEY_LOGIN_TYPE = "key_login_type";
 
-  List<String> loginTypes = ["Email", "Mobile Number"];
-
   @override
   void initState() {
     super.initState();
@@ -74,8 +72,13 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
 
   Future<void> onContinueClick() async {
     if (formKey.currentState?.validate() ?? false) {
+      loginViewModel.authFlow = LoginScreenTypes.MOBILE_NUMBER;
       await loginViewModel.sendOtp(mobileNo: _mobileFieldController.text);
     }
+  }
+
+  redirectToLoginEmailScreen() {
+    loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
   }
 
   @override
@@ -137,7 +140,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginTypes[0], onTap: (){},),
+                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: AppConstant.loginTypes[0], onTap: redirectToLoginEmailScreen,),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,
