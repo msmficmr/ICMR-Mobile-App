@@ -52,6 +52,13 @@ class AppRouter {
                 child: const HomeScreen(),
               ),
             ),
+            GoRoute(
+              path: RegistrationScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const RegistrationScreen(),
+              ),
+            ),
           ],
         )
       ],

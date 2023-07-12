@@ -1,3 +1,5 @@
+import 'package:mhealth/widgets/custom_chip_widget.dart';
+
 class AppConstant {
 
   AppConstant._();
@@ -12,5 +14,13 @@ class AppConstant {
 
   /// ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
+
+  //Gender List
+  static const List<CustomChipItem<String>> GENDER_LIST = [
+    CustomChipItem(data: "m", text: "Male"),
+    CustomChipItem(data: "f", text: "Female"),
+    CustomChipItem(data: "u", text: "Other"),
+  ];
+
 
 }
