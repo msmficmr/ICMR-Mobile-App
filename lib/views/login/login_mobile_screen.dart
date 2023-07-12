@@ -140,7 +140,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: AppConstant.loginTypes[0], onTap: redirectToLoginEmailScreen,),
+                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginViewModel.loginTypes[0], onTap: redirectToLoginEmailScreen,),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,

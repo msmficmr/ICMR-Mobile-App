@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -12,8 +10,7 @@ class AppRouter {
 
   /// List of routes which can be accessed without login in app
   List<String> unProtectedRoutes = [
-    LoginMobileScreen.routerPath,
-    LoginEmailScreen.routerPath,
+    LoginHome.routerPath,
     SplashScreen.routerPath,
   ];
 

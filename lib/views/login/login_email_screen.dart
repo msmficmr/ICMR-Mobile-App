@@ -135,7 +135,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: AppConstant.loginTypes[1], onTap: redirectToLoginMobileScreen,),
+                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginViewModel.loginTypes[1], onTap: redirectToLoginMobileScreen,),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,
