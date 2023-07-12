@@ -54,6 +54,9 @@ class LocationService {
             context: context,
             subtitle: _ERROR_LOCATION_PERMISSION_DENIED,
             buttonText: _GRANT_LOCATION_CTA,
+            action: (BuildContext context) {
+              Navigator.pop(context);
+            },
           );
         }
         PermissionStatus requestPermissionStatus = await _location.requestPermission();
@@ -79,13 +82,34 @@ class LocationService {
   void _showPermissionDialog(BuildContext context, LocationPermissionStatus status) {
     switch (status) {
       case LocationPermissionStatus.SERVICE_DISABLED:
-        CommonFunctions.openDialog(context: context, action: CommonFunctions.openLocationSettings, subtitle: _ERROR_LOCATION_SERVICE_DISABLED, buttonText: _ENABLE_LOCATION_CTA);
+        CommonFunctions.openDialog(
+            context: context,
+            action: (context) {
+              CommonFunctions.openLocationSettings();
+              Navigator.pop(context);
+            },
+            subtitle: _ERROR_LOCATION_SERVICE_DISABLED,
+            buttonText: _ENABLE_LOCATION_CTA);
         break;
       case LocationPermissionStatus.FOREVER_DENIED:
-        CommonFunctions.openDialog(context: context, action: CommonFunctions.openAppSettings, subtitle: _ERROR_LOCATION_PERMISSION_PERMANENT_DENIED, buttonText: _GRANT_LOCATION_CTA);
+        CommonFunctions.openDialog(
+            context: context,
+            action: (context) {
+              CommonFunctions.openLocationSettings();
+              Navigator.pop(context);
+            },
+            subtitle: _ERROR_LOCATION_PERMISSION_PERMANENT_DENIED,
+            buttonText: _GRANT_LOCATION_CTA);
         break;
       default:
-        CommonFunctions.openDialog(context: context, action: CommonFunctions.openAppSettings, subtitle: _ERROR_LOCATION_SERVICE_DISABLED, buttonText: _GRANT_LOCATION_CTA);
+        CommonFunctions.openDialog(
+            context: context,
+            action: (context) {
+              CommonFunctions.openLocationSettings();
+              Navigator.pop(context);
+            },
+            subtitle: _ERROR_LOCATION_SERVICE_DISABLED,
+            buttonText: _GRANT_LOCATION_CTA);
         break;
     }
   }
