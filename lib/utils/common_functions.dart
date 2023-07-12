@@ -9,10 +9,12 @@ class CommonFunctions {
     //TODO: add url launcher implementation
   }
 
+// open the Location service setting
   static void openLocationSettings() async {
     await Geolocator.openLocationSettings();
   }
 
+  /// opens the apps settings
   static void openAppSettings() async {
     await Geolocator.openAppSettings();
   }
