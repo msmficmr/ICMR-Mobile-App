@@ -11,6 +11,8 @@ class CustomAlertDialog extends StatelessWidget {
 
   /// keys that can used for testing
   final String titleKey, subtitleKey, buttonKey;
+  final VoidCallback? onCancelPress;
+  final String? buttonCancelText, buttonCancelKey;
 
   /// [onOkPressed] action for button of alertDialog
   /// if [onOkPressed] is not passed then default action will close the popup.
@@ -20,10 +22,13 @@ class CustomAlertDialog extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.buttonText,
-    this.onOkPressed,
     required this.titleKey,
     required this.subtitleKey,
     required this.buttonKey,
+    this.onOkPressed,
+    this.onCancelPress,
+    this.buttonCancelKey,
+    this.buttonCancelText,
   }) : super(key: key);
 
   @override
