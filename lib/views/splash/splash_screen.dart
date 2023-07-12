@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
+import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/utils/enums.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String routerPath = "/";
@@ -16,6 +20,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late NetworkStatusService networkStatusService;
 
   Timer? _timer;
   int _start = 5;
@@ -23,21 +28,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     splashTimer();
   }
 
-  void splashTimer() {
-    const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(
-      oneSec, (Timer timer) {
-      if (_start == 0) {
-        cancelTimer();
-        redirectToNextScreen();
-      } else {
-        _start--;
-      }
-    },
-    );
+  void splashTimer() async {
+    await networkStatusService.initConnectivity();
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      const oneSec = Duration(seconds: 1);
+      _timer = Timer.periodic(
+        oneSec,
+            (Timer timer) {
+          if (_start == 0) {
+            cancelTimer();
+            redirectToNextScreen();
+          } else {
+            _start--;
+          }
+        },
+      );
+    } else {
+      CommonFunctions.toastMessage("No internet connection");
+    }
   }
 
   cancelTimer() {
@@ -47,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() {
-    GoRouter.of(context).go(LoginMobileScreen.routerPath);
+    GoRouter.of(context).go(LoginHome.routerPath);
   }
 
   @override
@@ -55,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
     cancelTimer();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {

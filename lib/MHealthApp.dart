@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/config/environment/environment.dart';
 import 'package:mhealth/config/router/app_router.dart';
 import 'package:mhealth/config/theme/app_theme.dart';
+import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,10 @@ class MHealthApp extends StatelessWidget {
         ChangeNotifierProvider<LoginViewModel>(
           lazy: false,
           create: (BuildContext createContext) => LoginViewModel.loginViewModel,
+        ),
+        ChangeNotifierProvider<NetworkStatusService>(
+          lazy: false,
+          create: (BuildContext createContext) => NetworkStatusService(),
         ),
         Provider<AppRouter>(
           lazy: false,
