@@ -32,5 +32,4 @@ class AppStyles {
   static TextStyle titleMedium = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColorScheme.kGrayColor.shade800);
 
   static TextStyle headlineMedium = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColorScheme.kPrimaryColor);
-  static TextStyle headlineLarge = TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColorScheme.kGrayColor.shade800);
 }

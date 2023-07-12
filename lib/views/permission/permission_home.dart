@@ -11,6 +11,7 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
 
 class PermissionHome extends StatefulWidget {
   static const String routerPath = "/permission";
@@ -55,7 +56,7 @@ class _PermissionHomeState extends State<PermissionHome> {
             Text(
               CONSENT_PAGE_TITLE,
               key: Key(KEY_BUTTON_TITLE),
-              style: AppStyles.headlineLarge,
+              style: AppStyles.headlineMedium.copyWith(color: AppColorScheme.kGrayColor.shade800),
             ),
             const SpaceWidget(
               height: 30,
