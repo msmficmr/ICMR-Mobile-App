@@ -7,6 +7,8 @@ class AppConstant {
   static const String ENV_KEY = "ENV";
   static const String FONT_FAMILY = "Montserrat";
 
+  static const String EMAIL = "Email";
+
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
 
