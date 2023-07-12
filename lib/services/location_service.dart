@@ -11,8 +11,6 @@ class LocationService {
   final String _ERROR_LOCATION_SERVICE_DISABLED = "Location services are currently disabled. Please enable location services in your device settings.";
   final String _ERROR_LOCATION_PERMISSION_DENIED = "Location permissions are currently denied. Please grant location permissions in your app settings.";
   final String _ERROR_LOCATION_PERMISSION_PERMANENT_DENIED = "Location permissions are permanently denied, Please grant location permissions in your app settings.";
-  final String _ERROR_LOCATION_PERMISSION_IN_USE =
-      "Location permissions are currently allowed only while using the app. Please grant location permissions as always because we collect location data to calculate expense reimbursement based on distance travelled even when app is closed or not in use.";
   final String _ENABLE_LOCATION_CTA = "Enable Location Services";
   final String _GRANT_LOCATION_CTA = "Grant Location Permissions";
 
@@ -85,9 +83,6 @@ class LocationService {
         break;
       case LocationPermissionStatus.FOREVER_DENIED:
         CommonFunctions.openDialog(context: context, action: CommonFunctions.openAppSettings, subtitle: _ERROR_LOCATION_PERMISSION_PERMANENT_DENIED, buttonText: _GRANT_LOCATION_CTA);
-        break;
-      case LocationPermissionStatus.WHILE_IN_USE:
-        CommonFunctions.openDialog(context: context, action: CommonFunctions.openAppSettings, subtitle: _ERROR_LOCATION_PERMISSION_IN_USE, buttonText: _GRANT_LOCATION_CTA);
         break;
       default:
         CommonFunctions.openDialog(context: context, action: CommonFunctions.openAppSettings, subtitle: _ERROR_LOCATION_SERVICE_DISABLED, buttonText: _GRANT_LOCATION_CTA);
