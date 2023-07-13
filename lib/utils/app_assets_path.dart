@@ -10,4 +10,6 @@ class AppAssetsPath {
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
 
+  /// location consent image
+  static const String locPermissionConsent = "assets/images/loc_permission_consent.svg";
 }
