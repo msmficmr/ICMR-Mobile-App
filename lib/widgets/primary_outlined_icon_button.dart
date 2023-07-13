@@ -5,7 +5,7 @@ import '../config/theme/outlined_button_theme_style.dart';
 class PrimaryOutlinedIconButton extends StatefulWidget {
   /// [buttonTitle] is button text
   /// [widgetKey] is assigned to [FilledButton] so that it can used for automation
-  final String buttonTitle, widgetKey;
+  final String buttonTitle, widgetKey; 
 
   /// [buttonThemeStyle] is optional. if its not set i will access it from [OutlinedButtonThemeStyle] of [AppTheme.light] method
   final OutlinedButtonThemeStyle? buttonThemeStyle;
