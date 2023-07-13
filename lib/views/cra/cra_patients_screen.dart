@@ -6,6 +6,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
+import 'package:mhealth/widgets/custom_floating_button.dart';
 import 'package:mhealth/widgets/custom_patient_card.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 
@@ -26,6 +27,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   //Widget Keys
   final String KEY_TEXTFIELD_SEARCH = "key_search_textfield";
   final String KEY_TITLE_SEARCH = "key_title_mobile";
+  final String KEY_BUTTON_ADD = "key_button_add";
 
   void onSearchFieldChanged(String? input) {}
 
@@ -38,7 +40,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     return WillPopScope(
       onWillPop: () async {
         redirectToPreviousPage();
-        return true;
+        return false;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -48,11 +50,17 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
           centerTitle: false,
           onLeadingClick: () => redirectToPreviousPage(),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            GoRouter.of(context).go(RegistrationScreen.routerPath);
-          },
-          child: SvgPicture.asset(AppAssetsPath.icAdd),
+        floatingActionButton: SizedBox(
+          width: 50,
+          height: 50,
+          child: CustomFloatingButton(
+            buttonAssetType: CustomFloatingAssetTypes.SVG,
+            assetPath: AppAssetsPath.icAdd,
+            buttonKey: Key(KEY_BUTTON_ADD),
+            onPressed: () {
+              GoRouter.of(context).go(RegistrationScreen.routerPath);
+            },
+          ),
         ),
         body: Container(
           padding: const EdgeInsets.all(16.0),
@@ -61,9 +69,6 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               CustomTextField(
                 widgetKey: Key(KEY_TEXTFIELD_SEARCH),
                 controller: _searchFieldController,
-                hasPrefix: true,
-                prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
-                prefixData: AppAssetsPath.icEmail,
                 hintText: SEARCH_FIELD_TITLE,
                 headingKey: Key(KEY_TITLE_SEARCH),
                 onChanged: onSearchFieldChanged,
