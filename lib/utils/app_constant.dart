@@ -11,6 +11,7 @@ class AppConstant {
 
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
+  static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
 
   /// ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";

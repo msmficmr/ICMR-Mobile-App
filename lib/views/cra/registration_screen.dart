@@ -25,7 +25,6 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
   final TextEditingController _firstNameController = TextEditingController();
@@ -91,9 +90,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_dobFocusNode == FocusManager.instance.primaryFocus) {
       try {
         int age = CommonFunctions.getAge(dob) ?? 0;
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
   }
 
@@ -122,7 +119,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: PrimaryFilledButton(buttonThemeStyle: FilledButtonThemeStyle(enabledButtonColor: Color(0xFFF4F5FF)), onPressed: () {}, buttonTitle: 'Consent', widgetKey: KEY_BUTTON_CONSENT),
+                child: PrimaryFilledButton(
+                  buttonThemeStyle: const FilledButtonThemeStyle(enabledButtonColor: Color(0xFFF4F5FF)),
+                  onPressed: () {},
+                  buttonTitle: 'Consent',
+                  widgetKey: KEY_BUTTON_CONSENT,
+                ),
               ),
               const SpaceWidget(
                 height: 15,
@@ -254,17 +256,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   valueListenable: _buttonEnabled,
                   builder: (context, isValid, _) {
                     return PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(
-                          disabledTextColor: Colors.white
-                      ),
+                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
                       buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
                       onPressed: !isValid
                           ? null
                           : () {
-                        onContinueClick();
-                      },
+                              onContinueClick();
+                            },
                     );
                   },
                 ),
