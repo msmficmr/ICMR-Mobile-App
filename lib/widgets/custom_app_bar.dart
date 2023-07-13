@@ -113,16 +113,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
       case CustomAppBarTitleType.WIDGET:
         return titleWidget ?? const SizedBox.shrink();
       case CustomAppBarTitleType.HORIZONTAL_APP_ICON:
-        return SizedBox(
-          width: 200,
-          child: Center(
-            child: Container(
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                AppAssetsPath.appHorizontalIcon,
-              ),
-            ),
-          ),
+        return SvgPicture.asset(
+          AppAssetsPath.appHorizontalIcon,
         );
       case CustomAppBarTitleType.APP_ICON:
       default:
