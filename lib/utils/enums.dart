@@ -8,3 +8,5 @@ enum MaskAutoCompletionType { lazy, eager }
 
 /// These enums are used on login home to switch between mobile number and verification.
 enum LoginScreenTypes { EMAIL, MOBILE_NUMBER, OTP_SCREEN }
+
+enum LocationPermissionStatus { SERVICE_DISABLED, GRANTED, WHILE_IN_USE, DENIED, FOREVER_DENIED }
