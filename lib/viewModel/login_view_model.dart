@@ -28,7 +28,7 @@ class LoginViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isOTPValidating => _isOTPValidating;
 
-  final List<String> loginTypes = ["Email", "mobile number"];
+  final List<String> loginTypes = ["Email", "Mobile number"];
 
   set isLoggedIn(bool value) {
     _isLoggedIn = value;
