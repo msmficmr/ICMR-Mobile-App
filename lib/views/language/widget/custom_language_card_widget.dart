@@ -44,7 +44,7 @@ class _CustomLanguageCardWidgetState extends State<CustomLanguageCardWidget> {
               key: Key(widget.widgetKey),
               decoration: widget.customBoxDecoration ??
                   BoxDecoration(
-                    color: widget.cardColor ?? AppColorScheme.kPrimaryColor.shade500.withOpacity(0.1),
+                    color: widget.cardColor ?? AppColorScheme.kPrimaryColor.shade400.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
               //padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 25),

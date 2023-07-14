@@ -6,7 +6,6 @@ import '../../utils/app_constant.dart';
 import '../../utils/app_values.dart';
 import '../../utils/enums.dart';
 import '../../widgets/custom_app_bar.dart';
-import '../../widgets/primary_filled_button.dart';
 import '../../widgets/space_widget.dart';
 import 'widget/custom_language_card_widget.dart';
 
@@ -20,34 +19,15 @@ class LanguageSelectionScreen extends StatefulWidget {
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   List<Map<String, String>> languages = [
-    {
-      'name': 'English',
-      'nativeName': 'English',
-    },
-    {
-      'name': 'Hindi',
-      'nativeName': 'हिन्दी',
-    },
-    {
-      'name': 'Bengali',
-      'nativeName': 'বাংলা',
-    },
-    {
-      'name': 'Telugu',
-      'nativeName': 'తెలుగు',
-    },
-    {
-      'name': 'Marathi',
-      'nativeName': 'मराठी',
-    },
-    {
-      'name': 'Tamil',
-      'nativeName': 'தமிழ்',
-    },
-    {
-      'name': 'Gujarati',
-      'nativeName': 'ગુજરાતી',
-    },
+    {"locale": "en_US", "name": "English", "englishText": "English"},
+    {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
+    {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
+    {"locale": "te", "name": "తెలుగు", "englishText": "Telegu"},
+    {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
+    {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
+    {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
+    {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
+    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"}
   ];
 
   //TITLE
@@ -90,6 +70,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               ),
             ],
           ),
+          const SpaceWidget(
+            height: 10,
+          ),
           Text(
             TITLE_SELECT_LANGUAGE,
             key: Key(KEY_SELECT_LANGUAGE),
@@ -109,9 +92,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     onTap: () {},
                     child: Center(
                       child: CustomLanguageCardWidget(
-                        cardTile: item['nativeName']!,
-                        cardTitleKey: "key_language_english",
-                        widgetKey: "Key_card_widget",
+                        cardTile: item['name']!,
+                        cardTitleKey: "key_language_${item['name']}",
+                        widgetKey: "Key_${item['name']}card_widget",
                       ),
                     ),
                   );
