@@ -12,3 +12,5 @@ enum LoginScreenTypes { EMAIL, MOBILE_NUMBER, OTP_SCREEN }
 enum NetworkStatus { online, offline }
 
 enum CustomFloatingAssetTypes { SVG, ICON }
+
+enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
