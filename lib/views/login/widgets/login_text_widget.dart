@@ -40,7 +40,7 @@ class LoginTextWidget extends StatelessWidget {
               ),
             ),
           ),
-          if (loginType == "Email")
+          if (loginType == AppConstant.EMAIL)
             TextSpan(text: LOGIN_2)
         ],
       ),

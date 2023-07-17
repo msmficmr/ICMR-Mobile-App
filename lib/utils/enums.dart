@@ -10,3 +10,5 @@ enum MaskAutoCompletionType { lazy, eager }
 enum LoginScreenTypes { EMAIL, MOBILE_NUMBER, OTP_SCREEN }
 
 enum NetworkStatus { online, offline }
+
+enum LocationPermissionStatus { SERVICE_DISABLED, GRANTED, WHILE_IN_USE, DENIED, FOREVER_DENIED }
