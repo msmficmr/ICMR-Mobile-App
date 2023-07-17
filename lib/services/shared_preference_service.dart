@@ -44,8 +44,8 @@ class SharedPreferencesService {
   }
 
   /// [writeString] method is used to write Double data to local storage
-  Future<void> writeDouble({required String key, required int value}) async {
-    await _prefs!.setInt(key, value);
+  Future<void> writeDouble({required String key, required double value}) async {
+    await _prefs!.setDouble(key, value);
   }
 
   /// [removeString] method is used to delete particular String data from local storage
