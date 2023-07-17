@@ -54,9 +54,7 @@ class LocationService {
             context: context,
             subtitle: _ERROR_LOCATION_PERMISSION_DENIED,
             buttonText: _GRANT_LOCATION_CTA,
-            action: (BuildContext context) {
-              Navigator.pop(context);
-            },
+            action: (BuildContext context) {},
           );
         }
         PermissionStatus requestPermissionStatus = await _location.requestPermission();
@@ -95,7 +93,7 @@ class LocationService {
         CommonFunctions.openDialog(
             context: context,
             action: (context) {
-              CommonFunctions.openLocationSettings();
+              CommonFunctions.openAppSettings();
               Navigator.pop(context);
             },
             subtitle: _ERROR_LOCATION_PERMISSION_PERMANENT_DENIED,
@@ -105,7 +103,7 @@ class LocationService {
         CommonFunctions.openDialog(
             context: context,
             action: (context) {
-              CommonFunctions.openLocationSettings();
+              CommonFunctions.openAppSettings();
               Navigator.pop(context);
             },
             subtitle: _ERROR_LOCATION_SERVICE_DISABLED,
