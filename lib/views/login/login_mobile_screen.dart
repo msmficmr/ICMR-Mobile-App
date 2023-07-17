@@ -4,26 +4,29 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
-import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/privacy_policy_widget.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const String routerPath = "/login";
+class LoginMobileScreen extends StatefulWidget {
+  static const String routerPath = "/login-mobile";
 
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginMobileScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginMobileScreen> createState() => _LoginMobileScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginMobileScreenState extends State<LoginMobileScreen> {
   late ValueNotifier<bool> _isValidMobile;
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> _buttonEnabled;
+  late LoginViewModel loginViewModel;
 
   final TextEditingController _mobileFieldController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -40,15 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final String KEY_TITLE_MOBILE = "key_title_mobile";
   final String KEY_LOGIN_TYPE = "key_login_type";
 
-
-  static const List<String> loginTypes = ["Email", "Mobile Number"];
-
   @override
   void initState() {
     super.initState();
     _isValidMobile = ValueNotifier<bool>(false);
     _hasConsent = ValueNotifier<bool>(true);
     _buttonEnabled = ValueNotifier<bool>(false);
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
   }
 
   void onMobileFieldChanged(String? input) {
@@ -70,7 +71,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> onContinueClick() async {
-    if (formKey.currentState?.validate() ?? false) {}
+    if (formKey.currentState?.validate() ?? false) {
+      loginViewModel.authFlow = LoginScreenTypes.MOBILE_NUMBER;
+      await loginViewModel.sendOtp(mobileNo: _mobileFieldController.text);
+    }
+  }
+
+  redirectToLoginEmailScreen() {
+    loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
   }
 
   @override
@@ -132,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginTypes[0], onTap: (){},),
+                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginViewModel.loginTypes[0], onTap: redirectToLoginEmailScreen,),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,

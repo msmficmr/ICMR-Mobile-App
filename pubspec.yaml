@@ -16,6 +16,11 @@ dependencies:
   dropdown_search: ^5.0.6
   location: ^5.0.0
   geolocator: ^9.0.2
+  fluttertoast: ^8.2.2
+  pin_input_text_field: ^4.5.0
+  connectivity_plus: ^4.0.1
+
+
   shared_preferences: ^2.0.8
 dev_dependencies:
   flutter_test:
