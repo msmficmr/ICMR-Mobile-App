@@ -10,7 +10,7 @@ class AppRouter {
 
   /// List of routes which can be accessed without login in app
   List<String> unProtectedRoutes = [
-    LoginScreen.routerPath,
+    LoginHome.routerPath,
     SplashScreen.routerPath,
   ];
 
@@ -39,10 +39,17 @@ class AppRouter {
               builder: (context, state) => const SplashScreen(),
             ),
             GoRoute(
-              path: LoginScreen.routerPath,
+              path: LoginHome.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const LoginScreen(),
+                child: const LoginHome(),
+              ),
+            ),
+            GoRoute(
+              path: HomeScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const HomeScreen(),
               ),
             ),
           ],
@@ -57,7 +64,12 @@ class AppRouter {
         /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
         /// navigating to login screen
         if (!loginViewModel.isLoggedIn) {
-          return unProtectedRoutes.contains(navigationRoute) ? null : LoginScreen.routerPath;
+          return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
+        }
+        if (loginViewModel.isLoggedIn) {
+          if (navigationRoute == LoginHome.routerPath) {
+            return HomeScreen.routerPath;
+          }
         }
 
         /// if user is logged we are null so that it will navigate from one screen to another without any redirect
