@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../widgets/custom_alert_dialog.dart';
@@ -66,4 +67,15 @@ class CommonFunctions {
       ),
     );
   }
+  /// opens browser with Terms and conditions link
+  static void onTermsConditionClick() {
+    //TODO: add url launcher implementation
+  }
+
+  /// displays toast message on screen
+  static void toastMessage(String message) {
+    Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
+  }
+
+
 }

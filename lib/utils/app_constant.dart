@@ -7,11 +7,17 @@ class AppConstant {
   static const String ENV_KEY = "ENV";
   static const String FONT_FAMILY = "Montserrat";
 
+  static const String EMAIL = "Email";
+
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
 
  //KEYS
   static const String KEY_BUTTON_CONTINUE= "key_continue_button";
 
+
+
+  /// ERRORS
+  static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
 
 }
