@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AccountCard extends StatelessWidget {
-  final IconData? leftIcon;
+  final Widget? leftIcon;
   final String text;
-  final IconData? rightIcon;
+  final Widget? rightIcon;
   final Function() onTap;
   final TextStyle? textStyle;
   final Color? cardColor;
@@ -29,15 +29,18 @@ class AccountCard extends StatelessWidget {
       fontWeight: FontWeight.bold,
     );
 
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
         color: cardColor,
         child: Padding(
           padding: padding ?? const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              if (leftIcon != null) Icon(leftIcon, size: iconSize),
+              if (leftIcon != null) SizedBox(child: leftIcon),
               if (leftIcon != null) const SizedBox(width: 16.0),
               Expanded(
                 child: Text(
@@ -46,7 +49,7 @@ class AccountCard extends StatelessWidget {
                 ),
               ),
               if (rightIcon != null) const SizedBox(width: 16.0),
-              if (rightIcon != null) Icon(rightIcon, size: iconSize),
+              if (rightIcon != null) SizedBox(child: rightIcon),
             ],
           ),
         ),
