@@ -15,10 +15,7 @@ class SharedPreferencesService {
 
   // [readData] method is used to read a particular key from local storage
   Future<String?> readData({required String key}) async {
-    if (_prefs != null) {
       return _prefs!.getString(key);
-    }
-   return _prefs!.getString(key) ?? "";
   }
 
   /// [readBool] method is used to get bool value for a particular key from local storage
@@ -38,10 +35,7 @@ class SharedPreferencesService {
 
   /// [writeString] method is used to write String data to local storage
   Future<void> writeString({required String key, required String value}) async {
-    if (_prefs != null) {
       await _prefs!.setString(key, value);
-    }
-    //  await _prefs!.setString(key, value);
   }
 
   /// [writeString] method is used to write Int data to local storage
