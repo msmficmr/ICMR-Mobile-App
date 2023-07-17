@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mhealth/utils/app_styles.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/theme/filled_button_theme_style.dart';
 import '../../utils/app_color_scheme.dart';
@@ -20,6 +22,8 @@ class LanguageSelectionScreen extends StatefulWidget {
 }
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
+  late LanguageViewModel languageViewModel;
+  late ValueNotifier<bool> _buttonEnabled;
   List<Map<String, String>> languages = [
     {"locale": "en_US", "name": "English", "englishText": "English"},
     {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
@@ -43,6 +47,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   @override
   void initState() {
     super.initState();
+    _buttonEnabled = ValueNotifier<bool>(false);
+    languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
   }
 
   @override
@@ -84,22 +90,35 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
             height: 30,
           ),
           Expanded(
-            child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 20, mainAxisSpacing: 20, childAspectRatio: 1 / 0.4),
-                itemCount: languages.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final item = languages[index];
+            child: Selector<LanguageViewModel, int>(
+                selector: (context, provider) => provider.selectedIndex,
+                builder: (context, currentSelectedIndex, child) {
+                  return GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 20, mainAxisSpacing: 20, childAspectRatio: 1 / 0.4),
+                      itemCount: languages.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = languages[index];
 
-                  return GestureDetector(
-                    onTap: () {},
-                    child: Center(
-                      child: CustomLanguageCardWidget(
-                        cardTile: item['name']!,
-                        cardTitleKey: "key_language_${item['name']}",
-                        widgetKey: "Key_${item['name']}card_widget",
-                      ),
-                    ),
-                  );
+                        return GestureDetector(
+                          onTap: () {
+                            if (languageViewModel.selectedIndex == index) {
+                              _buttonEnabled.value = false;
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: -1); // Unselect the item if already selected
+                            } else {
+                              _buttonEnabled.value = true;
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index); // Update the selected index
+                            }
+                          },
+                          child: Center(
+                            child: CustomLanguageCardWidget(
+                              isSelected: languageViewModel.selectedIndex == index,
+                              cardTile: item['name'] ?? "",
+                              cardTitleKey: "key_language_${item['name']}",
+                              widgetKey: "Key_${item['name']}card_widget",
+                            ),
+                          ),
+                        );
+                      });
                 }),
           ),
           const SpaceWidget(
@@ -107,13 +126,20 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           ),
           SizedBox(
             width: double.infinity,
-            child: PrimaryFilledButton(
-              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-              buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-              widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
-              isLoading: false,
-              onPressed: () {},
-            ),
+            child: ValueListenableBuilder<bool>(
+                valueListenable: _buttonEnabled,
+                builder: (context, isValid, _) {
+                  return PrimaryFilledButton(
+                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                    buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                    widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
+                    isLoading: false,
+                    onPressed: !isValid ? null : () {},
+                  );
+                }),
+          ),
+          const SpaceWidget(
+            height: 10,
           ),
         ]),
       ),

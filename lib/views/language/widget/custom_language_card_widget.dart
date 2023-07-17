@@ -8,9 +8,8 @@ class CustomLanguageCardWidget extends StatefulWidget {
   /// [buttonTitle] is button text
   /// [widgetKey] is assigned to [FilledButton] so that it can used for automation
   final String cardTile, widgetKey, cardTitleKey;
-  final bool isLoading;
-  final TextStyle? customTextStyle;
-  final Color? borderColor, cardColor;
+  final bool isLoading, isSelected;
+  final Color? borderColor;
   final BoxDecoration? customBoxDecoration;
 
   const CustomLanguageCardWidget({
@@ -18,11 +17,10 @@ class CustomLanguageCardWidget extends StatefulWidget {
     required this.cardTile,
     required this.widgetKey,
     required this.cardTitleKey,
+    required this.isSelected,
     this.isLoading = false,
-    this.customTextStyle,
     this.customBoxDecoration,
     this.borderColor,
-    this.cardColor,
   });
 
   @override
@@ -44,7 +42,7 @@ class _CustomLanguageCardWidgetState extends State<CustomLanguageCardWidget> {
               key: Key(widget.widgetKey),
               decoration: widget.customBoxDecoration ??
                   BoxDecoration(
-                    color: widget.cardColor ?? AppColorScheme.kPrimaryColor.shade400.withOpacity(0.1),
+                    color: widget.isSelected ? AppColorScheme.kPrimaryColor : AppColorScheme.kPrimaryColor.shade400.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
               //padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 25),
@@ -52,7 +50,9 @@ class _CustomLanguageCardWidgetState extends State<CustomLanguageCardWidget> {
                 child: Text(
                   widget.cardTile,
                   key: Key(widget.cardTitleKey),
-                  style: widget.customTextStyle ?? AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                  style: widget.isSelected
+                      ? AppStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY)
+                      : AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
                 ),
               ),
             ),
