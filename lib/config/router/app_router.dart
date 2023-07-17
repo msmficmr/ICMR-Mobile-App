@@ -14,6 +14,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginScreen.routerPath,
     SplashScreen.routerPath,
+    LanguageSelectionScreen.routerPath,
   ];
 
   AppRouter(this.loginViewModel) {
@@ -23,7 +24,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: SplashScreen.routerPath,
+      initialLocation: LanguageSelectionScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {

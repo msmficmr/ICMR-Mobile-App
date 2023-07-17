@@ -11,7 +11,7 @@ class AppConstant {
   static const String CONTINUE_BUTTON_TITLE = "Continue";
 
  //KEYS
-  static const String KEY_CONTINUE_BUTTON = "key_continue_button";
+  static const String KEY_BUTTON_CONTINUE= "key_continue_button";
 
 
 }

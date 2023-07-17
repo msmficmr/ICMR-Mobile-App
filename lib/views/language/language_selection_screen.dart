@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mhealth/utils/app_styles.dart';
 
+import '../../config/theme/filled_button_theme_style.dart';
 import '../../utils/app_color_scheme.dart';
 import '../../utils/app_constant.dart';
 import '../../utils/app_values.dart';
 import '../../utils/enums.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/primary_filled_button.dart';
 import '../../widgets/space_widget.dart';
 import 'widget/custom_language_card_widget.dart';
 
@@ -27,7 +29,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
     {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
     {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
-    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"}
+    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
   ];
 
   //TITLE
@@ -100,26 +102,18 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   );
                 }),
           ),
-          // Positioned(
-          //   left: 0,
-          //   right: 0,
-          //   bottom: 0,
-          //   child: SizedBox(
-          //     width: double.infinity,
-          //     child: ValueListenableBuilder<bool>(
-          //       valueListenable: _buttonEnabled,
-          //       builder: (context, isValid, _) {
-          //         return PrimaryFilledButton(
-          //           buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-          //           widgetKey: AppConstant.KEY_CONTINUE_BUTTON,
-          //           onPressed: () {},
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
           const SpaceWidget(
             height: 10,
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: PrimaryFilledButton(
+              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+              buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+              widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
+              isLoading: false,
+              onPressed: () {},
+            ),
           ),
         ]),
       ),
