@@ -103,7 +103,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                               isSelected: languageViewModel.selectedIndex == index,
                               cardTile: item['name'] ?? "",
                               cardTitleKey: "key_language_${item['name']}",
-                              widgetKey: "Key_${item['name']}card_widget",
+                              widgetKey: "Key_${item['locale']}card_widget",
                             ),
                           ),
                         );
