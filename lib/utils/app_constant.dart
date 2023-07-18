@@ -49,28 +49,4 @@ class AppConstant {
     CustomChipItem(text: 'Yes', data: 'y'),
     CustomChipItem(text: 'No', data: 'n'),
   ];
-
-  static const List<String> OCCUPATION_TYPES = [
-    "Unemployed",
-    "Student",
-    "Self Employed(Shop owner, Vegetable, Fruit Service)",
-    "Service",
-    "Retired",
-    "Manual Labour(Cycle rikshaw, Construction)",
-    "Skilled Labour(Painter, Electrician, Plumber)",
-    "Home maker",
-    "Remove response",
-  ];
-
-  static const List<String> OCCUPATION_INDUSTRY = [
-    "Rubber Industry",
-    "Paint Industry",
-    "Chemical Industry",
-    "Radiation",
-    "Explosives",
-    "Construction & Cement",
-    "Pesticide use for farming",
-    "None",
-    "Remove response",
-  ];
 }

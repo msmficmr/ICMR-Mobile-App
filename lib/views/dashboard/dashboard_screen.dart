@@ -19,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
 
   takeCRA() {
-    GoRouter.of(context).go(CRAPatientScreen.routerPath);
+    GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
   @override
@@ -39,7 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               buttonTitle: AppConstant.TAKE_CRA_BUTTON_TITLE,
               widgetKey: KEY_BUTTON_TAKE_CRA,
               isLoading: false,
-              onPressed: () => takeCRA(),
+              onPressed: () {
+                takeCRA();
+              },
             ),
           )
         ],
