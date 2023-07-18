@@ -7,6 +7,8 @@ class AppAssetsPath {
   static const String icCheckboxUnChecked = "assets/icons/ic_checkbox_unchecked.svg";
   static const String icArrowBack = "assets/icons/ic_arrow_back.svg";
   static const String icEmail = "assets/icons/ic_email.svg";
+  static const String icClose = "assets/icons/ic_close.svg";
+  static const String icFile = "assets/icons/ic_file.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
