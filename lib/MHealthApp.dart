@@ -4,6 +4,7 @@ import 'package:mhealth/config/router/app_router.dart';
 import 'package:mhealth/config/theme/app_theme.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,10 @@ class MHealthApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext createContext) => NetworkStatusService(),
         ),
+        ChangeNotifierProvider<LanguageViewModel>(
+          lazy: false,
+          create: (BuildContext createContext) => LanguageViewModel(),
+        ),
         Provider<AppRouter>(
           lazy: false,
           create: (BuildContext createContext) {
@@ -30,21 +35,23 @@ class MHealthApp extends StatelessWidget {
           },
         ),
       ],
-      child: Builder(builder: (context) {
-        final router = Provider.of<AppRouter>(context, listen: false).goRouter;
+      child: Builder(
+        builder: (context) {
+          final router = Provider.of<AppRouter>(context, listen: false).goRouter;
 
-        return MaterialApp.router(
-          scaffoldMessengerKey: AppValues.scaffoldMessengerKey,
-          routerDelegate: router.routerDelegate,
-          routeInformationParser: router.routeInformationParser,
-          routeInformationProvider: router.routeInformationProvider,
-          title: Environment.runningEnv.appName,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(context),
-          darkTheme: AppTheme.light(context),
-          themeMode: ThemeMode.light,
-        );
-      },),
+          return MaterialApp.router(
+            scaffoldMessengerKey: AppValues.scaffoldMessengerKey,
+            routerDelegate: router.routerDelegate,
+            routeInformationParser: router.routeInformationParser,
+            routeInformationProvider: router.routeInformationProvider,
+            title: Environment.runningEnv.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(context),
+            darkTheme: AppTheme.light(context),
+            themeMode: ThemeMode.light,
+          );
+        },
+      ),
     );
   }
 }
