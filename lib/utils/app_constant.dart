@@ -1,5 +1,4 @@
 class AppConstant {
-
   AppConstant._();
 
   static const String APP_NAME_KEY = "APP_NAME";
@@ -12,12 +11,22 @@ class AppConstant {
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
 
- //KEYS
-  static const String KEY_BUTTON_CONTINUE= "key_continue_button";
-
-
+  //KEYS
+  static const String KEY_BUTTON_CONTINUE = "key_continue_button";
 
   /// ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
 
+  /// Language Supported
+  static const List<Map<String, String>> languages = [
+    {"locale": "en_US", "name": "English", "englishText": "English"},
+    {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
+    {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
+    {"locale": "te", "name": "తెలుగు", "englishText": "Telegu"},
+    {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
+    {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
+    {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
+    {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
+    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
+  ];
 }

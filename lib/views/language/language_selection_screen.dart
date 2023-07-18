@@ -24,17 +24,6 @@ class LanguageSelectionScreen extends StatefulWidget {
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   late LanguageViewModel languageViewModel;
   late ValueNotifier<bool> _buttonEnabled;
-  List<Map<String, String>> languages = [
-    {"locale": "en_US", "name": "English", "englishText": "English"},
-    {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
-    {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
-    {"locale": "te", "name": "తెలుగు", "englishText": "Telegu"},
-    {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
-    {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
-    {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
-    {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
-    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
-  ];
 
   //TITLE
   static const String TITLE_PREFERRED_LANGUAGE = "Choose Your Preferred Language";
@@ -95,11 +84,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 builder: (context, currentSelectedIndex, child) {
                   return GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 20, mainAxisSpacing: 20, childAspectRatio: 1 / 0.4),
-                      itemCount: languages.length,
+                      itemCount: AppConstant.languages.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final item = languages[index];
+                        final item = AppConstant.languages[index];
 
-                        return GestureDetector(
+                        return InkWell(
                           onTap: () {
                             if (languageViewModel.selectedIndex == index) {
                               _buttonEnabled.value = false;
