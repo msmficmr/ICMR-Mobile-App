@@ -15,6 +15,9 @@ class AppAssetsPath {
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
 
+  /// location consent image
+  static const String locPermissionConsent = "assets/images/loc_permission_consent.svg";
+
   /// Patient card icons
   static const String icFemale = "assets/icons/ic_female.svg";
   static const String icMale = "assets/icons/ic_male.svg";

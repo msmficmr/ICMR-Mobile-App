@@ -9,20 +9,53 @@ class AppConstant {
   static const String ENV_KEY = "ENV";
   static const String FONT_FAMILY = "Montserrat";
 
+  static const String EMAIL = "Email";
+
+  //Hint Texts
+  static const String HINT_TEXT_ENTER_HERE = "Enter here";
+  static const String HINT_TEXT_DATE = "DD/MM/YYYY";
+  static const String HINT_TEXT_SELECT = "Select";
+
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
   static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
   static const String CONSENT_BUTTON_TITLE = "Consent";
 
-  /// ERRORS
+  // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
 
-  //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [
     CustomChipItem(data: "m", text: "Male"),
     CustomChipItem(data: "f", text: "Female"),
     CustomChipItem(data: "u", text: "Other"),
   ];
 
+  static const List<CustomChipItem<String>> BINARY_LIST = [
+    CustomChipItem(text: 'Yes', data: 'y'),
+    CustomChipItem(text: 'No', data: 'n'),
+  ];
 
+  static const List<String> OCCUPATION_TYPES = [
+    "Unemployed",
+    "Student",
+    "Self Employed(Shop owner, Vegetable, Fruit Service)",
+    "Service",
+    "Retired",
+    "Manual Labour(Cycle rikshaw, Construction)",
+    "Skilled Labour(Painter, Electrician, Plumber)",
+    "Home maker",
+    "Remove response",
+  ];
+
+  static const List<String> OCCUPATION_INDUSTRY = [
+    "Rubber Industry",
+    "Paint Industry",
+    "Chemical Industry",
+    "Radiation",
+    "Explosives",
+    "Construction & Cement",
+    "Pesticide use for farming",
+    "None",
+    "Remove response",
+  ];
 }
