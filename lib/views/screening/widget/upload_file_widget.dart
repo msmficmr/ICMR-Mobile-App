@@ -12,11 +12,11 @@ class UploadFileWidget extends StatefulWidget {
   /// if you don't pass heading it wont be visible
   final String? heading;
 
-  final void Function(XFile?) onFileSelected;
+  final void Function(XFile?)? onFileSelected;
   const UploadFileWidget({
     super.key,
     this.heading,
-    required this.onFileSelected,
+    this.onFileSelected,
   });
 
   @override
@@ -62,7 +62,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
     cardWidth = cardWidth > 200 ? 200 : cardWidth;
 
     return Padding(
-        padding: EdgeInsets.all(outerPadding),
+        padding: EdgeInsets.all(2),
         child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
           if (widget.heading != null) ...[
             const SpaceWidget(
@@ -77,37 +77,39 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
           const SpaceWidget(
             height: 15,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox.square(
-                dimension: cardWidth,
-                child: SquareButton(
-                  cardKey: KEY_BUTTON_CAMERA,
-                  onCardClick: () {
-                   // captureCameraImage();
-                  },
-                  title: TITLE_BUTTON_CAMERA,
-                  titleKey: KEY_TITLE_CAMERA,
-                  svgPath: AppAssetsPath.icEmail,
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox.square(
+                  dimension: cardWidth,
+                  child: SquareButton(
+                    cardKey: KEY_BUTTON_CAMERA,
+                    onCardClick: () {
+                      // captureCameraImage();
+                    },
+                    title: TITLE_BUTTON_CAMERA,
+                    titleKey: KEY_TITLE_CAMERA,
+                    svgPath: AppAssetsPath.icEmail,
+                  ),
                 ),
-              ),
-              SpaceWidget(
-                width: spaceBetweenCard,
-              ),
-              SizedBox.square(
-                dimension: cardWidth,
-                child: SquareButton(
-                  cardKey: KEY_BUTTON_BROWSE,
-                  onCardClick: () {
-                  //  chooseImage();
-                  },
-                  title: TITLE_BUTTON_BROWSE,
-                  titleKey: KEY_TITLE_BROWSE,
-                  svgPath: AppAssetsPath.icArrowBack,
+                SpaceWidget(
+                  width: spaceBetweenCard,
                 ),
-              ),
-            ],
+                SizedBox.square(
+                  dimension: cardWidth,
+                  child: SquareButton(
+                    cardKey: KEY_BUTTON_BROWSE,
+                    onCardClick: () {
+                      //  chooseImage();
+                    },
+                    title: TITLE_BUTTON_BROWSE,
+                    titleKey: KEY_TITLE_BROWSE,
+                    svgPath: AppAssetsPath.icArrowBack,
+                  ),
+                ),
+              ],
+            ),
           ),
         ]));
   }

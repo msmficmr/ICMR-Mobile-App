@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
-
+import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/views/screening/widget/upload_file_widget.dart';
+import 'package:mhealth/widgets/attachment_widget.dart';
 import '../../utils/app_color_scheme.dart';
 import '../../utils/app_styles.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -33,14 +34,14 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   static const String TITLE_INFORMED_CONSENT = "Informed Consent";
 
   /// keys
-  final String KEY_INFORMED_CONSENT ="key_informed_consent";
+  final String KEY_INFORMED_CONSENT = "key_informed_consent";
   final Key KEY_TITLE_CAMERA = const Key("key_title_camera");
   final Key KEY_TITLE_BROWSE = const Key("key_title_browse");
   final Key KEY_TITLE_HEADING = const Key("key_title_heading");
   final Key KEY_BUTTON_CAMERA = const Key("key_button_camera");
   final Key KEY_BUTTON_BROWSE = const Key("key_button_browse");
 
-  double outerPadding = 20.0;
+  // double outerPadding = 20.0;
 
   // Future<void> captureCameraImage() async {
   //   // bool hasCameraPermission = await PermissionService.permissionService.checkCameraPermission(context);
@@ -66,7 +67,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
           titleText: APP_BAR_TITLE,
         ),
         body: Padding(
-            padding: EdgeInsets.all(outerPadding),
+            padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +80,27 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                   key: Key(KEY_INFORMED_CONSENT),
                   style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
                 ),
+                UploadFileWidget(
+                  heading: "Upload",
+                  onFileSelected: (file) {
+                    GoRouter.of(context).pop(file);
+                  },
+                ),
+                 const SpaceWidget(
+                  height: 10,
+                ),
+                AttachmentWidget(
+                    title: "ttt",
+                                    titleKey: const Key("KEY_TITLE"),
+                                    viewKey: const Key("KEY_CARD"),
+                                    removeButtonKey: const Key("KEY_REMOVE_BUTTON"),
+                                    onRemoveClick: () {
+                                      // provider.removeAttachment(index);
+                                    },
+                                    viewPictureClick: () {
+                                     // CommonFunctions.viewImage(context: context, bytes: provider.localPatientHistoryScreenModel.attachmentList[index].bytes);
+                                    },
+                )
               ],
             )));
   }

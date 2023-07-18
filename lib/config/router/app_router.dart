@@ -15,6 +15,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
+    ConsentScreeningScreen.routerPath
   ];
 
   AppRouter(this.loginViewModel) {
@@ -24,7 +25,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: SplashScreen.routerPath,
+      initialLocation: ConsentScreeningScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -53,6 +54,13 @@ class AppRouter {
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const HomeScreen(),
+              ),
+            ),
+               GoRoute(
+              path: ConsentScreeningScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const ConsentScreeningScreen(),
               ),
             ),
           ],
