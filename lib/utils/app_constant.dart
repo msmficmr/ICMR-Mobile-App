@@ -15,8 +15,11 @@ class AppConstant {
   static const String CONSENT_BUTTON_TITLE = "Consent";
   static const String ONLINE_SYNC_DATA_BUTTON_TITLE = "You are online, Sync data";
 
-  /// ERRORS
+  // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
+
+  // Shared Preferences keys
+  static const String LANGUAGE_KEY = "LANGUAGE";
 
   //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [
@@ -24,6 +27,5 @@ class AppConstant {
     CustomChipItem(data: "f", text: "Female"),
     CustomChipItem(data: "u", text: "Other"),
   ];
-
 
 }

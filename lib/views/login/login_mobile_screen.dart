@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/services/language_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
@@ -83,6 +85,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = DefaultMaterialLocalizations.delegate;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
@@ -101,6 +104,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    TextButton(onPressed: changeLanguage, child: Text(TranslationKeys.enter_your_mobile_number_title.translate(context))),
                     CustomTextField(
                       widgetKey: Key(KEY_TEXTFIELD_MOBILE),
                       controller: _mobileFieldController,
@@ -170,5 +174,10 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
         ),
       ),
     );
+  }
+
+  void changeLanguage() {
+    final languageService = Provider.of<LanguageService>(context, listen: false);
+    languageService.setLocale(locale: const Locale('hi'), language: "हिंदी");
   }
 }

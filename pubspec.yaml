@@ -8,6 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+      sdk: flutter
 
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.5
@@ -17,6 +19,7 @@ dependencies:
   pin_input_text_field: ^4.5.0
   connectivity_plus: ^4.0.1
   intl: ^0.18.0
+  shared_preferences: ^2.2.0
 
 
 dev_dependencies:
