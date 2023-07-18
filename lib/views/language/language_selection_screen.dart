@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+import 'package:mhealth/utils/app_styles.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:provider/provider.dart';
+
+import '../../config/theme/filled_button_theme_style.dart';
+import '../../utils/app_color_scheme.dart';
+import '../../utils/app_constant.dart';
+import '../../utils/app_values.dart';
+import '../../utils/enums.dart';
+import '../../widgets/custom_app_bar.dart';
+import '../../widgets/primary_filled_button.dart';
+import '../../widgets/space_widget.dart';
+import 'widget/custom_language_card_widget.dart';
+
+class LanguageSelectionScreen extends StatefulWidget {
+  static const String routerPath = "/languageSelectionScreen";
+  const LanguageSelectionScreen({super.key});
+
+  @override
+  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
+}
+
+class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
+  late LanguageViewModel languageViewModel;
+  late ValueNotifier<bool> _buttonEnabled;
+
+  //TITLE
+  static const String TITLE_PREFERRED_LANGUAGE = "Choose Your Preferred Language";
+  static const String TITLE_SELECT_LANGUAGE = "Please select your language";
+
+  //KEY
+  final String KEY_PREFERRED_LANGUAGE = "key_preferred_language";
+  final String KEY_SELECT_LANGUAGE = "key_select_language";
+
+  @override
+  void initState() {
+    super.initState();
+    _buttonEnabled = ValueNotifier<bool>(false);
+    languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(
+        appBarTitleType: CustomAppBarTitleType.HORIZONTAL_APP_ICON,
+        hasLeading: false,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const SpaceWidget(
+            height: 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  TITLE_PREFERRED_LANGUAGE,
+                  key: Key(KEY_PREFERRED_LANGUAGE),
+                  style: AppStyles.headlineMedium.copyWith(color: AppColorScheme.kGrayColor, fontWeight: FontWeight.w700, fontFamily: AppConstant.FONT_FAMILY),
+                ),
+              ),
+            ],
+          ),
+          const SpaceWidget(
+            height: 10,
+          ),
+          Text(
+            TITLE_SELECT_LANGUAGE,
+            key: Key(KEY_SELECT_LANGUAGE),
+            style: AppStyles.titleSmall.copyWith(color: AppColorScheme.kGrayColor.shade700, fontFamily: AppConstant.FONT_FAMILY),
+          ),
+          const SpaceWidget(
+            height: 30,
+          ),
+          Expanded(
+            child: Selector<LanguageViewModel, int>(
+                selector: (context, provider) => provider.selectedIndex,
+                builder: (context, currentSelectedIndex, child) {
+                  return GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 20, mainAxisSpacing: 20, childAspectRatio: 1 / 0.4),
+                      itemCount: AppConstant.languages.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = AppConstant.languages[index];
+
+                        return InkWell(
+                          onTap: () {
+                            if (languageViewModel.selectedIndex == index) {
+                              _buttonEnabled.value = false;
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: -1); // Unselect the item if already selected
+                            } else {
+                              _buttonEnabled.value = true;
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index); // Update the selected index
+                            }
+                          },
+                          child: Center(
+                            child: CustomLanguageCardWidget(
+                              isSelected: languageViewModel.selectedIndex == index,
+                              cardTile: item['name'] ?? "",
+                              cardTitleKey: "key_language_${item['name']}",
+                              widgetKey: "Key_${item['locale']}card_widget",
+                            ),
+                          ),
+                        );
+                      });
+                }),
+          ),
+          const SpaceWidget(
+            height: 10,
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: ValueListenableBuilder<bool>(
+                valueListenable: _buttonEnabled,
+                builder: (context, isValid, _) {
+                  return PrimaryFilledButton(
+                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                    buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                    widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
+                    isLoading: false,
+                    onPressed: !isValid ? null : () {},
+                  );
+                }),
+          ),
+          const SpaceWidget(
+            height: 10,
+          ),
+        ]),
+      ),
+    );
+  }
+}
