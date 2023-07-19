@@ -46,7 +46,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   void initState() {
     super.initState();
     _isValidEmail = ValueNotifier<bool>(false);
-    _hasConsent = ValueNotifier<bool>(true);
+    _hasConsent = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
   }
