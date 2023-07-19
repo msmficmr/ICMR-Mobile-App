@@ -24,7 +24,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: LanguageSelectionScreen.routerPath,
+      initialLocation: SplashScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -49,10 +49,24 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: HomeScreen.routerPath,
+              path: DashboardScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const HomeScreen(),
+                child: const DashboardScreen(),
+              ),
+            ),
+            GoRoute(
+              path: CRAPatientScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const CRAPatientScreen(),
+              ),
+            ),
+            GoRoute(
+              path: RegistrationScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const RegistrationScreen(),
               ),
             ),
             GoRoute(
@@ -78,7 +92,7 @@ class AppRouter {
         }
         if (loginViewModel.isLoggedIn) {
           if (navigationRoute == LoginHome.routerPath) {
-            return HomeScreen.routerPath;
+            return DashboardScreen.routerPath;
           }
         }
 

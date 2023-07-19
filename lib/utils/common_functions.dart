@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:mhealth/utils/app_values.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../widgets/custom_alert_dialog.dart';
 
 class CommonFunctions {
+
   /// opens browser with privacy policy link
   static void onPrivacyPolicyClick() {
     //TODO: add url launcher implementation
@@ -77,5 +80,37 @@ class CommonFunctions {
     Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
   }
 
+  static int? getAge(String? dob) {
+    try {
+      if (dob == null || dob.isEmpty) {
+        return null;
+      }
+      if (dob.isNotEmpty) {
+        DateTime birthDate = DateFormat(AppValues.dobDateFormat).parse(dob);
+
+        DateTime today = DateTime.now();
+        Duration duration = today.difference(birthDate);
+
+        return (duration.inDays / 365).round();
+      }
+
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static String getDob(String? age) {
+    if (age == null) {
+      return "";
+    }
+    int? intAge = int.tryParse(age);
+    if (intAge == null) {
+      return "";
+    }
+    DateTime currentDate = DateTime.now();
+
+    return DateFormat(AppValues.dobDateFormat).format(DateTime(currentDate.year - intAge, currentDate.month, currentDate.day));
+  }
 
 }
