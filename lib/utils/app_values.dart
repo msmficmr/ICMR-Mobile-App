@@ -7,6 +7,7 @@ class AppValues {
 
   AppValues._();
 
+  static double get kAppPadding => 16.0;
   static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static TextInputFormatter get numberInputFormatter => CustomInputFormatter(regx: r'^[0-9]*$');

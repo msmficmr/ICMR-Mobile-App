@@ -9,11 +9,16 @@ class AppConstant {
   static const String ENV_KEY = "ENV";
   static const String FONT_FAMILY = "Montserrat";
 
+  static const String EMAIL = "Email";
+
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
   static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
   static const String CONSENT_BUTTON_TITLE = "Consent";
   static const String ONLINE_SYNC_DATA_BUTTON_TITLE = "You are online, Sync data";
+
+  //KEYS
+  static const String KEY_BUTTON_CONTINUE = "key_continue_button";
 
   // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
@@ -28,4 +33,16 @@ class AppConstant {
     CustomChipItem(data: "u", text: "Other"),
   ];
 
+  /// Language Supported
+  static const List<Map<String, String>> languages = [
+    {"locale": "en_US", "name": "English", "englishText": "English"},
+    {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
+    {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
+    {"locale": "te", "name": "తెలుగు", "englishText": "Telugu"},
+    {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
+    {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
+    {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
+    {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
+    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
+  ];
 }

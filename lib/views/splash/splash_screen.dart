@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +9,7 @@ import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/views/language/language_selection_screen.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -59,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() {
-    GoRouter.of(context).go(LoginHome.routerPath);
+    GoRouter.of(context).go(LanguageSelectionScreen.routerPath);
   }
 
   @override

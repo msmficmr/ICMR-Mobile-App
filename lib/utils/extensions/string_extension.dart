@@ -1,5 +1,5 @@
 import 'package:mhealth/utils/app_localization.dart';
-import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 
 extension StringExtension on String {
   String get toKey {
@@ -13,8 +13,8 @@ extension StringExtension on String {
   }
 }
 
-extension TranslationExtension on TranslationKeys {
-  String get _string => this.toString().split('.')[1];
+extension TranslationExtension on String {
+  String get _string => this;
 
   String translate(context) {
     return AppLocalizations.of(context).getTranslate(_string) ?? "";

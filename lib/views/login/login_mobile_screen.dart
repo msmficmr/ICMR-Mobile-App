@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
-import 'package:mhealth/services/language_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -104,7 +104,6 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextButton(onPressed: changeLanguage, child: Text(TranslationKeys.enter_your_mobile_number_title.translate(context))),
                     CustomTextField(
                       widgetKey: Key(KEY_TEXTFIELD_MOBILE),
                       controller: _mobileFieldController,
@@ -112,7 +111,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                       prefixType: TextFieldPrefixSuffixType.TEXT,
                       prefixData: MOB_FIELD_PREFIX_TEXT,
                       hintText: MOB_FIELD_HINT_TEXT,
-                      heading: MOB_FIELD_TITLE,
+                      heading: TranslationKeys.enterMobileNumber.translate(context),
                       headingKey: Key(KEY_TITLE_MOBILE),
                       onChanged: onMobileFieldChanged,
                       validator: AppValidators.validateMobile,
@@ -174,10 +173,5 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
         ),
       ),
     );
-  }
-
-  void changeLanguage() {
-    final languageService = Provider.of<LanguageService>(context, listen: false);
-    languageService.setLocale(locale: const Locale('hi'), language: "हिंदी");
   }
 }

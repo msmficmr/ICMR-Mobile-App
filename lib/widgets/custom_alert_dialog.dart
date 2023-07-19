@@ -38,6 +38,7 @@ class CustomAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      insetPadding: const EdgeInsets.all(16),
       child: SizedBox(
         width: double.infinity,
         child: Padding(

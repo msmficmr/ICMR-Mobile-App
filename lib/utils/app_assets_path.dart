@@ -24,4 +24,6 @@ class AppAssetsPath {
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
 
+  /// location consent image
+  static const String locPermissionConsent = "assets/images/loc_permission_consent.svg";
 }

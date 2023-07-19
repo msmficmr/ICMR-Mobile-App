@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/config/environment/environment.dart';
 import 'package:mhealth/config/router/app_router.dart';
 import 'package:mhealth/config/theme/app_theme.dart';
-import 'package:mhealth/services/language_service.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_localization.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -24,9 +24,9 @@ class MHealthApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext createContext) => NetworkStatusService(),
         ),
-        ChangeNotifierProvider<LanguageService>(
+        ChangeNotifierProvider<LanguageViewModel>(
           lazy: false,
-          create: (_) => LanguageService(),
+          create: (BuildContext createContext) => LanguageViewModel(),
         ),
         Provider<AppRouter>(
           lazy: false,
@@ -40,7 +40,7 @@ class MHealthApp extends StatelessWidget {
         builder: (context) {
           final router = Provider.of<AppRouter>(context, listen: false).goRouter;
 
-          return Consumer<LanguageService>(builder: (context, provider, child) {
+          return Consumer<LanguageViewModel>(builder: (context, provider, child) {
             return MaterialApp.router(
               scaffoldMessengerKey: AppValues.scaffoldMessengerKey,
               routerDelegate: router.routerDelegate,
