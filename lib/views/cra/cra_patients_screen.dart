@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -88,21 +87,21 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                       patientName: "Aparna Nair",
                       patientId: "KH88383839399",
                       gender: "Female",
-                      dob: "45",
+                      dob: "45y",
                       phoneNumber: "9741814444",
                     ),
                     CustomPatientCard(
                       patientName: "Sahil Lalani",
                       patientId: "KH88383839399",
                       gender: "Male",
-                      dob: "45",
+                      dob: "45y",
                       phoneNumber: "9741814444",
                     ),
                     CustomPatientCard(
                       patientName: "Aparna Nair",
                       patientId: "KH88383839399",
                       gender: "Female",
-                      dob: "45",
+                      dob: "45y",
                       phoneNumber: "9741814444",
                     ),
                   ],
