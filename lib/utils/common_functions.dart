@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mhealth/widgets/image_view_widget.dart';
 
 import '../widgets/custom_alert_dialog.dart';
 
@@ -76,6 +77,18 @@ class CommonFunctions {
   static void toastMessage(String message) {
     Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
   }
+
+    static void viewImage({required BuildContext context, required List<int> bytes}) {
+    showDialog(
+      context: context,
+      useSafeArea: true,
+      builder: (context) => ImageViewWidget(
+        imageList: bytes,
+      ),
+    );
+  }
+
+  static chooseImage({required BuildContext context}) {}
 
 
 }
