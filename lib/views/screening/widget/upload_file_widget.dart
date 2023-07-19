@@ -88,7 +88,6 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                 children: [
                   Expanded(
                     child: SizedBox.square(
-                    
                       dimension: cardWidth,
                       child: SquareButton(
                         cardKey: KEY_BUTTON_CAMERA,
@@ -120,40 +119,6 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                   ),
                 ],
               ))),
-      // Container(
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //     children: [
-      //       SizedBox.square(
-      //         dimension: cardWidth,
-      //         child: SquareButton(
-      //           cardKey: KEY_BUTTON_CAMERA,
-      //           onCardClick: () {
-      //             // captureCameraImage();
-      //           },
-      //           title: TITLE_BUTTON_CAMERA,
-      //           titleKey: KEY_TITLE_CAMERA,
-      //           svgPath: AppAssetsPath.icEmail,
-      //         ),
-      //       ),
-      //       SpaceWidget(
-      //         width: spaceBetweenCard,
-      //       ),
-      //       SizedBox.square(
-      //         dimension: cardWidth,
-      //         child: SquareButton(
-      //           cardKey: KEY_BUTTON_BROWSE,
-      //           onCardClick: () {
-      //             //  chooseImage();
-      //           },
-      //           title: TITLE_BUTTON_BROWSE,
-      //           titleKey: KEY_TITLE_BROWSE,
-      //           svgPath: AppAssetsPath.icArrowBack,
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     ]);
   }
 }
