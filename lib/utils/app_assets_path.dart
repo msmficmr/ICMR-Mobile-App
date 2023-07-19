@@ -11,6 +11,8 @@ class AppAssetsPath {
   static const String icSearch = "assets/icons/ic_search.svg";
   static const String icCalender = "assets/icons/ic_calender.svg";
   static const String icInfo = "assets/icons/ic_info.svg";
+  static const String icClose = "assets/icons/ic_close.svg";
+  static const String icFile = "assets/icons/ic_file.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
