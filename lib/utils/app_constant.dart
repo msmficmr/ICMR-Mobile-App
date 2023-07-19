@@ -19,7 +19,7 @@ class AppConstant {
   static const String CONTINUE_BUTTON_TITLE = "Continue";
   static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
   static const String CONSENT_BUTTON_TITLE = "Consent";
-  static const String ONLINE_SYNC_DATA_BUTTON_TITLE = "You are online, Sync data";
+  static const String SYNC_BUTTON_TITLE = "You are online, Sync data";
 
   //KEYS
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";

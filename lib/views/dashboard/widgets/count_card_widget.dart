@@ -5,14 +5,19 @@ import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
-class CountCardWidget extends StatelessWidget {
+class DashboardCardWidget extends StatelessWidget {
+
+  final Key titleKey, countKey;
+
   /// [assetPath] is the icon for the card
   /// [count] is the total count of the particular type
   /// [type] name of the type of card
   String assetPath, count, title;
 
-  CountCardWidget({
+  DashboardCardWidget({
     Key? key,
+    required this.titleKey,
+    required this.countKey,
     required this.assetPath,
     required this.count,
     required this.title,
@@ -34,12 +39,12 @@ class CountCardWidget extends StatelessWidget {
             SvgPicture.asset(assetPath),
             const SpaceWidget(height: 5),
             Text(
-              count,
+              count, key: countKey,
               style: AppStyles.bodyMedium.copyWith(color: const Color(0xFF212121), fontSize: 36, fontWeight: FontWeight.w600),
             ),
             const SpaceWidget(height: 5),
             Text(
-              title,
+              title, key: titleKey,
               style: AppStyles.bodySmall.copyWith(color: const Color(0xFF616161)),
             )
           ],

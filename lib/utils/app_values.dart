@@ -4,6 +4,7 @@ import 'package:mhealth/utils/custom_input_formatter.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 
 class AppValues {
+
   AppValues._();
 
   static double get kAppPadding => 16.0;

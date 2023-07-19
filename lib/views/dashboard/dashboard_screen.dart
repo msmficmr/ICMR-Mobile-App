@@ -24,9 +24,15 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  //Widget Keys
+
+  //Keys
+  final String KEY_CARD_COUNT = "key_card_count";
+  final String KEY_CARD_TITLE = "key_card_title";
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
+
+  //Title
+  final String TITLE_DASHBOARD = "Dashboard";
 
   redirectToCRAScreen() {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
@@ -41,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         centerTitle: false,
         trailingType: CustomAppBarTrailingType.SINGLE,
         trailingWidget: InkWell(
-          onTap: (){},
+          onTap: () {},
           child: const SizedBox(
             width: 30,
             height: 30,
@@ -61,9 +67,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Dashboard",
+                    TITLE_DASHBOARD,
                     style: AppStyles.headlineMedium.copyWith(
-                      color: const Color(0xFF212121),
+                      color: AppColorScheme.kGrayColor.shade900,
                     ),
                   ),
                   const SpaceWidget(
@@ -72,11 +78,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CountCardWidget(assetPath: AppAssetsPath.icCRA, count: "150", title: "Total CRA Completed"),
+                      DashboardCardWidget(
+                        assetPath: AppAssetsPath.icCRA,
+                        count: "150",
+                        title: "Total CRA Completed",
+                        countKey: Key(KEY_CARD_COUNT),
+                        titleKey: Key(KEY_CARD_TITLE),
+                      ),
                       const SpaceWidget(
                         width: 20,
                       ),
-                      CountCardWidget(assetPath: AppAssetsPath.icSync, count: "130", title: "Total CRA Sync"),
+                      DashboardCardWidget(
+                        assetPath: AppAssetsPath.icSync,
+                        count: "130",
+                        title: "Total CRA Sync",
+                        countKey: Key(KEY_CARD_COUNT),
+                        titleKey: Key(KEY_CARD_TITLE),
+                      ),
                     ],
                   )
                 ],
@@ -101,17 +119,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           AppAssetsPath.icSync,
                           colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
                         ),
-                        buttonTitle: AppConstant.ONLINE_SYNC_DATA_BUTTON_TITLE,
+                        buttonTitle: AppConstant.SYNC_BUTTON_TITLE,
                         widgetKey: KEY_BUTTON_SYNC),
                   ),
-                  const SizedBox(height: 15),
+                  const SpaceWidget(height: 15),
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryFilledIconButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
                       buttonTitle: AppConstant.TAKE_CRA_BUTTON_TITLE,
                       widgetKey: KEY_BUTTON_TAKE_CRA,
-                      isLoading: false,
+                      isLoading: false, //TODO: will change in the upcoming MR
                       onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,
