@@ -12,6 +12,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
+    LanguageSelectionScreen.routerPath,
   ];
 
   AppRouter(this.loginViewModel) {
@@ -64,6 +65,13 @@ class AppRouter {
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const RegistrationScreen(),
+              ),
+            ),
+            GoRoute(
+              path: LanguageSelectionScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const LanguageSelectionScreen(),
               ),
             ),
           ],

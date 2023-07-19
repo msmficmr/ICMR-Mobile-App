@@ -61,7 +61,6 @@ class CustomPinField extends StatelessWidget {
               keyboardType: keyboardType,
               inputFormatters: inputFormatters ?? [FilteringTextInputFormatter.digitsOnly],
               decoration: BoxLooseDecoration(
-                hintText: hintText,
                 strokeColorBuilder: FixedColorBuilder(AppColorScheme.kGrayColor.shade300),
                 hintTextStyle: AppStyles.hintStyle.copyWith(fontFamily: AppConstant.FONT_FAMILY,fontSize: 16),
                 textStyle: AppStyles.bodyMedium.copyWith(fontFamily: AppConstant.FONT_FAMILY),

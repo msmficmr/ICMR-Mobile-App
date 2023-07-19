@@ -10,6 +10,8 @@ import 'package:mhealth/widgets/space_widget.dart';
 class CustomPatientCard extends StatelessWidget {
   final String patientName, patientId, gender, dob, phoneNumber;
 
+  final Key patientNameKey, patientIdKey;
+
   final Color textTitleColor, textColor;
 
   const CustomPatientCard({
@@ -19,6 +21,8 @@ class CustomPatientCard extends StatelessWidget {
     required this.gender,
     required this.dob,
     required this.phoneNumber,
+    required this.patientNameKey,
+    required this.patientIdKey,
     this.textTitleColor = const Color(0xFF2F43EE),
     this.textColor = const Color(0xFF616161),
   }) : super(key: key);
@@ -39,12 +43,12 @@ class CustomPatientCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              patientName,
+              patientName, key: patientNameKey,
               style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
             ),
             const SpaceWidget(height: 5),
             Text(
-              "KHID: $patientId",
+              "KHID: $patientId", key: patientIdKey,
               style: AppStyles.titleMedium.copyWith(color: textColor),
             ),
             const SpaceWidget(height: 5),

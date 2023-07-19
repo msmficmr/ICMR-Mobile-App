@@ -11,7 +11,6 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/views/dashboard/widgets/count_card_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
-import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/primary_filled_icon_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
@@ -29,8 +28,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
 
-  takeCRA() {
-    GoRouter.of(context).go(CRAPatientScreen.routerPath);
+  redirectToCRAScreen() {
+    GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
   @override
@@ -113,7 +112,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       buttonTitle: AppConstant.TAKE_CRA_BUTTON_TITLE,
                       widgetKey: KEY_BUTTON_TAKE_CRA,
                       isLoading: false,
-                      onPressed: () => takeCRA(),
+                      onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,
                         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
