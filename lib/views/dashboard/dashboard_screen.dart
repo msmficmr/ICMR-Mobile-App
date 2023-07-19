@@ -18,7 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   //Widget Keys
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
 
-  takeCRA() {
+  redirectToCRAScreen() {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
@@ -40,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               widgetKey: KEY_BUTTON_TAKE_CRA,
               isLoading: false,
               onPressed: () {
-                takeCRA();
+                redirectToCRAScreen();
               },
             ),
           )

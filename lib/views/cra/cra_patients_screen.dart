@@ -27,12 +27,10 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final String KEY_TEXTFIELD_SEARCH = "key_search_textfield";
   final String KEY_TITLE_SEARCH = "key_title_mobile";
   final String KEY_BUTTON_ADD = "key_button_add";
+  final String KEY_PATIENT_NAME = "key_patient_name";
+  final String KEY_PATIENT_ID = "key_patient_id";
 
   void onSearchFieldChanged(String? input) {}
-
-  redirectToPreviousPage() {
-    GoRouter.of(context).push(DashboardScreen.routerPath);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +75,15 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
             Expanded(
               child: ListView(
                 shrinkWrap: true,
-                children: const [
+                children: [
                   CustomPatientCard(
                     patientName: "Aparna Nair",
                     patientId: "KH88383839399",
                     gender: "Female",
                     dob: "45",
                     phoneNumber: "9741814444",
+                    patientNameKey: Key(KEY_PATIENT_NAME),
+                    patientIdKey: Key(KEY_PATIENT_ID),
                   ),
                   CustomPatientCard(
                     patientName: "Sahil Lalani",
@@ -91,6 +91,8 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                     gender: "Male",
                     dob: "45",
                     phoneNumber: "9741814444",
+                    patientNameKey: Key(KEY_PATIENT_NAME),
+                    patientIdKey: Key(KEY_PATIENT_ID),
                   ),
                   CustomPatientCard(
                     patientName: "Aparna Nair",
@@ -98,6 +100,8 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                     gender: "Female",
                     dob: "45",
                     phoneNumber: "9741814444",
+                    patientNameKey: Key(KEY_PATIENT_NAME),
+                    patientIdKey: Key(KEY_PATIENT_ID),
                   ),
                 ],
               ),
