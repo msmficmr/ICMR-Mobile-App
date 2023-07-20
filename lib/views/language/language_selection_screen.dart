@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/services/location_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   Future<void> onContinueClick() async {
     if (_buttonEnabled.value) {
-      GoRouter.of(context).go(LoginHome.routerPath);
+      await LocationService.locationServiceInstance.checkPermission(context);
+      GoRouter.of(context).go(DashboardScreen.routerPath);
     }
   }
 
