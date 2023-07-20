@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/router/router_transition.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
-import 'package:mhealth/views/language/language_selection_screen.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -13,6 +12,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
+    LanguageSelectionScreen.routerPath
   ];
 
   AppRouter(this.loginViewModel) {
