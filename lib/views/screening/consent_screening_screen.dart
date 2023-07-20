@@ -1,12 +1,9 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
-import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
@@ -50,16 +47,6 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   final String KEY_ATTACHMENT_VIEW_CARD = "key_attachment_view_card";
   final String KEY_BUTTON_UPLOAD_FILE = "key_button_upload_file";
   final String KEY_REMOVE_BUTTON = "key_remove_button";
-
-  void selectAttachment() async {
-    XFile? attachment = await CommonFunctions.chooseImage(context: context);
-    if (attachment != null) {
-      Uint8List bytes = await attachment.readAsBytes();
-      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: attachment.name);
-      _selectedAttachment.value = model;
-      _buttonEnabled.value = true;
-    }
-  }
 
   onFileSelect(file) async {
     if (file != null) {
