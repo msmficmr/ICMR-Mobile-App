@@ -30,8 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
 
-  takeCRA() {
-    GoRouter.of(context).go(CRAPatientScreen.routerPath);
+  redirectToCRAScreen() {
+    GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
   @override
@@ -114,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
                       isLoading: false,
-                      onPressed: () => takeCRA(),
+                      onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,
                         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),

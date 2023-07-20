@@ -4,8 +4,6 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/router/router_transition.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 
-import '../../views/language/language_selection_screen.dart';
-
 class AppRouter {
   LoginViewModel loginViewModel;
   late GoRouter goRouter;
@@ -14,7 +12,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
-    LanguageSelectionScreen.routerPath,
+    LanguageSelectionScreen.routerPath
   ];
 
   AppRouter(this.loginViewModel) {
@@ -24,7 +22,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: LanguageSelectionScreen.routerPath,
+      initialLocation: SplashScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {

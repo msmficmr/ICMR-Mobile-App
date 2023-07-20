@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:mhealth/widgets/image_view_widget.dart';
 
 import '../widgets/custom_alert_dialog.dart';
 
@@ -70,6 +74,7 @@ class CommonFunctions {
       ),
     );
   }
+
   /// opens browser with Terms and conditions link
   static void onTermsConditionClick() {
     //TODO: add url launcher implementation
@@ -100,5 +105,34 @@ class CommonFunctions {
     }
   }
 
+  static String getDob(String? age) {
+    if (age == null) {
+      return "";
+    }
+    int? intAge = int.tryParse(age);
+    if (intAge == null) {
+      return "";
+    }
+    DateTime currentDate = DateTime.now();
 
+    return DateFormat(AppValues.dobDateFormat).format(DateTime(currentDate.year - intAge, currentDate.month, currentDate.day));
+  }
+
+  static void viewImage({required BuildContext context, required List<int> bytes}) {
+    showDialog(
+      context: context,
+      useSafeArea: true,
+      builder: (context) => ImageViewWidget(
+        imageList: bytes,
+      ),
+    );
+  }
+
+  static Future<XFile?> getImage({required BuildContext context, required ImageSource imageSource}) async {
+    bool hasCameraPermission = await PermissionService.permissionService.checkCameraPermission(context);
+    if (hasCameraPermission) {
+      XFile? file = await ImagePicker().pickImage(source: imageSource);
+      return file;
+    }
+  }
 }

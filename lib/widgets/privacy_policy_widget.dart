@@ -29,7 +29,6 @@ class PrivacyPolicyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("Locale is $locale");
     return CustomCheckBox(
       widgetKey: Key(widgetKey),
       value: checkboxStatus,

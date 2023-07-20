@@ -51,7 +51,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
   void initState() {
     super.initState();
     _isValidMobile = ValueNotifier<bool>(false);
-    _hasConsent = ValueNotifier<bool>(true);
+    _hasConsent = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);

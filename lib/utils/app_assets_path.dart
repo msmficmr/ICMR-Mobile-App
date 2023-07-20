@@ -14,16 +14,21 @@ class AppAssetsPath {
   static const String icSync = "assets/icons/ic_sync.svg";
   static const String icInfo = "assets/icons/ic_info.svg";
   static const String icProfile = "assets/icons/ic_profile.svg";
+  static const String icClose = "assets/icons/ic_close.svg";
+  static const String icFile = "assets/icons/ic_file.svg";
+  static const String dottedIcon = "assets/icons/dotted_icon.svg";
+  static const String icCamera = "assets/icons/ic_camera.svg";
+  static const String icUpload = "assets/icons/ic_upload.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
+
+  /// location consent image
+  static const String locPermissionConsent = "assets/images/loc_permission_consent.svg";
 
   /// Patient card icons
   static const String icFemale = "assets/icons/ic_female.svg";
   static const String icMale = "assets/icons/ic_male.svg";
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
-
-  /// location consent image
-  static const String locPermissionConsent = "assets/images/loc_permission_consent.svg";
 }

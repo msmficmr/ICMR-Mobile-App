@@ -1,3 +1,7 @@
+// ignore_for_file: non_constant_identifier_names,
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
@@ -52,7 +56,9 @@ class LocationService {
             context: context,
             subtitle: _ERROR_LOCATION_PERMISSION_DENIED,
             buttonText: _GRANT_LOCATION_CTA,
-            action: (BuildContext context) {},
+            action: (BuildContext context) {
+              Navigator.pop(context);
+            },
           );
         }
         PermissionStatus requestPermissionStatus = await _location.requestPermission();

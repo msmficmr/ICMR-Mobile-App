@@ -11,10 +11,13 @@ class AppConstant {
 
   static const String EMAIL = "Email";
 
+  //Hint Texts
+  static const String HINT_TEXT_ENTER_HERE = "Enter here";
+  static const String HINT_TEXT_DATE = "DD/MM/YYYY";
+  static const String HINT_TEXT_SELECT = "Select";
+
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
-  static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
-  static const String CONSENT_BUTTON_TITLE = "Consent";
   static const String ONLINE_SYNC_DATA_BUTTON_TITLE = "You are online, Sync data";
 
   //KEYS
@@ -44,5 +47,10 @@ class AppConstant {
     {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
     {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
     {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
+  ];
+
+  static const List<CustomChipItem<String>> BINARY_LIST = [
+    CustomChipItem(text: 'Yes', data: 'y'),
+    CustomChipItem(text: 'No', data: 'n'),
   ];
 }

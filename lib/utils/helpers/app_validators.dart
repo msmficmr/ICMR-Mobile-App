@@ -110,5 +110,61 @@ class AppValidators {
     return null;
   }
 
+  static String? validateAge(String? value) {
+    const String kAgeEmptyValidator = "Age can't be empty.";
+    const String kValidAgeValidator = "Enter Valid Age.";
+
+    if (value == null || value.isEmpty) {
+      return kAgeEmptyValidator;
+    }
+
+    try {
+      int age = int.parse(value);
+      if (age > 150 || age <= 0) {
+        return kValidAgeValidator;
+      }
+    } catch (e) {
+      return kValidAgeValidator;
+    }
+
+    return null;
+  }
+
+  static String? validateAadhar(value) {
+    const String kEmptyValidator = "Enter Valid Aadhar number.";
+    const String kValidValidator = "Aadhar must be of 12 digit.";
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    String pattern = r"^\d{12}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
+  static String? validateID(String? value) {
+    const String kValidValidator = "Enter a valid ID.";
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    String pattern = r"^[a-zA-Z0-9]$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
+  static String? validateBinaryQuestion(value) {
+    if (value == null || value.isEmpty) {
+      return "Select an option";
+    }
+
+    return null;
+  }
 
 }

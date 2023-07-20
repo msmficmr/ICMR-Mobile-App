@@ -13,8 +13,6 @@ enum NetworkStatus { online, offline }
 
 enum CustomFloatingAssetTypes { SVG, ICON }
 
-enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
-
-// enum TranslationKeys {enter_your_mobile_number_title}
-
 enum LocationPermissionStatus { SERVICE_DISABLED, GRANTED, WHILE_IN_USE, DENIED, FOREVER_DENIED }
+
+enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
