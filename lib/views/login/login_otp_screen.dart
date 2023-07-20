@@ -27,8 +27,6 @@ class LoginOtpScreen extends StatefulWidget {
 
 class _LoginOtpScreenState extends State<LoginOtpScreen> {
   final String PAGE_TITLE = "Enter the 6-digit OTP sent to";
-  final String RESEND_OTP_HEADING = "Didn't receive the OTP?  ";
-  final String RESEND_OTP_TITTLE = "Resend";
   final String SEC_TEXT = " Sec";
   final String RESEND_TEXT = "Resend In ";
 
@@ -177,7 +175,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
-                                RESEND_OTP_HEADING,
+                                TranslationKeys.resendOTPHeading.translate(context),
                                 style: AppStyles.titleSmall.copyWith(fontFamily: AppConstant.FONT_FAMILY),
                               ),
                             ),
@@ -204,7 +202,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    RESEND_OTP_TITTLE,
+                                                    TranslationKeys.resendOTPTitle.translate(context),
                                                     style: AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
                                                   ),
                                                 ),

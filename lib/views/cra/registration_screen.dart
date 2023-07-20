@@ -10,8 +10,10 @@ import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
@@ -142,7 +144,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         enabledButtonColor: Color(0xFFF4F5FF),
                       ),
                       icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                      buttonTitle: AppConstant.CONSENT_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONSENT),
                 ),
                 const SpaceWidget(
