@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() {
-    GoRouter.of(context).go(LoginHome.routerPath);
+    GoRouter.of(context).go(LanguageSelectionScreen.routerPath);
   }
 
   @override
