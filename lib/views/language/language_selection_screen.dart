@@ -37,7 +37,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   Future<void> onContinueClick() async {
     if (_buttonEnabled.value) {
-      GoRouter.of(context).push(LoginHome.routerPath);
+      GoRouter.of(context).go(LoginHome.routerPath);
     }
   }
 
