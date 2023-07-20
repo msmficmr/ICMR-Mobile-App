@@ -11,7 +11,7 @@ class DashboardCardWidget extends StatelessWidget {
 
   /// [assetPath] is the icon for the card
   /// [count] is the total count of the particular type
-  /// [type] name of the type of card
+  /// [title] name of the title of card
   String assetPath, count, title;
 
   DashboardCardWidget({
@@ -40,12 +40,12 @@ class DashboardCardWidget extends StatelessWidget {
             const SpaceWidget(height: 5),
             Text(
               count, key: countKey,
-              style: AppStyles.bodyMedium.copyWith(color: const Color(0xFF212121), fontSize: 36, fontWeight: FontWeight.w600),
+              style: AppStyles.titleBig,
             ),
             const SpaceWidget(height: 5),
             Text(
               title, key: titleKey,
-              style: AppStyles.bodySmall.copyWith(color: const Color(0xFF616161)),
+              style: AppStyles.bodySmall.copyWith(color: AppColorScheme.kGrayColor.shade700),
             )
           ],
         ),

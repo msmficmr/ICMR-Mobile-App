@@ -33,6 +33,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   //Title
   final String TITLE_DASHBOARD = "Dashboard";
+  final String TOTAL_CRA_COMPLETED = "Total CRA Completed";
+  final String TOTAL_CRA_SYNC = "Total CRA Sync";
 
   redirectToCRAScreen() {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
@@ -81,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       DashboardCardWidget(
                         assetPath: AppAssetsPath.icCRA,
                         count: "150",
-                        title: "Total CRA Completed",
+                        title: TOTAL_CRA_COMPLETED,
                         countKey: Key(KEY_CARD_COUNT),
                         titleKey: Key(KEY_CARD_TITLE),
                       ),
@@ -91,7 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       DashboardCardWidget(
                         assetPath: AppAssetsPath.icSync,
                         count: "130",
-                        title: "Total CRA Sync",
+                        title: TOTAL_CRA_SYNC,
                         countKey: Key(KEY_CARD_COUNT),
                         titleKey: Key(KEY_CARD_TITLE),
                       ),
