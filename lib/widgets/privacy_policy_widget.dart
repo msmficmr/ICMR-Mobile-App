@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -14,63 +16,109 @@ class PrivacyPolicyWidget extends StatelessWidget {
   /// enable you test the widget
   final String widgetKey;
 
-  const PrivacyPolicyWidget({
+  /// get the [locale] selected by the user, to show the privacy text in the selected language
+  final Locale locale;
+
+  PrivacyPolicyWidget({
     super.key,
     required this.checkboxStatus,
     required this.widgetKey,
+    required this.locale,
     this.onChanged,
   });
 
-  final String TERMS_1 = "By continuing, you agree to our ";
-  final String TERMS_2 = "Terms & Conditions ";
-  final String TERMS_3 = "and ";
-  final String TERMS_4 = "Privacy Policy";
-  final String TERMS_5 = " and agree to receive communication on";
-  final String TERMS_6 = " WhatsApp";
-  final String TERMS_7 = " from mHealth.";
-
   @override
   Widget build(BuildContext context) {
+    log("Locale is $locale");
     return CustomCheckBox(
       widgetKey: Key(widgetKey),
       value: checkboxStatus,
       onChanged: onChanged,
-      children: [
-        TextSpan(
-          text: TERMS_1,
-        ),
-        WidgetSpan(
-          child: InkWell(
-            onTap: CommonFunctions.onPrivacyPolicyClick,
-            child: Text(
-              TERMS_2,
-              style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ),
-        TextSpan(
-          text: TERMS_3,
-        ),
-        WidgetSpan(
-          child: InkWell(
-            onTap: CommonFunctions.onPrivacyPolicyClick,
-            child: Text(
-              TERMS_4,
-              style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ),
-        TextSpan(
-          text: TERMS_5,
-        ),
-        TextSpan(
-            text: TERMS_6,
-            style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kGreen, fontWeight: FontWeight.w500)
-        ),
-        TextSpan(
-          text: TERMS_7,
-        ),
-      ],
+      children: privacyText(),
     );
   }
+
+  List<InlineSpan> privacyText() {
+    switch (locale.toString()) {
+      case "hi":
+        return hindiText;
+      case "en_US":
+      default:
+        return englishText;
+    }
+  }
+
+  List<InlineSpan> hindiText = [
+    const TextSpan(
+      text: "जारी रखते हुए, आप हमारे ",
+    ),
+    WidgetSpan(
+      child: InkWell(
+        onTap: CommonFunctions.onPrivacyPolicyClick,
+        child: Text(
+          "नियम और शर्तों",
+          style: AppStyles.bodySmall.copyWith(height: 1.0, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
+        ),
+      ),
+    ),
+    const TextSpan(
+      text: " और ",
+    ),
+    WidgetSpan(
+      child: InkWell(
+        onTap: CommonFunctions.onPrivacyPolicyClick,
+        child: Text(
+          "गोपनीयता नीति",
+          style: AppStyles.bodySmall.copyWith(height: 1.0, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
+        ),
+      ),
+    ),
+    const TextSpan(
+      text: " से सहमत हैं और mHealth से ",
+    ),
+    TextSpan(
+        text: "व्हाट्सएप",
+        style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kGreen, fontWeight: FontWeight.w500)
+    ),
+    const TextSpan(
+      text: " पर संचार प्राप्त करने के लिए सहमत हैं",
+    ),
+  ];
+
+  List<InlineSpan> englishText = [
+    const TextSpan(
+      text: "By continuing, you agree to our ",
+    ),
+    WidgetSpan(
+      child: InkWell(
+        onTap: CommonFunctions.onPrivacyPolicyClick,
+        child: Text(
+          "Terms & Conditions ",
+          style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
+        ),
+      ),
+    ),
+    const TextSpan(
+      text: "and ",
+    ),
+    WidgetSpan(
+      child: InkWell(
+        onTap: CommonFunctions.onPrivacyPolicyClick,
+        child: Text(
+          "Privacy Policy",
+          style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
+        ),
+      ),
+    ),
+    const TextSpan(
+      text: " and agree to receive communication on",
+    ),
+    TextSpan(
+        text: " WhatsApp",
+        style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kGreen, fontWeight: FontWeight.w500)
+    ),
+    const TextSpan(
+      text: " from mHealth.",
+    ),
+  ];
 }

@@ -6,6 +6,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -29,6 +30,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> _buttonEnabled;
   late LoginViewModel loginViewModel;
+  late LanguageViewModel languageViewModel;
 
   final TextEditingController _mobileFieldController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -52,6 +54,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
     _hasConsent = ValueNotifier<bool>(true);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
   }
 
   void onMobileFieldChanged(String? input) {
@@ -126,6 +129,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                       valueListenable: _hasConsent,
                       builder: (context, _, __) {
                         return PrivacyPolicyWidget(
+                          locale: languageViewModel.locale,
                           checkboxStatus: _hasConsent.value,
                           widgetKey: KEY_CHECKBOX_CONSENT,
                           onChanged: onConsentChanged,
