@@ -3,7 +3,9 @@ import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -106,7 +108,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                       prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                       prefixData: AppAssetsPath.icEmail,
                       hintText: EMAIL_FIELD_HINT_TEXT,
-                      heading: EMAIL_FIELD_TITLE,
+                      heading: TranslationKeys.enterEmailId.translate(context),
                       headingKey: Key(KEY_TITLE_MOBILE),
                       onChanged: onEmailFieldChanged,
                       validator: AppValidators.validateEmail,
@@ -146,7 +148,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                           buttonThemeStyle: const FilledButtonThemeStyle(
                               disabledTextColor: Colors.white
                           ),
-                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                          buttonTitle: TranslationKeys.continueText.translate(context),
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: !isValid

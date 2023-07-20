@@ -8,10 +8,11 @@ import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/views/dashboard/widgets/count_card_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
-import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/primary_filled_icon_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
@@ -62,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Dashboard",
+                    TranslationKeys.dashboard.translate(context),
                     style: AppStyles.headlineMedium.copyWith(
                       color: const Color(0xFF212121),
                     ),
@@ -73,11 +74,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CountCardWidget(assetPath: AppAssetsPath.icCRA, count: "150", title: "Total CRA Completed"),
+                      CountCardWidget(assetPath: AppAssetsPath.icCRA, count: "150", title: TranslationKeys.totalCRACompleted.translate(context)),
                       const SpaceWidget(
                         width: 20,
                       ),
-                      CountCardWidget(assetPath: AppAssetsPath.icSync, count: "130", title: "Total CRA Sync"),
+                      CountCardWidget(assetPath: AppAssetsPath.icSync, count: "130", title: TranslationKeys.totalCRASync.translate(context)),
                     ],
                   )
                 ],
@@ -102,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           AppAssetsPath.icSync,
                           colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
                         ),
-                        buttonTitle: AppConstant.ONLINE_SYNC_DATA_BUTTON_TITLE,
+                        buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
                         widgetKey: KEY_BUTTON_SYNC),
                   ),
                   const SizedBox(height: 15),
@@ -110,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     width: double.infinity,
                     child: PrimaryFilledIconButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: AppConstant.TAKE_CRA_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
                       isLoading: false,
                       onPressed: () => takeCRA(),

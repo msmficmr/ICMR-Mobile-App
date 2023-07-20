@@ -1,3 +1,19 @@
 {
-  "enter_your_mobile_number_title" : "Enter your mobile number"
+  "enter_your_mobile_number_title" : "Enter your mobile number",
+  "continue" : "Continue",
+  "enter_6_digit_otp" : "Enter the 6-digit OTP sent to",
+  "enter_your_email_id" : "Enter your Email ID",
+  "dashboard" : "Dashboard",
+  "total_cra_completed" : "Total CRA completed",
+  "total_cra_sync" : "Total CRA sync",
+  "you_are_online_sync_data" : "You are online, Sync data",
+  "take_cra" : "Take CRA",
+  "cra_patient_list" : "CRA patient list",
+  "search" : "Search",
+  "my_account" : "My account",
+  "female" : "Female",
+  "language" : "Language",
+  "data_sync" : "Data Sync",
+  "version" : "Version",
+  "please_take_consent_from_citizen" : "Please take consent from citizen"
 }

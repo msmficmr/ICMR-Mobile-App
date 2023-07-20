@@ -85,7 +85,6 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final localization = DefaultMaterialLocalizations.delegate;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
@@ -154,7 +153,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                           buttonThemeStyle: const FilledButtonThemeStyle(
                             disabledTextColor: Colors.white
                           ),
-                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                          buttonTitle: TranslationKeys.continueText.translate(context),
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: !isValid

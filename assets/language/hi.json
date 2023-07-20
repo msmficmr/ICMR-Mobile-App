@@ -1,3 +1,19 @@
 {
-  "enter_your_mobile_number_title" : "अपना मोबाइल संख्या दर्ज करे"
+  "enter_your_mobile_number_title" : "अपना मोबाइल संख्या दर्ज करे",
+  "continue" : "जारी रखना",
+  "enter_6_digit_otp" : "पर भेजा गया 6 अंकों का ओटीपी दर्ज करें",
+  "enter_your_email_id" : "अपना ईमेल आईडी दर्ज करें",
+  "dashboard" : "डैशबोर्ड",
+  "total_cra_completed" : "कुल सामुदायिक जोखिम आकलान पूरा हुआ",
+  "total_cra_sync" : "कुल सामुदायिक जोखिम आकलान सिंक",
+  "you_are_online_sync_data" : "आप ऑनलाइन हैं, डेटा सिंक करें",
+  "take_cra" : "सामुदायिक आकलन मूल्यांकन लें",
+  "cra_patient_list" : "सामुदायिक जोखिम आकलन सूची",
+  "search" : "खोज",
+  "my_account" : "मेरा खाता",
+  "female" : "महिला",
+  "language" : "भाषा",
+  "data_sync" : "डेटा सिंक",
+  "version" : "संस्करण",
+  "please_take_consent_from_citizen" : "कृपया नागरिक से सहमति लें"
 }

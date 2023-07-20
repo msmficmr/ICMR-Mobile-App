@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_floating_button.dart';
 import 'package:mhealth/widgets/custom_patient_card.dart';
@@ -46,7 +47,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
         resizeToAvoidBottomInset: true,
         appBar: CustomAppBar(
           appBarTitleType: CustomAppBarTitleType.TEXT,
-          titleText: 'CRA Patient List',
+          titleText: TranslationKeys.craPatientList.translate(context),
           centerTitle: false,
           onLeadingClick: () => redirectToPreviousPage(),
         ),
@@ -69,7 +70,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               CustomTextField(
                 widgetKey: Key(KEY_TEXTFIELD_SEARCH),
                 controller: _searchFieldController,
-                hintText: SEARCH_FIELD_TITLE,
+                hintText: TranslationKeys.search.translate(context),
                 headingKey: Key(KEY_TITLE_SEARCH),
                 onChanged: onSearchFieldChanged,
                 keyboardType: TextInputType.emailAddress,

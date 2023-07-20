@@ -7,7 +7,9 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/widgets/countdown_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -140,7 +142,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                         children: [
                           WidgetSpan(
                             child: Text(
-                              "$PAGE_TITLE ",
+                              TranslationKeys.enterOTP.translate(context),
                               style: AppStyles.titleMedium,
                             ),
                           ),
@@ -267,7 +269,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                       buttonThemeStyle: const FilledButtonThemeStyle(
                           disabledTextColor: Colors.white
                       ),
-                      buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       onPressed: !isEnabled ? null : onContinueClick,
                     );
