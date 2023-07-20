@@ -26,6 +26,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
 
   //Keys
+  final String KEY_DASHBOARD_APPBAR = "key_dashboard_appbar";
   final String KEY_CARD_COUNT = "key_card_count";
   final String KEY_CARD_TITLE = "key_card_title";
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
@@ -44,6 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        key: Key(KEY_DASHBOARD_APPBAR),
         hasLeading: false,
         appBarTitleType: CustomAppBarTitleType.HORIZONTAL_APP_ICON,
         centerTitle: false,
