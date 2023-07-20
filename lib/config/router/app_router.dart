@@ -12,7 +12,7 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
-    LanguageSelectionScreen.routerPath,
+    LanguageSelectionScreen.routerPath
   ];
 
   AppRouter(this.loginViewModel) {
