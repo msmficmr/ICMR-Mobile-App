@@ -78,7 +78,7 @@ class CustomChipWidget<T> extends StatelessWidget {
     this.chipPadding = const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
     this.selectedBackgroundColor = const Color(0xFF4454EF),
     this.selectedBorderColor = const Color(0xFF4454EF),
-    this.selectedTextColor = AppColorScheme.selectedTextColor,
+    this.selectedTextColor = const Color(0xFFFFFFFF),
     this.unSelectedBackgroundColor = Colors.transparent,
     this.unSelectedBorderColor = const Color(0xFFE0E0E0),
     this.unSelectedTextColor = const Color(0xFF9E9E9E),

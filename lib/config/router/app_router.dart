@@ -12,7 +12,6 @@ class AppRouter {
   List<String> unProtectedRoutes = [
     LoginHome.routerPath,
     SplashScreen.routerPath,
-    LanguageSelectionScreen.routerPath
   ];
 
   AppRouter(this.loginViewModel) {
@@ -74,6 +73,13 @@ class AppRouter {
                 child: const LanguageSelectionScreen(),
               ),
             ),
+            GoRoute(
+              path: ConsentScreeningScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const ConsentScreeningScreen(),
+              ),
+            ),
           ],
         )
       ],
@@ -90,7 +96,7 @@ class AppRouter {
         }
         if (loginViewModel.isLoggedIn) {
           if (navigationRoute == LoginHome.routerPath) {
-            return DashboardScreen.routerPath;
+            return LanguageSelectionScreen.routerPath;
           }
         }
 

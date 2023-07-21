@@ -30,6 +30,7 @@ class AppStyles {
   /// used to give style for title for TextFormField dropdown items
   static TextStyle titleSmall = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColorScheme.kGrayColor.shade700);
   static TextStyle titleMedium = TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColorScheme.kGrayColor.shade800);
+  static TextStyle titleBig = TextStyle(fontSize: 36, fontWeight: FontWeight.w600, color: AppColorScheme.kGrayColor.shade900);
 
   static TextStyle headlineMedium = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColorScheme.kPrimaryColor);
 }

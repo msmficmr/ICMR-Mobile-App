@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
 
 import '../widgets/custom_alert_dialog.dart';
 
 class CommonFunctions {
+
   /// opens browser with privacy policy link
   static void onPrivacyPolicyClick() {
     //TODO: add url launcher implementation

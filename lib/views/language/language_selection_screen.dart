@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/services/location_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +35,13 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   //KEY
   final String KEY_PREFERRED_LANGUAGE = "key_preferred_language";
   final String KEY_SELECT_LANGUAGE = "key_select_language";
+
+  Future<void> onContinueClick() async {
+    if (_buttonEnabled.value) {
+      await LocationService.locationServiceInstance.checkPermission(context);
+      GoRouter.of(context).go(DashboardScreen.routerPath);
+    }
+  }
 
   @override
   void initState() {
@@ -123,7 +133,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                     widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
                     isLoading: false,
-                    onPressed: !isValid ? null : () {},
+                    onPressed: !isValid ? null : () {
+                      onContinueClick();
+                    },
                   );
                 }),
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
@@ -158,6 +160,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void onContinueClick() {}
 
+  void onConsentClicked() {
+    GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,7 +188,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: PrimaryFilledIconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      onConsentClicked();
+                    },
                     isLoading: false,
                     buttonThemeStyle: const FilledButtonThemeStyle(
                       enabledTextColor: Color(0xFF2F43EE),

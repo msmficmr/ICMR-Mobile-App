@@ -10,9 +10,12 @@ class AppAssetsPath {
   static const String icAdd = "assets/icons/ic_add.svg";
   static const String icSearch = "assets/icons/ic_search.svg";
   static const String icCalender = "assets/icons/ic_calender.svg";
+  static const String icCRA = "assets/icons/ic_cra.svg";
+  static const String icSync = "assets/icons/ic_sync.svg";
   static const String icInfo = "assets/icons/ic_info.svg";
   static const String icClose = "assets/icons/ic_close.svg";
   static const String icFile = "assets/icons/ic_file.svg";
+  static const String icProfile = "assets/icons/ic_profile.svg";
   static const String dottedIcon = "assets/icons/dotted_icon.svg";
   static const String icCamera = "assets/icons/ic_camera.svg";
   static const String icUpload = "assets/icons/ic_upload.svg";
