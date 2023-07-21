@@ -167,4 +167,19 @@ class AppValidators {
     return null;
   }
 
+  static String? validatePincode(value) {
+    const String kEmptyValidator = "Enter Valid Pincode.";
+    const String kValidValidator = "Pincode must be of 6 digit.";
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    String pattern = r"^\d{6}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
 }

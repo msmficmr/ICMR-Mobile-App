@@ -118,7 +118,6 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         hasLeading: true,
         onLeadingClick: onBackPress,

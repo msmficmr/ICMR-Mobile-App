@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/services/location_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   Future<void> onContinueClick() async {
     if (_buttonEnabled.value) {
-      GoRouter.of(context).push(LoginHome.routerPath);
+      await LocationService.locationServiceInstance.checkPermission(context);
+      GoRouter.of(context).go(DashboardScreen.routerPath);
     }
   }
 
@@ -100,10 +102,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                           onTap: () {
                             if (languageViewModel.selectedIndex == index) {
                               _buttonEnabled.value = false;
-                              languageViewModel.setSelectedLanguage(selectedLanguage: item['name'] ?? "", selectedIndex: -1, locale: Locale(item['locale'] ?? "en_US")); // Unselect the item if already selected
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['name'] ?? "", selectedIndex: -1, locale: Locale(item['locale'] ?? "")); // Unselect the item if already selected
                             } else {
                               _buttonEnabled.value = true;
-                              languageViewModel.setSelectedLanguage(selectedLanguage: item['name'] ?? "", selectedIndex: index, locale: Locale(item['locale'] ?? "en_US")); // Update the selected index
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index, locale: Locale(item['locale'] ?? "")); // Update the selected index
                             }
                           },
                           child: Center(

@@ -18,6 +18,7 @@ class AppValues {
   static int get kOtpTimer => 30;
 
   static BorderRadius get circularBorderRadius10 => BorderRadius.circular(10);
+  static BorderRadius get circularBorderRadius30 => BorderRadius.circular(30);
 
   static String dobDateFormat = "dd/MM/yyyy";
 }

@@ -129,7 +129,6 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                       valueListenable: _hasConsent,
                       builder: (context, _, __) {
                         return PrivacyPolicyWidget(
-                          locale: languageViewModel.locale,
                           checkboxStatus: _hasConsent.value,
                           widgetKey: KEY_CHECKBOX_CONSENT,
                           onChanged: onConsentChanged,

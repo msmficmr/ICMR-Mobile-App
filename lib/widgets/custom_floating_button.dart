@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 
@@ -52,7 +53,7 @@ class CustomFloatingButton extends StatelessWidget {
     this.buttonKey,
     this.icon,
     this.assetPath,
-    this.buttonColor = const Color(0xFF1A60B0),
+    this.buttonColor = AppColorScheme.kPrimaryColor,
     this.buttonAssetType = CustomFloatingAssetTypes.ICON,
     this.iconColor = Colors.white,
   })  : assert(_getIconAssert(buttonAssetType, icon, assetPath)),
@@ -62,13 +63,13 @@ class CustomFloatingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: onPressed == null ? buttonColor.withOpacity(0.5) : buttonColor,
-      borderRadius: AppValues.circularBorderRadius10,
+      borderRadius: AppValues.circularBorderRadius30,
       child: InkWell(
         key: buttonKey,
         onTap: onPressed,
-        borderRadius: AppValues.circularBorderRadius10,
+        borderRadius: AppValues.circularBorderRadius30,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
           child: Center(
             child: buttonAssetType == CustomFloatingAssetTypes.ICON
                 ? Icon(

@@ -4,11 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/widgets/custom_alert_dialog.dart';
+import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
-
-import '../widgets/custom_alert_dialog.dart';
+import 'package:provider/provider.dart';
 
 class CommonFunctions {
 
@@ -133,6 +135,28 @@ class CommonFunctions {
     if (hasCameraPermission) {
       XFile? file = await ImagePicker().pickImage(source: imageSource);
       return file;
+    }
+  }
+
+  List<CustomChipItem<String>> genderList({required BuildContext context}) {
+    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    switch (languageViewModel.locale.toString()) {
+      case "hi":
+        return AppConstant.HI_GENDER_LIST;
+      case "en_US":
+      default:
+        return AppConstant.EN_GENDER_LIST;
+    }
+  }
+
+  List<CustomChipItem<String>> binaryList({required BuildContext context}) {
+    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    switch (languageViewModel.locale.toString()) {
+      case "hi":
+        return AppConstant.HI_BINARY_LIST;
+      case "en_US":
+      default:
+        return AppConstant.EN_BINARY_LIST;
     }
   }
 }

@@ -1,7 +1,6 @@
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 
 class AppConstant {
-
   AppConstant._();
 
   static const String APP_NAME_KEY = "APP_NAME";
@@ -12,13 +11,10 @@ class AppConstant {
   static const String EMAIL = "Email";
 
   //Hint Texts
-  static const String HINT_TEXT_ENTER_HERE = "Enter here";
   static const String HINT_TEXT_DATE = "DD/MM/YYYY";
-  static const String HINT_TEXT_SELECT = "Select";
 
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
-  static const String ONLINE_SYNC_DATA_BUTTON_TITLE = "You are online, Sync data";
 
   //KEYS
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";
@@ -30,10 +26,15 @@ class AppConstant {
   static const String LANGUAGE_KEY = "LANGUAGE";
 
   //Gender List
-  static const List<CustomChipItem<String>> GENDER_LIST = [
+  static const List<CustomChipItem<String>> EN_GENDER_LIST = [
     CustomChipItem(data: "m", text: "Male"),
     CustomChipItem(data: "f", text: "Female"),
     CustomChipItem(data: "u", text: "Other"),
+  ];
+  static const List<CustomChipItem<String>> HI_GENDER_LIST = [
+    CustomChipItem(data: "m", text: "पुरुष"),
+    CustomChipItem(data: "f", text: "महिला"),
+    CustomChipItem(data: "u", text: "ट्रांसजेंडर"),
   ];
 
   /// Language Supported
@@ -49,8 +50,13 @@ class AppConstant {
     {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
   ];
 
-  static const List<CustomChipItem<String>> BINARY_LIST = [
+  static const List<CustomChipItem<String>> EN_BINARY_LIST = [
     CustomChipItem(text: 'Yes', data: 'y'),
     CustomChipItem(text: 'No', data: 'n'),
+  ];
+
+  static const List<CustomChipItem<String>> HI_BINARY_LIST = [
+    CustomChipItem(text: 'हाँ', data: 'y'),
+    CustomChipItem(text: 'नहीं', data: 'n'),
   ];
 }

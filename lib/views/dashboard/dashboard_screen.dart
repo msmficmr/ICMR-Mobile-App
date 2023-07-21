@@ -5,7 +5,6 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
-import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -26,7 +25,11 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  //Widget Keys
+
+  //Keys
+  final String KEY_DASHBOARD_APPBAR = "key_dashboard_appbar";
+  final String KEY_CARD_COUNT = "key_card_count";
+  final String KEY_CARD_TITLE = "key_card_title";
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
 
@@ -38,6 +41,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
+        key: Key(KEY_DASHBOARD_APPBAR),
         hasLeading: false,
         appBarTitleType: CustomAppBarTitleType.HORIZONTAL_APP_ICON,
         centerTitle: false,
@@ -65,7 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     TranslationKeys.dashboard.translate(context),
                     style: AppStyles.headlineMedium.copyWith(
-                      color: const Color(0xFF212121),
+                      color: AppColorScheme.kGrayColor.shade900,
                     ),
                   ),
                   const SpaceWidget(
@@ -74,11 +78,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CountCardWidget(assetPath: AppAssetsPath.icCRA, count: "150", title: TranslationKeys.totalCRACompleted.translate(context)),
+                      DashboardCardWidget(
+                        assetPath: AppAssetsPath.icCRA,
+                        count: "150",
+                        title: TranslationKeys.totalCRACompleted.translate(context),
+                        countKey: Key(KEY_CARD_COUNT),
+                        titleKey: Key(KEY_CARD_TITLE),
+                      ),
                       const SpaceWidget(
                         width: 20,
                       ),
-                      CountCardWidget(assetPath: AppAssetsPath.icSync, count: "130", title: TranslationKeys.totalCRASync.translate(context)),
+                      DashboardCardWidget(
+                        assetPath: AppAssetsPath.icSync,
+                        count: "130",
+                        title: TranslationKeys.totalCRASync.translate(context),
+                        countKey: Key(KEY_CARD_COUNT),
+                        titleKey: Key(KEY_CARD_TITLE),
+                      ),
                     ],
                   )
                 ],
@@ -106,14 +122,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
                         widgetKey: KEY_BUTTON_SYNC),
                   ),
-                  const SizedBox(height: 15),
+                  const SpaceWidget(height: 15),
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryFilledIconButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
                       buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
-                      isLoading: false,
+                      isLoading: false, //TODO: will change in the upcoming MR
                       onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,

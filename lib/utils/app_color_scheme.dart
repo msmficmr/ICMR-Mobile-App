@@ -11,7 +11,6 @@ class AppColorScheme {
   static Color get kPrimaryIconColor => Colors.white;
 
   static const Color selectedBackgroundColor =  Color(0xFFF6FBFE);
-  static const Color selectedTextColor =  Color(0xFFFFFFFF);
 
   static const MaterialColor kPrimaryColor = MaterialColor(
     0xFF3042EE,

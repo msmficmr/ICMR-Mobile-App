@@ -33,6 +33,8 @@ class TranslationKeys {
   static const String medicalId = "medical_id";
   static const String mobileNumber = "mobile_number";
   static const String district = "district";
+  static const String state = "state";
+  static const String pincode = "pincode";
   static const String wasACopyOfSignedConsent = "was_a_copy_of_signed_consent";
   static const String yes = "yes";
   static const String no = "no";
@@ -58,4 +60,13 @@ class TranslationKeys {
   static const String constructionAndCement = "construction_and_cement";
   static const String pesticideUseForFarming = "pesticide_use_for_farming";
   static const String none = "none";
+  static const String enterHere = "enter_here";
+  static const String select = "select";
+  static const String cra = "cra";
+  static const String informedConsent = "informed_consent";
+  static const String uploadConsent = "upload_consent";
+  static const String camera = "camera";
+  static const String browse = "browse";
+  static const String uploadFile = "upload_file";
+  static const String registration = "registration";
 }

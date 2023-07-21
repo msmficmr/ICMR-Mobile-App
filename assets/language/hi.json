@@ -14,7 +14,7 @@
   "language" : "भाषा",
   "data_sync" : "डेटा सिंक",
   "version" : "संस्करण",
-  "please_take_consent_from_citizen" : "कृपया नागरिक से सहमति लें",
+  "please_take_consent_from_citizen" : "कृपया नागरिक से अनुमति लें",
   "resend_otp_heading" : "ओटीपी प्राप्त नहीं हुआ? ",
   "resend_otp_title" : "पुन: भेजें",
   "consent" : "अनुमति",
@@ -30,6 +30,8 @@
   "medical_id" : "मेडिकल आईडी",
   "mobile_number" : "मोबाइल नंबर",
   "district" : "पता",
+  "state": "राज्य",
+  "pincode" : "पिन कोड",
   "was_a_copy_of_signed_consent" : "क्या हस्ताक्षरित सहमति प्रपत्र की एक प्रति रोगी को सौंपी गई थी",
   "yes" : "हाँ",
   "no" : "नहीं",
@@ -54,5 +56,14 @@
   "explosives" : "विस्फोटक",
   "construction_and_cement" : "निर्माण एवं सीमेंट",
   "pesticide_use_for_farming" : "खेती के लिए कीटनाशकों का उपयोग",
-  "none" : "कोई नहीं"
+  "none" : "कोई नहीं",
+  "enter_here" : "दर्ज करें",
+  "select" : "चयन करें",
+  "cra" : "सामुदायिक जोखिम आकलन ",
+  "informed_consent" : "सूचित अनुमति",
+  "upload_consent" : "अनुमति पत्र अपलोड करें",
+  "camera" : "कैमरा",
+  "browse" : "ब्राउज़",
+  "upload_file" : "फ़ाइल अपलोड करें",
+  "registration" : "पंजीकरण"
 }
