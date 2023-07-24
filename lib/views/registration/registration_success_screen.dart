@@ -128,9 +128,6 @@ Widget cardWidget(
       if (Text == "registration") {
         GoRouter.of(context).push(RegistrationScreen.routerPath);
       }
-      // if (text == "CRA") {
-      //   Navigator.pushNamed(context, PersonalHistoryScreen.routeName, arguments: {'patientDetails': patientDetailsMap});
-      // }
     },
     child: Container(
       width: 100,
