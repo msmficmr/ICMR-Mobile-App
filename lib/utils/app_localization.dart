@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mhealth/utils/app_constant.dart';
 
 class AppLocalizations {
   late final Locale appLocale;
@@ -27,10 +28,7 @@ class AppLocalizations {
     return _localizedStrings[jsonKey];
   }
 
-  static const supportedLocales = [
-    Locale('en', 'IN'),
-    Locale('hi', 'IN'),
-  ];
+  static const supportedLocales = AppConstant.appLocales;
 
   /// This method checks for the supported locales & the locale for the phone language,
   /// If the phone language is supported by the app it will return the language
@@ -56,7 +54,7 @@ class _ApplicationLocalizationsDelegate extends LocalizationsDelegate<AppLocaliz
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'hi'].contains(locale.languageCode);
+    return AppConstant.appLanguages.contains(locale.languageCode);
   }
 
   @override

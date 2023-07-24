@@ -280,7 +280,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _gender,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
-                    chipList: CommonFunctions().genderList(context: context),
+                    shouldTranslate: true,
+                    chipList: AppConstant.GENDER_LIST,
                     onChanged: (value) {
                       _gender.value = value;
                     },
@@ -424,7 +425,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _signedConsent,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
-                    chipList: CommonFunctions().binaryList(context: context),
+                    shouldTranslate: true,
+                    chipList: AppConstant.BINARY_LIST,
                     onChanged: (value) {
                       _signedConsent.value = value;
                     },
@@ -455,7 +457,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _disclosedIncome,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
-                    chipList: CommonFunctions().binaryList(context: context),
+                    shouldTranslate: true,
+                    chipList: AppConstant.BINARY_LIST,
                     onChanged: (value) {
                       _disclosedIncome.value = value;
                       _discloseIncome.value = !_discloseIncome.value;

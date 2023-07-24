@@ -80,12 +80,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     dimension: cardWidth,
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_CAMERA,
-                      onCardClick: () async {
-                        XFile? file = await CommonFunctions.getImage(context: context, imageSource: ImageSource.camera);
-                        if (file != null) {
-                          widget.onFileSelected(file);
-                        }
-                      },
+                      onCardClick: fetchImage,
                       title: TranslationKeys.camera.translate(context),
                       titleKey: KEY_TITLE_CAMERA,
                       svgPath: AppAssetsPath.icCamera,
@@ -118,5 +113,12 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
         ),
       ],
     );
+  }
+
+  fetchImage() async {
+    XFile? file = await CommonFunctions.getImage(context: context, imageSource: ImageSource.camera);
+    if (file != null) {
+      widget.onFileSelected(file);
+    }
   }
 }

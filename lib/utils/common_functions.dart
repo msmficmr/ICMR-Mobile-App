@@ -137,26 +137,4 @@ class CommonFunctions {
       return file;
     }
   }
-
-  List<CustomChipItem<String>> genderList({required BuildContext context}) {
-    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    switch (languageViewModel.locale.toString()) {
-      case "hi":
-        return AppConstant.HI_GENDER_LIST;
-      case "en_US":
-      default:
-        return AppConstant.EN_GENDER_LIST;
-    }
-  }
-
-  List<CustomChipItem<String>> binaryList({required BuildContext context}) {
-    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    switch (languageViewModel.locale.toString()) {
-      case "hi":
-        return AppConstant.HI_BINARY_LIST;
-      case "en_US":
-      default:
-        return AppConstant.EN_BINARY_LIST;
-    }
-  }
 }
