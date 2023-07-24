@@ -69,7 +69,7 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                     ),
                     Text(
                       'Registration Successful',
-                      style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor.shade500, fontWeight: FontWeight.w700, fontFamily: AppConstant.FONT_FAMILY),
+                      style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor.shade500, fontWeight: FontWeight.w700),
                       // style: bold_blue_16,
                       textAlign: TextAlign.center,
                     ),
@@ -91,7 +91,7 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Your Next Step',
-                  style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kDarkGrayColor, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                  style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor.shade800, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
                 ),
               ),
               const SizedBox(
@@ -125,14 +125,13 @@ Widget cardWidget(
 ) {
   return InkWell(
     onTap: () {
-      if (Text == "registration") {
+      if (text == "registration") {
         GoRouter.of(context).push(RegistrationScreen.routerPath);
       }
     },
     child: Container(
       width: 100,
       decoration: const BoxDecoration(
-        // color: LIGHT_BLUE,
         color: AppColorScheme.kLightBlue,
         borderRadius: BorderRadius.all(
           Radius.circular(10),

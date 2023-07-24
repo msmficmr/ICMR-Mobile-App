@@ -9,7 +9,6 @@ class AppColorScheme {
   static Color get kGreen => const Color(0xFF4DC85B);
   static Color get kBlack => const Color(0xFF000000);
   static const Color kLightBlue = Color(0xFFF7FBFE);
-  static const Color kDarkGrayColor = Color(0xFF3D3D3D);
   static const Color kBlueColor = Color(0xFF3C5B9E);
 
   static Color get kPrimaryIconColor => Colors.white;
