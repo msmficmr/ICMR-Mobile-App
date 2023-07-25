@@ -90,7 +90,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String TITLE_OCCUPATION_TYPE = "Occupation Type*";
   final String TITLE_OCCUPATION_INDUSTRY_TYPE = "Occupation in any of the Industry*";
 
-
   final String MOB_FIELD_PREFIX_TEXT = "+91";
 
   final FocusNode _dobFocusNode = FocusNode();
@@ -101,7 +100,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _disclosedIncome;
   late ValueNotifier<bool> _discloseIncome;
   late ValueNotifier<bool> _buttonEnabled;
-
 
   static const List<String> OCCUPATION_TYPES = [
     "Unemployed",
@@ -158,7 +156,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  void onContinueClick() {}
+  void onContinueClick() {
+    GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+  }
 
   void onConsentClicked() {
     GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
@@ -400,15 +400,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ValueListenableBuilder<bool>(
                   valueListenable: _discloseIncome,
                   builder: (context, isValid, _) {
-                    return isValid ? CustomTextField(
-                      controller: _incomeController,
-                      widgetKey: Key(KEY_FIELD_INCOME),
-                      hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                      heading: TITLE_INCOME,
-                      headingKey: Key(KEY_HEADING_INCOME),
-                      validator: AppValidators.requiredFiled,
-                      keyboardType: TextInputType.number,
-                    ) : const SizedBox.shrink();
+                    return isValid
+                        ? CustomTextField(
+                            controller: _incomeController,
+                            widgetKey: Key(KEY_FIELD_INCOME),
+                            hintText: AppConstant.HINT_TEXT_ENTER_HERE,
+                            heading: TITLE_INCOME,
+                            headingKey: Key(KEY_HEADING_INCOME),
+                            validator: AppValidators.requiredFiled,
+                            keyboardType: TextInputType.number,
+                          )
+                        : const SizedBox.shrink();
                   }),
               const SpaceWidget(
                 height: 15,

@@ -19,6 +19,11 @@ class AppAssetsPath {
   static const String dottedIcon = "assets/icons/dotted_icon.svg";
   static const String icCamera = "assets/icons/ic_camera.svg";
   static const String icUpload = "assets/icons/ic_upload.svg";
+  static const String icMyAccount = "assets/icons/ic_my_account.svg";
+  static const String icLanguage = "assets/icons/ic_language.svg";
+  static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
+  static const String icRegistrationBack = "assets/icons/ic_registration_back.svg";
+  static const String icCra = "assets/icons/ic_cra.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
@@ -31,5 +36,4 @@ class AppAssetsPath {
   static const String icMale = "assets/icons/ic_male.svg";
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
-
 }
