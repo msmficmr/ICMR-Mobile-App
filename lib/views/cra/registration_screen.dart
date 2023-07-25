@@ -86,7 +86,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   //Titles
   final String TITLE_STUDY_PH = "Study PH";
 
-
   final String MOB_FIELD_PREFIX_TEXT = "+91";
 
   final FocusNode _dobFocusNode = FocusNode();
@@ -200,7 +199,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  void onContinueClick() {}
+  void onContinueClick() {
+    GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+  }
 
   void onConsentClicked() {
     GoRouter.of(context).push(ConsentScreeningScreen.routerPath);

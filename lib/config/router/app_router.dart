@@ -80,6 +80,13 @@ class AppRouter {
                 child: const ConsentScreeningScreen(),
               ),
             ),
+            GoRoute(
+              path: RegistrationSuccessFullScreen.routeName,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const RegistrationSuccessFullScreen(),
+              ),
+            )
           ],
         )
       ],

@@ -13,12 +13,17 @@ class AppAssetsPath {
   static const String icCRA = "assets/icons/ic_cra.svg";
   static const String icSync = "assets/icons/ic_sync.svg";
   static const String icInfo = "assets/icons/ic_info.svg";
-  static const String icProfile = "assets/icons/ic_profile.svg";
   static const String icClose = "assets/icons/ic_close.svg";
   static const String icFile = "assets/icons/ic_file.svg";
+  static const String icProfile = "assets/icons/ic_profile.svg";
   static const String dottedIcon = "assets/icons/dotted_icon.svg";
   static const String icCamera = "assets/icons/ic_camera.svg";
   static const String icUpload = "assets/icons/ic_upload.svg";
+  static const String icMyAccount = "assets/icons/ic_my_account.svg";
+  static const String icLanguage = "assets/icons/ic_language.svg";
+  static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
+  static const String icRegistrationBack = "assets/icons/ic_registration_back.svg";
+  static const String icCra = "assets/icons/ic_cra.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
