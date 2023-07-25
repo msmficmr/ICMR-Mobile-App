@@ -73,7 +73,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
   Future<void> onContinueClick() async {
     if (formKey.currentState?.validate() ?? false) {
       loginViewModel.authFlow = LoginScreenTypes.MOBILE_NUMBER;
-      await loginViewModel.sendOtp(mobileNo: _mobileFieldController.text);
+      await loginViewModel.sendOtp(mobileNumberOrEmailText: _mobileFieldController.text);
     }
   }
 

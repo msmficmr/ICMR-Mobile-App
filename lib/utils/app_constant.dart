@@ -28,6 +28,9 @@ class AppConstant {
   // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
 
+  ///SECURE STORAGE KEYS
+  static const String SHARED_PREFERENCE_USER_DETAILS = "SHARED_PREFERENCE_USER_DETAILS";
+
   /// Language Supported
   static const List<Map<String, String>> languages = [
     {"locale": "en_US", "name": "English", "englishText": "English"},
