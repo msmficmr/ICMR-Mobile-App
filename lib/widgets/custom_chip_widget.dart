@@ -5,6 +5,9 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
 class CustomChipWidget<T> extends StatelessWidget {
+  /// If we pass this variable as true then it will translate the text into local language
+  final bool shouldTranslate;
+
   //sets selected item for chips list
   final T? selectedItem;
 
@@ -76,6 +79,7 @@ class CustomChipWidget<T> extends StatelessWidget {
     this.heading,
     this.validator,
     this.chipPadding = const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+    this.shouldTranslate = false,
     this.selectedBackgroundColor = const Color(0xFF4454EF),
     this.selectedBorderColor = const Color(0xFF4454EF),
     this.selectedTextColor = const Color(0xFFFFFFFF),
@@ -125,45 +129,48 @@ class CustomChipWidget<T> extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.start,
                   runSpacing: 10,
                   spacing: 10,
-                  children: List.generate(chipList.length, (index) {
-                    bool isItemSelected = (selectedItem == null || selectedItem != chipList[index].data);
+                  children: List.generate(
+                    chipList.length,
+                    (index) {
+                      bool isItemSelected = (selectedItem == null || selectedItem != chipList[index].data);
 
-                    return Material(
-                      color: isItemSelected ? unSelectedBackgroundColor : selectedBackgroundColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: isItemSelected ? unSelectedBorderColor : selectedBorderColor,
-                        ),
-                      ),
-                      child: InkWell(
-                        key: Key("key_choice_${chipList[index].text.toKey}"),
-                        onTap: onChanged == null
-                            ? null
-                            : () {
-                                _fieldKey.currentState!.didChange(chipList[index].data);
-                                onChanged!(chipList[index].data);
-                              },
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: chipPadding,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: unSelectedBorderColor,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            chipList[index].text,
-                            style: AppStyles.titleMedium?.copyWith(
-                              fontWeight: isItemSelected ? FontWeight.normal : FontWeight.w600,
-                              color: isItemSelected ? unSelectedTextColor : selectedTextColor,
-                            ),
+                      return Material(
+                        color: isItemSelected ? unSelectedBackgroundColor : selectedBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: isItemSelected ? unSelectedBorderColor : selectedBorderColor,
                           ),
                         ),
-                      ),
-                    );
-                  }),
+                        child: InkWell(
+                          key: Key("key_choice_${chipList[index].text.toKey}"),
+                          onTap: onChanged == null
+                              ? null
+                              : () {
+                                  _fieldKey.currentState!.didChange(chipList[index].data);
+                                  onChanged!(chipList[index].data);
+                                },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: chipPadding,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: unSelectedBorderColor,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              shouldTranslate ? chipList[index].text.translate(context) : chipList[index].text,
+                              style: AppStyles.titleMedium.copyWith(
+                                fontWeight: isItemSelected ? FontWeight.normal : FontWeight.w600,
+                                color: isItemSelected ? unSelectedTextColor : selectedTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 if (field.hasError) ...[
                   const SpaceWidget(),
@@ -188,5 +195,6 @@ class CustomChipItem<T> {
 
   /// *[data] will be used to return T type data when onChange callback is called
   final T? data;
+
   const CustomChipItem({required this.text, required this.data});
 }
