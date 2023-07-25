@@ -8,6 +8,7 @@ class AppAssetsPath {
   static const String icArrowBack = "assets/icons/ic_arrow_back.svg";
   static const String icEmail = "assets/icons/ic_email.svg";
   static const String icAdd = "assets/icons/ic_add.svg";
+  static const String icAddCircular = "assets/icons/ic_add_circular.svg";
   static const String icSearch = "assets/icons/ic_search.svg";
   static const String icCalender = "assets/icons/ic_calender.svg";
   static const String icCRA = "assets/icons/ic_cra.svg";

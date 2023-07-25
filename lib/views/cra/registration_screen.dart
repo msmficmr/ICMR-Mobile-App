@@ -35,6 +35,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -182,25 +183,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _buttonEnabled = ValueNotifier<bool>(false);
   }
 
-  onDOBChanged(String? dob) {
-    if (_dobFocusNode == FocusManager.instance.primaryFocus) {
-      try {
-        int age = CommonFunctions.getAge(dob) ?? 0;
-      } catch (e) {}
-    }
-  }
-
-  onAgeChanged(String? age) {
-    _dobController.clear();
-
-    if (_ageFocusNode == FocusManager.instance.primaryFocus) {
-      _dobController.text = CommonFunctions.getDob(age);
-      dobInputFormatter.formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: _dobController.text));
-    }
-  }
-
   void onContinueClick() {
-    GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+    if (formKey.currentState!.validate()) {
+      GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+    }
   }
 
   void onConsentClicked() {
@@ -220,321 +206,323 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                TranslationKeys.pleaseTakeConsentFromCitizen.translate(context),
-                style: AppStyles.bodyMedium,
-              ),
-              const SpaceWidget(height: 5),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: PrimaryFilledIconButton(
-                    onPressed: () {
-                      onConsentClicked();
-                    },
-                    isLoading: false,
-                    buttonThemeStyle: const FilledButtonThemeStyle(
-                      enabledTextColor: Color(0xFF2F43EE),
-                      enabledButtonColor: Color(0xFFF4F5FF),
-                    ),
-                    icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                    buttonTitle: TranslationKeys.consent.translate(context),
-                    widgetKey: KEY_BUTTON_CONSENT),
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //First Name Widget
-              CustomTextField(
-                controller: _firstNameController,
-                widgetKey: Key(KEY_FIELD_FIRST_NAME),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.firstName.translate(context)}*",
-                headingKey: Key(KEY_HEADING_FIRST_NAME),
-                validator: AppValidators.requiredFiled,
-                inputFormatters: [
-                  AppValues.stringInputFormatter,
-                ],
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //Last Name Widget
-              CustomTextField(
-                controller: _lastNameController,
-                widgetKey: Key(KEY_FIELD_LAST_NAME),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.lastName.translate(context)}*",
-                headingKey: Key(KEY_HEADING_LAST_NAME),
-                validator: AppValidators.requiredFiled,
-                inputFormatters: [
-                  AppValues.stringInputFormatter,
-                ],
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //Gender
-              ValueListenableBuilder(
-                valueListenable: _gender,
-                builder: (context, _, __) {
-                  return CustomChipWidget<String?>(
-                    shouldTranslate: true,
-                    chipList: AppConstant.GENDER_LIST,
-                    onChanged: (value) {
-                      _gender.value = value;
-                    },
-                    validator: AppValidators.validateGender,
-                    selectedItem: _gender.value,
-                    heading: "${TranslationKeys.gender.translate(context)}*",
-                    headingKey: Key(KEY_HEADING_GENDER),
-                  );
-                },
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //DOB
-              CustomTextField(
-                controller: _dobController,
-                focusNode: _dobFocusNode,
-                widgetKey: Key(KEY_FIELD_DOB),
-                hintText: AppConstant.HINT_TEXT_DATE,
-                heading: TranslationKeys.dateOfBirth.translate(context),
-                headingKey: Key(KEY_HEADING_DOB),
-                hasPrefix: true,
-                prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
-                prefixData: AppAssetsPath.icCalender,
-                inputFormatters: [
-                  dobInputFormatter,
-                ],
-                validator: AppValidators.validateDOB,
-                keyboardType: TextInputType.number,
-                onChanged: onDOBChanged,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              CustomTextField(
-                controller: _ageController,
-                focusNode: _ageFocusNode,
-                widgetKey: Key(KEY_FIELD_AGE),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.age.translate(context)}*",
-                headingKey: Key(KEY_HEADING_AGE),
-                validator: AppValidators.validateAge,
-                keyboardType: TextInputType.number,
-                onChanged: onAgeChanged,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //AADHAR
-              CustomTextField(
-                controller: _aadharIDController,
-                widgetKey: Key(KEY_FIELD_AADHAR_ID),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: TranslationKeys.aadharId.translate(context),
-                headingKey: Key(KEY_HEADING_AADHAR_ID),
-                validator: AppValidators.validateAadhar,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  MaskTextInputFormatter(mask: '############'),
-                ],
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //MEDICAL ID
-              CustomTextField(
-                controller: _medicalIDIDController,
-                widgetKey: Key(KEY_FIELD_MEDICAL_ID),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.medicalId.translate(context)}*",
-                headingKey: Key(KEY_HEADING_MEDICAL_ID),
-                validator: AppValidators.validateID,
-                keyboardType: TextInputType.text,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //MOBILE
-              CustomTextField(
-                widgetKey: Key(KEY_FIELD_MOBILE),
-                controller: _mobileFieldController,
-                hasPrefix: true,
-                prefixType: TextFieldPrefixSuffixType.TEXT,
-                prefixData: MOB_FIELD_PREFIX_TEXT,
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.mobileNumber.translate(context)}*",
-                headingKey: Key(KEY_HEADING_MOBILE),
-                validator: AppValidators.validateMobile,
-                inputFormatters: [
-                  MaskTextInputFormatter(mask: '##########'),
-                ],
-                keyboardType: TextInputType.number,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //DISTRICT
-              CustomTextField(
-                controller: _districtController,
-                widgetKey: Key(KEY_FIELD_DISTRICT),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.district.translate(context)}*",
-                headingKey: Key(KEY_HEADING_DISTRICT),
-                validator: AppValidators.requiredFiled,
-                keyboardType: TextInputType.text,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //STATE
-              CustomTextField(
-                controller: _stateController,
-                widgetKey: Key(KEY_FIELD_STATE),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.state.translate(context)}*",
-                headingKey: Key(KEY_HEADING_STATE),
-                validator: AppValidators.requiredFiled,
-                keyboardType: TextInputType.text,
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //PINCODE
-              CustomTextField(
-                controller: _pincodeController,
-                widgetKey: Key(KEY_FIELD_PINCODE),
-                hintText: TranslationKeys.enterHere.translate(context),
-                heading: "${TranslationKeys.pincode.translate(context)}*",
-                headingKey: Key(KEY_HEADING_PINCODE),
-                validator: AppValidators.validatePincode,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  MaskTextInputFormatter(mask: '######'),
-                ],
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //SIGNED CONSENT
-              ValueListenableBuilder(
-                valueListenable: _signedConsent,
-                builder: (context, _, __) {
-                  return CustomChipWidget<String?>(
-                    shouldTranslate: true,
-                    chipList: AppConstant.BINARY_LIST,
-                    onChanged: (value) {
-                      _signedConsent.value = value;
-                    },
-                    validator: AppValidators.validateBinaryQuestion,
-                    selectedItem: _signedConsent.value,
-                    heading: TranslationKeys.wasACopyOfSignedConsent.translate(context),
-                    headingKey: Key(KEY_HEADING_SIGNED_CONSENT),
-                  );
-                },
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //STUDY
-              CustomDropdown<String>(
-                widgetKey: KEY_FIELD_STUDY_PH,
-                heading: TITLE_STUDY_PH,
-                headingKey: Key(KEY_HEADING_STUDY_PH),
-                hintText: TranslationKeys.select.translate(context),
-                onChanged: (val) {},
-                items: [],
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //DISCLOSED INCOME
-              ValueListenableBuilder(
-                valueListenable: _disclosedIncome,
-                builder: (context, _, __) {
-                  return CustomChipWidget<String?>(
-                    shouldTranslate: true,
-                    chipList: AppConstant.BINARY_LIST,
-                    onChanged: (value) {
-                      _disclosedIncome.value = value;
-                      _discloseIncome.value = !_discloseIncome.value;
-                    },
-                    validator: AppValidators.validateBinaryQuestion,
-                    selectedItem: _disclosedIncome.value,
-                    heading: TranslationKeys.patientDisclosedIncome.translate(context),
-                    headingKey: Key(KEY_HEADING_DISCLOSED_INCOME),
-                  );
-                },
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //INCOME
-              ValueListenableBuilder<bool>(
-                  valueListenable: _discloseIncome,
-                  builder: (context, isValid, _) {
-                    return isValid ? CustomTextField(
-                      controller: _incomeController,
-                      widgetKey: Key(KEY_FIELD_INCOME),
-                      hintText: TranslationKeys.enterHere.translate(context),
-                      heading: TranslationKeys.income.translate(context),
-                      headingKey: Key(KEY_HEADING_INCOME),
-                      validator: AppValidators.requiredFiled,
-                      keyboardType: TextInputType.number,
-                    ) : const SizedBox.shrink();
-                  }),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //OCCUPATION TYPE
-              CustomDropdown<String>(
-                widgetKey: KEY_FIELD_OCCUPATION_TYPE,
-                heading: TranslationKeys.occupationType.translate(context),
-                headingKey: Key(KEY_HEADING_OCCUPATION_TYPE),
-                hintText: TranslationKeys.select.translate(context),
-                onChanged: (val) {},
-                items: getOccupationTypes(),
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              //OCCUPATION INDUSTRY TYPE
-              CustomDropdown<String>(
-                widgetKey: KEY_FIELD_OCCUPATION_INDUSTRY_TYPE,
-                heading: TranslationKeys.occupationIndustry.translate(context),
-                headingKey: Key(KEY_HEADING_OCCUPATION_INDUSTRY_TYPE),
-                hintText: TranslationKeys.select.translate(context),
-                onChanged: (val) {},
-                items: getOccupationIndustryTypes(),
-              ),
-              const SpaceWidget(
-                height: 15,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _buttonEnabled,
-                  builder: (context, isValid, _) {
-                    return PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: TranslationKeys.continueText.translate(context),
-                      widgetKey: KEY_BUTTON_CONTINUE,
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  TranslationKeys.pleaseTakeConsentFromCitizen.translate(context),
+                  style: AppStyles.bodyMedium,
+                ),
+                const SpaceWidget(height: 5),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: PrimaryFilledIconButton(
+                      onPressed: () {
+                        onConsentClicked();
+                      },
                       isLoading: false,
-                      onPressed: !isValid
-                          ? null
-                          : () {
-                              onContinueClick();
-                            },
+                      buttonThemeStyle: const FilledButtonThemeStyle(
+                        enabledTextColor: Color(0xFF2F43EE),
+                        enabledButtonColor: Color(0xFFF4F5FF),
+                      ),
+                      icon: SvgPicture.asset(AppAssetsPath.icInfo),
+                      buttonTitle: TranslationKeys.consent.translate(context),
+                      widgetKey: KEY_BUTTON_CONSENT),
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //CURRENT DATE
+                Text(
+                  "Date :- ${CommonFunctions.currentDate()}",
+                  style: AppStyles.titleMedium,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //FIRST NAME
+                CustomTextField(
+                  controller: _firstNameController,
+                  widgetKey: Key(KEY_FIELD_FIRST_NAME),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.firstName.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_FIRST_NAME),
+                  validator: AppValidators.requiredFiled,
+                  inputFormatters: [
+                    AppValues.stringInputFormatter,
+                  ],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //LAST NAME
+                CustomTextField(
+                  controller: _lastNameController,
+                  widgetKey: Key(KEY_FIELD_LAST_NAME),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.lastName.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_LAST_NAME),
+                  validator: AppValidators.requiredFiled,
+                  inputFormatters: [
+                    AppValues.stringInputFormatter,
+                  ],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //GENDER
+                ValueListenableBuilder(
+                  valueListenable: _gender,
+                  builder: (context, _, __) {
+                    return CustomChipWidget<String?>(
+                      shouldTranslate: true,
+                      chipList: AppConstant.GENDER_LIST,
+                      onChanged: (value) {
+                        _gender.value = value;
+                      },
+                      validator: AppValidators.validateGender,
+                      selectedItem: _gender.value,
+                      heading: "${TranslationKeys.gender.translate(context)}*",
+                      headingKey: Key(KEY_HEADING_GENDER),
                     );
                   },
                 ),
-              ),
-            ],
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //DOB
+                CustomTextField(
+                  controller: _dobController,
+                  focusNode: _dobFocusNode,
+                  widgetKey: Key(KEY_FIELD_DOB),
+                  hintText: AppConstant.HINT_TEXT_DATE,
+                  heading: TranslationKeys.dateOfBirth.translate(context),
+                  headingKey: Key(KEY_HEADING_DOB),
+                  hasPrefix: true,
+                  prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
+                  prefixData: AppAssetsPath.icCalender,
+                  inputFormatters: [
+                    dobInputFormatter,
+                  ],
+                  validator: AppValidators.validateDOB,
+                  keyboardType: TextInputType.number,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //Age
+                CustomTextField(
+                  controller: _ageController,
+                  focusNode: _ageFocusNode,
+                  widgetKey: Key(KEY_FIELD_AGE),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.age.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_AGE),
+                  validator: AppValidators.validateAge,
+                  keyboardType: TextInputType.number,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //AADHAR
+                CustomTextField(
+                  controller: _aadharIDController,
+                  widgetKey: Key(KEY_FIELD_AADHAR_ID),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: TranslationKeys.aadharId.translate(context),
+                  headingKey: Key(KEY_HEADING_AADHAR_ID),
+                  validator: AppValidators.validateAadhar,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    MaskTextInputFormatter(mask: '############'),
+                  ],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //MEDICAL ID
+                CustomTextField(
+                  controller: _medicalIDIDController,
+                  widgetKey: Key(KEY_FIELD_MEDICAL_ID),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.medicalId.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_MEDICAL_ID),
+                  validator: AppValidators.validateID,
+                  keyboardType: TextInputType.text,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //MOBILE
+                CustomTextField(
+                  widgetKey: Key(KEY_FIELD_MOBILE),
+                  controller: _mobileFieldController,
+                  hasPrefix: true,
+                  prefixType: TextFieldPrefixSuffixType.TEXT,
+                  prefixData: MOB_FIELD_PREFIX_TEXT,
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.mobileNumber.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_MOBILE),
+                  validator: AppValidators.validateMobile,
+                  inputFormatters: [
+                    MaskTextInputFormatter(mask: '##########'),
+                  ],
+                  keyboardType: TextInputType.number,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //DISTRICT
+                CustomTextField(
+                  controller: _districtController,
+                  widgetKey: Key(KEY_FIELD_DISTRICT),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.district.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_DISTRICT),
+                  validator: AppValidators.requiredFiled,
+                  keyboardType: TextInputType.text,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //STATE
+                CustomTextField(
+                  controller: _stateController,
+                  widgetKey: Key(KEY_FIELD_STATE),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.state.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_STATE),
+                  validator: AppValidators.requiredFiled,
+                  keyboardType: TextInputType.text,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //PINCODE
+                CustomTextField(
+                  controller: _pincodeController,
+                  widgetKey: Key(KEY_FIELD_PINCODE),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.pincode.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_PINCODE),
+                  validator: AppValidators.validatePincode,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    MaskTextInputFormatter(mask: '######'),
+                  ],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //SIGNED CONSENT
+                ValueListenableBuilder(
+                  valueListenable: _signedConsent,
+                  builder: (context, _, __) {
+                    return CustomChipWidget<String?>(
+                      shouldTranslate: true,
+                      chipList: AppConstant.BINARY_LIST,
+                      onChanged: (value) {
+                        _signedConsent.value = value;
+                      },
+                      validator: AppValidators.validateBinaryQuestion,
+                      selectedItem: _signedConsent.value,
+                      heading: "${TranslationKeys.wasACopyOfSignedConsent.translate(context)}*",
+                      headingKey: Key(KEY_HEADING_SIGNED_CONSENT),
+                    );
+                  },
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //STUDY
+                CustomDropdown<String>(
+                  widgetKey: KEY_FIELD_STUDY_PH,
+                  heading: TITLE_STUDY_PH,
+                  headingKey: Key(KEY_HEADING_STUDY_PH),
+                  hintText: TranslationKeys.select.translate(context),
+                  onChanged: (val) {},
+                  items: [],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //DISCLOSED INCOME
+                ValueListenableBuilder(
+                  valueListenable: _disclosedIncome,
+                  builder: (context, _, __) {
+                    return CustomChipWidget<String?>(
+                      shouldTranslate: true,
+                      chipList: AppConstant.BINARY_LIST,
+                      onChanged: (value) {
+                        _disclosedIncome.value = value;
+                        _discloseIncome.value = !_discloseIncome.value;
+                      },
+                      validator: AppValidators.validateBinaryQuestion,
+                      selectedItem: _disclosedIncome.value,
+                      heading: "${TranslationKeys.patientDisclosedIncome.translate(context)}*",
+                      headingKey: Key(KEY_HEADING_DISCLOSED_INCOME),
+                    );
+                  },
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //INCOME
+                ValueListenableBuilder<bool>(
+                    valueListenable: _discloseIncome,
+                    builder: (context, isValid, _) {
+                      return isValid ? CustomTextField(
+                        controller: _incomeController,
+                        widgetKey: Key(KEY_FIELD_INCOME),
+                        hintText: TranslationKeys.enterHere.translate(context),
+                        heading: TranslationKeys.income.translate(context),
+                        headingKey: Key(KEY_HEADING_INCOME),
+                        keyboardType: TextInputType.number,
+                      ) : const SizedBox.shrink();
+                    }),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //OCCUPATION TYPE
+                CustomDropdown<String>(
+                  widgetKey: KEY_FIELD_OCCUPATION_TYPE,
+                  heading: "${TranslationKeys.occupationType.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_OCCUPATION_TYPE),
+                  hintText: TranslationKeys.select.translate(context),
+                  onChanged: (val) {},
+                  items: getOccupationTypes(),
+                  validator: AppValidators.requiredFiled,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //OCCUPATION INDUSTRY TYPE
+                CustomDropdown<String>(
+                  widgetKey: KEY_FIELD_OCCUPATION_INDUSTRY_TYPE,
+                  heading: "${TranslationKeys.occupationIndustry.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_OCCUPATION_INDUSTRY_TYPE),
+                  hintText: TranslationKeys.select.translate(context),
+                  onChanged: (val) {},
+                  items: getOccupationIndustryTypes(),
+                  validator: AppValidators.requiredFiled,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: PrimaryFilledButton(
+                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                    buttonTitle: TranslationKeys.continueText.translate(context),
+                    widgetKey: KEY_BUTTON_CONTINUE,
+                    isLoading: false,
+                    onPressed: onContinueClick,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

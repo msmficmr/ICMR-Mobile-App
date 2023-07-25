@@ -32,7 +32,7 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
     super.initState();
 
     cards.insert(0, const CardWidget(text: "Take\nCRA", image: AppAssetsPath.icCra, screenNames: ScreenNames.REGISTRATION_SCREEN));
-    cards.insert(cards.length, const CardWidget(text: 'New\nregistration', image: AppAssetsPath.icAdd, screenNames: ScreenNames.TAKE_CRA_SCREEN));
+    cards.insert(cards.length, const CardWidget(text: 'New\nregistration', image: AppAssetsPath.icAddCircular, screenNames: ScreenNames.TAKE_CRA_SCREEN));
   }
 
   @override

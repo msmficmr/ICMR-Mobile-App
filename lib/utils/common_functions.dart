@@ -148,4 +148,11 @@ class CommonFunctions {
       }
     } catch (e) {}
   }
+
+  static String currentDate() {
+    DateTime now = DateTime.now();
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+    String formattedDate = dateFormat.format(now);
+    return formattedDate;
+  }
 }
