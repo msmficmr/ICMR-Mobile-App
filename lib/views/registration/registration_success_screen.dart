@@ -5,6 +5,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/views/registration/widgets/cardWidget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
@@ -29,8 +30,8 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
   void initState() {
     super.initState();
 
-    cards.insert(0, cardWidget(context, 'Take\nCRA', AppAssetsPath.icCra));
-    cards.insert(cards.length, cardWidget(context, 'New\nregistration', AppAssetsPath.icAdd));
+    cards.insert(0, const CardWidget(text: "Take\nCRA", image: AppAssetsPath.icCra));
+    cards.insert(cards.length, const CardWidget(text: 'New\nregistration', image: AppAssetsPath.icAdd));
   }
 
   @override
@@ -115,45 +116,4 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
       ),
     );
   }
-}
-
-Widget cardWidget(
-  BuildContext context,
-  String text,
-  String image,
-  // Map patientDetailsMap,
-) {
-  return InkWell(
-    onTap: () {
-      if (text == "registration") {
-        GoRouter.of(context).push(RegistrationScreen.routerPath);
-      }
-    },
-    child: Container(
-      width: 100,
-      decoration: const BoxDecoration(
-        color: AppColorScheme.kLightBlue,
-        borderRadius: BorderRadius.all(
-          Radius.circular(10),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 20.0, 20.0, 20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgPicture.asset(image, fit: BoxFit.cover),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              text,
-              style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor.shade600, fontSize: 12, fontWeight: FontWeight.w400, fontFamily: AppConstant.FONT_FAMILY),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
