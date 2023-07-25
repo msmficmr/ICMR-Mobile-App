@@ -11,7 +11,6 @@ import 'package:mhealth/widgets/image_view_widget.dart';
 import '../widgets/custom_alert_dialog.dart';
 
 class CommonFunctions {
-
   /// opens browser with privacy policy link
   static void onPrivacyPolicyClick() {
     //TODO: add url launcher implementation
@@ -134,5 +133,17 @@ class CommonFunctions {
       XFile? file = await ImagePicker().pickImage(source: imageSource);
       return file;
     }
+  }
+
+  static void showRetrySnackbar() {
+    try {
+      if (AppValues.scaffoldMessengerKey.currentState?.mounted ?? false) {
+        AppValues.scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text("No Internet Connection"),
+          ),
+        );
+      }
+    } catch (e) {}
   }
 }
