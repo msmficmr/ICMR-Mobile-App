@@ -38,6 +38,13 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
 
   double outerPadding = 20.0;
 
+  fetchImage(ImageSource source) async {
+    XFile? file = await CommonFunctions.getImage(context: context, imageSource: source);
+    if (file != null) {
+      widget.onFileSelected(file);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -80,7 +87,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     dimension: cardWidth,
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_CAMERA,
-                      onCardClick: fetchImage,
+                      onCardClick: fetchImage(ImageSource.camera),
                       title: TranslationKeys.camera.translate(context),
                       titleKey: KEY_TITLE_CAMERA,
                       svgPath: AppAssetsPath.icCamera,
@@ -95,12 +102,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     dimension: cardWidth,
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_BROWSE,
-                      onCardClick: () async {
-                        XFile? file = await CommonFunctions.getImage(context: context, imageSource: ImageSource.gallery);
-                        if (file != null) {
-                          widget.onFileSelected(file);
-                        }
-                      },
+                      onCardClick: fetchImage(ImageSource.gallery),
                       title: TranslationKeys.browse.translate(context),
                       titleKey: KEY_TITLE_BROWSE,
                       svgPath: AppAssetsPath.icUpload,
@@ -113,12 +115,5 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
         ),
       ],
     );
-  }
-
-  fetchImage() async {
-    XFile? file = await CommonFunctions.getImage(context: context, imageSource: ImageSource.camera);
-    if (file != null) {
-      widget.onFileSelected(file);
-    }
   }
 }
