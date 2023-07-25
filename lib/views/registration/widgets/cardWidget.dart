@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/utils/enums.dart';
 
 import '../../../utils/app_color_scheme.dart';
 import '../../../utils/app_constant.dart';
@@ -10,17 +12,14 @@ import '../../cra/registration_screen.dart';
 class CardWidget extends StatelessWidget {
   final String text;
   final String image;
-
-  const CardWidget({
-    required this.text,
-    required this.image,
-  });
+  final ScreenNames screenNames;
+  const CardWidget({required this.text, required this.image, required this.screenNames});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (text == "registration") {
+        if (screenNames == ScreenNames.REGISTRATION_SCREEN) {
           GoRouter.of(context).push(RegistrationScreen.routerPath);
         }
       },

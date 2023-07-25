@@ -5,6 +5,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/views/registration/widgets/cardWidget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
@@ -15,7 +16,6 @@ class RegistrationSuccessFullScreen extends StatefulWidget {
   static const routeName = "/registrationSuccessFullScreen";
 
   const RegistrationSuccessFullScreen({Key? key}) : super(key: key);
-
   @override
   State<RegistrationSuccessFullScreen> createState() => _RegistrationSuccessFullScreenState();
 }
@@ -24,14 +24,15 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
   List<Widget> cards = [];
   final String patientName = "Aparna"; // to be picked dynamically later
   final String titleText = "Registration";
+
   double horizontalSpacing = 10;
 
   @override
   void initState() {
     super.initState();
 
-    cards.insert(0, const CardWidget(text: "Take\nCRA", image: AppAssetsPath.icCra));
-    cards.insert(cards.length, const CardWidget(text: 'New\nregistration', image: AppAssetsPath.icAdd));
+    cards.insert(0, const CardWidget(text: "Take\nCRA", image: AppAssetsPath.icCra, screenNames: ScreenNames.REGISTRATION_SCREEN));
+    cards.insert(cards.length, const CardWidget(text: 'New\nregistration', image: AppAssetsPath.icAdd, screenNames: ScreenNames.TAKE_CRA_SCREEN));
   }
 
   @override
