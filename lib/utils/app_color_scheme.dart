@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColorScheme {
   AppColorScheme._();
-
+  static Color get kWhite => const Color(0xFFFFFFFF);
   static Color get errorTextColor => const Color(0xffF16063);
   static Color get kLightGreen => const Color(0xFFE9F6E8);
   static Color get kLightRed => const Color(0xFFFDEAEA);

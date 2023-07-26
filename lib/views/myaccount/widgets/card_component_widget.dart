@@ -25,7 +25,8 @@ class AccountCard extends StatelessWidget {
     this.width, // Add width as a parameter
     this.height, // Add height as a parameter
   });
-
+//KEY
+  final String KEY_OPTION_SELECT = "key_option_select";
   @override
   Widget build(BuildContext context) {
     const defaultTextStyle = TextStyle(
@@ -52,6 +53,7 @@ class AccountCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     text,
+                    key: Key(KEY_OPTION_SELECT),
                     style: textStyle ?? defaultTextStyle,
                   ),
                 ),

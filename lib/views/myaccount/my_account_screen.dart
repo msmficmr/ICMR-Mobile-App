@@ -14,6 +14,7 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mhealth/config/environment/environment.dart';
 
 class MyAccountScreen extends StatefulWidget {
   static const String routerPath = "/myAccountScreen";
@@ -32,7 +33,12 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String age = '23';
   final String phone = '+91 9898989898';
   final String patientRelation = 'Myself';
-  final String appVersion = '0.1.0';
+  final String appVersion = Environment.runningEnv.releaseVersion;
+
+  //KEY
+  final String KEY_PATIENT_TEXT = "key_patient_text";
+  final String KEY_PATIENT_ID = "key_patient_id";
+  final String KEY_PATIENT_NAME = "key_patient_name";
 
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: patientID));
@@ -53,31 +59,36 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         onLeadingClick: () {
           GoRouter.of(context).pop();
         },
-        backgroundColor: Colors.grey.shade50,
+        backgroundColor: AppColorScheme.kGrayColor.shade50,
         trailingType: CustomAppBarTrailingType.SINGLE,
         trailingWidget: SvgPicture.asset(
           AppAssetsPath.icLogout,
         ),
         titleText: "My Account",
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: Column(children: [
+          const SizedBox(
+            height: 80,
+          ),
           Card(
-            color: Colors.grey.shade50,
+            // color: Colors.grey.shade50,
+            color: AppColorScheme.kGrayColor.shade50,
             elevation: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
                       ClipOval(
                         child: Container(
                           width: 45, // Adjust the size as needed
                           height: 45, // Adjust the size as needed
-                          color: isImagePresent ? Colors.transparent : const Color(0xFF2F43EE), // Set a background color for the container without the image
+                          color: isImagePresent ? Colors.transparent : AppColorScheme.kPrimaryColor.shade900, // Set a background color for the container without the image
                           child: isImagePresent
                               ? SvgPicture.asset(
                                   image,
@@ -86,6 +97,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                               : Center(
                                   child: Text(
                                     patientName.isNotEmpty == true ? patientName![0] : 'A',
+                                    key: Key(KEY_PATIENT_TEXT),
                                     style: const TextStyle(
                                       fontSize: 20,
                                       color: Colors.white,
@@ -104,7 +116,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                               width: 47,
                               height: 18,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2F43EE),
+                                color: AppColorScheme.kPrimaryColor.shade900,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: FittedBox(
@@ -116,7 +128,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                             ),
                             Text(
                               patientName,
-                              key: Key("Manish"),
+                              key: Key(KEY_PATIENT_NAME),
                               style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
                             )
                           ],
@@ -137,10 +149,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                       // mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text('Patient ID:', style: AppStyles.bodySmall),
-                        SizedBox(width: 2),
+                        const SpaceWidget(width: 2),
                         Text(
                           patientID,
-                          // _textEditingController.text,
+                          key: Key(KEY_PATIENT_ID),
                           style: AppStyles.bodySmall,
                         ),
                         InkWell(
@@ -177,7 +189,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             child: Padding(
               padding: const EdgeInsets.only(left: 5, right: 5),
               child: AccountCard(
-                width: 328,
                 height: 54,
                 leftIcon: SvgPicture.asset(
                   AppAssetsPath.icLanguage,
@@ -191,8 +202,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   // Handle profile card tap
                 },
                 textStyle: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w500, fontFamily: AppConstant.FONT_FAMILY),
-                cardColor: Color(0xFFFFFFFF),
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                cardColor: AppColorScheme.kWhite,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 iconSize: 24.0,
               ),
             ),
@@ -213,8 +224,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   // Handle profile card tap
                 },
                 textStyle: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w500, fontFamily: AppConstant.FONT_FAMILY),
-                cardColor: Color(0xFFFFFFFF),
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                cardColor: AppColorScheme.kWhite,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
                 iconSize: 24.0,
               ),
             ),
@@ -223,7 +234,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.only(bottom: 25.0),
-        height: 100.0, // Set the height you want for the Container
+        height: MediaQuery.of(context).size.height * 0.1,
         child: Center(
           child: Column(children: [
             SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
