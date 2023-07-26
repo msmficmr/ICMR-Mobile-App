@@ -5,9 +5,10 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
-import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/views/dashboard/widgets/count_card_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -32,11 +33,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
 
-  //Title
-  final String TITLE_DASHBOARD = "Dashboard";
-  final String TOTAL_CRA_COMPLETED = "Total CRA Completed";
-  final String TOTAL_CRA_SYNC = "Total CRA Sync";
-
   redirectToCRAScreen() {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
@@ -51,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         centerTitle: false,
         trailingType: CustomAppBarTrailingType.SINGLE,
         trailingWidget: InkWell(
-          onTap: () {},
+          onTap: (){},
           child: const SizedBox(
             width: 30,
             height: 30,
@@ -71,7 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    TITLE_DASHBOARD,
+                    TranslationKeys.dashboard.translate(context),
                     style: AppStyles.headlineMedium.copyWith(
                       color: AppColorScheme.kGrayColor.shade900,
                     ),
@@ -85,7 +81,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       DashboardCardWidget(
                         assetPath: AppAssetsPath.icCRA,
                         count: "150",
-                        title: TOTAL_CRA_COMPLETED,
+                        title: TranslationKeys.totalCRACompleted.translate(context),
                         countKey: Key(KEY_CARD_COUNT),
                         titleKey: Key(KEY_CARD_TITLE),
                       ),
@@ -95,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       DashboardCardWidget(
                         assetPath: AppAssetsPath.icSync,
                         count: "130",
-                        title: TOTAL_CRA_SYNC,
+                        title: TranslationKeys.totalCRASync.translate(context),
                         countKey: Key(KEY_CARD_COUNT),
                         titleKey: Key(KEY_CARD_TITLE),
                       ),
@@ -123,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           AppAssetsPath.icSync,
                           colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
                         ),
-                        buttonTitle: AppConstant.SYNC_BUTTON_TITLE,
+                        buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
                         widgetKey: KEY_BUTTON_SYNC),
                   ),
                   const SpaceWidget(height: 15),
@@ -131,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     width: double.infinity,
                     child: PrimaryFilledIconButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: AppConstant.TAKE_CRA_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
                       isLoading: false, //TODO: will change in the upcoming MR
                       onPressed: () => redirectToCRAScreen(),

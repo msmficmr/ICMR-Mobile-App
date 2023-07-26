@@ -7,7 +7,9 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/widgets/countdown_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -25,8 +27,6 @@ class LoginOtpScreen extends StatefulWidget {
 
 class _LoginOtpScreenState extends State<LoginOtpScreen> {
   final String PAGE_TITLE = "Enter the 6-digit OTP sent to";
-  final String RESEND_OTP_HEADING = "Didn't receive the OTP?  ";
-  final String RESEND_OTP_TITTLE = "Resend";
   final String SEC_TEXT = " Sec";
   final String RESEND_TEXT = "Resend In ";
 
@@ -118,7 +118,6 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         hasLeading: true,
         onLeadingClick: onBackPress,
@@ -140,7 +139,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                         children: [
                           WidgetSpan(
                             child: Text(
-                              "$PAGE_TITLE ",
+                              TranslationKeys.enterOTP.translate(context),
                               style: AppStyles.titleMedium,
                             ),
                           ),
@@ -175,7 +174,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
-                                RESEND_OTP_HEADING,
+                                TranslationKeys.resendOTPHeading.translate(context),
                                 style: AppStyles.titleSmall.copyWith(fontFamily: AppConstant.FONT_FAMILY),
                               ),
                             ),
@@ -202,7 +201,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
                                                   child: Text(
-                                                    RESEND_OTP_TITTLE,
+                                                    TranslationKeys.resendOTPTitle.translate(context),
                                                     style: AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
                                                   ),
                                                 ),
@@ -267,7 +266,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                       buttonThemeStyle: const FilledButtonThemeStyle(
                           disabledTextColor: Colors.white
                       ),
-                      buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       onPressed: !isEnabled ? null : onContinueClick,
                     );

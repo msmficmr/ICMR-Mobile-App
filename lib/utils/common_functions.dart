@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
+import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
-
-import '../widgets/custom_alert_dialog.dart';
+import 'package:provider/provider.dart';
 
 class CommonFunctions {
   /// opens browser with privacy policy link
