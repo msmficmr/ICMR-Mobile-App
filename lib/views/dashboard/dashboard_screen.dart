@@ -112,8 +112,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onPressed: () {},
                         isLoading: false,
                         buttonThemeStyle: const FilledButtonThemeStyle(
-                          enabledTextColor: Color(0xFF2F43EE),
-                          enabledButtonColor: Color(0xFFF4F5FF),
+                          enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                          enabledButtonColor: AppColorScheme.kEnabledButtonColor,
                         ),
                         icon: SvgPicture.asset(
                           AppAssetsPath.icSync,
@@ -126,14 +126,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryFilledIconButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                      buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
                       buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
                       isLoading: false, //TODO: will change in the upcoming MR
                       onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(AppColorScheme.kPrimaryIconColor, BlendMode.srcIn),
                       ),
                     ),
                   ),

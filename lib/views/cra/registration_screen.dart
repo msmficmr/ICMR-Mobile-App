@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
@@ -224,8 +225,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       },
                       isLoading: false,
                       buttonThemeStyle: const FilledButtonThemeStyle(
-                        enabledTextColor: Color(0xFF2F43EE),
-                        enabledButtonColor: Color(0xFFF4F5FF),
+                        enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                        enabledButtonColor: AppColorScheme.kEnabledButtonColor,
                       ),
                       icon: SvgPicture.asset(AppAssetsPath.icInfo),
                       buttonTitle: TranslationKeys.consent.translate(context),
