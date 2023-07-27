@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -27,6 +30,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> _buttonEnabled;
   late LoginViewModel loginViewModel;
+  late LanguageViewModel languageViewModel;
 
   final TextEditingController _mobileFieldController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -50,6 +54,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
     _hasConsent = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
   }
 
   void onMobileFieldChanged(String? input) {
@@ -108,7 +113,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                       prefixType: TextFieldPrefixSuffixType.TEXT,
                       prefixData: MOB_FIELD_PREFIX_TEXT,
                       hintText: MOB_FIELD_HINT_TEXT,
-                      heading: MOB_FIELD_TITLE,
+                      heading: TranslationKeys.enterMobileNumber.translate(context),
                       headingKey: Key(KEY_TITLE_MOBILE),
                       onChanged: onMobileFieldChanged,
                       validator: AppValidators.validateMobile,
@@ -151,7 +156,7 @@ class _LoginMobileScreenState extends State<LoginMobileScreen> {
                           buttonThemeStyle: const FilledButtonThemeStyle(
                             disabledTextColor: Colors.white
                           ),
-                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                          buttonTitle: TranslationKeys.continueText.translate(context),
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: !isValid

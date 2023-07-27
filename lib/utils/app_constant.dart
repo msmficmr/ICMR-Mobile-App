@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 
 class AppConstant {
@@ -10,23 +12,34 @@ class AppConstant {
 
   static const String EMAIL = "Email";
 
+  //Languages
+  static const List<Locale> appLocales = [
+    Locale('en', 'IN'),
+    Locale('hi', 'IN'),
+  ];
+  static const List<String> appLanguages = ['en', 'hi'];
+
   //Hint Texts
-  static const String HINT_TEXT_ENTER_HERE = "Enter here";
   static const String HINT_TEXT_DATE = "DD/MM/YYYY";
-  static const String HINT_TEXT_SELECT = "Select";
 
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
-  static const String TAKE_CRA_BUTTON_TITLE = "Take CRA";
-  static const String CONSENT_BUTTON_TITLE = "Consent";
-  static const String SYNC_BUTTON_TITLE = "You are online, Sync data";
 
   //KEYS
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";
 
-  /// ERRORS
   // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
+
+  // Shared Preferences keys
+  static const String LANGUAGE_KEY = "LANGUAGE";
+
+  //Gender List
+  static const List<CustomChipItem<String>> GENDER_LIST = [
+    CustomChipItem(data: "m", text: "male"),
+    CustomChipItem(data: "f", text: "female"),
+    CustomChipItem(data: "o", text: "others"),
+  ];
 
   ///SECURE STORAGE KEYS
   static const String SHARED_PREFERENCE_USER_DETAILS = "SHARED_PREFERENCE_USER_DETAILS";
@@ -36,21 +49,16 @@ class AppConstant {
     {"locale": "en_US", "name": "English", "englishText": "English"},
     {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
     {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
-    {"locale": "te", "name": "తెలుగు", "englishText": "Telegu"},
+    {"locale": "te", "name": "తెలుగు", "englishText": "Telugu"},
     {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
     {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
     {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
     {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
     {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
   ];
-  static const List<CustomChipItem<String>> GENDER_LIST = [
-    CustomChipItem(data: "m", text: "Male"),
-    CustomChipItem(data: "f", text: "Female"),
-    CustomChipItem(data: "u", text: "Other"),
-  ];
 
   static const List<CustomChipItem<String>> BINARY_LIST = [
-    CustomChipItem(text: 'Yes', data: 'y'),
-    CustomChipItem(text: 'No', data: 'n'),
+    CustomChipItem(text: 'yes', data: 'y'),
+    CustomChipItem(text: 'no', data: 'n'),
   ];
 }

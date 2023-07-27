@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/views/screening/widget/upload_file_widget.dart';
 import 'package:mhealth/widgets/attachment_widget.dart';
@@ -30,11 +32,7 @@ class ConsentScreeningScreen extends StatefulWidget {
 class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   late ValueNotifier<bool> _buttonEnabled;
   final ValueNotifier<AttachmentModel?> _selectedAttachment = ValueNotifier<AttachmentModel?>(null);
-  //TITLE
-  static const String APP_BAR_TITLE = "CRA";
-  static const String TITLE_INFORMED_CONSENT = "Informed Consent";
-  static const String TITLE_UPLOAD_CONSENT = "Upload Consent";
-  static const String UPLOAD_FILE_BUTTON_TITLE = "Upload File";
+
 
   /// keys
   final String KEY_INFORMED_CONSENT = "key_informed_consent";
@@ -71,7 +69,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
         onLeadingClick: () {
           GoRouter.of(context).pop();
         },
-        titleText: APP_BAR_TITLE,
+        titleText: TranslationKeys.cra.translate(context),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
@@ -91,7 +89,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                   width: 5,
                 ),
                 Text(
-                  TITLE_INFORMED_CONSENT,
+                  TranslationKeys.informedConsent.translate(context),
                   key: Key(KEY_INFORMED_CONSENT),
                   style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
                 ),
@@ -101,7 +99,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                 valueListenable: _selectedAttachment,
                 builder: (context, _, __) {
                   return UploadFileWidget(
-                    heading: TITLE_UPLOAD_CONSENT,
+                    heading: TranslationKeys.uploadConsent.translate(context),
                     onFileSelected: onFileSelect,
                   );
                 }),
@@ -137,7 +135,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                   builder: (context, isValid, _) {
                     return PrimaryFilledButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: UPLOAD_FILE_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.uploadFile.translate(context),
                       widgetKey: KEY_BUTTON_UPLOAD_FILE,
                       isLoading: false,
                       onPressed: !isValid ? null : () {},

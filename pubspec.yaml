@@ -8,6 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+      sdk: flutter
 
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.5
@@ -40,6 +42,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/fonts/
+    - assets/language/
 
   fonts:
     - family: Montserrat

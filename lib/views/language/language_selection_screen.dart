@@ -102,10 +102,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                           onTap: () {
                             if (languageViewModel.selectedIndex == index) {
                               _buttonEnabled.value = false;
-                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: -1); // Unselect the item if already selected
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['name'] ?? "", selectedIndex: -1, locale: Locale(item['locale'] ?? "")); // Unselect the item if already selected
                             } else {
                               _buttonEnabled.value = true;
-                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index); // Update the selected index
+                              languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index, locale: Locale(item['locale'] ?? "")); // Update the selected index
                             }
                           },
                           child: Center(

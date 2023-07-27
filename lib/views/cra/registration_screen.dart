@@ -10,8 +10,11 @@ import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/custom_dropdown.dart';
@@ -19,6 +22,7 @@ import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/primary_filled_icon_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
@@ -39,7 +43,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _aadharIDController = TextEditingController();
   final TextEditingController _medicalIDIDController = TextEditingController();
   final TextEditingController _mobileFieldController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _districtController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _pincodeController = TextEditingController();
   final TextEditingController _incomeController = TextEditingController();
 
   //Widget Keys
@@ -51,7 +57,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_FIELD_AADHAR_ID = "key_textfield_aadhar_id";
   final String KEY_FIELD_MEDICAL_ID = "key_textfield_medical_id";
   final String KEY_FIELD_MOBILE = "key_textfield_mobile";
-  final String KEY_FIELD_ADDRESS = "key_textfield_address";
+  final String KEY_FIELD_DISTRICT = "key_textfield_district";
+  final String KEY_FIELD_STATE = "key_textfield_state";
+  final String KEY_FIELD_PINCODE = "key_textfield_pincode";
   final String KEY_FIELD_STUDY_PH = "key_textfield_study_ph";
   final String KEY_FIELD_INCOME = "key_textfield_income";
   final String KEY_FIELD_OCCUPATION_TYPE = "key_textfield_occupation_type";
@@ -64,7 +72,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_HEADING_AADHAR_ID = "key_heading_aadhar_id";
   final String KEY_HEADING_MEDICAL_ID = "key_heading_medicak_id";
   final String KEY_HEADING_MOBILE = "key_title_mobile";
-  final String KEY_HEADING_ADDRESS = "key_title_address";
+  final String KEY_HEADING_DISTRICT = "key_title_district";
+  final String KEY_HEADING_STATE = "key_title_state";
+  final String KEY_HEADING_PINCODE = "key_title_pincode";
   final String KEY_HEADING_SIGNED_CONSENT = "key_title_signed_consent";
   final String KEY_HEADING_STUDY_PH = "key_title_study_ph";
   final String KEY_HEADING_DISCLOSED_INCOME = "key_title_disclosed_income";
@@ -74,22 +84,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
   //Titles
-  final String TITLE_FIRST_NAME = "First Name*";
-  final String TITLE_LAST_NAME = "Last Name*";
-  final String TITLE_GENDER = "Gender*";
-  final String TITLE_DOB = "DOB*";
-  final String TITLE_AGE = "Age";
-  final String TITLE_AADHAR_ID = "Aadhar ID";
-  final String TITLE_MEDICAL_ID = "Medical ID";
-  final String TITLE_MOBILE = "Mobile number*";
-  final String TITLE_ADDRESS = "Address*";
-  final String TITLE_SIGNED_CONSENT = "Was a copy of the signed consent form handed over to the patient*";
   final String TITLE_STUDY_PH = "Study PH";
-  final String TITLE_DISCLOSED_INCOME = "Patient disclosed income*";
-  final String TITLE_INCOME = "Patient income*";
-  final String TITLE_OCCUPATION_TYPE = "Occupation Type*";
-  final String TITLE_OCCUPATION_INDUSTRY_TYPE = "Occupation in any of the Industry*";
-
 
   final String MOB_FIELD_PREFIX_TEXT = "+91";
 
@@ -103,7 +98,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<bool> _buttonEnabled;
 
 
-  static const List<String> OCCUPATION_TYPES = [
+  //TODO: Only for the UI purpose the list has been hardcoded for now
+
+  List<String> getOccupationTypes() {
+    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    switch (languageViewModel.locale.toString()) {
+      case "hi":
+        return HI_OCCUPATION_TYPES;
+      case "en_US":
+      default:
+        return EN_OCCUPATION_TYPES;
+    }
+  }
+  static const List<String> EN_OCCUPATION_TYPES = [
     "Unemployed",
     "Student",
     "Self Employed(Shop owner, Vegetable, Fruit Service)",
@@ -115,7 +122,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     "Remove response",
   ];
 
-  static const List<String> OCCUPATION_INDUSTRY = [
+  static const List<String> HI_OCCUPATION_TYPES = [
+    "बेरोजगार",
+    "विद्यार्थी",
+    "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)",
+    "सेवा",
+    "सेवानिवृत्त",
+    "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)",
+    "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)",
+    "गृह निर्माता",
+    "प्रतिक्रिया हटाएँ",
+  ];
+
+  List<String> getOccupationIndustryTypes() {
+    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    switch (languageViewModel.locale.toString()) {
+      case "hi":
+        return HI_OCCUPATION_INDUSTRY;
+      case "en_US":
+      default:
+        return EN_OCCUPATION_INDUSTRY;
+    }
+  }
+  static const List<String> EN_OCCUPATION_INDUSTRY = [
     "Rubber Industry",
     "Paint Industry",
     "Chemical Industry",
@@ -125,6 +154,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     "Pesticide use for farming",
     "None",
     "Remove response",
+  ];
+
+  static const List<String> HI_OCCUPATION_INDUSTRY = [
+    "रबर उद्योग",
+    "पेंट उद्योग",
+    "रासायनिक उद्योग",
+    "विकिरण",
+    "विस्फोटक",
+    "निर्माण एवं सीमेंट",
+    "खेती के लिए कीटनाशकों का उपयोग",
+    "कोई नहीं",
+    "प्रतिक्रिया हटाएँ",
   ];
 
   @override
@@ -158,7 +199,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  void onContinueClick() {}
+  void onContinueClick() {
+    GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+  }
 
   void onConsentClicked() {
     GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
@@ -170,7 +213,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
         appBarTitleType: CustomAppBarTitleType.TEXT,
-        titleText: 'Registration',
+        titleText: TranslationKeys.registration.translate(context),
         centerTitle: false,
         onLeadingClick: () => Navigator.pop(context),
       ),
@@ -181,7 +224,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Take consent from patient",
+                TranslationKeys.pleaseTakeConsentFromCitizen.translate(context),
                 style: AppStyles.bodyMedium,
               ),
               const SpaceWidget(height: 5),
@@ -197,7 +240,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       enabledButtonColor: Color(0xFFF4F5FF),
                     ),
                     icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                    buttonTitle: AppConstant.CONSENT_BUTTON_TITLE,
+                    buttonTitle: TranslationKeys.consent.translate(context),
                     widgetKey: KEY_BUTTON_CONSENT),
               ),
               const SpaceWidget(
@@ -207,8 +250,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               CustomTextField(
                 controller: _firstNameController,
                 widgetKey: Key(KEY_FIELD_FIRST_NAME),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_FIRST_NAME,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.firstName.translate(context)}*",
                 headingKey: Key(KEY_HEADING_FIRST_NAME),
                 validator: AppValidators.requiredFiled,
                 inputFormatters: [
@@ -222,8 +265,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               CustomTextField(
                 controller: _lastNameController,
                 widgetKey: Key(KEY_FIELD_LAST_NAME),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_LAST_NAME,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.lastName.translate(context)}*",
                 headingKey: Key(KEY_HEADING_LAST_NAME),
                 validator: AppValidators.requiredFiled,
                 inputFormatters: [
@@ -238,13 +281,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _gender,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
+                    shouldTranslate: true,
                     chipList: AppConstant.GENDER_LIST,
                     onChanged: (value) {
                       _gender.value = value;
                     },
                     validator: AppValidators.validateGender,
                     selectedItem: _gender.value,
-                    heading: TITLE_GENDER,
+                    heading: "${TranslationKeys.gender.translate(context)}*",
                     headingKey: Key(KEY_HEADING_GENDER),
                   );
                 },
@@ -258,7 +302,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 focusNode: _dobFocusNode,
                 widgetKey: Key(KEY_FIELD_DOB),
                 hintText: AppConstant.HINT_TEXT_DATE,
-                heading: TITLE_DOB,
+                heading: TranslationKeys.dateOfBirth.translate(context),
                 headingKey: Key(KEY_HEADING_DOB),
                 hasPrefix: true,
                 prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
@@ -277,8 +321,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 controller: _ageController,
                 focusNode: _ageFocusNode,
                 widgetKey: Key(KEY_FIELD_AGE),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_AGE,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.age.translate(context)}*",
                 headingKey: Key(KEY_HEADING_AGE),
                 validator: AppValidators.validateAge,
                 keyboardType: TextInputType.number,
@@ -291,11 +335,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               CustomTextField(
                 controller: _aadharIDController,
                 widgetKey: Key(KEY_FIELD_AADHAR_ID),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_AADHAR_ID,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: TranslationKeys.aadharId.translate(context),
                 headingKey: Key(KEY_HEADING_AADHAR_ID),
                 validator: AppValidators.validateAadhar,
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  MaskTextInputFormatter(mask: '############'),
+                ],
               ),
               const SpaceWidget(
                 height: 15,
@@ -304,8 +351,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               CustomTextField(
                 controller: _medicalIDIDController,
                 widgetKey: Key(KEY_FIELD_MEDICAL_ID),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_MEDICAL_ID,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.medicalId.translate(context)}*",
                 headingKey: Key(KEY_HEADING_MEDICAL_ID),
                 validator: AppValidators.validateID,
                 keyboardType: TextInputType.text,
@@ -320,8 +367,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 hasPrefix: true,
                 prefixType: TextFieldPrefixSuffixType.TEXT,
                 prefixData: MOB_FIELD_PREFIX_TEXT,
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_MOBILE,
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.mobileNumber.translate(context)}*",
                 headingKey: Key(KEY_HEADING_MOBILE),
                 validator: AppValidators.validateMobile,
                 inputFormatters: [
@@ -332,15 +379,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SpaceWidget(
                 height: 15,
               ),
-              //ADDRESS
+              //DISTRICT
               CustomTextField(
-                controller: _addressController,
-                widgetKey: Key(KEY_FIELD_ADDRESS),
-                hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                heading: TITLE_ADDRESS,
-                headingKey: Key(KEY_HEADING_ADDRESS),
+                controller: _districtController,
+                widgetKey: Key(KEY_FIELD_DISTRICT),
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.district.translate(context)}*",
+                headingKey: Key(KEY_HEADING_DISTRICT),
                 validator: AppValidators.requiredFiled,
                 keyboardType: TextInputType.text,
+              ),
+              const SpaceWidget(
+                height: 15,
+              ),
+              //STATE
+              CustomTextField(
+                controller: _stateController,
+                widgetKey: Key(KEY_FIELD_STATE),
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.state.translate(context)}*",
+                headingKey: Key(KEY_HEADING_STATE),
+                validator: AppValidators.requiredFiled,
+                keyboardType: TextInputType.text,
+              ),
+              const SpaceWidget(
+                height: 15,
+              ),
+              //PINCODE
+              CustomTextField(
+                controller: _pincodeController,
+                widgetKey: Key(KEY_FIELD_PINCODE),
+                hintText: TranslationKeys.enterHere.translate(context),
+                heading: "${TranslationKeys.pincode.translate(context)}*",
+                headingKey: Key(KEY_HEADING_PINCODE),
+                validator: AppValidators.validatePincode,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  MaskTextInputFormatter(mask: '######'),
+                ],
               ),
               const SpaceWidget(
                 height: 15,
@@ -350,13 +426,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _signedConsent,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
+                    shouldTranslate: true,
                     chipList: AppConstant.BINARY_LIST,
                     onChanged: (value) {
                       _signedConsent.value = value;
                     },
                     validator: AppValidators.validateBinaryQuestion,
                     selectedItem: _signedConsent.value,
-                    heading: TITLE_SIGNED_CONSENT,
+                    heading: TranslationKeys.wasACopyOfSignedConsent.translate(context),
                     headingKey: Key(KEY_HEADING_SIGNED_CONSENT),
                   );
                 },
@@ -369,7 +446,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 widgetKey: KEY_FIELD_STUDY_PH,
                 heading: TITLE_STUDY_PH,
                 headingKey: Key(KEY_HEADING_STUDY_PH),
-                hintText: AppConstant.HINT_TEXT_SELECT,
+                hintText: TranslationKeys.select.translate(context),
                 onChanged: (val) {},
                 items: [],
               ),
@@ -381,6 +458,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 valueListenable: _disclosedIncome,
                 builder: (context, _, __) {
                   return CustomChipWidget<String?>(
+                    shouldTranslate: true,
                     chipList: AppConstant.BINARY_LIST,
                     onChanged: (value) {
                       _disclosedIncome.value = value;
@@ -388,7 +466,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     },
                     validator: AppValidators.validateBinaryQuestion,
                     selectedItem: _disclosedIncome.value,
-                    heading: TITLE_DISCLOSED_INCOME,
+                    heading: TranslationKeys.patientDisclosedIncome.translate(context),
                     headingKey: Key(KEY_HEADING_DISCLOSED_INCOME),
                   );
                 },
@@ -403,8 +481,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return isValid ? CustomTextField(
                       controller: _incomeController,
                       widgetKey: Key(KEY_FIELD_INCOME),
-                      hintText: AppConstant.HINT_TEXT_ENTER_HERE,
-                      heading: TITLE_INCOME,
+                      hintText: TranslationKeys.enterHere.translate(context),
+                      heading: TranslationKeys.income.translate(context),
                       headingKey: Key(KEY_HEADING_INCOME),
                       validator: AppValidators.requiredFiled,
                       keyboardType: TextInputType.number,
@@ -416,11 +494,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               //OCCUPATION TYPE
               CustomDropdown<String>(
                 widgetKey: KEY_FIELD_OCCUPATION_TYPE,
-                heading: TITLE_OCCUPATION_TYPE,
+                heading: TranslationKeys.occupationType.translate(context),
                 headingKey: Key(KEY_HEADING_OCCUPATION_TYPE),
-                hintText: AppConstant.HINT_TEXT_SELECT,
+                hintText: TranslationKeys.select.translate(context),
                 onChanged: (val) {},
-                items: OCCUPATION_TYPES,
+                items: getOccupationTypes(),
               ),
               const SpaceWidget(
                 height: 15,
@@ -428,11 +506,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               //OCCUPATION INDUSTRY TYPE
               CustomDropdown<String>(
                 widgetKey: KEY_FIELD_OCCUPATION_INDUSTRY_TYPE,
-                heading: TITLE_OCCUPATION_INDUSTRY_TYPE,
+                heading: TranslationKeys.occupationIndustry.translate(context),
                 headingKey: Key(KEY_HEADING_OCCUPATION_INDUSTRY_TYPE),
-                hintText: AppConstant.HINT_TEXT_SELECT,
+                hintText: TranslationKeys.select.translate(context),
                 onChanged: (val) {},
-                items: OCCUPATION_INDUSTRY,
+                items: getOccupationIndustryTypes(),
               ),
               const SpaceWidget(
                 height: 15,
@@ -444,7 +522,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   builder: (context, isValid, _) {
                     return PrimaryFilledButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                      buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
                       onPressed: !isValid
