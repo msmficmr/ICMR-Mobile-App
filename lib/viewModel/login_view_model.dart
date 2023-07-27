@@ -25,8 +25,6 @@ class LoginViewModel extends ChangeNotifier {
   LoginScreenTypes _authFlow = LoginScreenTypes.MOBILE_NUMBER;
   String _mobileNoOrEmailText = "";
   bool _isEmailLogin = false;
-  // String _email = "";
-  //String _mobileNo = "";
   bool _isLoading = false;
   bool _isOTPValidating = false;
 
@@ -35,8 +33,6 @@ class LoginViewModel extends ChangeNotifier {
   LoginScreenTypes get authFlow => _authFlow;
   String get mobileNoOrEmailText => _mobileNoOrEmailText;
   bool get isEmailLogin => _isEmailLogin;
-  // String get mobileNo => _mobileNo;
-  //String get email => _email;
   bool get isLoading => _isLoading;
   bool get isOTPValidating => _isOTPValidating;
 
@@ -62,10 +58,6 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // set mobileNo(String value) {
-  //   _mobileNo = value;
-  // }
-
   set mobileNoOrEmailText(String value) {
     _mobileNoOrEmailText = value;
   }
@@ -73,10 +65,6 @@ class LoginViewModel extends ChangeNotifier {
   set isEmailLogin(bool value) {
     _isEmailLogin = false;
   }
-
-  // set email(String value) {
-  //   _email = value;
-  // }
 
   set authFlow(LoginScreenTypes value) {
     _authFlow = value;
@@ -90,6 +78,7 @@ class LoginViewModel extends ChangeNotifier {
   loginUser(String data) {
     _userDetails = UserModel.fromJson(jsonDecode(data));
     _isLoggedIn = true;
+    print(_isLoggedIn);
     notifyListeners();
   }
 
@@ -114,7 +103,7 @@ class LoginViewModel extends ChangeNotifier {
       isLoading = true;
       SendOtpResponseModel? response = await AuthService().sendOtp(otpPayload: otpPayload);
       if (response != null) {
-        if (response.statusCode == 20000) {
+        if (response.statusCode == "20000") {
           _mobileNoOrEmailText = mobileNumberOrEmailText;
           loginScreenType = LoginScreenTypes.OTP_SCREEN;
         } else {
@@ -143,8 +132,8 @@ class LoginViewModel extends ChangeNotifier {
       if (response != null) {
         if (response.statusCode == 20000) {
           String userDetails = jsonEncode(response.toJson());
-          await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-          loginUser(userDetails);
+            await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
+            loginUser(userDetails);
         } else {
           CommonFunctions.toastMessage(response.status ?? "");
         }

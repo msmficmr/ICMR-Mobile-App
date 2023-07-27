@@ -49,42 +49,42 @@ class VerifyOtpResponseModel {
 }
 
 class UserModel {
-  String userId;
+  String? userId;
   dynamic version;
-  String userName;
+  String? userName;
   String? salutation;
-  String firstName;
+  String? firstName;
   String? middleName;
-  String lastName;
+  String? lastName;
   String? email;
-  String gender;
+  String? gender;
   dynamic roles;
-  dynamic? organizations;
+  dynamic organizations;
   dynamic locations;
   bool? isDeleted;
-  String createdBy;
-  DateTime createdOn;
-  String lastModifiedBy;
-  DateTime lastModifiedOn;
-  String profileName;
-  String fullNameSearchable;
+  String? createdBy;
+  DateTime? createdOn;
+  String? lastModifiedBy;
+  DateTime? lastModifiedOn;
+  String? profileName;
+  String? fullNameSearchable;
   UserModel({
-    required this.userId,
-    required this.createdBy,
-    required this.createdOn,
-    required this.lastModifiedBy,
-    required this.lastModifiedOn,
-    required this.profileName,
-    required this.fullNameSearchable,
-    required this.userName,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.gender,
+     this.userId,
+    this.roles,
+    this.createdBy,
+    this.createdOn,
+    this.lastModifiedBy,
+    this.lastModifiedOn,
+    this.profileName,
+    this.fullNameSearchable,
+    this.userName,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.gender,
     this.version,
     this.salutation,
     this.middleName,
-    this.roles,
     this.organizations,
     this.locations,
     this.isDeleted,
@@ -105,9 +105,9 @@ class UserModel {
         locations: json["locations"],
         isDeleted: json["isDeleted"],
         createdBy: json["createdBy"],
-        createdOn: DateTime.parse(json["createdOn"]),
+        createdOn: json["createdOn"] == null ? null : DateTime.parse(json["createdOn"]),
         lastModifiedBy: json["lastModifiedBy"],
-        lastModifiedOn: DateTime.parse(json["lastModifiedOn"]),
+        lastModifiedOn: json["lastModifiedOn"] == null ? null : DateTime.parse(json["lastModifiedOn"]),
         profileName: json["profileName"],
         fullNameSearchable: json["fullNameSearchable"],
       );
@@ -127,9 +127,9 @@ class UserModel {
         "locations": locations,
         "isDeleted": isDeleted,
         "createdBy": createdBy,
-        "createdOn": createdOn.toIso8601String(),
+        "createdOn": createdOn?.toIso8601String(),
         "lastModifiedBy": lastModifiedBy,
-        "lastModifiedOn": lastModifiedOn.toIso8601String(),
+        "lastModifiedOn": lastModifiedOn?.toIso8601String(),
         "profileName": profileName,
         "fullNameSearchable": fullNameSearchable,
       };
