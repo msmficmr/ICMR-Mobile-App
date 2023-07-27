@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
       const oneSec = Duration(seconds: 1);
       _timer = Timer.periodic(
         oneSec,
-            (Timer timer) {
+        (Timer timer) {
           if (_start == 0) {
             cancelTimer();
             redirectToNextScreen();
