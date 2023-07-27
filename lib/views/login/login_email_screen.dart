@@ -77,7 +77,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   Future<void> onContinueClick() async {
     if (formKey.currentState?.validate() ?? false) {
       loginViewModel.authFlow = LoginScreenTypes.EMAIL;
-      await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,isEmailLogin : true);
+      await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,authType: AuthType.email);
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
+import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
 import 'package:mhealth/services/authService/auth_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
@@ -78,7 +79,6 @@ class LoginViewModel extends ChangeNotifier {
   loginUser(String data) {
     _userDetails = UserModel.fromJson(jsonDecode(data));
     _isLoggedIn = true;
-    print(_isLoggedIn);
     notifyListeners();
   }
 
@@ -90,10 +90,10 @@ class LoginViewModel extends ChangeNotifier {
   /// object has property called success if otp sent success this property will be `true`
   /// if we get success property as true then we are redirecting to otp validation screen
   /// otherwise we will display message property of [SendOtpResponseModel]
-  Future<bool> sendOtp({required String mobileNumberOrEmailText, bool? isEmailLogin}) async {
+  Future<bool> sendOtp({required String mobileNumberOrEmailText,AuthType authType=AuthType.mobile}) async {
     bool isOtpSentSuccess = false;
     Map<String, dynamic> otpPayload = {};
-    if (isEmailLogin == true) {
+    if (authType == AuthType.email) {
       _isEmailLogin = true;
       otpPayload = {"email": mobileNumberOrEmailText};
     } else {
@@ -103,12 +103,8 @@ class LoginViewModel extends ChangeNotifier {
       isLoading = true;
       SendOtpResponseModel? response = await AuthService().sendOtp(otpPayload: otpPayload);
       if (response != null) {
-        if (response.statusCode == "20000") {
           _mobileNoOrEmailText = mobileNumberOrEmailText;
           loginScreenType = LoginScreenTypes.OTP_SCREEN;
-        } else {
-          CommonFunctions.toastMessage(response.message ?? "");
-        }
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
@@ -119,7 +115,7 @@ class LoginViewModel extends ChangeNotifier {
     return isOtpSentSuccess;
   }
 
-  Future<void> validateOtp({required String otp, bool? isEmailLogin}) async {
+  Future<void> validateOtp({required String otp}) async {
     try {
       isOTPValidating = true;
       Map<String, dynamic> payload = {};
@@ -130,13 +126,9 @@ class LoginViewModel extends ChangeNotifier {
       }
       VerifyOtpResponseModel? response = await AuthService().verifyOtp(payload: payload);
       if (response != null) {
-        if (response.statusCode == 20000) {
           String userDetails = jsonEncode(response.toJson());
             await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
             loginUser(userDetails);
-        } else {
-          CommonFunctions.toastMessage(response.status ?? "");
-        }
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);

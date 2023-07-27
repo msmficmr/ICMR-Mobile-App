@@ -18,3 +18,5 @@ enum LocationPermissionStatus { SERVICE_DISABLED, GRANTED, WHILE_IN_USE, DENIED,
 enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
 
 enum ScreenNames { REGISTRATION_SCREEN, TAKE_CRA_SCREEN }
+
+enum AuthType {mobile,email}
