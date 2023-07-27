@@ -4,8 +4,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
-
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// if app bar don't have leading widget then set [hasLeading] parameter to `false` default value is `true`
   final bool hasLeading;
 
@@ -86,6 +85,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
     }
   }
 
+  final Color? backgroundColor;
+
   CustomAppBar({
     super.key,
     this.onTrailingClick,
@@ -96,6 +97,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
     this.onLeadingClick,
     this.titleText,
     this.trailingWidgetList,
+    this.backgroundColor,
     this.trailingType = CustomAppBarTrailingType.NONE,
     this.centerTitle = true,
     this.hasLeading = true,
@@ -155,22 +157,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget{
     return AppBar(
       titleSpacing: 0.0,
       automaticallyImplyLeading: false,
+      backgroundColor: backgroundColor,
       leading: !hasLeading
           ? null
           : InkWell(
-        key: const Key("key_appbar_leading"),
-        onTap: onLeadingClick,
-        child: leading ??
-            Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: SvgPicture.asset(
-                  AppAssetsPath.icArrowBack,
-                ),
-              ),
+              key: const Key("key_appbar_leading"),
+              onTap: onLeadingClick,
+              child: leading ??
+                  Center(
+                    child: SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: SvgPicture.asset(
+                        AppAssetsPath.icArrowBack,
+                      ),
+                    ),
+                  ),
             ),
-      ),
       centerTitle: centerTitle,
       title: Padding(
         padding: (hasLeading || centerTitle) ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
