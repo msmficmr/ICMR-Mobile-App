@@ -86,6 +86,13 @@ class AppRouter {
                 key: state.pageKey,
                 child: const RegistrationSuccessFullScreen(),
               ),
+            ),
+            GoRoute(
+              path: MyAccountScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const MyAccountScreen(),
+              ),
             )
           ],
         )

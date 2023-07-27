@@ -9,6 +9,8 @@ class AccountCard extends StatelessWidget {
   final Color? cardColor;
   final EdgeInsetsGeometry? padding;
   final double? iconSize;
+  final double? width;
+  final double? height;
 
   const AccountCard({
     super.key,
@@ -20,8 +22,11 @@ class AccountCard extends StatelessWidget {
     this.cardColor,
     this.padding,
     this.iconSize,
+    this.width, // Add width as a parameter
+    this.height, // Add height as a parameter
   });
-
+//KEY
+  final String KEY_OPTION_SELECT = "key_option_select";
   @override
   Widget build(BuildContext context) {
     const defaultTextStyle = TextStyle(
@@ -36,21 +41,26 @@ class AccountCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         color: cardColor,
-        child: Padding(
-          padding: padding ?? const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              if (leftIcon != null) SizedBox(child: leftIcon),
-              if (leftIcon != null) const SizedBox(width: 16.0),
-              Expanded(
-                child: Text(
-                  text,
-                  style: textStyle ?? defaultTextStyle,
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: Padding(
+            padding: padding ?? const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                if (leftIcon != null) SizedBox(child: leftIcon),
+                if (leftIcon != null) const SizedBox(width: 16.0),
+                Expanded(
+                  child: Text(
+                    text,
+                    key: Key(KEY_OPTION_SELECT),
+                    style: textStyle ?? defaultTextStyle,
+                  ),
                 ),
-              ),
-              if (rightIcon != null) const SizedBox(width: 16.0),
-              if (rightIcon != null) SizedBox(child: rightIcon),
-            ],
+                if (rightIcon != null) const SizedBox(width: 16.0),
+                if (rightIcon != null) SizedBox(child: rightIcon),
+              ],
+            ),
           ),
         ),
       ),
