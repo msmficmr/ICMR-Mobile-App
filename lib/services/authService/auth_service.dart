@@ -15,7 +15,7 @@ class AuthService implements IAuthService {
       Response? response = await ApiBaseHelper.httpPostRequest(AppEndpoints.sendOtpUrl, payload: otpPayload);
       if (response != null) {
         SendOtpResponseModel otpModel = sendOtpResponseModelFromJson(response.body);
-        if (otpModel.statusCode == "20000") {
+        if (otpModel.statusCode == 20000) {
           return otpModel;
         } else {
           CommonFunctions.toastMessage(otpModel.message ?? "");

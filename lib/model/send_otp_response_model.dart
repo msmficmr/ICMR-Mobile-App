@@ -9,7 +9,7 @@ SendOtpResponseModel sendOtpResponseModelFromJson(String str) => SendOtpResponse
 String sendOtpResponseModelToJson(SendOtpResponseModel data) => json.encode(data.toJson());
 
 class SendOtpResponseModel {
-  String? statusCode;
+  int? statusCode;
   String? message;
 
   SendOtpResponseModel({
