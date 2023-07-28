@@ -16,6 +16,7 @@ import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/custom_dropdown.dart';
@@ -37,6 +38,10 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
+
+
+  AttachmentModel? consent;
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -97,8 +102,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _signedConsent;
   late ValueNotifier<String?> _disclosedIncome;
   late ValueNotifier<bool> _discloseIncome;
-  late ValueNotifier<bool> _buttonEnabled;
 
+  late RegistrationViewModel registrationViewModel;
 
   //TODO: Only for the UI purpose the list has been hardcoded for now
 
@@ -112,6 +117,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return EN_OCCUPATION_TYPES;
     }
   }
+
   static const List<String> EN_OCCUPATION_TYPES = [
     "Unemployed",
     "Student",
@@ -146,6 +152,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return EN_OCCUPATION_INDUSTRY;
     }
   }
+
   static const List<String> EN_OCCUPATION_INDUSTRY = [
     "Rubber Industry",
     "Paint Industry",
@@ -173,6 +180,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
+    registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
     initializeField();
   }
 
@@ -181,17 +189,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _signedConsent = ValueNotifier<String?>(null);
     _disclosedIncome = ValueNotifier<String?>(null);
     _discloseIncome = ValueNotifier<bool>(false);
-    _buttonEnabled = ValueNotifier<bool>(false);
   }
 
   void onContinueClick() {
     if (formKey.currentState!.validate()) {
-      GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+      GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+    } else {
+      CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);
     }
   }
 
-  void onConsentClicked() {
-    GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+  void onConsentClicked() async {
+    consent = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ConsentScreeningScreen()));
+    consentKey.currentState?.didChange(consent);
+  }
+
+  @override
+  void dispose() {
+    registrationViewModel.consentOptionSelected = false;
+    super.dispose();
   }
 
   @override
@@ -213,31 +229,53 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  TranslationKeys.pleaseTakeConsentFromCitizen.translate(context),
+                  "${TranslationKeys.pleaseTakeConsentFromCitizen.translate(context)}*",
                   style: AppStyles.bodyMedium,
                 ),
                 const SpaceWidget(height: 5),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: PrimaryFilledIconButton(
-                      onPressed: () {
-                        onConsentClicked();
-                      },
-                      isLoading: false,
-                      buttonThemeStyle: const FilledButtonThemeStyle(
-                        enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                        enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                FormField<AttachmentModel?>(
+                    key: consentKey,
+                    initialValue: consent,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value == null) {
+                        return AppConstant.FIELD_REQUIRED;
+                      }
+                    },
+                    builder: (FormFieldState<AttachmentModel?> state) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: PrimaryFilledIconButton(
+                            onPressed: () {
+                              onConsentClicked();
+                            },
+                            isLoading: false,
+                            buttonThemeStyle: FilledButtonThemeStyle(
+                              enabledTextColor: consent == null ? AppColorScheme.kEnabledButtonTextColor : AppColorScheme.kGreen,
+                              enabledButtonColor: consent == null ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kGreenLight,
+                            ),
+                            icon: SvgPicture.asset(
+                              consent == null ? AppAssetsPath.icInfo : AppAssetsPath.icTick,
+                              colorFilter: ColorFilter.mode(consent == null ? AppColorScheme.kEnabledButtonTextColor : AppColorScheme.kGreen, BlendMode.srcIn),
+                            ),
+                            buttonTitle: consent == null ? TranslationKeys.consent.translate(context) : "${TranslationKeys.consent.translate(context)} - ${TranslationKeys.yes.translate(context)}",
+                            widgetKey: KEY_BUTTON_CONSENT),
                       ),
-                      icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                      buttonTitle: TranslationKeys.consent.translate(context),
-                      widgetKey: KEY_BUTTON_CONSENT),
-                ),
+                      const SpaceWidget(height: 5),
+                      if (state.hasError)
+                        Text(AppConstant.FIELD_REQUIRED, style: AppStyles.errorStyle)
+                    ],
+                  );
+                }),
                 const SpaceWidget(
                   height: 15,
                 ),
                 //CURRENT DATE
                 Text(
-                  "Date :- ${CommonFunctions.currentDate()}",
+                  "${TranslationKeys.date.translate(context)} :- ${CommonFunctions.currentDate()}",
                   style: AppStyles.titleMedium,
                 ),
                 const SpaceWidget(
@@ -474,14 +512,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ValueListenableBuilder<bool>(
                     valueListenable: _discloseIncome,
                     builder: (context, isValid, _) {
-                      return isValid ? CustomTextField(
-                        controller: _incomeController,
-                        widgetKey: Key(KEY_FIELD_INCOME),
-                        hintText: TranslationKeys.enterHere.translate(context),
-                        heading: TranslationKeys.income.translate(context),
-                        headingKey: Key(KEY_HEADING_INCOME),
-                        keyboardType: TextInputType.number,
-                      ) : const SizedBox.shrink();
+                      return isValid
+                          ? CustomTextField(
+                              controller: _incomeController,
+                              widgetKey: Key(KEY_FIELD_INCOME),
+                              hintText: TranslationKeys.enterHere.translate(context),
+                              heading: TranslationKeys.income.translate(context),
+                              headingKey: Key(KEY_HEADING_INCOME),
+                              keyboardType: TextInputType.number,
+                            )
+                          : const SizedBox.shrink();
                     }),
                 const SpaceWidget(
                   height: 15,

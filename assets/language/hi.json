@@ -65,5 +65,11 @@
   "camera" : "कैमरा",
   "browse" : "ब्राउज़",
   "upload_file" : "फ़ाइल अपलोड करें",
-  "registration" : "पंजीकरण"
+  "registration" : "पंजीकरण",
+  "registration_successful" : "सफल पंजीकरण",
+  "new_registration" : "नया पंजीकरण करे",
+  "your_next_step" : "अगला चरण",
+  "thank_you" : "धन्यवाद",
+  "registered_successfully" : "आप mHealth के साथ सफलतापूर्वक पंजीकृत हो गए हैं",
+  "date" : "दिनांक"
 }

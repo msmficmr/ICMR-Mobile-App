@@ -266,7 +266,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                       buttonThemeStyle: const FilledButtonThemeStyle(
                           disabledTextColor: Colors.white
                       ),
-                      buttonTitle: TranslationKeys.continueText.translate(context),
+                      buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                       widgetKey: KEY_BUTTON_CONTINUE,
                       onPressed: !isEnabled ? null : onContinueClick,
                     );

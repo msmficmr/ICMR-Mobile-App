@@ -30,6 +30,8 @@ class AppConstant {
 
   // ERRORS
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
+  static const String ERROR_FILL_REQUIRED_FIELDS = "Fill Required fields";
+  static const String FIELD_REQUIRED = "This field is required";
 
   // Shared Preferences keys
   static const String LANGUAGE_KEY = "LANGUAGE";

@@ -65,5 +65,11 @@
   "camera" : "Camera",
   "browse" : "Browse",
   "upload_file" : "Upload file",
-  "registration" : "Registration"
+  "registration" : "Registration",
+  "registration_successful" : "Registration Successful",
+  "new_registration" : "New Registration",
+  "your_next_step" : "Your Next Step",
+  "thank_you" : "Thank you",
+  "registered_successfully" : "You are successfully registered with mHealth",
+  "date" : "Date"
 }

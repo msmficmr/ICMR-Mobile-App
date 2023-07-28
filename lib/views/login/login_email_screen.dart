@@ -151,7 +151,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                           buttonThemeStyle: const FilledButtonThemeStyle(
                               disabledTextColor: Colors.white
                           ),
-                          buttonTitle: TranslationKeys.continueText.translate(context),
+                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: !isValid

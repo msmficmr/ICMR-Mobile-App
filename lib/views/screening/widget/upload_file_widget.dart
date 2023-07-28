@@ -87,7 +87,9 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     dimension: cardWidth,
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_CAMERA,
-                      onCardClick: fetchImage(ImageSource.camera),
+                      onCardClick: () {
+                        fetchImage(ImageSource.camera);
+                      },
                       title: TranslationKeys.camera.translate(context),
                       titleKey: KEY_TITLE_CAMERA,
                       svgPath: AppAssetsPath.icCamera,
@@ -102,7 +104,9 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     dimension: cardWidth,
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_BROWSE,
-                      onCardClick: fetchImage(ImageSource.gallery),
+                      onCardClick: () {
+                        fetchImage(ImageSource.gallery);
+                      },
                       title: TranslationKeys.browse.translate(context),
                       titleKey: KEY_TITLE_BROWSE,
                       svgPath: AppAssetsPath.icUpload,

@@ -81,7 +81,7 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: RegistrationSuccessFullScreen.routeName,
+              path: RegistrationSuccessFullScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const RegistrationSuccessFullScreen(),
