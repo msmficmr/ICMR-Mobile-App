@@ -40,7 +40,6 @@ class ApiBaseHelper {
         Uri.parse('${Environment.runningEnv.baseUrl}$requestUrl'),
         body: json.encode(payload),
       );
-
       return response;
     } on SocketException {
       CommonFunctions.showRetrySnackbar();
@@ -102,7 +101,7 @@ class ApiBaseHelper {
       var header = await _authorizationRefreshToken();
       Response response = await get(
         Uri.parse('${Environment.runningEnv.baseUrl}$requestUrl'),
-       headers: header,
+        headers: header,
       );
       if (response.statusCode == HttpStatus.ok) {
         //TODO : set access token
@@ -112,7 +111,7 @@ class ApiBaseHelper {
     } catch (e) {}
   }
 
-    static Future<Map<String, String>> _authorizationRefreshToken() async {
+  static Future<Map<String, String>> _authorizationRefreshToken() async {
     //TODO : set access token
     String token = "";
     String refreshToken = "";
