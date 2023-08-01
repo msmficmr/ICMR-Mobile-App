@@ -155,4 +155,14 @@ class CommonFunctions {
     String formattedDate = dateFormat.format(now);
     return formattedDate;
   }
+
+  static String getText({required String language, required String engText, required String hindiText}) {
+    String text = "";
+    if (language == "en_US") {
+      return engText;
+    } else if (language == "hi") {
+      return hindiText;
+    }
+    return text;
+  }
 }

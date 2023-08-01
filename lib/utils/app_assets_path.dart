@@ -37,4 +37,7 @@ class AppAssetsPath {
   static const String icMale = "assets/icons/ic_male.svg";
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
+
+  /// Loader
+  static const String loader = "assets/loader.json";
 }

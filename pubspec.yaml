@@ -31,6 +31,9 @@ dependencies:
   dotted_border: ^2.0.0+3
   http_interceptor: ^1.0.2
   http: ^0.13.6
+  lottie: ^1.0.1
+  bubble: ^1.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -43,6 +46,7 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/language/
+    - assets/loader.json
 
   fonts:
     - family: Montserrat

@@ -41,6 +41,9 @@ class AppConstant {
     CustomChipItem(data: "o", text: "others"),
   ];
 
+  // QUESTIONNAIRE TYPE
+  static const String CHIP_WITH_SINGLE_SELECT_CHIP = "CHIP_WITH_SINGLE_SELECT_CHIP";
+
   /// Language Supported
   static const List<Map<String, String>> languages = [
     {"locale": "en_US", "name": "English", "englishText": "English"},
