@@ -69,7 +69,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   /// Implemented functionality resend otp to user mobile
   // after sending otp we will disable functionality of [onResendClick] for 30 sec.
   onResendClick() async {
-    bool isOtpSent = await loginViewModel.sendOtp(mobileNo: loginViewModel.mobileNo);
+    bool isOtpSent = await loginViewModel.sendOtp(mobileNumberOrEmailText: loginViewModel.mobileNoOrEmailText);
     if (isOtpSent) {
       _startResendTimer();
     }
@@ -145,7 +145,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                           ),
                           WidgetSpan(
                             child: Text(
-                              loginViewModel.mobileNo,
+                              loginViewModel.mobileNoOrEmailText,
                               style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -256,22 +256,21 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
               ),
             ),
             Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _isContinueButtonEnabled,
-                  builder: (context, isEnabled, _) {
-                    return PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(
-                          disabledTextColor: Colors.white
-                      ),
-                      buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                      widgetKey: KEY_BUTTON_CONTINUE,
-                      onPressed: !isEnabled ? null : onContinueClick,
-                    );
-                  },
-                ),
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _isContinueButtonEnabled,
+                builder: (context, isEnabled, _) {
+                  return PrimaryFilledButton(
+                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                    buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                    widgetKey: KEY_BUTTON_CONTINUE,
+                    onPressed: !isEnabled ? null : onContinueClick,
+                     isLoading: loginViewModel.isOTPValidating,
+                  );
+                },
+              ),
             )
           ],
         ),

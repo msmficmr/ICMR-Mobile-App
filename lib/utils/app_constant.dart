@@ -43,6 +43,9 @@ class AppConstant {
     CustomChipItem(data: "o", text: "others"),
   ];
 
+  ///SECURE STORAGE KEYS
+  static const String SHARED_PREFERENCE_USER_DETAILS = "SHARED_PREFERENCE_USER_DETAILS";
+
   /// Language Supported
   static const List<Map<String, String>> languages = [
     {"locale": "en_US", "name": "English", "englishText": "English"},

@@ -25,14 +25,13 @@ class CardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
+      key: cardKey,
       child: Padding(
-        key: cardKey,
         padding: const EdgeInsets.only(right: 16.0),
         child: InkWell(
           onTap: onTap,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.14,
             decoration: const BoxDecoration(
               color: AppColorScheme.kLightBlue,
               borderRadius: BorderRadius.all(

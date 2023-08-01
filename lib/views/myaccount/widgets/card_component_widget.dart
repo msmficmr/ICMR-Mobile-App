@@ -22,6 +22,8 @@ class AccountCard extends StatelessWidget {
 
   final double? iconSize;
 
+  final Key? cardKey;
+
   const AccountCard({
     super.key,
     this.iconSize,
@@ -30,6 +32,7 @@ class AccountCard extends StatelessWidget {
     this.trailingIconPath,
     this.hasLeading = true,
     this.hasTrailing = true,
+    this.cardKey,
     required this.leadingIconPath,
     required this.cardTitleText,
   });
@@ -41,6 +44,7 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     return InkWell(
+      key: cardKey,
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),

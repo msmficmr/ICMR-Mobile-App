@@ -40,6 +40,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String KEY_PATIENT_TEXT = "key_patient_text";
   final String KEY_PATIENT_ID = "key_patient_id";
   final String KEY_PATIENT_NAME = "key_patient_name";
+  final String KEY_LANGUAGE_CARD = "key_language_card";
+  final String KEY_DATA_SYNC_CARD = "key_data_sync_card";
 
   //Constant text
   final String PATIENT_ID = "Patient ID";
@@ -149,11 +151,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           ),
           const SpaceWidget(height: 20),
           AccountCard(
+            key: Key(KEY_LANGUAGE_CARD),
             cardTitleText : TranslationKeys.language.translate(context),
             trailingIconPath: AppAssetsPath.icChevronRight,
             leadingIconPath: AppAssetsPath.icLanguage,
           ),
           AccountCard(
+            key: Key(KEY_DATA_SYNC_CARD),
             cardTitleText : TranslationKeys.dataSync.translate(context),
             trailingIconPath: AppAssetsPath.icChevronRight,
             leadingIconPath: AppAssetsPath.icSync,
