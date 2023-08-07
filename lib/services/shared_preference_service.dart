@@ -35,7 +35,6 @@ class SharedPreferencesService {
   Future<void> writeString({required String key, required String value}) async {
 
     await _prefs?.setString(key, value);
-        print(value);
   }
 
   /// [writeString] method is used to write Int data to local storage
