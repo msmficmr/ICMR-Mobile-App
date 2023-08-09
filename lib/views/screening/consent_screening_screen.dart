@@ -138,7 +138,9 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                       buttonTitle: TranslationKeys.uploadFile.translate(context),
                       widgetKey: KEY_BUTTON_UPLOAD_FILE,
                       isLoading: false,
-                      onPressed: !isValid ? null : () {},
+                      onPressed: !isValid ? null : () {
+                         Navigator.pop(context, _selectedAttachment.value);
+                      },
                     );
                   }),
             ),
