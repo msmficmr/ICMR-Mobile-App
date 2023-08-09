@@ -4,7 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
@@ -26,6 +30,9 @@ import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
+  // final AttachmentModel? selectedAttachment; // Add this line
+
+  //RegistrationScreen({Key? key, this.selectedAttachment}) : super(key: key); // Add this line
 
   const RegistrationScreen({Key? key}) : super(key: key);
 
@@ -34,6 +41,7 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  late AttachmentModel? _selectedAttachment;
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
   final TextEditingController _firstNameController = TextEditingController();
@@ -96,6 +104,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _disclosedIncome;
   late ValueNotifier<bool> _discloseIncome;
   late ValueNotifier<bool> _buttonEnabled;
+  late ValueNotifier<bool> _isConsentButtonActiveNotifier;
 
 
   //TODO: Only for the UI purpose the list has been hardcoded for now
@@ -110,6 +119,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return EN_OCCUPATION_TYPES;
     }
   }
+
   static const List<String> EN_OCCUPATION_TYPES = [
     "Unemployed",
     "Student",
@@ -171,6 +181,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
+     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
     initializeField();
   }
 
@@ -200,11 +211,36 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void onContinueClick() {
+    AttachmentDb attachment = AttachmentDb()
+      ..fileName = _selectedAttachment!.fileName
+      ..image = _selectedAttachment!.bytes;
+    IsarDbService.isarDbService.savePatient(PatientRegistration()
+    ..consentDate = DateTime.now()
+      ..firstName = _firstNameController.text
+      ..lastName = _lastNameController.text
+      ..gender = _gender.value
+      ..dob = _dobController.text
+      ..age = _ageController.text
+      ..aadharId = _aadharIDController.text
+      ..medicalId = _medicalIDIDController.text
+      ..mobile = _mobileFieldController.text
+      ..state = _stateController.text
+      ..pincode = _pincodeController.text
+      ..district = _districtController.text
+      ..signedConsent = _signedConsent.value
+      ..disclosedIncome =_disclosedIncome.value
+      ..income = _incomeController.text
+      ..consent = attachment);
+
     GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
   }
 
-  void onConsentClicked() {
-    GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+  void onConsentClicked() async {
+    AttachmentModel? result = await GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+    if (result != null) {
+      _selectedAttachment = result;
+      _isConsentButtonActiveNotifier.value = true;
+    }
   }
 
   @override
@@ -230,18 +266,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SpaceWidget(height: 5),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: PrimaryFilledIconButton(
-                    onPressed: () {
-                      onConsentClicked();
-                    },
-                    isLoading: false,
-                    buttonThemeStyle: const FilledButtonThemeStyle(
-                      enabledTextColor: Color(0xFF2F43EE),
-                      enabledButtonColor: Color(0xFFF4F5FF),
-                    ),
-                    icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                    buttonTitle: TranslationKeys.consent.translate(context),
-                    widgetKey: KEY_BUTTON_CONSENT),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _isConsentButtonActiveNotifier,
+                  builder: (context, isButtonActive, child) {
+                    return PrimaryFilledIconButton(
+                     onPressed: () {
+                    onConsentClicked();
+                  },
+                      isLoading: false,
+                      buttonThemeStyle: FilledButtonThemeStyle(
+                        enabledTextColor: isButtonActive ? Color(0xFFF4F5FF) : Color(0xFF2F43EE),
+                        enabledButtonColor: isButtonActive ? AppColorScheme.kGreen : Color(0xFFF4F5FF),
+                      ),
+                      icon: SvgPicture.asset(AppAssetsPath.icInfo),
+                      buttonTitle: TranslationKeys.consent.translate(context),
+                      widgetKey: KEY_BUTTON_CONSENT,
+                    );
+                  },
+                ),
               ),
               const SpaceWidget(
                 height: 15,

@@ -63,7 +63,7 @@ class AppRouter {
               path: RegistrationScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const RegistrationScreen(),
+                child: RegistrationScreen(),
               ),
             ),
             GoRoute(
