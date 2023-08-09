@@ -1,0 +1,554 @@
+{
+    "uiTemplateId": "risk_assessment_health_habit",
+    "templateName": "RISK_ASSESSMENT_HEALTH_HABIT",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "do_you_smoke_cigarette",
+    "fields": {
+        "do_you_smoke_cigarette": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_smoke_cigarette",
+                "questionText": "Do you smoke Cigarette?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_smoke_beedi": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_smoke_beedi",
+                "questionText": "Do you smoke Beedi?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_smoke_others": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_smoke_others",
+                "questionText": "Do you smoke others?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_chew_tobacco": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_chew_tobacco",
+                "questionText": "Do you chew Tobacco?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_chew_arecanut": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_chew_arecanut",
+                "questionText": "Do you chew Arecanut?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_drink_spirit": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_drink_spirit",
+                "questionText": "Do you drink Spirit?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_drink_beer_wine": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_drink_beer_wine",
+                "questionText": "Do you drink Beer/Wine?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "past",
+                        "displayText": "Past"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "current"
+                    },
+                    {
+                        "id": "not",
+                        "displayText": "Not"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
+                        "type": "MULTI_SELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "past",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}

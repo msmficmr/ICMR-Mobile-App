@@ -21,7 +21,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: Delete.routerPath,
+      initialLocation: NewChat.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -37,10 +37,6 @@ class AppRouter {
             GoRoute(
               path: SplashScreen.routerPath,
               builder: (context, state) => const SplashScreen(),
-            ),
-            GoRoute(
-              path: Delete.routerPath,
-              builder: (context, state) => const Delete(),
             ),
             GoRoute(
               path: LoginHome.routerPath,
@@ -89,6 +85,13 @@ class AppRouter {
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const RegistrationSuccessFullScreen(),
+              ),
+            ),
+            GoRoute(
+              path: NewChat.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const NewChat(),
               ),
             )
           ],

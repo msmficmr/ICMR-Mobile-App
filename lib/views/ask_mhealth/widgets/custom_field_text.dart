@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
-import 'package:mhealth/views/questionnaire/widgets/send_widget.dart';
+import 'package:mhealth/views/ask_mhealth/widgets/send_widget.dart';
 
 class CustomFieldText extends StatefulWidget {
   final VoidCallback onSubmit;
   final TextEditingController textEditingController;
   final bool showSubmit;
+  final double screenWidth;
 
   const CustomFieldText({
     Key? key,
     required this.onSubmit,
     required this.textEditingController,
     this.showSubmit = true,
+    required this.screenWidth,
   }) : super(key: key);
 
   @override
@@ -26,18 +29,29 @@ class _CustomFieldTextState extends State<CustomFieldText> {
       children: [
         Container(
           margin: const EdgeInsets.only(bottom: 30),
-          width: MediaQuery.of(context).size.width * 0.7,
+          width: widget.screenWidth * 0.6,
           child: TextField(
-            cursorColor: AppColorScheme.kPrimaryColor,
             controller: widget.textEditingController,
+            cursorColor: AppColorScheme.kPrimaryColor,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'[a-zA-Z0-9,. ]'),
+              ),
+            ],
             decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               errorBorder: OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(),
             ),
           ),
         ),
         if (widget.showSubmit)
-          SendWidget(onTap: () {}, bottom: 30.0,),
+          SendWidget(
+            onTap: () {
+              widget.onSubmit();
+            },
+            bottom: 30.0,
+          ),
       ],
     );
   }

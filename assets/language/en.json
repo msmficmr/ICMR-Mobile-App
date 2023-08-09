@@ -65,5 +65,6 @@
   "camera" : "Camera",
   "browse" : "Browse",
   "upload_file" : "Upload file",
-  "registration" : "Registration"
+  "registration" : "Registration",
+  "submit" : "Submit"
 }

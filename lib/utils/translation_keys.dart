@@ -69,4 +69,5 @@ class TranslationKeys {
   static const String browse = "browse";
   static const String uploadFile = "upload_file";
   static const String registration = "registration";
+  static const String submit = "submit";
 }

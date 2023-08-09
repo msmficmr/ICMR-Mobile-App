@@ -38,6 +38,11 @@ class AppAssetsPath {
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
 
+  /// Questionnaires
+  static const String personalHistoryQuestionnaire = "assets/json/personal_history.json";
+  static const String healthHabitQuestionnaire = "assets/json/health_habit.json";
+  static const String fagerstormQuestionnaire = "assets/json/fagerstorm.json";
+
   /// Loader
-  static const String loader = "assets/loader.json";
+  static const String loader = "assets/json/loader.json";
 }
