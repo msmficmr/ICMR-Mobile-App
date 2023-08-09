@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -13,13 +12,11 @@ import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
-import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/views/screening/widget/upload_file_widget.dart';
 import 'package:mhealth/widgets/attachment_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
-import 'package:provider/provider.dart';
 
 class ConsentScreeningScreen extends StatefulWidget {
   static const String routerPath = "/consentScreening";
@@ -141,8 +138,8 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                       buttonTitle: TranslationKeys.uploadFile.translate(context),
                       widgetKey: KEY_BUTTON_UPLOAD_FILE,
                       isLoading: false,
-                      onPressed: !isValid ? null : () async {
-                        Navigator.of(context).pop(_selectedAttachment.value);
+                      onPressed: !isValid ? null : () {
+                         Navigator.pop(context, _selectedAttachment.value);
                       },
                     );
                   }),

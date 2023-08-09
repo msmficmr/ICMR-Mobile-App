@@ -1,0 +1,25 @@
+import 'package:isar/isar.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:path_provider/path_provider.dart';
+
+class IsarDbService {
+  late Future<Isar> isar;
+
+  IsarDbService._() {
+    isar = openIsarDb();
+  }
+  static Future<Isar> openIsarDb() async {
+    final dir = await getApplicationSupportDirectory();
+    return Isar.open([PatientRegistrationSchema], directory: dir.path);
+  }
+
+  static IsarDbService isarDbService = IsarDbService._();
+
+  Future<void> savePatient(PatientRegistration patientRegistration) async {
+    Isar? db = await isar;
+    await db.writeTxn(() async {
+      await db.patientRegistrations.put(patientRegistration);
+    });
+  }
+
+}
