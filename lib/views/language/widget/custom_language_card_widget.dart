@@ -51,7 +51,7 @@ class _CustomLanguageCardWidgetState extends State<CustomLanguageCardWidget> {
                   widget.cardTile,
                   key: Key(widget.cardTitleKey),
                   style: widget.isSelected
-                      ? AppStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY)
+                      ? AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryIconColor, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY)
                       : AppStyles.titleSmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
                 ),
               ),

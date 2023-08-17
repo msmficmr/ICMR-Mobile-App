@@ -7,9 +7,12 @@ class AppColorScheme {
   static Color get kLightGreen => const Color(0xFFE9F6E8);
   static Color get kLightRed => const Color(0xFFFDEAEA);
   static Color get kGreen => const Color(0xFF4DC85B);
+  static Color get kGreenLight => const Color(0xFFE9F6E8);
   static Color get kBlack => const Color(0xFF000000);
   static const Color kLightBlue = Color(0xFFF7FBFE);
   static const Color kBlueColor = Color(0xFF3C5B9E);
+  static const Color kEnabledButtonTextColor = Color(0xFF2F43EE);
+  static const Color kEnabledButtonColor = Color(0xFFF4F5FF);
 
   static Color get kPrimaryIconColor => Colors.white;
 

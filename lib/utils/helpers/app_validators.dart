@@ -82,7 +82,7 @@ class AppValidators {
     const String kValidDOBValidator = "Enter Valid DOB.";
 
     if (value == null || value.isEmpty) {
-      return kDOBEmptyValidator;
+      return null;
     }
 
     final formattedDateNow = DateFormat('dd/MM/yyyy').format(DateTime.now());
@@ -134,7 +134,7 @@ class AppValidators {
     const String kEmptyValidator = "Enter Valid Aadhar number.";
     const String kValidValidator = "Aadhar must be of 12 digit.";
     if (value == null || value.isEmpty) {
-      return kEmptyValidator;
+      return null;
     }
     String pattern = r"^\d{12}$";
     RegExp regExp = RegExp(pattern);
@@ -146,9 +146,10 @@ class AppValidators {
   }
 
   static String? validateID(String? value) {
+    const String kEmptyValidator = "Enter Valid Medical ID.";
     const String kValidValidator = "Enter a valid ID.";
     if (value == null || value.isEmpty) {
-      return null;
+      return kEmptyValidator;
     }
     String pattern = r"^[a-zA-Z0-9]$";
     RegExp regExp = RegExp(pattern);

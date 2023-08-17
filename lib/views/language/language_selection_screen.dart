@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/services/location_service.dart';
 import 'package:mhealth/services/questinair_service.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/views/dashboard/dashboard_screen.dart';
+import 'package:mhealth/widgets/custom_app_bar.dart';
+import 'package:mhealth/widgets/primary_filled_button.dart';
+import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
-import '../../config/theme/filled_button_theme_style.dart';
-import '../../utils/app_color_scheme.dart';
-import '../../utils/app_constant.dart';
-import '../../utils/app_values.dart';
-import '../../utils/enums.dart';
-import '../../widgets/custom_app_bar.dart';
-import '../../widgets/primary_filled_button.dart';
-import '../../widgets/space_widget.dart';
 import 'widget/custom_language_card_widget.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
@@ -140,7 +140,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                 valueListenable: _buttonEnabled,
                 builder: (context, isValid, _) {
                   return PrimaryFilledButton(
-                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                    buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
                     buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                     widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
                     isLoading: false,

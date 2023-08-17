@@ -47,7 +47,6 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   @override
   void initState() {
     super.initState();
-  
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     _countDown = ValueNotifier<int>(AppValues.kOtpTimer);
     _showResendButton = ValueNotifier<bool>(false);
