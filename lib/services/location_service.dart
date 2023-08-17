@@ -1,6 +1,3 @@
-// ignore_for_file: non_constant_identifier_names,
-
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mhealth/utils/common_functions.dart';
