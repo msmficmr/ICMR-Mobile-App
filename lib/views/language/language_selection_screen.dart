@@ -42,11 +42,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   onContinueClick() async {
     if (_buttonEnabled.value) {
       await LocationService.locationServiceInstance.checkPermission(context);
-      GoRouter.of(context).go(DashboardScreen.routerPath);
       RiskAssessmentQuestionaire? RAQuestions = await QuestionairService().loadQuestionairAsset();
-
       if (RAQuestions != null) {
         await IsarDbService.isarDbService.saveRiskAssessmentQuestionaire(RAQuestions);
+      GoRouter.of(context).go(DashboardScreen.routerPath);
+
       } else {
         CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
       }
