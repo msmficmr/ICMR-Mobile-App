@@ -21,7 +21,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: RegistrationSuccessFullScreen.routerPath,
+      initialLocation: SplashScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -106,11 +106,11 @@ class AppRouter {
         /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
         /// navigating to login screen
         if (!loginViewModel.isLoggedIn) {
-          return unProtectedRoutes.contains(navigationRoute) ? null : RegistrationSuccessFullScreen.routerPath;
+          return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
         }
         if (loginViewModel.isLoggedIn) {
           if (navigationRoute == LoginHome.routerPath) {
-            return RegistrationSuccessFullScreen.routerPath;
+            return LanguageSelectionScreen.routerPath;
           }
         }
 

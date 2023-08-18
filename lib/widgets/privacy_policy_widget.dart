@@ -25,9 +25,6 @@ class PrivacyPolicyWidget extends StatelessWidget {
   final String TERMS_2 = "Terms & Conditions ";
   final String TERMS_3 = "and ";
   final String TERMS_4 = "Privacy Policy";
-  final String TERMS_5 = " and agree to receive communication on";
-  final String TERMS_6 = " WhatsApp";
-  final String TERMS_7 = " from mHealth.";
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +56,6 @@ class PrivacyPolicyWidget extends StatelessWidget {
               style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w500),
             ),
           ),
-        ),
-        TextSpan(
-          text: TERMS_5,
-        ),
-        TextSpan(
-            text: TERMS_6,
-            style: AppStyles.bodySmall.copyWith(height: 1.5, color: AppColorScheme.kGreen, fontWeight: FontWeight.w500)
-        ),
-        TextSpan(
-          text: TERMS_7,
         ),
       ],
     );

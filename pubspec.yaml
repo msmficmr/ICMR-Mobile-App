@@ -48,6 +48,9 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/language/
+    - assets/personal_history.json
+    - assets/fagerstorm.json
+    - assets/health_habit.json
 
   fonts:
     - family: Montserrat
