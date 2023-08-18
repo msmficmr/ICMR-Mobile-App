@@ -14,7 +14,6 @@ import 'package:mhealth/views/ask_mhealth/widgets/chip_with_multiselect_textform
 import 'package:mhealth/views/ask_mhealth/widgets/chip_with_single_select_chip.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/multiselect_chip_with_submit.dart';
-import 'package:mhealth/views/ask_mhealth/widgets/previous_chat_button.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/question.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/single_choice_toggle_text_form_widget.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/single_text_field.dart';
@@ -54,12 +53,12 @@ class _AnimatedChatWidgetState extends State<AnimatedChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     double screenWidth = MediaQuery.of(context).size.width;
     maxWidth = CommonFunctions.getCardWidth(screenWidth: screenWidth);
     ChatBotViewModel chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
     ServiceFlow serviceFlow = chatBotProvider.serviceFlow;
     ListQueue conversationStack = Questionnaires().conversation;
+
     /// if the messages is new and untapped, then only the loader
     /// should show for it
     /// To show loading Animation only for the last received question, that's why we keep
@@ -168,13 +167,6 @@ class _AnimatedChatWidgetState extends State<AnimatedChatWidget> {
                           conversationModel: conversationStack.elementAt(index),
                         );
                       }),
-                if (conversationStack.elementAt(index).chipType == AppConstant.BUTTON_TYPE)
-                  Selector<ChatBotViewModel, int>(
-                      selector: (_, provider) => provider.widgetIndex,
-                      shouldRebuild: (previous, next) => next == chatBotProvider.widgetIndex,
-                      builder: (context, value, child) {
-                        return const PreviousRiskAssessmentButton();
-                      }),
                 if (conversationStack.elementAt(index).chipType == AppConstant.CHIP_WITH_MULTISELECT_TEXTFORM)
                   ChipWithMultiSelectTextForm(
                     index: index,
@@ -194,7 +186,6 @@ Widget chat({
   required double screenWidth,
   required int index,
 }) {
-  ChatBotViewModel chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
   return Container(
     alignment: Alignment.topCenter,
     padding: const EdgeInsets.only(

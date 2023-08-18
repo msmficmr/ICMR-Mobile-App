@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mhealth/repo/questionnaires.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -28,7 +26,7 @@ class _NewContainerWidgetState extends State<NewContainerWidget> {
   Widget build(BuildContext context) {
     return Consumer<ChatBotViewModel>(
       builder: (context, chatBotProvider, child) {
-        final _conversationLength = _questionnairesRepository.getLength;
+        final conversationLength = _questionnairesRepository.getLength;
         final screenWidth = MediaQuery.of(context).size.width;
         return Container(
           width: widget.maxWidth,
@@ -68,34 +66,32 @@ class _NewContainerWidgetState extends State<NewContainerWidget> {
               Expanded(
                 child: _questionnairesRepository.conversation.isNotEmpty
                     ? AnimatedList(
-                      controller: chatBotProvider.scrollController,
-                      key: chatBotProvider.animationKey,
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      reverse: true,
-                      initialItemCount: _conversationLength,
-                      itemBuilder: (context, index, animation) {
-                        // if the messages is new and untapped, then only the loader
-                        // should show for it
-                        // To show loading Animation only for the last received question, that's why we keep
-                        // condition "index == 0", the last received question always comes at index 0.
-                        if (index <= _conversationLength - 1) {
-                          return Column(
-                            children: [
-                              AnimatedChatWidget(
-                                index: index,
-                                animation: animation,
-                                maxWidth: widget.maxWidth,
-                              ),
-                            ],
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                    )
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                        controller: chatBotProvider.scrollController,
+                        key: chatBotProvider.animationKey,
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        reverse: true,
+                        initialItemCount: conversationLength,
+                        itemBuilder: (context, index, animation) {
+                          /// if the messages is new and untapped, then only the loader
+                          /// should show for it
+                          /// To show loading Animation only for the last received question, that's why we keep
+                          /// condition "index == 0", the last received question always comes at index 0.
+                          if (index <= conversationLength - 1) {
+                            return Column(
+                              children: [
+                                AnimatedChatWidget(
+                                  index: index,
+                                  animation: animation,
+                                  maxWidth: widget.maxWidth,
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
+                      )
+                    : const Center(child: CircularProgressIndicator()),
               )
             ],
           ),

@@ -25,6 +25,9 @@ class AppAssetsPath {
   static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
   static const String icRegistrationBack = "assets/icons/ic_registration_back.svg";
   static const String icCra = "assets/icons/ic_cra.svg";
+  static const String icEdit = "assets/icons/ic_edit.svg";
+  static const String icChevronRight = "assets/icons/ic_chevron_right.svg";
+  static const String icTick = "assets/icons/ic_tick.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
@@ -37,6 +40,8 @@ class AppAssetsPath {
   static const String icMale = "assets/icons/ic_male.svg";
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
+  static const String icCopy = "assets/icons/ic_copy.svg";
+  static const String icLogout = "assets/icons/ic_logout.svg";
 
   /// Questionnaires
   static const String personalHistoryQuestionnaire = "assets/json/personal_history.json";
@@ -45,4 +50,6 @@ class AppAssetsPath {
 
   /// Loader
   static const String loader = "assets/json/loader.json";
+
+  static const editIcon = "assets/icons/edit_icon.png";
 }

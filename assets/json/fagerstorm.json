@@ -6,7 +6,7 @@
   "fields": {
     "smokeless_tobacco": {
       "questionObject": {
-        "type": "CHIP_OPTIONS",
+        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
         "questionId": "smokeless_tobacco",
         "questionText": "Smokeless tobacco*",
         "required": "true",
@@ -31,7 +31,7 @@
           {
             "inputId": "after_normal_sleep_do_you_use_smokeless_waking",
             "inputText": "After a normal sleeping period, do you use smokeless within 30 minutes of waking?",
-            "required": "true",
+            "required": "false",
             "options": [
               {
                 "id": "yes",
@@ -45,16 +45,16 @@
             "regex": null,
             "minValidator": null,
             "maxValidator": null,
-            "type": "CHIP_OPTIONS",
+            "type": null,
             "followup": null,
-            "nextQuestionId": "do_you_use_smokeless_tobacco_when_you_are_sick",
-            "previousQuestionId": "smokeless_tobacco",
-            "lastQuestion": false
+            "forOptionKey": "yes",
+            "placeholder": null,
+            "rangeValidator": null
           },
           {
             "inputId": "do_you_use_smokeless_tobacco_when_you_are_sick",
             "inputText": "Do you use smokeless Tobacco when you are sick or have mouth sores?",
-            "required": "true",
+            "required": "false",
             "options": [
               {
                 "id": "yes",
@@ -68,11 +68,11 @@
             "regex": null,
             "minValidator": null,
             "maxValidator": null,
-            "type": "CHIP_OPTIONS",
+            "type": null,
             "followup": null,
-            "nextQuestionId": "do_you_use_smokeless_tobacco_when_you_are_sick",
-            "previousQuestionId": "how_many_times_do_you_use_per_week",
-            "lastQuestion": false
+            "forOptionKey": "yes",
+            "placeholder": null,
+            "rangeValidator": null
           },
           {
             "inputId": "how_many_times_do_you_use_per_week",

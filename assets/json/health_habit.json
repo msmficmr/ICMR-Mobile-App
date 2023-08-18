@@ -53,6 +53,44 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                        "followup": [
+                            {
+                                "inputId": "if_yes_quit_since",
+                                "inputText": "If yes, quit since*",
+                                "required": "true",
+                                "options": null,
+                                "regex": "^([a-zA-Z0-9 ]+)$",
+                                "minValidator": "1",
+                                "maxValidator": "1,999",
+                                "type": null,
+                                "followup": null,
+                                "forOptionKey": "yes",
+                                "placeholder": null,
+                                "rangeValidator": null
+                            }
+                        ],
+                        "forOptionKey": "never",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "quit",
+                        "inputText": "Quit?*",
+                        "required": "true",
+                        "options": [
+                            {
+                                "id": "yes",
+                                "displayText": "Yes"
+                            },
+                            {
+                                "id": "no",
+                                "displayText": "No"
+                            }
+                        ],
+                        "regex": null,
+                        "minValidator": null,
+                        "maxValidator": null,
                         "type": "MULTI_SELECT_TEXTFORM",
                         "followup": [
                             {
@@ -78,7 +116,7 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
+            "nextQuestionId": "do_you_smoke_beedi",
             "previousQuestionId": null,
             "lastQuestion": false
         },
@@ -156,8 +194,8 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
+            "nextQuestionId": "do_you_smoke_others",
+            "previousQuestionId": "do_you_smoke_cigarette",
             "lastQuestion": false
         },
         "do_you_smoke_others": {
@@ -234,8 +272,8 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
+            "nextQuestionId": "do_you_chew_tobacco",
+            "previousQuestionId": "do_you_smoke_beedi",
             "lastQuestion": false
         },
         "do_you_chew_tobacco": {
@@ -312,8 +350,8 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
+            "nextQuestionId": "do_you_chew_arecanut",
+            "previousQuestionId": "do_you_smoke_others",
             "lastQuestion": false
         },
         "do_you_chew_arecanut": {
@@ -390,8 +428,8 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
+            "nextQuestionId": "do_you_drink_spirit",
+            "previousQuestionId": "do_you_chew_tobacco",
             "lastQuestion": false
         },
         "do_you_drink_spirit": {
@@ -468,8 +506,8 @@
                 "prevQuestionId": null,
                 "nextQuestionId": null
             },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
+            "nextQuestionId": "do_you_drink_beer_wine",
+            "previousQuestionId": "do_you_chew_arecanut",
             "lastQuestion": false
         },
         "do_you_drink_beer_wine": {
@@ -547,8 +585,8 @@
                 "nextQuestionId": null
             },
             "nextQuestionId": null,
-            "previousQuestionId": null,
-            "lastQuestion": false
+            "previousQuestionId": "do_you_drink_spirit",
+            "lastQuestion": true
         }
     }
 }

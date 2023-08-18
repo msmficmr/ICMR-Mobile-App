@@ -93,18 +93,18 @@ class Questionnaires implements QuestionnaireService {
   @override
   void addToConversation(
       {required String questionId,
-      required String question,
-      required String chipType,
-      required DateTime timeAsked,
-      bool hasFollowUp = false,
-      bool isFollowUp = false,
-      Map<String, dynamic> followupQuestions = const {},
-      bool hasOptions = true,
-      List<String> options = const [],
-      List<String> optionKeys = const [],
-      int? selectedOptionIndex,
-      String? answer,
-      bool isEditable = false}) {
+        required String question,
+        required String chipType,
+        required DateTime timeAsked,
+        bool hasFollowUp = false,
+        bool isFollowUp = false,
+        Map<String, dynamic> followupQuestions = const {},
+        bool hasOptions = true,
+        List<String> options = const [],
+        List<String> optionKeys = const [],
+        int? selectedOptionIndex,
+        String? answer,
+        bool isEditable = false}) {
     _conversation.addFirst(ConversationModel(
       questionId: questionId,
       question: question,
@@ -134,16 +134,13 @@ class Questionnaires implements QuestionnaireService {
   /// The [fetchAllQuestionnaires] method fetches all questions for a specific section
   /// from the [Questionnaires] Singleton class.
   @override
-  Future<Map<String, dynamic>> fetchAllQuestionnaires() async {
+  Future<Map<String, dynamic>> fetchAllQuestionnaires({String sectionName = ""}) async {
     log("fetchAllQuestionnaires");
     _sharedPreferences = await SharedPreferences.getInstance();
     if (_questionMapObject.isEmpty) {
-
       try {
-
-
-
-        final String response = await rootBundle.loadString(AppAssetsPath.personalHistoryQuestionnaire);
+        // AppAssetsPath.personalHistoryQuestionnaire
+        final String response = await rootBundle.loadString(sectionName);
         _questionMapObject.addAll(json.decode(response));
 
         _chatBotProvider.setCurrentVersionNumber(currentVersionNumber: _questionMapObject["versionNumber"]);
@@ -153,7 +150,7 @@ class Questionnaires implements QuestionnaireService {
           allQuestionIds.add(key);
         });
         _allQuestionIds = allQuestionIds;
-        log("Line 158 $_allQuestionIds");
+        // log("Line 158 $_allQuestionIds");
       } on CustomException catch (error) {
         CommonFunctions.toastMessage(AppConstant.AN_UNKNOWN_ERROR);
       }
@@ -165,10 +162,15 @@ class Questionnaires implements QuestionnaireService {
   /// It retrieves questions one by one from the questionnaires object by
   /// iterating over the Question objects in the [_questionMapObject] map.
   @override
-  Future<void> fetchNextQuestion({required BuildContext context, required String questionId, required String encounterId, required String ehrCategoryId}) async {
+  Future<void> fetchNextQuestion({
+    required BuildContext context,
+    required String questionId,
+    required String encounterId,
+    required String ehrCategoryId,
+  }) async {
     try {
       Map<String, dynamic> questionObject = _questionMapObject["fields"][questionId];
-      log("Line 173 $questionObject");
+      //  log("Line 173 $questionObject");
       _chatBotProvider.setIsNextSuggestionClickable(isNextSuggestionClickable: true);
 
       if (questionObject["lastQuestion"] != null) {
@@ -178,7 +180,7 @@ class Questionnaires implements QuestionnaireService {
 
       if (_presentSectionEnded) {
         log("Line 182");
-        _chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+        _chatBotProvider.setIsOneAssessmentCompleted = false;
       }
 
       Map<String, String> optionsData = {};
@@ -199,10 +201,13 @@ class Questionnaires implements QuestionnaireService {
       Field currentQuestionObject = Field.fromJson(newQuestionObject);
 
       Map<String, dynamic> followupMap = {};
+      currentQuestionObject.followup?.forEach((element) {
+        log("Line followup 198: ${element.toJson()}");
+      });
 
       if (currentQuestionObject.followup != null && currentQuestionObject.followup!.isNotEmpty) {
-        log("Line 206");
-        followupMap = await generateFollowUpQuestionsMapObject(field: currentQuestionObject);
+        log("Line 206: ${currentQuestionObject.toJson()}");
+        followupMap = generateFollowUpQuestionsMapObject(field: currentQuestionObject);
         log("Line 208 $followupMap");
       }
       try {
@@ -212,11 +217,10 @@ class Questionnaires implements QuestionnaireService {
             optionsData[options.id ?? ""] = options.displayText ?? "";
           });
         }
-      } catch (error) {
+      } catch (error, stackTrace) {
         CommonFunctions.toastMessage(AppConstant.AN_UNKNOWN_ERROR);
       }
       if (currentQuestionObject.type == AppConstant.TEXT_AREA) {
-        log("Line 221");
         ConversationModel qaModel = ConversationModel(
           questionId: currentQuestionObject.questionId ?? "",
           question: currentQuestionObject.questionText ?? "",
@@ -227,10 +231,10 @@ class Questionnaires implements QuestionnaireService {
           hasOptions: optionsData.values.toList().isNotEmpty,
           followupQuestions: (currentQuestionObject.followup != null && currentQuestionObject.followup!.isNotEmpty) ? followupMap : {},
         );
-        // await _chatBotProvider.onUserInputOptions(conversationModel: qaModel, context: context);
+        await _chatBotProvider.onUserSelectsOption(conversationModel: qaModel, context: context);
       } else {
         try {
-          log("Line 235");
+          var dd = (currentQuestionObject.followup != null && currentQuestionObject.followup!.isNotEmpty) ? followupMap : {};
           addToConversation(
               questionId: currentQuestionObject.questionId ?? "",
               question: currentQuestionObject.questionText ?? "",
@@ -242,7 +246,8 @@ class Questionnaires implements QuestionnaireService {
               hasFollowUp: (currentQuestionObject.followup != null && currentQuestionObject.followup!.isNotEmpty),
               followupQuestions: (currentQuestionObject.followup != null && currentQuestionObject.followup!.isNotEmpty) ? followupMap : {},
               isEditable: true);
-        } catch (error) {
+        } catch (error, stackTrace) {
+          log("Error is $error");
           CommonFunctions.toastMessage(AppConstant.AN_UNKNOWN_ERROR);
         }
       }

@@ -1,20 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mhealth/model/conversation_model.dart';
 import 'package:mhealth/repo/questionnaires.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/color_palette.dart';
 import 'package:mhealth/utils/common_functions.dart';
-import 'package:mhealth/utils/extensions/string_extension.dart';
-import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/chat_bot_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/question.dart';
-import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
 
 class MultiMultiChipWidget extends StatefulWidget {
   ConversationModel conversationModel;
-
   MultiMultiChipWidget({Key? key, required this.conversationModel}) : super(key: key);
 
   @override
@@ -22,9 +21,20 @@ class MultiMultiChipWidget extends StatefulWidget {
 }
 
 class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
-  final Questionnaires _questionnairesRepository = Questionnaires();
+  final Questionnaires _questionariesRepository = Questionnaires();
   String selectedOptionKey = "";
   ConversationModel? followUpQuestion;
+
+  void renderFollowUpQuestion() {
+    selectedOptionKey = widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!];
+    if (widget.conversationModel.followupQuestions.containsKey(selectedOptionKey)) {
+    } else {
+      widget.conversationModel = _questionariesRepository.conversation.first;
+      chatBotProvider.onUserSelectsOption(conversationModel: widget.conversationModel, context: context);
+
+      ///Fllow up qustion not found for [selectedOptionKey] so load next question
+    }
+  }
 
   List<String> _selectedChoices = [];
   List<String> submittedKeys = [];
@@ -34,17 +44,6 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
 
   final GlobalKey<AnimatedListState> animationKey = GlobalKey<AnimatedListState>();
 
-  void renderFollowUpQuestion() {
-    selectedOptionKey = widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!];
-    if (widget.conversationModel.followupQuestions.containsKey(selectedOptionKey)) {
-    } else {
-      widget.conversationModel = _questionnairesRepository.conversation.first;
-      chatBotProvider.onUserInputOptions(conversationModel: widget.conversationModel, context: context);
-
-      ///Follow up question not found for [selectedOptionKey] so load next question
-    }
-  }
-
   void displayQuestion() {
     List<String> remainingKeys = followUpQuestion!.selectedOptionKeys.where((element) => !submittedKeys.contains(element)).toList();
     if (remainingKeys.isNotEmpty) {
@@ -53,27 +52,27 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
     } else {
       //Submitted all options
       widget.conversationModel.followupQuestions[selectedOptionKey][0]["inputs"][submittedKeys.last][0]["isSubmitted"] = true;
-      _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["inputs"][submittedKeys.last][0]["isSubmitted"] = true;
-      widget.conversationModel = _questionnairesRepository.conversation.first;
-      chatBotProvider.onUserInputOptions(conversationModel: widget.conversationModel, context: context);
+      _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["inputs"][submittedKeys.last][0]["isSubmitted"] = true;
+      widget.conversationModel = _questionariesRepository.conversation.first;
+      chatBotProvider.onUserSelectsOption(conversationModel: widget.conversationModel, context: context);
     }
   }
 
   bool displayBottomMargin() {
     if (widget.conversationModel.followupQuestions.containsKey(selectedOptionKey)) {
-      ConversationModel model = ConversationModel.fromJson(widget.conversationModel.followupQuestions[selectedOptionKey][0]);
-      List<String> stepSelectedKeys = followUpQuestion?.selectedOptionKeys ?? [];
+      // ConversationModel model = ConversationModel.fromJson(widget.conversationModel.followupQuestions[selectedOptionKey][0]);
+      List<String> stempSelectedKeys = followUpQuestion?.selectedOptionKeys ?? [];
       int count = 0;
-      for (String subKey in stepSelectedKeys) {
+      for (String subKey in stempSelectedKeys) {
         bool isSubmitted = followUpQuestion!.followupQuestions[subKey][0]["isSubmitted"];
         if (isSubmitted) {
           count++;
         }
       }
-      if (stepSelectedKeys.isEmpty) {
+      if (stempSelectedKeys.length == 0) {
         return true;
       }
-      if (count == stepSelectedKeys.length) {
+      if (count == stempSelectedKeys.length) {
         return false;
       }
       return true;
@@ -86,24 +85,29 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
-    if (widget.conversationModel.selectedOptionIndex != null) {
-      selectedOptionKey = widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!];
 
-      if (widget.conversationModel.followupQuestions.containsKey(selectedOptionKey)) {
-        followUpQuestion = ConversationModel.fromJson(widget.conversationModel.followupQuestions[selectedOptionKey][0]);
+    try {
+      if (widget.conversationModel.selectedOptionIndex != null) {
+        selectedOptionKey = widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!];
 
-        _selectedChoices = followUpQuestion?.selectedOptionKeys ?? [];
-        List<String> stepSelectedKeys = followUpQuestion?.selectedOptionKeys ?? [];
-        for (String subKey in stepSelectedKeys) {
-          bool isSubmitted = followUpQuestion!.followupQuestions[subKey][0]["isSubmitted"];
-          if (isSubmitted) {
-            if (!submittedKeys.contains(subKey)) {
-              submittedKeys.add(subKey);
-              submittedSubQuestions.add(subKey);
+        if (widget.conversationModel.followupQuestions.containsKey(selectedOptionKey)) {
+          followUpQuestion = ConversationModel.fromJson(widget.conversationModel.followupQuestions[selectedOptionKey][0]);
+          _selectedChoices = followUpQuestion?.selectedOptionKeys ?? [];
+          List<String> stempSelectedKeys = followUpQuestion?.selectedOptionKeys ?? [];
+          for (String subKey in stempSelectedKeys) {
+            bool isSubmitted = followUpQuestion!.followupQuestions[subKey][0]["isSubmitted"];
+            if (isSubmitted) {
+              if (!submittedKeys.contains(subKey)) {
+                submittedKeys.add(subKey);
+                submittedSubQuestions.add(subKey);
+              }
             }
           }
         }
       }
+    } catch (error, stackTrace) {
+      print("MM: error: $error");
+      print("MM: stackTrace: $stackTrace");
     }
 
     return Container(
@@ -115,50 +119,48 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
             questionTime: widget.conversationModel.timeAsked,
             screenWidth: CommonFunctions.getCardWidth(screenWidth: screenWidth),
           ),
-          const SpaceWidget(height: 10),
+          const SizedBox(height: 10),
           Align(
             alignment: Alignment.centerRight,
             child: Wrap(
               runSpacing: 1,
               spacing: 1,
               alignment: WrapAlignment.end,
-              children: List.generate(
-                widget.conversationModel.options.length,
-                (index) {
-                  String optionText = widget.conversationModel.options[index];
-                  bool isSelected = widget.conversationModel.selectedOptionIndex == index;
-                  return (widget.conversationModel.selectedOptionIndex == null || isSelected)
-                      ? Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                          child: ChoiceChip(
-                            label: Text(
-                              optionText,
-                              maxLines: 5,
-                              softWrap: true,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                height: AppConstant.TEXT_HEIGHT,
-                                fontSize: 14,
-                                color: isSelected ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor,
-                              ),
+              children: List.generate(widget.conversationModel.options.length, (index) {
+                String optionText = widget.conversationModel.options[index];
+                bool isSelected = widget.conversationModel.selectedOptionIndex == index;
+
+                return (widget.conversationModel.selectedOptionIndex == null || isSelected)
+                    ? Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(
+                            optionText,
+                            maxLines: 5,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              height: AppConstant.TEXT_HEIGHT,
+                              fontSize: 14,
+                              color: isSelected ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor.shade700,
                             ),
-                            selected: isSelected,
-                            selectedColor: AppColorScheme.kPrimaryColor,
-                            backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-                            onSelected: widget.conversationModel.selectedOptionIndex == null
-                                ? (selected) {
-                                    widget.conversationModel.selectedOptionIndex = index;
-                                    widget.conversationModel.answer = optionText;
-                                    renderFollowUpQuestion();
-                                    chatBotProvider.notify();
-                                  }
-                                : (_) {},
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
-                        )
-                      : const SizedBox.shrink();
-                },
-              ),
+                          selected: isSelected,
+                          selectedColor: AppColorScheme.kPrimaryColor,
+                          backgroundColor: AppColorScheme.kPrimaryColor.shade50,
+                          onSelected: widget.conversationModel.selectedOptionIndex == null
+                              ? (selected) {
+                                  widget.conversationModel.selectedOptionIndex = index;
+                                  widget.conversationModel.answer = optionText;
+                                  renderFollowUpQuestion();
+                                  chatBotProvider.notify();
+                                }
+                              : (_) {},
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        ),
+                      )
+                    : const SizedBox.shrink();
+              }),
             ),
           ),
           ...[
@@ -180,7 +182,7 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                           questionTime: DateTime.now(),
                           screenWidth: CommonFunctions.getCardWidth(screenWidth: screenWidth),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         widget.conversationModel.followUpSubmitted
                             ? Align(
                                 alignment: Alignment.centerRight,
@@ -191,25 +193,28 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                   crossAxisAlignment: WrapCrossAlignment.end,
                                   runAlignment: WrapAlignment.end,
                                   children: List.generate(
-                                    _selectedChoices.length,
-                                    (index) => Container(
-                                      margin: const EdgeInsets.all(4.0),
-                                      child: ChoiceChip(
-                                        onSelected: (value) {},
-                                        label: Text(
-                                          followUpQuestion!.selectedOptions[index],
-                                          maxLines: 5,
-                                          softWrap: true,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: 14, height: AppConstant.TEXT_HEIGHT, color: AppColorScheme.kPrimaryIconColor),
-                                        ),
-                                        padding: const EdgeInsets.all(10.0),
-                                        selected: true,
-                                        selectedColor: AppColorScheme.kPrimaryColor,
-                                        backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-                                      ),
-                                    ),
-                                  ),
+                                      _selectedChoices.length,
+                                      (index) => Container(
+                                            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                                            child: ChoiceChip(
+                                              onSelected: (value) {},
+                                              label: Text(
+                                                followUpQuestion!.selectedOptions[index],
+                                                maxLines: 5,
+                                                softWrap: true,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  height: AppConstant.TEXT_HEIGHT,
+                                                  color: AppColorScheme.kPrimaryIconColor,
+                                                ),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                              selected: true,
+                                              selectedColor: AppColorScheme.kPrimaryColor,
+                                              backgroundColor: AppColorScheme.kPrimaryColor.shade50,
+                                            ),
+                                          )),
                                 ),
                               )
                             : Wrap(
@@ -221,7 +226,7 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                   String optionKey = followUpQuestion!.optionKeys[index];
 
                                   return Container(
-                                    margin: const EdgeInsets.all(4.0),
+                                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                                     child: ChoiceChip(
                                       label: Text(
                                         optionText,
@@ -229,24 +234,27 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                         softWrap: true,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                            fontSize: 14, height: AppConstant.TEXT_HEIGHT, color: _selectedChoices.contains(optionKey) ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor),
+                                          fontSize: 14,
+                                          height: AppConstant.TEXT_HEIGHT,
+                                          color: _selectedChoices.contains(optionKey) ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor.shade700,
+                                        ),
                                       ),
                                       selected: _selectedChoices.contains(optionKey),
                                       selectedColor: AppColorScheme.kPrimaryColor,
                                       backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-                                      padding: const EdgeInsets.all(10.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                       onSelected: (selected) {
                                         if (_selectedChoices.contains(optionKey)) {
-                                          int storedIndex = _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].indexOf(optionText);
+                                          int storedIndex = _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].indexOf(optionText);
                                           if (storedIndex != -1) {
-                                            _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].removeAt(storedIndex);
-                                            _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptionKeys"].removeAt(storedIndex);
+                                            _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].removeAt(storedIndex);
+                                            _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptionKeys"].removeAt(storedIndex);
                                             _selectedChoices.remove(optionKey);
                                           }
                                         } else {
                                           _selectedChoices.add(optionKey);
-                                          _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].add(optionText);
-                                          _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptionKeys"].add(optionKey);
+                                          _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptions"].add(optionText);
+                                          _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["selectedOptionKeys"].add(optionKey);
                                         }
 
                                         chatBotProvider.notify();
@@ -255,7 +263,7 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                   );
                                 }).toList(),
                               ),
-                        const SpaceWidget(height: 10),
+                        const SizedBox(height: 10),
                         if (!widget.conversationModel.followUpSubmitted)
                           GestureDetector(
                             onTap: () {
@@ -273,13 +281,19 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                 decoration: BoxDecoration(
                                   color: AppColorScheme.kPrimaryColor,
                                   border: Border.all(width: 1, color: AppColorScheme.kPrimaryColor),
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(30),
-                                  ),
+                                  borderRadius: const BorderRadius.all(Radius.circular(30)),
                                 ),
                                 child: Text(
-                                  TranslationKeys.submit.translate(context),
-                                  style: TextStyle(fontSize: 14, height: AppConstant.TEXT_HEIGHT, color: AppColorScheme.kPrimaryIconColor),
+                                  CommonFunctions.getText(
+                                    language: chatBotProvider.currentLanguage,
+                                    engText: "Submit",
+                                    hindiText: "Submit",
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    height: AppConstant.TEXT_HEIGHT,
+                                    color: AppColorScheme.kPrimaryIconColor,
+                                  ),
                                 ),
                               ),
                             ),
@@ -298,7 +312,7 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                                 conversationModel: widget.conversationModel,
                                 onSubmit: () {
                                   submittedSubQuestions.add(submittedKeys[index]);
-                                  _questionnairesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["inputs"][submittedKeys[index]][0]["isSubmitted"] = true;
+                                  _questionariesRepository.conversation.first.followupQuestions[selectedOptionKey][0]["inputs"][submittedKeys[index]][0]["isSubmitted"] = true;
                                   displayQuestion();
                                 },
                                 isSubmitted: false,
@@ -312,7 +326,7 @@ class _MultiMultiChipWidgetState extends State<MultiMultiChipWidget> {
                     )
                   : const SizedBox.shrink(),
             )
-          ]
+          ],
         ],
       ),
     );
@@ -325,7 +339,6 @@ class _FollowUpQuestion extends StatelessWidget {
   bool isSubmitted;
   final String submittedOptionKey;
   final ConversationModel conversationModel;
-
   _FollowUpQuestion({Key? key, required this.conversationModel, required this.onSubmit, required this.optionKey, required this.isSubmitted, required this.submittedOptionKey}) : super(key: key);
 
   final TextEditingController otherTypeEditingController = TextEditingController();
@@ -351,9 +364,7 @@ class _FollowUpQuestion extends StatelessWidget {
           questionTime: DateTime.now(),
           screenWidth: CommonFunctions.getCardWidth(screenWidth: screenWidth),
         ),
-        const SpaceWidget(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Align(
           alignment: Alignment.centerRight,
           child: Wrap(
@@ -366,19 +377,23 @@ class _FollowUpQuestion extends StatelessWidget {
             children: isSubmitted
                 ? List.generate(subQuestionMap["selectedOptionKeys"].length, (index) {
                     return Container(
-                      margin: const EdgeInsets.all(4.0),
+                      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                       child: ChoiceChip(
                         selected: true,
                         onSelected: (value) {},
                         selectedColor: AppColorScheme.kPrimaryColor,
                         backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         label: Text(
                           "${subQuestionMap["selectedOptions"][index]}",
                           maxLines: 5,
                           softWrap: true,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 14, height: AppConstant.TEXT_HEIGHT, color: AppColorScheme.kPrimaryIconColor),
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: AppConstant.TEXT_HEIGHT,
+                            color: AppColorScheme.kPrimaryIconColor,
+                          ),
                         ),
                       ),
                     );
@@ -387,7 +402,7 @@ class _FollowUpQuestion extends StatelessWidget {
                     String subOptionText = subQuestionMap["suggestions"][index];
                     String subOptionKey = subQuestionMap["optionKeys"][index];
                     return Container(
-                      margin: const EdgeInsets.all(4.0),
+                      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                       child: ChoiceChip(
                         label: Text(
                           subOptionText,
@@ -397,12 +412,12 @@ class _FollowUpQuestion extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 14,
                               height: AppConstant.TEXT_HEIGHT,
-                              color: subQuestionMap["selectedOptionKeys"].contains(subOptionKey) ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor),
+                              color: subQuestionMap["selectedOptionKeys"].contains(subOptionKey) ? AppColorScheme.kPrimaryIconColor : AppColorScheme.kGrayColor.shade700),
                         ),
                         selected: subQuestionMap["selectedOptionKeys"].contains(subOptionKey),
                         selectedColor: AppColorScheme.kPrimaryColor,
                         backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         onSelected: (selected) {
                           if (subQuestionMap["selectedOptionKeys"].contains(subOptionKey)) {
                             subQuestionMap["selectedOptionKeys"].remove(subOptionKey);
@@ -432,11 +447,7 @@ class _FollowUpQuestion extends StatelessWidget {
               child: TextFormField(
                 cursorColor: AppColorScheme.kPrimaryColor,
                 controller: otherTypeEditingController,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'[a-zA-Z,. ]'),
-                  ),
-                ],
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z,. ]'))],
                 decoration: const InputDecoration(
                   errorBorder: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(),
@@ -457,7 +468,7 @@ class _FollowUpQuestion extends StatelessWidget {
               onSelected: (value) {},
               selectedColor: AppColorScheme.kPrimaryColor,
               backgroundColor: AppColorScheme.kPrimaryColor.shade50,
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               label: Text(
                 "${subQuestionMap["inputs"]["other_cancer"][0]["answer"]}",
                 maxLines: 5,
@@ -487,18 +498,20 @@ class _FollowUpQuestion extends StatelessWidget {
             child: Container(
               alignment: Alignment.topRight,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
                 margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   color: AppColorScheme.kPrimaryColor,
                   border: Border.all(width: 1, color: AppColorScheme.kPrimaryColor),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(30),
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
                 ),
                 child: Text(
-                  TranslationKeys.submit.translate(context),
-                  style: TextStyle(fontSize: 14, height: AppConstant.TEXT_HEIGHT, color: AppColorScheme.kPrimaryIconColor),
+                  CommonFunctions.getText(language: chatBotProvider.currentLanguage, engText: "Submit", hindiText: 'Submit'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: AppConstant.TEXT_HEIGHT,
+                    color: AppColorScheme.kPrimaryIconColor,
+                  ),
                 ),
               ),
             ),

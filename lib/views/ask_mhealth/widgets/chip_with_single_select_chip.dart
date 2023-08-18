@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/conversation_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -41,7 +43,7 @@ class _ChipWithSingleSelectChipState extends State<ChipWithSingleSelectChip> {
                     return GestureDetector(
                       onTap: () {
                         if (chatBotProvider.isNextSuggestionClickable) {
-                          chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+                          chatBotProvider.setIsOneAssessmentCompleted = false;
                           widget.conversationModel.selectedOptionIndex = index;
                           widget.conversationModel.answer = widget.conversationModel.optionKeys[index];
                           chatBotProvider.notify();
@@ -89,7 +91,7 @@ class _ChipWithSingleSelectChipState extends State<ChipWithSingleSelectChip> {
                 return GestureDetector(
                   onTap: () {
                     if (chatBotProvider.isNextSuggestionClickable) {
-                      chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+                      chatBotProvider.setIsOneAssessmentCompleted = false;
                       try {
                         widget.conversationModel.followUpSubmitted = true;
                         widget.conversationModel.followupQuestions[widget.conversationModel.answer][0]["selectedOptionIndex"] = followUpIndex;
@@ -100,7 +102,9 @@ class _ChipWithSingleSelectChipState extends State<ChipWithSingleSelectChip> {
 
                         chatBotProvider.notify();
                         chatBotProvider.onUserSelectsOption(context: context, conversationModel: widget.conversationModel);
-                      } catch (error, stacktrace) {}
+                      } catch (error, stacktrace) {
+                        log("Single ship select error: $error");
+                      }
                     }
                   },
                   child: Container(

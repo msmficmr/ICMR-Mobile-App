@@ -175,13 +175,7 @@
         "hintText": null,
         "minvalidator": null,
         "maxValidator": null,
-        "filter": {
-          "gender": [
-            "FEMALE",
-            "TRANSGENDER"
-          ],
-          "age": null
-        },
+        "filter": null,
         "options": [
           {
             "id": "yes",

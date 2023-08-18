@@ -78,12 +78,13 @@ class _MultiSelectChipsWidgetState extends State<MultiSelectChipsWidget> {
               widget.conversationModel.followUpSubmitted)
             CustomChipWOMargin(
                 answer: widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]][0]["inputs"]["other_cancer"][0]["answer"]),
-          // submit button will only show when follow-ups are not submitted
+
+          /// submit button will only show when follow-ups are not submitted
           if (widget.conversationModel.followupQuestions[widget.conversationModel.answer] != null && !widget.conversationModel.followUpSubmitted)
             GestureDetector(
               onTap: () {
                 if (chatBotProvider.isNextSuggestionClickable) {
-                  chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+                  chatBotProvider.setIsOneAssessmentCompleted = false;
                   if (widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]][0]["selectedOptions"].length > 0) {
                     _questionnairesRepository.conversation.first.followUpSubmitted = true;
                     if (textEditingController.text.isNotEmpty) {

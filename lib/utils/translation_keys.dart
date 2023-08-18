@@ -13,7 +13,7 @@ class TranslationKeys {
   static const String takeCRA = "take_cra";
   static const String craPatientList = "cra_patient_list";
   static const String search = "search";
-  static const String myAccount = "myAccount";
+  static const String myAccount = "my_account";
   static const String language = "language";
   static const String dataSync = "data_sync";
   static const String version = "version";
@@ -69,5 +69,11 @@ class TranslationKeys {
   static const String browse = "browse";
   static const String uploadFile = "upload_file";
   static const String registration = "registration";
+  static const String registrationSuccessful = "registration_successful";
+  static const String newRegistration = "new_registration";
+  static const String yourNextStep = "your_next_step";
+  static const String thankYou = "thank_you";
+  static const String registeredSuccessfully = "registered_successfully";
+  static const String date = "date";
   static const String submit = "submit";
 }

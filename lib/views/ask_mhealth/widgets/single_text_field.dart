@@ -79,22 +79,20 @@ class _SingleTextFieldState extends State<SingleTextField> {
                   SendWidget(
                     onTap: () {
                       if (chatBotProvider.isNextSuggestionClickable) {
-                        chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+                        chatBotProvider.setIsOneAssessmentCompleted = false;
                         if (_questionnairesRepository.conversation.first.questionId == "middle_name") {
                           _questionnairesRepository.conversation.first.answer = _textEditingController.text;
                           _textEditingController.clear();
                           _questionnairesRepository.conversation.first.followUpSubmitted = true;
                           chatBotProvider.notify();
-                          chatBotProvider.onUserInputOptions(
-                              conversationModel: widget.conversationModel, context: context);
+                          chatBotProvider.onUserSelectsOption(conversationModel: widget.conversationModel, context: context);
                         } else {
                           if (formKey.currentState!.validate() && _textEditingController.text.isNotEmpty) {
                             _questionnairesRepository.conversation.first.answer = _textEditingController.text;
                             _textEditingController.clear();
                             _questionnairesRepository.conversation.first.followUpSubmitted = true;
                             chatBotProvider.notify();
-                            chatBotProvider.onUserInputOptions(
-                                conversationModel: widget.conversationModel, context: context);
+                            chatBotProvider.onUserSelectsOption(conversationModel: widget.conversationModel, context: context);
                           } else {}
                         }
                       }

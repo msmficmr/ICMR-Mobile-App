@@ -9,14 +9,14 @@ import 'package:provider/provider.dart';
 class CustomChip extends StatelessWidget {
   const CustomChip({
     Key? key,
-    required this.answer,
+    required this.ans,
     this.showUserIcon = true,
     this.editable = false,
     this.mainAxisAlignment = MainAxisAlignment.end,
     required this.index,
   }) : super(key: key);
 
-  final String answer;
+  final String ans;
   final bool showUserIcon;
   final MainAxisAlignment mainAxisAlignment;
   final bool editable;
@@ -60,7 +60,7 @@ class CustomChip extends StatelessWidget {
                               isAlwaysShown: false,
                               trackVisibility: false,
                               child: Text(
-                                answer.trim(),
+                                ans.trim(),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 6,
                                 textAlign: TextAlign.left,

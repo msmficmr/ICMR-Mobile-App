@@ -65,19 +65,14 @@ class _ChipWithMultiSelectTextFormState extends State<ChipWithMultiSelectTextFor
               );
             },
             child: (widget.conversationModel.selectedOptionIndex != null &&
-                widget.conversationModel.followupQuestions[
-                widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] !=
-                    null)
+                    widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] != null)
                 ? Column(
                     children: [
                       ...[
                         if (widget.conversationModel.selectedOptionIndex != null &&
-                            widget.conversationModel.followupQuestions[widget
-                                .conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] !=
-                                null)
+                            widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] != null)
                           Question(
-                            questionText: widget.conversationModel.followupQuestions[widget.conversationModel
-                                .optionKeys[widget.conversationModel.selectedOptionIndex!]][0]["question"],
+                            questionText: widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]][0]["question"],
                             questionTime: widget.conversationModel.timeAsked,
                             screenWidth: CommonFunctions.getCardWidth(screenWidth: screenWidth),
                           ),
@@ -85,15 +80,12 @@ class _ChipWithMultiSelectTextFormState extends State<ChipWithMultiSelectTextFor
                       const SizedBox(height: 10),
                       ...[
                         if (widget.conversationModel.selectedOptionIndex != null &&
-                            widget.conversationModel.followupQuestions[widget
-                                .conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] !=
-                                null)
+                            widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex!]] != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 20.0),
                             child: MultiSelectChipsWidget(
                               conversationModel: widget.conversationModel,
-                              followUpQuestion: widget.conversationModel.followupQuestions[widget
-                                  .conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex ?? 0]][0],
+                              followUpQuestion: widget.conversationModel.followupQuestions[widget.conversationModel.optionKeys[widget.conversationModel.selectedOptionIndex ?? 0]][0],
                               screenWidth: CommonFunctions.getCardWidth(screenWidth: screenWidth),
                             ),
                           )
@@ -114,7 +106,7 @@ class _ChipWithMultiSelectTextFormState extends State<ChipWithMultiSelectTextFor
         return GestureDetector(
           onTap: () {
             if (chatBotProvider.isNextSuggestionClickable) {
-              chatBotProvider.setIsAssessmentCompleted(isAssessmentCompleted: false);
+              chatBotProvider.setIsOneAssessmentCompleted = false;
               _questionnairesRepository.conversation.first.selectedOptionIndex = index;
               _questionnairesRepository.conversation.first.answer = _questionnairesRepository.conversation.first.optionKeys[index];
               if ((widget.conversationModel.followupQuestions[widget.conversationModel.answer] == null && widget.conversationModel.followUpSubmitted == false)) {

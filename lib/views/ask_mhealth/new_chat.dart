@@ -40,14 +40,14 @@ class _NewChatState extends State<NewChat> {
 
   fetchQuestion() async {
     chatBotProvider.setServiceFlow(newFlow: ServiceFlow.none);
-    Intents().getRASections(context: context);
-    // await _questionnairesRepo.fetchAllQuestionnaires();
-    // _questionnairesRepo.fetchNextQuestion(
-    //   context: context,
-    //   questionId: "are_you_diabetic",
-    //   encounterId: "PERSONAL_HISTORY",
-    //   ehrCategoryId: "RISK_ASSESSMENT_RISK_ASSESSMENT_PERSONAL_HISTORY",
-    // );
+    // Intents().getRASections(context: context);
+    await _questionnairesRepo.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
+    _questionnairesRepo.fetchNextQuestion(
+      context: context,
+      questionId: "are_you_diabetic",
+      encounterId: "PERSONAL_HISTORY",
+      ehrCategoryId: "RISK_ASSESSMENT_RISK_ASSESSMENT_PERSONAL_HISTORY",
+    );
   }
 
   @override
@@ -55,20 +55,17 @@ class _NewChatState extends State<NewChat> {
     super.initState();
     chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
     _questionnairesRepo.setChatBotProvider = context;
-    fetchQuestion();
 
     /// setting up initial question
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearSharedPreferences();
     });
 
-    chatBotProvider.setServiceFlow(newFlow: ServiceFlow.riskAssessment);
-
     initiateData(context: context);
+    fetchQuestion();
 
     if (mounted) {
       _questionnairesRepo.clearQuestionnaires();
-      chatBotProvider.getWelcomeIntent(context: context);
     }
   }
 
@@ -96,7 +93,6 @@ class _NewChatState extends State<NewChat> {
 
   @override
   Widget build(BuildContext context) {
-    ChatBotViewModel chatBotViewModel = Provider.of<ChatBotViewModel>(context, listen: true);
     final screenWidth = MediaQuery.of(context).size.width;
 
     return WillPopScope(
