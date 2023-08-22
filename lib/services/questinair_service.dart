@@ -14,7 +14,7 @@ class QuestionairService {
     sectionPath = ["assets/personal_history_en.json", "assets/health_habit_en.json","assets/fagerstorm_en.json" ];
     break;
   case "hi":
-    sectionPath = ["assets/fagerstorm_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json"];
+    sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];
     break;
   default:
     CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
