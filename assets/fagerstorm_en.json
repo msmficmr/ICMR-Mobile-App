@@ -452,20 +452,22 @@
                     }
                 ],
                 "placeholder": null,
-                "followup": [{
-                    "inputId": "if_others_specify_symptoms",
-                    "inputText": "Other Symptoms",
-                    "required": "true",
-                    "options": null,
-                    "regex": "^([a-zA-Z0-9 ]+)$",
-                    "minValidator": "1",
-                    "maxValidator": "1,999",
-                    "type": null,
-                    "followup": null,
-                    "forOptionKey": "other_symptoms",
-                    "placeholder": null,
-                    "rangeValidator": null
-                }],
+                "followup": [
+                    {
+                        "inputId": "if_others_specify_symptoms",
+                        "inputText": "Other Symptoms",
+                        "required": "true",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "other_symptoms",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
                 "nextQuestionId": "lesions",
                 "previousQuestionId": "symptoms",
                 "lastQuestion": false
@@ -517,20 +519,22 @@
                     }
                 ],
                 "placeholder": null,
-                "followup":[ {
-                    "inputId": "if_others_specify_lesions",
-                    "inputText": "Other Lesions",
-                    "required": "true",
-                    "options": null,
-                    "regex": "^([a-zA-Z0-9 ]+)$",
-                    "minValidator": "1",
-                    "maxValidator": "1,999",
-                    "type": null,
-                    "followup": null,
-                    "forOptionKey": "others_lesions",
-                    "placeholder": null,
-                    "rangeValidator": null
-                }],
+                "followup": [
+                    {
+                        "inputId": "if_others_specify_lesions",
+                        "inputText": "Other Lesions",
+                        "required": "true",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "others_lesions",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
                 "nextQuestionId": null,
                 "previousQuestionId": "symptoms",
                 "lastQuestion": true
