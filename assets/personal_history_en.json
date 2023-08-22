@@ -3,6 +3,7 @@
   "templateName": "RISK_ASSESSMENT_RISK_ASSESSMENT_PERSONAL_HISTORY",
   "versionNumber": "V1.0",
   "firstQuestionId": "are_you_diabetic",
+  "locale": "en_US",
   "fields": {
       "are_you_diabetic": {
           "questionObject": {

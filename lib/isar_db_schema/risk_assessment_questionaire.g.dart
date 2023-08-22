@@ -18,8 +18,13 @@ const RiskAssessmentQuestionaireSchema = CollectionSchema(
   name: r'RiskAssessmentQuestionaire',
   id: -6727376593895483744,
   properties: {
-    r'sections': PropertySchema(
+    r'locale': PropertySchema(
       id: 0,
+      name: r'locale',
+      type: IsarType.string,
+    ),
+    r'sections': PropertySchema(
+      id: 1,
       name: r'sections',
       type: IsarType.objectList,
       target: r'QuestionnairesModel',
@@ -51,6 +56,12 @@ int _riskAssessmentQuestionaireEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
+    final value = object.locale;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final list = object.sections;
     if (list != null) {
       bytesCount += 3 + list.length * 3;
@@ -73,8 +84,9 @@ void _riskAssessmentQuestionaireSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
+  writer.writeString(offsets[0], object.locale);
   writer.writeObjectList<QuestionnairesModel>(
-    offsets[0],
+    offsets[1],
     allOffsets,
     QuestionnairesModelSchema.serialize,
     object.sections,
@@ -89,8 +101,9 @@ RiskAssessmentQuestionaire _riskAssessmentQuestionaireDeserialize(
 ) {
   final object = RiskAssessmentQuestionaire();
   object.id = id;
+  object.locale = reader.readStringOrNull(offsets[0]);
   object.sections = reader.readObjectList<QuestionnairesModel>(
-    offsets[0],
+    offsets[1],
     QuestionnairesModelSchema.deserialize,
     allOffsets,
     QuestionnairesModel(),
@@ -106,6 +119,8 @@ P _riskAssessmentQuestionaireDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readStringOrNull(offset)) as P;
+    case 1:
       return (reader.readObjectList<QuestionnairesModel>(
         offset,
         QuestionnairesModelSchema.deserialize,
@@ -289,6 +304,162 @@ extension RiskAssessmentQuestionaireQueryFilter on QueryBuilder<
   }
 
   QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'locale',
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'locale',
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'locale',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+          QAfterFilterCondition>
+      localeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'locale',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+          QAfterFilterCondition>
+      localeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'locale',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'locale',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterFilterCondition> localeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'locale',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
       QAfterFilterCondition> sectionsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -411,7 +582,21 @@ extension RiskAssessmentQuestionaireQueryLinks on QueryBuilder<
     RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QFilterCondition> {}
 
 extension RiskAssessmentQuestionaireQuerySortBy on QueryBuilder<
-    RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QSortBy> {}
+    RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QSortBy> {
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterSortBy> sortByLocale() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locale', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterSortBy> sortByLocaleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locale', Sort.desc);
+    });
+  }
+}
 
 extension RiskAssessmentQuestionaireQuerySortThenBy on QueryBuilder<
     RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QSortThenBy> {
@@ -428,16 +613,44 @@ extension RiskAssessmentQuestionaireQuerySortThenBy on QueryBuilder<
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterSortBy> thenByLocale() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locale', Sort.asc);
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QAfterSortBy> thenByLocaleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locale', Sort.desc);
+    });
+  }
 }
 
 extension RiskAssessmentQuestionaireQueryWhereDistinct on QueryBuilder<
-    RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QDistinct> {}
+    RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QDistinct> {
+  QueryBuilder<RiskAssessmentQuestionaire, RiskAssessmentQuestionaire,
+      QDistinct> distinctByLocale({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'locale', caseSensitive: caseSensitive);
+    });
+  }
+}
 
 extension RiskAssessmentQuestionaireQueryProperty on QueryBuilder<
     RiskAssessmentQuestionaire, RiskAssessmentQuestionaire, QQueryProperty> {
   QueryBuilder<RiskAssessmentQuestionaire, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<RiskAssessmentQuestionaire, String?, QQueryOperations>
+      localeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'locale');
     });
   }
 
@@ -471,18 +684,23 @@ const QuestionnairesModelSchema = Schema(
       type: IsarType.objectList,
       target: r'QuestionObj',
     ),
-    r'templateName': PropertySchema(
+    r'sectionName': PropertySchema(
       id: 2,
+      name: r'sectionName',
+      type: IsarType.string,
+    ),
+    r'templateName': PropertySchema(
+      id: 3,
       name: r'templateName',
       type: IsarType.string,
     ),
     r'uiTemplateId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'uiTemplateId',
       type: IsarType.string,
     ),
     r'versionNumber': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'versionNumber',
       type: IsarType.string,
     )
@@ -520,6 +738,12 @@ int _questionnairesModelEstimateSize(
     }
   }
   {
+    final value = object.sectionName;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.templateName;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -553,9 +777,10 @@ void _questionnairesModelSerialize(
     QuestionObjSchema.serialize,
     object.questionObj,
   );
-  writer.writeString(offsets[2], object.templateName);
-  writer.writeString(offsets[3], object.uiTemplateId);
-  writer.writeString(offsets[4], object.versionNumber);
+  writer.writeString(offsets[2], object.sectionName);
+  writer.writeString(offsets[3], object.templateName);
+  writer.writeString(offsets[4], object.uiTemplateId);
+  writer.writeString(offsets[5], object.versionNumber);
 }
 
 QuestionnairesModel _questionnairesModelDeserialize(
@@ -572,9 +797,10 @@ QuestionnairesModel _questionnairesModelDeserialize(
     allOffsets,
     QuestionObj(),
   );
-  object.templateName = reader.readStringOrNull(offsets[2]);
-  object.uiTemplateId = reader.readStringOrNull(offsets[3]);
-  object.versionNumber = reader.readStringOrNull(offsets[4]);
+  object.sectionName = reader.readStringOrNull(offsets[2]);
+  object.templateName = reader.readStringOrNull(offsets[3]);
+  object.uiTemplateId = reader.readStringOrNull(offsets[4]);
+  object.versionNumber = reader.readStringOrNull(offsets[5]);
   return object;
 }
 
@@ -599,6 +825,8 @@ P _questionnairesModelDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -865,6 +1093,160 @@ extension QuestionnairesModelQueryFilter on QueryBuilder<QuestionnairesModel,
         upper,
         includeUpper,
       );
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sectionName',
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sectionName',
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sectionName',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'sectionName',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'sectionName',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sectionName',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<QuestionnairesModel, QuestionnairesModel, QAfterFilterCondition>
+      sectionNameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sectionName',
+        value: '',
+      ));
     });
   }
 

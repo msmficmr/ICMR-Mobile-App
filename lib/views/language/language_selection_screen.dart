@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
@@ -42,14 +44,17 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   onContinueClick() async {
     if (_buttonEnabled.value) {
       await LocationService.locationServiceInstance.checkPermission(context);
-      RiskAssessmentQuestionaire? RAQuestions = await QuestionairService().loadQuestionairAsset();
+      String? locale = languageViewModel.selectedLanguage;
+      RiskAssessmentQuestionaire? RAQuestions = await QuestionairService().loadQuestionairAsset(locale);
       if (RAQuestions != null) {
-        await IsarDbService.isarDbService.saveRiskAssessmentQuestionaire(RAQuestions);
-      GoRouter.of(context).go(DashboardScreen.routerPath);
-
+        RiskAssessmentQuestionaire? riskAssessmentQuestionaire = await IsarDbService.isarDbService.updateRiskAssessmentQuestionaire(locale, RAQuestions);
+        if (riskAssessmentQuestionaire == null) {
+          await IsarDbService.isarDbService.saveRiskAssessmentQuestionaire(RAQuestions);
+        }
       } else {
         CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
       }
+      GoRouter.of(context).go(DashboardScreen.routerPath);
     }
   }
 
