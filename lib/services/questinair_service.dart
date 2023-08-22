@@ -11,7 +11,7 @@ class QuestionairService {
     try {
     switch (locale) {
   case "en_US":
-    sectionPath = ["assets/fagerstorm_en.json", "assets/health_habit_en.json", "assets/personal_history_en.json"];
+    sectionPath = ["assets/personal_history_en.json", "assets/health_habit_en.json","assets/fagerstorm_en.json" ];
     break;
   case "hi":
     sectionPath = ["assets/fagerstorm_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json"];
