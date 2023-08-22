@@ -7,11 +7,13 @@ part 'risk_assessment_questionaire.g.dart';
 @collection
 class RiskAssessmentQuestionaire {
   Id? id;
+  String? locale;
   List<QuestionnairesModel>? sections;
 }
 
 @embedded
 class QuestionnairesModel {
+  String? sectionName;
   String? uiTemplateId;
   String? templateName;
   String? versionNumber;

@@ -6,9 +6,20 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 
 class QuestionairService {
-  Future<RiskAssessmentQuestionaire?> loadQuestionairAsset() async {
+  Future<RiskAssessmentQuestionaire?> loadQuestionairAsset(String locale) async {
+    List<String> sectionPath = [];
     try {
-      List<String> sectionPath = ["assets/fagerstorm.json", "assets/health_habit.json", "assets/personal_history.json"];
+    switch (locale) {
+  case "en_US":
+    sectionPath = ["assets/personal_history_en.json", "assets/health_habit_en.json","assets/fagerstorm_en.json" ];
+    break;
+  case "hi":
+    sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];
+    break;
+  default:
+    CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+}
+
       RiskAssessmentQuestionaire object = RiskAssessmentQuestionaire();
       List<QuestionnairesModel>? sections = [];
       for (int i = 0; i < sectionPath.length; i++) {
@@ -17,17 +28,18 @@ class QuestionairService {
 
         sections.add(parseJson(result));
       }
+      object.locale = locale;
       object.sections = sections;
-
       return object;
     } catch (e) {
-       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     }
   }
 
   QuestionnairesModel parseJson(Map<String, dynamic> data) {
     QuestionnairesModel object = QuestionnairesModel();
     object.uiTemplateId = data["uiTemplateId"];
+    object.sectionName = getSectionName(data["uiTemplateId"]);
     object.templateName = data["templateName"];
     object.versionNumber = data["versionNumber"];
     object.firstQuestionId = data["firstQuestionId"];
@@ -65,6 +77,14 @@ class QuestionairService {
     object.questionObj = questions;
 
     return object;
+  }
+
+  String getSectionName(String fullTemplateId) {
+    String commonPrefix = "risk_assessment_risk_assessment_";
+    if (fullTemplateId.startsWith(commonPrefix)) {
+      return fullTemplateId.substring(commonPrefix.length);
+    }
+    return fullTemplateId;
   }
 
   List<Followup> generateFollowUp(List<dynamic> followupList) {
