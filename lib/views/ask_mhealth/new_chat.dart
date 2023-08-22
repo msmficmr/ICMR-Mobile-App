@@ -41,7 +41,7 @@ class _NewChatState extends State<NewChat> {
   fetchQuestion() async {
     chatBotProvider.setServiceFlow(newFlow: ServiceFlow.none);
     // Intents().getRASections(context: context);
-    await _questionnairesRepo.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
+    // await _questionnairesRepo.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
     _questionnairesRepo.fetchNextQuestion(
       context: context,
       questionId: "are_you_diabetic",

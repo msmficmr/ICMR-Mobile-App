@@ -1,14 +1,14 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/model/conversation_model.dart';
+import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/repo/questionnaires.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
-import 'package:mhealth/utils/exceptions/app_exception.dart';
 import 'package:mhealth/viewModel/chat_bot/edit_conversation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,9 +18,6 @@ class ChatBotViewModel extends ChangeNotifier {
   Map<String, String> _languageMap = {};
 
   Map<String, String> get languageMapObject => _languageMap;
-
-  final Map<String, String> _sections = {"personal_history": "Personal History", "health_habit": "Health Habit", "fagerstorm": "Fagerstorm"};
-  Map<String, String> get sections => _sections;
 
   /// using global variable for using animations
   final GlobalKey<AnimatedListState> animationKey = GlobalKey<AnimatedListState>();
@@ -50,6 +47,20 @@ class ChatBotViewModel extends ChangeNotifier {
   Map<String, Map<String, dynamic>> _screeningSections = {};
   ServiceFlow _serviceFlow = ServiceFlow.riskAssessment;
 
+  List<Questionnaire> questionnaireList = [];
+
+  int screenNumber = 0;
+
+  void setNextScreenNumber() {
+    screenNumber++;
+  }
+
+  void setPreviousScreenNumber() {
+    screenNumber--;
+  }
+
+  List<String> questionnaireSections = [];
+
   /// The variable [_questionMapObject] is a map object that contains a list of
   /// question objects obtained from the server.
   Map<String, dynamic> _questionMapObject = {};
@@ -57,9 +68,13 @@ class ChatBotViewModel extends ChangeNotifier {
   Map<String, dynamic> get questionMapObject => _questionMapObject;
 
   int get widgetIndex => _widgetIndex;
+
   int get totalQuestions => _totalQuestions;
+
   bool get isLastQuestion => _isLastQuestion;
+
   bool get isNextSuggestionClickable => _isNextSuggestionClickable;
+
   bool get isOneAssessmentCompleted => _isOneAssessmentCompleted;
 
   bool get isNewChatScreenMounted => _isNewChatScreenMounted;
@@ -157,7 +172,7 @@ class ChatBotViewModel extends ChangeNotifier {
   Future<void> onUserSelectsOption({required ConversationModel conversationModel, required BuildContext context}) async {
     try {
       if (!_questionnairesRepository.presentSectionEnded) {
-        await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
+        // await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
         await _questionnairesRepository.fetchNextQuestion(
           context: context,
           questionId: _questionnairesRepository.nextQuestionId,
@@ -167,7 +182,7 @@ class ChatBotViewModel extends ChangeNotifier {
         passEditableValue(context: _context, showEditOption: _serviceFlow != ServiceFlow.registration);
       } else {
         _questionnairesRepository.clearQuestionnaires();
-        await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.healthHabitQuestionnaire);
+        // await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.healthHabitQuestionnaire);
         _questionnairesRepository.fetchNextQuestion(
           context: context,
           questionId: "do_you_smoke_cigarette",
@@ -181,22 +196,205 @@ class ChatBotViewModel extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> fetchQuestionnaire({required String sectionName}) async {
-      try {
-        final String response = await rootBundle.loadString(sectionName);
-        _questionMapObject.addAll(json.decode(response));
-        List<String> allQuestionIds = [];
-        Map<String, dynamic> questionsMapObject = _questionMapObject["fields"];
-        questionsMapObject.forEach((key, value) {
-          allQuestionIds.add(key);
-        });
-        log("line 193 ${_questionMapObject["fields"]}");
-        return _questionMapObject["fields"];
-      } on CustomException catch (error) {
-        CommonFunctions.toastMessage(AppConstant.AN_UNKNOWN_ERROR);
-        rethrow;
-      } finally {
-        notifyListeners();
+  fetchQuestionnaireForRA() async {
+    RiskAssessmentQuestionaire? isarDB = await IsarDbService.isarDbService.getRiskAssessmentQuestionnaireById();
+    if (isarDB!.sections != null) {
+      for (var section in isarDB.sections!) {
+        questionnaireSections.add(section.sectionName.toString());
       }
+    }
+    for (int i = 0; i < isarDB.sections!.length; i++) {
+      if (isarDB.sections![i].sectionName == questionnaireSections[screenNumber]) {
+        questionnaireList = parseJsonForQuestionnaire(isarDB.sections![i].questionObj ?? []);
+      }
+    }
+    notifyListeners();
+  }
+
+  List<Questionnaire> parseJsonForQuestionnaire(questionsList) {
+    List<Questionnaire> questionnaires = [];
+
+    for (var element in questionsList) {
+      Questionnaire? questionnaire = _parseQuestionnaire(element);
+      if (questionnaire != null) {
+        questionnaires.add(questionnaire);
+      }
+    }
+    return questionnaires;
+  }
+
+  Questionnaire? _parseQuestionnaire(element) {
+    String chipType = element.type ?? "";
+    if (chipType.isNotEmpty) {
+      if (chipType == AppConstant.CHIP_WITH_MULTISELECT_TEXTFORM || chipType == AppConstant.CHIP_OPTIONS || chipType == AppConstant.CHIP_WITH_SINGLE_SELECT_CHIP) {
+        return _parseSingleSelectionQuestionnaire(element);
+      } else if (chipType == AppConstant.MULTI_SELECT_TEXTFORM || chipType == AppConstant.CHIP_OPTIONS_WITH_MULTI_SELECTION) {
+        return _parseMultiSelectionSubQuestionnaire(element);
+      } else if (chipType == AppConstant.SINGLE_MULTI_MULTI_CHIP_OPTIONS) {
+        return _parseSingleMultiMultiSelectionQuestionnaire(element);
+      }
+    } else if (element.type == null) {
+      return _parseTextFieldQuestionnaire(element);
+    }
+    return null;
+  }
+
+  SingleSelectionQuestionnaire _parseSingleSelectionQuestionnaire(element) {
+    String questionId = element is QuestionObj ? element.questionId.toString() : element.inputId.toString();
+    String question = element is QuestionObj ? element.questionText.toString() : element.inputText.toString();
+    List<QuestionnaireOption> optionsList = [];
+    List<Option> options = element.options ?? [];
+    bool isRequired = false;
+    String isRequiredField = element.requiredValue ?? "";
+    if (isRequiredField.isNotEmpty) {
+      isRequired = true;
+    }
+    List<Followup> followUps = element.followup ?? [];
+    if (options != []) {
+      for (var option in options) {
+        QuestionnaireOption questionnaireOption = _parseOptions(option, followUps);
+        optionsList.add(questionnaireOption);
+      }
+    }
+
+    SingleSelectionQuestionnaire singleSelectionQuestionnaire = SingleSelectionQuestionnaire(
+      DateTime.now(),
+      null,
+      versionNumber: "",
+      questionId: questionId,
+      questionText: question,
+      optionsList: optionsList,
+      isRequired: isRequired,
+      shouldShowError: false,
+    );
+
+    return singleSelectionQuestionnaire;
+  }
+
+  MultiSelectionSubQuestionnaire _parseMultiSelectionSubQuestionnaire(Followup element) {
+    String questionId = element.inputId.toString();
+    String question = element.inputText.toString();
+    List<QuestionnaireOption> optionsList = [];
+    List<Option> options = element.options ?? [];
+    var inputField;
+    List<Followup> followUps = element.followup ?? [];
+    if (followUps.isNotEmpty) {
+      for (var follow in followUps) {
+        if (follow.inputId != null) {
+          inputField = follow;
+        }
+      }
+    }
+    for (var option in options) {
+      QuestionnaireOption questionnaireOption = _parseOptions(option, inputField);
+      optionsList.add(questionnaireOption);
+    }
+    bool isRequired = false;
+    String isRequiredField = element.requiredValue ?? "";
+    if (isRequiredField.isNotEmpty) {
+      isRequired = true;
+    }
+
+    MultiSelectionSubQuestionnaire multiSelectionSubQuestionnaire = MultiSelectionSubQuestionnaire(
+      selectedOptions: [],
+      questionId: questionId,
+      questionText: question,
+      optionsList: optionsList,
+      isRequired: isRequired,
+      shouldShowError: false,
+      versionNumber: "",
+      timeAsked: DateTime.now().toString(),
+    );
+    return multiSelectionSubQuestionnaire;
+  }
+
+  SingleMultiMultiSelectionQuestionnaire _parseSingleMultiMultiSelectionQuestionnaire(QuestionObj element) {
+    String questionId = element.questionId.toString();
+    String question = element.questionText.toString();
+    List<QuestionnaireOption> optionsList = [];
+    List<Option> options = element.options ?? [];
+    bool isRequired = false;
+    String isRequiredField = element.requiredValue ?? "";
+    if (isRequiredField.isNotEmpty) {
+      isRequired = true;
+    }
+    var inputField;
+    List<Followup> followUps = element.followup ?? [];
+    if (followUps.isNotEmpty) {
+      for (var follow in followUps) {
+        if (follow.inputId != null) {
+          inputField = follow;
+        }
+      }
+    }
+    for (var option in options) {
+      QuestionnaireOption questionnaireOption = _parseOptions(option, inputField);
+      optionsList.add(questionnaireOption);
+    }
+
+    SingleMultiMultiSelectionQuestionnaire singleMultiMultiSelectionQuestionnaire = SingleMultiMultiSelectionQuestionnaire(
+      element,
+    );
+
+    return singleMultiMultiSelectionQuestionnaire;
+  }
+
+  QuestionnaireOption _parseOptions(option, followupList1) {
+    List followupList = followupList1 is List<Followup> ? followupList1 : [followupList1];
+    String? optionId = option.id;
+    List<Questionnaire> questionnaireList = [];
+    for (var followup in followupList) {
+      if (followup != null) {
+        if (followup.forOptionKey == optionId) {
+          var questionnaire = _parseQuestionnaire(followup);
+          if (questionnaire != null) {
+            questionnaireList.add(questionnaire);
+          }
+        }
+      }
+    }
+    QuestionnaireOption questionnaireOption = QuestionnaireOption(questionnaireList, optionId: optionId!, optionText: option.displayText.toString());
+    return questionnaireOption;
+  }
+
+  TextFieldQuestionnaire _parseTextAreaFieldQuestionnaire(element) {
+    String id = element.inputId.toString();
+    String label = element.inputText.toString() ?? "";
+
+    // String? regex = element.findElements("inputs").firstOrNull?.findElements("input").firstOrNull?.findElements("validation").firstOrNull?.findElements("regex").firstOrNull?.text;
+
+    bool isRequired = true;
+    // var isRequiredField = element.findElements("inputs").firstOrNull?.findElements("input").firstOrNull?.findElements("required");
+    //
+    // if (isRequiredField != null) {
+    //   isRequired = isRequiredField.firstOrNull?.text == "true";
+    // }
+
+    TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
+      "",
+      id: id,
+      label: label,
+      regex: "",
+      isRequired: isRequired,
+      shouldShowError: false,
+    );
+    return textFieldQuestionnaire;
+  }
+
+  TextFieldQuestionnaire _parseTextFieldQuestionnaire(element) {
+    String id = element.inputId.toString();
+    String label = element.inputText.toString();
+    String? regex = element.regex.toString();
+    bool isRequired = false;
+
+    TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
+      null,
+      id: id,
+      label: label,
+      regex: regex,
+      isRequired: isRequired,
+      shouldShowError: false,
+    );
+    return textFieldQuestionnaire;
   }
 }

@@ -19,6 +19,8 @@ enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
 
 enum ScreenNames { REGISTRATION_SCREEN, TAKE_CRA_SCREEN }
 
+enum AuthType {mobile,email}
+
 /// Enum to describe the current status of ServiceFlow
 enum ServiceFlow { riskAssessment, none, registration, loginIntent, languageIntent }
 

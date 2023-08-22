@@ -24,22 +24,6 @@ class Intents {
     chatBotProvider.notify();
   }
 
-  void getRASections({required BuildContext context}) async {
-    final chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
-    await Future.delayed(const Duration(milliseconds: 800));
-    _questionnaires.addToConversation(
-      questionId: AppConstant.IN_BUILT_QUESTION,
-      question: "Please select below sections",
-      chipType: AppConstant.CHIP_OPTIONS,
-      timeAsked: DateTime.now(),
-      hasOptions: true,
-      optionKeys: chatBotProvider.sections.keys.toList(),
-      options: chatBotProvider.sections.values.toList(),
-    );
-    _questionnaires.setIsInBuiltQuestion = true;
-    chatBotProvider.notify();
-  }
-
   void getPreviousChatButtonIntent({required BuildContext context}) async {
     final chatBotProvider = Provider.of<ChatBotViewModel>(context, listen: false);
     await Future.delayed(const Duration(milliseconds: 800));

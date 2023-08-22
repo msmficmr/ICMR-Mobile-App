@@ -8,6 +8,7 @@ import 'package:mhealth/utils/app_localization.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:provider/provider.dart';
 
 class MHealthApp extends StatelessWidget {
@@ -28,6 +29,10 @@ class MHealthApp extends StatelessWidget {
         ChangeNotifierProvider<LanguageViewModel>(
           lazy: false,
           create: (BuildContext createContext) => LanguageViewModel(),
+        ),
+        ChangeNotifierProvider<RegistrationViewModel>(
+          lazy: false,
+          create: (BuildContext createContext) => RegistrationViewModel(),
         ),
         ChangeNotifierProvider<ChatBotViewModel>(
           lazy: false,

@@ -37,6 +37,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
+  redirectToMyAccountsScreen() {
+    GoRouter.of(context).push(MyAccountScreen.routerPath);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         centerTitle: false,
         trailingType: CustomAppBarTrailingType.SINGLE,
         trailingWidget: InkWell(
-          onTap: (){},
+          onTap: redirectToMyAccountsScreen,
           child: const SizedBox(
             width: 30,
             height: 30,

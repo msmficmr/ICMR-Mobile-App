@@ -77,7 +77,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   Future<void> onContinueClick() async {
     if (formKey.currentState?.validate() ?? false) {
       loginViewModel.authFlow = LoginScreenTypes.EMAIL;
-      await loginViewModel.sendOtp(mobileNo: _emailFieldController.text);
+      await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,authType: AuthType.email);
     }
   }
 
@@ -140,7 +140,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(widgetKey: KEY_LOGIN_TYPE, loginType: loginViewModel.loginTypes[1], onTap: redirectToLoginMobileScreen,),
+                  LoginTextWidget(
+                    widgetKey: KEY_LOGIN_TYPE,
+                    loginType: loginViewModel.loginTypes[1],
+                    onTap: redirectToLoginMobileScreen,
+                  ),
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,
@@ -148,17 +152,15 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                       valueListenable: _buttonEnabled,
                       builder: (context, isValid, _) {
                         return PrimaryFilledButton(
-                          buttonThemeStyle: const FilledButtonThemeStyle(
-                              disabledTextColor: Colors.white
-                          ),
-                          buttonTitle: TranslationKeys.continueText.translate(context),
+                          buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: !isValid
                               ? null
                               : () {
-                            onContinueClick();
-                          },
+                                  onContinueClick();
+                                },
                         );
                       },
                     ),

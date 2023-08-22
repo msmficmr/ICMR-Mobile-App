@@ -1,19 +1,24 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/services/location_service.dart';
+import 'package:mhealth/services/questinair_service.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/views/dashboard/dashboard_screen.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
-
 import 'widget/custom_language_card_widget.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
@@ -36,10 +41,18 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   final String KEY_PREFERRED_LANGUAGE = "key_preferred_language";
   final String KEY_SELECT_LANGUAGE = "key_select_language";
 
-  Future<void> onContinueClick() async {
+  onContinueClick() async {
     if (_buttonEnabled.value) {
       await LocationService.locationServiceInstance.checkPermission(context);
+      RiskAssessmentQuestionaire? RAQuestions = await QuestionairService().loadQuestionairAsset();
+      log("RA Questions $RAQuestions");
+      if (RAQuestions != null) {
+        await IsarDbService.isarDbService.saveRiskAssessmentQuestionnaire(RAQuestions);
       GoRouter.of(context).go(DashboardScreen.routerPath);
+
+      } else {
+        CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      }
     }
   }
 
@@ -102,7 +115,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                           onTap: () {
                             if (languageViewModel.selectedIndex == index) {
                               _buttonEnabled.value = false;
-                              languageViewModel.setSelectedLanguage(selectedLanguage: item['name'] ?? "", selectedIndex: -1, locale: Locale(item['locale'] ?? "")); // Unselect the item if already selected
+                              languageViewModel.setSelectedLanguage(
+                                  selectedLanguage: item['name'] ?? "", selectedIndex: -1, locale: Locale(item['locale'] ?? "")); // Unselect the item if already selected
                             } else {
                               _buttonEnabled.value = true;
                               languageViewModel.setSelectedLanguage(selectedLanguage: item['locale'] ?? "", selectedIndex: index, locale: Locale(item['locale'] ?? "")); // Update the selected index
@@ -133,9 +147,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
                     widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
                     isLoading: false,
-                    onPressed: !isValid ? null : () {
-                      onContinueClick();
-                    },
+                    onPressed: !isValid
+                        ? null
+                        : () {
+                            onContinueClick();
+                          },
                   );
                 }),
           ),

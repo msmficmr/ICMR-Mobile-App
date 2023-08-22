@@ -161,19 +161,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: !hasLeading
           ? null
           : InkWell(
-        key: const Key("key_appbar_leading"),
-        onTap: onLeadingClick,
-        child: leading ??
-            Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: SvgPicture.asset(
-                  AppAssetsPath.icArrowBack,
-                ),
-              ),
+              key: const Key("key_appbar_leading"),
+              onTap: onLeadingClick,
+              child: leading ??
+                  Center(
+                    child: SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: SvgPicture.asset(
+                        AppAssetsPath.icArrowBack,
+                      ),
+                    ),
+                  ),
             ),
-      ),
       centerTitle: centerTitle,
       title: Padding(
         padding: (hasLeading || centerTitle) ? EdgeInsets.zero : const EdgeInsets.only(left: 16),

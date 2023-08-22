@@ -7,5 +7,7 @@ export 'package:mhealth/views/cra/cra_patients_screen.dart';
 export 'package:mhealth/views/cra/registration_screen.dart';
 export 'package:mhealth/views/language/language_selection_screen.dart';
 export 'package:mhealth/views/screening/consent_screening_screen.dart';
-export 'package:mhealth/views/registration/registration_success_screen.dart';
+export 'package:mhealth/views/cra/registration_success_screen.dart';
+export 'package:mhealth/views/myaccount/my_account_screen.dart';
 export 'package:mhealth/views/ask_mhealth/new_chat.dart';
+export 'package:mhealth/views/ask_mhealth/questionnaire_screen.dart';

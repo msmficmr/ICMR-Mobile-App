@@ -4,18 +4,21 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/custom_dropdown.dart';
@@ -27,6 +30,9 @@ import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
+  // final AttachmentModel? selectedAttachment; // Add this line
+
+  //RegistrationScreen({Key? key, this.selectedAttachment}) : super(key: key); // Add this line
 
   const RegistrationScreen({Key? key}) : super(key: key);
 
@@ -35,8 +41,13 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  late AttachmentModel? _selectedAttachment;
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
+
+
+  AttachmentModel? consent;
 
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -98,7 +109,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _disclosedIncome;
   late ValueNotifier<bool> _discloseIncome;
   late ValueNotifier<bool> _buttonEnabled;
+  late ValueNotifier<bool> _isConsentButtonActiveNotifier;
 
+  late RegistrationViewModel registrationViewModel;
 
   //TODO: Only for the UI purpose the list has been hardcoded for now
 
@@ -112,6 +125,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return EN_OCCUPATION_TYPES;
     }
   }
+
   static const List<String> EN_OCCUPATION_TYPES = [
     "Unemployed",
     "Student",
@@ -146,6 +160,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         return EN_OCCUPATION_INDUSTRY;
     }
   }
+
   static const List<String> EN_OCCUPATION_INDUSTRY = [
     "Rubber Industry",
     "Paint Industry",
@@ -173,6 +188,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
+     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
+     _buttonEnabled = ValueNotifier<bool>(true);
+    registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
     initializeField();
   }
 
@@ -181,17 +199,41 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _signedConsent = ValueNotifier<String?>(null);
     _disclosedIncome = ValueNotifier<String?>(null);
     _discloseIncome = ValueNotifier<bool>(false);
-    _buttonEnabled = ValueNotifier<bool>(false);
   }
 
   void onContinueClick() {
     if (formKey.currentState!.validate()) {
-      GoRouter.of(context).push(RegistrationSuccessFullScreen.routeName);
+      AttachmentDb attachment = AttachmentDb()
+        ..fileName = _selectedAttachment!.fileName
+        ..image = _selectedAttachment!.bytes;
+      IsarDbService.isarDbService.savePatient(PatientRegistration()
+        ..consentDate = DateTime.now()
+        ..firstName = _firstNameController.text
+        ..lastName = _lastNameController.text
+        ..gender = _gender.value
+        ..dob = _dobController.text
+        ..age = _ageController.text
+        ..aadharId = _aadharIDController.text
+        ..medicalId = _medicalIDIDController.text
+        ..mobile = _mobileFieldController.text
+        ..state = _stateController.text
+        ..pincode = _pincodeController.text
+        ..district = _districtController.text
+        ..signedConsent = _signedConsent.value
+        ..disclosedIncome =_disclosedIncome.value
+        ..income = _incomeController.text
+        ..consent = attachment);
+
+      GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
     }
   }
 
-  void onConsentClicked() {
-    GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+  void onConsentClicked() async {
+    AttachmentModel? result = await GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
+    if (result != null) {
+      _selectedAttachment = result;
+      _isConsentButtonActiveNotifier.value = true;
+    }
   }
 
   @override
@@ -219,31 +261,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(height: 5),
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: PrimaryFilledIconButton(
-                      onPressed: () {
-                        onConsentClicked();
-                      },
-                      isLoading: false,
-                      buttonThemeStyle: const FilledButtonThemeStyle(
-                        enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                        enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                      ),
-                      icon: SvgPicture.asset(AppAssetsPath.icInfo),
-                      buttonTitle: TranslationKeys.consent.translate(context),
-                      widgetKey: KEY_BUTTON_CONSENT),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _isConsentButtonActiveNotifier,
+                    builder: (context, isButtonActive, child) {
+                      return PrimaryFilledIconButton(
+                       onPressed: () {
+                      onConsentClicked();
+                    },
+                        isLoading: false,
+                        buttonThemeStyle: FilledButtonThemeStyle(
+                          enabledTextColor: isButtonActive ? Color(0xFFF4F5FF) : Color(0xFF2F43EE),
+                          enabledButtonColor: isButtonActive ? AppColorScheme.kGreen : Color(0xFFF4F5FF),
+                        ),
+                        icon: SvgPicture.asset(AppAssetsPath.icInfo),
+                        buttonTitle: TranslationKeys.consent.translate(context),
+                        widgetKey: KEY_BUTTON_CONSENT,
+                      );
+                    },
+                  ),
                 ),
                 const SpaceWidget(
                   height: 15,
                 ),
-                //CURRENT DATE
-                Text(
-                  "Date :- ${CommonFunctions.currentDate()}",
-                  style: AppStyles.titleMedium,
-                ),
-                const SpaceWidget(
-                  height: 15,
-                ),
-                //FIRST NAME
+                //First Name Widget
                 CustomTextField(
                   controller: _firstNameController,
                   widgetKey: Key(KEY_FIELD_FIRST_NAME),
@@ -258,7 +298,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                //LAST NAME
+                //Last Name Widget
                 CustomTextField(
                   controller: _lastNameController,
                   widgetKey: Key(KEY_FIELD_LAST_NAME),
@@ -273,7 +313,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                //GENDER
+                //Gender
                 ValueListenableBuilder(
                   valueListenable: _gender,
                   builder: (context, _, __) {
@@ -313,7 +353,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                //Age
                 CustomTextField(
                   controller: _ageController,
                   focusNode: _ageFocusNode,
@@ -429,7 +468,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       },
                       validator: AppValidators.validateBinaryQuestion,
                       selectedItem: _signedConsent.value,
-                      heading: "${TranslationKeys.wasACopyOfSignedConsent.translate(context)}*",
+                      heading: TranslationKeys.wasACopyOfSignedConsent.translate(context),
                       headingKey: Key(KEY_HEADING_SIGNED_CONSENT),
                     );
                   },
@@ -462,7 +501,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       },
                       validator: AppValidators.validateBinaryQuestion,
                       selectedItem: _disclosedIncome.value,
-                      heading: "${TranslationKeys.patientDisclosedIncome.translate(context)}*",
+                      heading: TranslationKeys.patientDisclosedIncome.translate(context),
                       headingKey: Key(KEY_HEADING_DISCLOSED_INCOME),
                     );
                   },
@@ -480,6 +519,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         hintText: TranslationKeys.enterHere.translate(context),
                         heading: TranslationKeys.income.translate(context),
                         headingKey: Key(KEY_HEADING_INCOME),
+                        validator: AppValidators.requiredFiled,
                         keyboardType: TextInputType.number,
                       ) : const SizedBox.shrink();
                     }),
@@ -489,12 +529,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 //OCCUPATION TYPE
                 CustomDropdown<String>(
                   widgetKey: KEY_FIELD_OCCUPATION_TYPE,
-                  heading: "${TranslationKeys.occupationType.translate(context)}*",
+                  heading: TranslationKeys.occupationType.translate(context),
                   headingKey: Key(KEY_HEADING_OCCUPATION_TYPE),
                   hintText: TranslationKeys.select.translate(context),
                   onChanged: (val) {},
                   items: getOccupationTypes(),
-                  validator: AppValidators.requiredFiled,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -502,24 +541,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 //OCCUPATION INDUSTRY TYPE
                 CustomDropdown<String>(
                   widgetKey: KEY_FIELD_OCCUPATION_INDUSTRY_TYPE,
-                  heading: "${TranslationKeys.occupationIndustry.translate(context)}*",
+                  heading: TranslationKeys.occupationIndustry.translate(context),
                   headingKey: Key(KEY_HEADING_OCCUPATION_INDUSTRY_TYPE),
                   hintText: TranslationKeys.select.translate(context),
                   onChanged: (val) {},
                   items: getOccupationIndustryTypes(),
-                  validator: AppValidators.requiredFiled,
                 ),
                 const SpaceWidget(
                   height: 15,
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: PrimaryFilledButton(
-                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                    buttonTitle: TranslationKeys.continueText.translate(context),
-                    widgetKey: KEY_BUTTON_CONTINUE,
-                    isLoading: false,
-                    onPressed: onContinueClick,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _buttonEnabled,
+                    builder: (context, isValid, _) {
+                      return PrimaryFilledButton(
+                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                        buttonTitle: TranslationKeys.continueText.translate(context),
+                        widgetKey: KEY_BUTTON_CONTINUE,
+                        isLoading: false,
+                        onPressed: !isValid
+                            ? null
+                            : () {
+                                onContinueClick();
+                              },
+                      );
+                    },
                   ),
                 ),
               ],

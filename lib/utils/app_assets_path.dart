@@ -44,9 +44,9 @@ class AppAssetsPath {
   static const String icLogout = "assets/icons/ic_logout.svg";
 
   /// Questionnaires
-  static const String personalHistoryQuestionnaire = "assets/json/personal_history.json";
-  static const String healthHabitQuestionnaire = "assets/json/health_habit.json";
-  static const String fagerstormQuestionnaire = "assets/json/fagerstorm.json";
+  // static const String personalHistoryQuestionnaire = "assets/json/personal_history.json";
+  // static const String healthHabitQuestionnaire = "assets/json/health_habit.json";
+  // static const String fagerstormQuestionnaire = "assets/json/fagerstorm.json";
 
   /// Loader
   static const String loader = "assets/json/loader.json";

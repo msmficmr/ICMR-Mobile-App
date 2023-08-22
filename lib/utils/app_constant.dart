@@ -57,6 +57,8 @@ class AppConstant {
   static const String YOU_HAVE_SET_HAS_OPTIONS_AS_TRUE = "You have set hasOptions as true, but options is empty or You have "
       "set hasOptions as false, but options is not empty.";
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
+  static const String ERROR_FILL_REQUIRED_FIELDS = "Fill Required fields";
+  static const String FIELD_REQUIRED = "This field is required";
 
   // LANGUAGE CODE KEYS
   static const String ENGLISH_LANGUAGE_CODE_KEY = "en_US";
@@ -68,6 +70,7 @@ class AppConstant {
   static const String PATIENT_DOB_KEY = "PatientDOB";
   static const String PATIENT_GENDER_KEY = "PatientGender";
   static const String LOCATION_ID_KEY = "locationId";
+  static const String TEMPLATE_VERSION = "template_version";
 
   //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [
@@ -75,6 +78,9 @@ class AppConstant {
     CustomChipItem(data: "f", text: "female"),
     CustomChipItem(data: "o", text: "others"),
   ];
+
+  ///SECURE STORAGE KEYS
+  static const String SHARED_PREFERENCE_USER_DETAILS = "SHARED_PREFERENCE_USER_DETAILS";
 
   // QUESTIONNAIRE TYPE
   static const String BUTTON_TYPE = "BUTTON_TYPE";
@@ -92,6 +98,8 @@ class AppConstant {
   static const String SINGLE_MULTI_MULTI_CHIP_OPTIONS = "SINGLE_MULTI_MULTI_CHIP_OPTIONS";
   static const String SINGLE_CHOICE_TOGGLE_WITH_MULTI_INPUT = "SINGLE_CHOICE_TOGGLE_WITH_MULTI_INPUT";
   static const String SINGLE_CHOICE_TOGGLE_WITH_AUTOSUGGEST = "SINGLE_CHOICE_TOGGLE_WITH_AUTOSUGGEST";
+  static const String MULTI_SELECT_TEXTFORM = "MULTI_SELECT_TEXTFORM";
+  static const String CHIP_OPTIONS_WITH_MULTI_SELECTION = "CHIP_OPTIONS_WITH_MULTI_SELECTION";
   static const String ENCOUNTER_CATEGORY_MAP_IDS_KEY = "EncounterCategoryMapIds";
   static const String INSURANCE_SECTION_NAME = "Insurance related information";
   static const String IN_BUILT_QUESTION = "InBuiltQuestion";

@@ -31,6 +31,9 @@ dependencies:
   dotted_border: ^2.0.0+3
   http_interceptor: ^1.0.2
   http: ^0.13.6
+  isar: ^3.1.0+1
+  path_provider: ^2.0.15
+  isar_flutter_libs: ^3.1.0+1
   lottie: ^1.0.1
   bubble: ^1.2.1
 
@@ -39,6 +42,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.6
 flutter:
 
   uses-material-design: true
@@ -46,6 +51,9 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/language/
+    - assets/personal_history.json
+    - assets/fagerstorm.json
+    - assets/health_habit.json
     - assets/json/
 
   fonts:

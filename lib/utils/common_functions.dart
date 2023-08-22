@@ -6,11 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
-import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonFunctions {
