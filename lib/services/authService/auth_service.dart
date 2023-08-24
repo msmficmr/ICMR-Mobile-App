@@ -22,7 +22,6 @@ class AuthService implements IAuthService {
         } else {
           CommonFunctions.toastMessage(otpModel.message ?? "");
         }
-        return otpModel;
       } else {
         throw AppException(null, AppConstant.ERROR_SOMETHING_WENT_WRONG, 500);
       }
