@@ -46,10 +46,6 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
       case HttpStatus.notFound:
         break;
       case HttpStatus.unauthorized:
-      //   LoginViewModel.loginViewModel.logoutUser();
-      //    throw UnAuthorizedException(response: data, message: "404", statusCode: statusCode);
-      // case HttpStatus.notFound:
-      //   throw NotFoundException(response: data, message: "404", statusCode: statusCode);
       case HttpStatus.badRequest:
         throw BadRequestException(response: data, message: "400", statusCode: statusCode);
       case HttpStatus.tooManyRequests:
