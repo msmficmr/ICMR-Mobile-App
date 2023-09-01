@@ -21,7 +21,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: SplashScreen.routerPath,
+      initialLocation: QuestionnaireScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -95,43 +95,39 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: NewChat.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const NewChat(),
-              ),
-            ),
-            GoRoute(
               path: QuestionnaireScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const QuestionnaireScreen(),
-              ),
+              pageBuilder: (context, state) {
+                String sectionName = state.extra.toString();
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: QuestionnaireScreen(sectionName: sectionName,),
+                );
+              },
             ),
           ],
         )
       ],
 
-      /// this callback will called on every time when we are trying to navigate from one screen to another
-      redirect: (BuildContext context, GoRouterState state) async {
-        // [state.matchedLocation] will return navigation route passed to push/go method
-        String navigationRoute = state.matchedLocation;
-
-        /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
-        /// navigating to login screen
-        if (!loginViewModel.isLoggedIn) {
-          return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
-        }
-        if (loginViewModel.isLoggedIn) {
-          if (navigationRoute == LoginHome.routerPath) {
-            return LanguageSelectionScreen.routerPath;
-          }
-        }
-
-        /// if user is logged we are null so that it will navigate from one screen to another without any redirect
-
-        return null;
-      },
+      // /// this callback will called on every time when we are trying to navigate from one screen to another
+      // redirect: (BuildContext context, GoRouterState state) async {
+      //   // [state.matchedLocation] will return navigation route passed to push/go method
+      //   String navigationRoute = state.matchedLocation;
+      //
+      //   /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
+      //   /// navigating to login screen
+      //   if (!loginViewModel.isLoggedIn) {
+      //     return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
+      //   }
+      //   if (loginViewModel.isLoggedIn) {
+      //     if (navigationRoute == LoginHome.routerPath) {
+      //       return LanguageSelectionScreen.routerPath;
+      //     }
+      //   }
+      //
+      //   /// if user is logged we are null so that it will navigate from one screen to another without any redirect
+      //
+      //   return null;
+      // },
     );
   }
 }

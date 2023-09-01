@@ -1,20 +1,12 @@
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
+import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
-import 'package:mhealth/model/conversation_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
-import 'package:mhealth/repo/questionnaires.dart';
 import 'package:mhealth/services/isar_db_service.dart';
-import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
-import 'package:mhealth/utils/common_functions.dart';
-import 'package:mhealth/utils/enums.dart';
-import 'package:mhealth/viewModel/chat_bot/edit_conversation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatBotViewModel extends ChangeNotifier {
-  final Questionnaires _questionnairesRepository = Questionnaires();
-
   Map<String, String> _languageMap = {};
 
   Map<String, String> get languageMapObject => _languageMap;
@@ -23,192 +15,122 @@ class ChatBotViewModel extends ChangeNotifier {
   final GlobalKey<AnimatedListState> animationKey = GlobalKey<AnimatedListState>();
   final ScrollController scrollController = ScrollController();
 
-  late BuildContext _context;
+  late CRAModel answeredCRAData;
 
-  int _widgetIndex = 0;
-  int _totalQuestions = 0;
-  bool _isLastQuestion = false;
-  bool _isNextSuggestionClickable = true;
-
-  bool _isOneAssessmentCompleted = false;
-
-  /// [_isNewChatScreenMounted] tracks if the newChat screen is mounted or not
-  bool _isNewChatScreenMounted = false;
-
-  String _currentLanguage = "en_US";
-  String? _currentSectionId;
-  String? _currentEncounterId;
-
-  String? _currentSectionName;
-  String _currentVersionNumber = "";
-  final List _conversationToSend = [];
-  Map<String, String> _sectionNameIdMap = {};
-  Map<String, dynamic> _questionObj = {};
-  Map<String, Map<String, dynamic>> _screeningSections = {};
-  ServiceFlow _serviceFlow = ServiceFlow.riskAssessment;
+  RiskAssessmentQuestionaire? isarDB;
 
   List<Questionnaire> questionnaireList = [];
+  List<Questionnaire> answeredQuestionnaire = [];
+  List<CRAModel> craSectionData = [];
 
-  int screenNumber = 0;
+  String? _sectionName;
+  String? get sectionName => _sectionName;
 
-  void setNextScreenNumber() {
-    screenNumber++;
+  void setNextSectionData(String sectionName) {
+    List<Questionnaire> answeredQuestions = [];
+    answeredQuestions.addAll(questionnaireList);
+    answeredCRAData = CRAModel(sectionName, answeredQuestions);
+    craSectionData.add(answeredCRAData);
+    if (sectionName == isarDB!.sections![questionnaireSections.length - 1].sectionName) {
+      log("End of the questionnaire $craSectionData");
+      submitForm(craData: craSectionData);
+    } else {
+      for (int i = 0; i < questionnaireSections.length; i++) {
+        if (sectionName == questionnaireSections[i]) {
+          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i + 1].questionObj ?? []);
+          _sectionName = isarDB!.sections![i+1].sectionName;
+        }
+      }
+    }
+    notifyListeners();
   }
 
-  void setPreviousScreenNumber() {
-    screenNumber--;
+  void setPreviousSectionData(String sectionName) {
+    int previousIndex = questionnaireSections.indexOf(sectionName);
+    if (craSectionData.isNotEmpty) {
+      for (var section in craSectionData) {
+        String? key = section.ehrCategoryMap;
+        if (questionnaireSections[previousIndex - 1] == key) {
+          _sectionName = key;
+          questionnaireList = section.questionnaireList!;
+        }
+      }
+    }
   }
 
   List<String> questionnaireSections = [];
 
-  /// The variable [_questionMapObject] is a map object that contains a list of
-  /// question objects obtained from the server.
-  Map<String, dynamic> _questionMapObject = {};
-
-  Map<String, dynamic> get questionMapObject => _questionMapObject;
-
-  int get widgetIndex => _widgetIndex;
-
-  int get totalQuestions => _totalQuestions;
-
-  bool get isLastQuestion => _isLastQuestion;
-
-  bool get isNextSuggestionClickable => _isNextSuggestionClickable;
-
-  bool get isOneAssessmentCompleted => _isOneAssessmentCompleted;
-
-  bool get isNewChatScreenMounted => _isNewChatScreenMounted;
-
-  String get currentLanguage => _currentLanguage;
-
-  String? get currentSectionId => _currentSectionId;
-
-  String? get currentEncounterId => _currentEncounterId;
-
-  String? get currentSectionName => _currentSectionName;
-
-  String get currentVersionNumber => _currentVersionNumber;
-
-  List get conversationToSend => _conversationToSend;
-
-  Map<String, String> get sectionNameIdMap => _sectionNameIdMap;
-
-  Map<String, dynamic> get questionObj => _questionObj;
-
-  Map<String, Map<String, dynamic>> get screeningSections => _screeningSections;
-
-  ServiceFlow get serviceFlow => _serviceFlow;
-
-  Future<void> setLanguage({String? languageCode}) async {
-    _currentLanguage = languageCode ?? await CommonFunctions.getLanguageKey() ?? "en_US";
-  }
-
-  void setIsNextSuggestionClickable({required bool isNextSuggestionClickable}) {
-    _isNextSuggestionClickable = isNextSuggestionClickable;
-  }
-
-  void setIsLastQuestion(bool isLastQuestion) {
-    _isLastQuestion = isLastQuestion;
-  }
-
-  void setBuildContext(BuildContext context) {
-    _context = context;
-  }
-
-  void setServiceFlow({required ServiceFlow newFlow}) {
-    _serviceFlow = newFlow;
-  }
-
-  setCurrentVersionNumber({required String currentVersionNumber}) {
-    _currentVersionNumber = currentVersionNumber;
-  }
-
-  void setIndex({required int widgetIndex}) {
-    _widgetIndex = widgetIndex;
-    notifyListeners();
-  }
-
-  set setIsOneAssessmentCompleted(bool isOneAssessmentCompleted) {
-    _isOneAssessmentCompleted = isOneAssessmentCompleted;
-  }
-
-  removeLastConversationToSend() => _conversationToSend.removeLast();
-
-  void setNewChatScreenMount(bool isMounted) {
-    _isNewChatScreenMounted = isMounted;
-  }
-
   /// Forces provider to setstate on external command
   void notify() => notifyListeners();
 
-  Future<void> clearScreeningData({required bool clearSharedPreferences}) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    if (clearSharedPreferences) {
-      sharedPreferences.clear();
-    } else {
-      sharedPreferences.remove(AppConstant.CASE_ID);
-    }
-
-    try {
-      if (animationKey.currentState != null) {
-        for (var i = 0; i < _questionnairesRepository.getLength; i++) {
-          animationKey.currentState!.removeItem(0, (context, animation) => Container());
+  fetchQuestionnaireForRA(String language, String sectionName) async {
+    isarDB = await IsarDbService.isarDbService.getRAQuestionaireByLocale(language);
+    if (questionnaireSections.isEmpty) {
+      if (isarDB!.sections != null) {
+        for (var section in isarDB!.sections!) {
+          questionnaireSections.add(section.sectionName.toString());
         }
       }
-    } catch (error, stackTrace) {
-      CommonFunctions.toastMessage(AppConstant.AN_UNKNOWN_ERROR);
     }
 
-    _questionnairesRepository.clearConversation();
-    _screeningSections.clear();
-    _conversationToSend.clear();
-    _currentEncounterId = null;
-    _currentSectionId = null;
-    _currentSectionName = null;
-    _screeningSections.clear();
-    _isNewChatScreenMounted = false;
-  }
-
-  Future<void> onUserSelectsOption({required ConversationModel conversationModel, required BuildContext context}) async {
-    try {
-      if (!_questionnairesRepository.presentSectionEnded) {
-        // await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.personalHistoryQuestionnaire);
-        await _questionnairesRepository.fetchNextQuestion(
-          context: context,
-          questionId: _questionnairesRepository.nextQuestionId,
-          encounterId: _currentEncounterId ?? "",
-          ehrCategoryId: _currentSectionId ?? "",
-        );
-        passEditableValue(context: _context, showEditOption: _serviceFlow != ServiceFlow.registration);
-      } else {
-        _questionnairesRepository.clearQuestionnaires();
-        // await _questionnairesRepository.fetchAllQuestionnaires(sectionName: AppAssetsPath.healthHabitQuestionnaire);
-        _questionnairesRepository.fetchNextQuestion(
-          context: context,
-          questionId: "do_you_smoke_cigarette",
-          encounterId: "HEALTH_HABIT",
-          ehrCategoryId: "RISK_ASSESSMENT_RISK_ASSESSMENT_HEALTH_HABIT",
-        );
-      }
-    } catch (error, stackTrace) {
-      log("onUserSelectsOption error: $error");
-      log("onUserSelectsOption stackTrace: $stackTrace");
-    }
-  }
-
-  fetchQuestionnaireForRA() async {
-    RiskAssessmentQuestionaire? isarDB = await IsarDbService.isarDbService.getRiskAssessmentQuestionnaireById();
-    if (isarDB!.sections != null) {
-      for (var section in isarDB.sections!) {
-        questionnaireSections.add(section.sectionName.toString());
-      }
-    }
-    for (int i = 0; i < isarDB.sections!.length; i++) {
-      if (isarDB.sections![i].sectionName == questionnaireSections[screenNumber]) {
-        questionnaireList = parseJsonForQuestionnaire(isarDB.sections![i].questionObj ?? []);
+    if (questionnaireList.isEmpty) {
+      _sectionName = questionnaireSections[0];
+      for (int i = 0; i < isarDB!.sections!.length; i++) {
+        if (isarDB!.sections![i].sectionName == questionnaireSections[0]) {
+          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i].questionObj ?? []);
+        }
       }
     }
     notifyListeners();
+  }
+
+  void submitForm({required List<CRAModel> craData}) {
+    List<String> sectionNames = [];
+    List<CRAQuestionnaire> craQuestionnaireData = [];
+    CRAQuestionnaire? craQuestionnaire;
+    for (int i = 0; i < craData.length; i++) {
+      sectionNames.add(craData[i].ehrCategoryMap.toString());
+      for(int j = 0; j < craData[i].questionnaireList!.length; j++) {
+        List<Inputs>? inputs;
+        late Inputs input;
+        if (craData[i].questionnaireList![j].toJson()['inputs'] != []) {
+          for (int k = 0; k < craData[i].questionnaireList![j].toJson()['inputs'].length; k++ ) {
+            input = Inputs()
+                ..inputId = craData[i].questionnaireList![j].toJson()['inputs'][k]['inputId']
+                ..value = craData[i].questionnaireList![j].toJson()['inputs'][k]['value'];
+          }
+          inputs!.add(input);
+        }
+         craQuestionnaire = CRAQuestionnaire()
+            ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
+            ..versionNumber = "1.0"
+            ..value = craData[i].questionnaireList![j].toJson()['value']
+            ..inputs = inputs ?? []
+            ..timeAsked = craData[i].questionnaireList![j].toJson()['timeAsked']
+            ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
+            ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
+      }
+      craQuestionnaireData.add(craQuestionnaire!);
+    }
+    CRASectionModel craModel = CRASectionModel()
+    ..ehrCategoryMap = sectionNames[0]
+    ..questionnaireList = craQuestionnaireData;
+    List<CRASectionModel> craSectionModel = [];
+    craSectionModel.add(craModel);
+    for (var e in craSectionModel) {
+      log(e.questionnaireList.toString());
+    }
+    try {
+      IsarDbService.isarDbService.saveCRA(CRAOfflineData()
+        ..id = 01
+        ..patientId = "CRA15150"
+        ..caseId = "515"
+        ..versionNumber = "1.0"
+        ..craSectionData = craSectionModel
+      );
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   List<Questionnaire> parseJsonForQuestionnaire(questionsList) {
@@ -357,35 +279,16 @@ class ChatBotViewModel extends ChangeNotifier {
     return questionnaireOption;
   }
 
-  TextFieldQuestionnaire _parseTextAreaFieldQuestionnaire(element) {
-    String id = element.inputId.toString();
-    String label = element.inputText.toString() ?? "";
-
-    // String? regex = element.findElements("inputs").firstOrNull?.findElements("input").firstOrNull?.findElements("validation").firstOrNull?.findElements("regex").firstOrNull?.text;
-
-    bool isRequired = true;
-    // var isRequiredField = element.findElements("inputs").firstOrNull?.findElements("input").firstOrNull?.findElements("required");
-    //
-    // if (isRequiredField != null) {
-    //   isRequired = isRequiredField.firstOrNull?.text == "true";
-    // }
-
-    TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
-      "",
-      id: id,
-      label: label,
-      regex: "",
-      isRequired: isRequired,
-      shouldShowError: false,
-    );
-    return textFieldQuestionnaire;
-  }
-
   TextFieldQuestionnaire _parseTextFieldQuestionnaire(element) {
     String id = element.inputId.toString();
     String label = element.inputText.toString();
     String? regex = element.regex.toString();
     bool isRequired = false;
+
+    var isRequiredField = element.requiredValue.toString();
+    if (isRequiredField.isNotEmpty) {
+      isRequired = isRequiredField == "true";
+    }
 
     TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
       null,
@@ -397,4 +300,13 @@ class ChatBotViewModel extends ChangeNotifier {
     );
     return textFieldQuestionnaire;
   }
+}
+
+class CRAModel {
+  String? ehrCategoryMap;
+  List<Questionnaire>? questionnaireList;
+
+  CRAModel(this.ehrCategoryMap, this.questionnaireList);
+
+  Map<String, dynamic> toJson() => {'ehrCategoryMapId': ehrCategoryMap, 'ehrNotes': questionnaireList};
 }

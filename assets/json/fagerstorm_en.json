@@ -515,7 +515,7 @@
                     },
                     {
                         "id": "others_lesions",
-                        "displayText": "others"
+                        "displayText": "Others"
                     }
                 ],
                 "placeholder": null,

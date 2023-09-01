@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -21,20 +19,13 @@ Widget _getWidgetForQuestionnaire(BuildContext context,
         context, questionnaire, height, globalOnClick);
   } else if (questionnaire is TextFieldQuestionnaire) {
     return _getWidgetForTextFieldQuestionnaire(context, questionnaire, height);
-  }
-  // else if (questionnaire is SingleMultiMultiSelectionQuestionnaire) {
-  //   return FamilyHistoryCapturer(
-  //       key: UniqueKey(),
-  //       questionConfiguration: questionnaire.xmlElement,
-  //       existingResponse: null);
-  // }
-  else {
+  } else {
     return Container(
       width: height * 0.5,
       color: AppColorScheme.errorTextColor,
-      child: Text(
-        "Not implemented yet $questionnaire",
-        style: const TextStyle(
+      child: const Text(
+        "Not implemented yet",
+        style: TextStyle(
           color: AppColorScheme.kGrayColor,
         ),
       ),

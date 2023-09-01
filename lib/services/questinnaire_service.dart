@@ -2,13 +2,25 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
+import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 
-class QuestionairService {
-  Future<RiskAssessmentQuestionaire?> loadQuestionairAsset() async {
+class QuestionnaireService {
+  Future<RiskAssessmentQuestionaire?> loadQuestionnaireAsset(String locale) async {
+    List<String> sectionPath = [];
     try {
-      List<String> sectionPath = ["assets/personal_history.json", "assets/health_habit.json", "assets/fagerstorm.json"];
+    switch (locale) {
+  case "en_US":
+    sectionPath = [AppAssetsPath.personalHistoryQuestionnaire, AppAssetsPath.healthHabitQuestionnaire, AppAssetsPath.fagerstormQuestionnaire];
+    break;
+  case "hi":
+    sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];
+    break;
+  default:
+    CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+}
+
       RiskAssessmentQuestionaire object = RiskAssessmentQuestionaire();
       List<QuestionnairesModel>? sections = [];
       for (int i = 0; i < sectionPath.length; i++) {
@@ -17,8 +29,8 @@ class QuestionairService {
 
         sections.add(parseJson(result));
       }
+      object.locale = locale;
       object.sections = sections;
-
       return object;
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);

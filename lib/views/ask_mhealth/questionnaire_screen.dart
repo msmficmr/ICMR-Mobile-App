@@ -1,10 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
-import 'package:mhealth/services/isar_db_service.dart';
-import 'package:mhealth/services/questinair_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -12,16 +12,19 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/chat_bot_view_model.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/create_questionnaire_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:mhealth/model/questionnaire_form_model.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   static const routerPath = "/questionnaireScreen";
+  String sectionName;
 
-  const QuestionnaireScreen({Key? key}) : super(key: key);
+  QuestionnaireScreen({Key? key, required this.sectionName}) : super(key: key);
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
@@ -31,28 +34,30 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
   late ChatBotViewModel chatBotViewModel;
-  late ValueNotifier<bool> _buttonEnabled;
 
   @override
   void initState() {
     super.initState();
     chatBotViewModel = Provider.of<ChatBotViewModel>(context, listen: false);
-    _buttonEnabled = ValueNotifier<bool>(false);
-    addQuestions();
-    // fetchQuestions();
+    fetchQuestions();
   }
 
-  addQuestions() async {
-    RiskAssessmentQuestionaire? rAQuestions = await QuestionairService().loadQuestionairAsset();
-    if (rAQuestions != null) {
-      await IsarDbService.isarDbService.saveRiskAssessmentQuestionnaire(rAQuestions);
-      await chatBotViewModel.fetchQuestionnaireForRA();
+  fetchQuestions() async {
+    if (chatBotViewModel.questionnaireList.isEmpty) {
+      final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+      String? locale = languageViewModel.selectedLanguage;
+      await chatBotViewModel.fetchQuestionnaireForRA("en_US", "");
     }
   }
 
-  // fetchQuestions() async {
-  //   await chatBotViewModel.fetchQuestionnaireForRA();
-  // }
+  goToPreviousScreen() {
+    if (chatBotViewModel.questionnaireSections[0] == chatBotViewModel.sectionName) {
+      GoRouter.of(context).push(DashboardScreen.routerPath);
+    } else {
+      chatBotViewModel.setPreviousSectionData(chatBotViewModel.sectionName!);
+      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +65,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
-        chatBotViewModel.setPreviousScreenNumber();
-        GoRouter.of(context).push(QuestionnaireScreen.routerPath);
-        return true;
+        goToPreviousScreen();
+        return false;
       },
       child: Scaffold(
         appBar: CustomAppBar(
+          onLeadingClick: () => goToPreviousScreen(),
           appBarTitleType: CustomAppBarTitleType.TEXT,
           titleText: "RISK ASSESSMENT",
         ),
@@ -95,7 +100,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              chatBotViewModel.questionnaireSections[chatBotViewModel.screenNumber].sectionTitleName,
+                              chatBotViewModel.sectionName!.sectionTitleName,
                               style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor),
                             ),
                           )
@@ -136,7 +141,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 }
                               }
                               if (isValid) {
-                                chatBotViewModel.setNextScreenNumber();
+                                chatBotViewModel.setNextSectionData(chatBotViewModel.sectionName!);
                                 GoRouter.of(context).push(QuestionnaireScreen.routerPath);
                               } else {
                                 setState(() {});

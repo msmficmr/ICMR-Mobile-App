@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:isar/isar.dart';
 
 part 'risk_assessment_questionaire.g.dart';
@@ -7,6 +5,7 @@ part 'risk_assessment_questionaire.g.dart';
 @collection
 class RiskAssessmentQuestionaire {
   Id? id;
+  String? locale;
   List<QuestionnairesModel>? sections;
 }
 
