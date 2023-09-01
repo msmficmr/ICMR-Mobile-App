@@ -24,6 +24,7 @@ class ChatBotViewModel extends ChangeNotifier {
   List<CRAModel> craSectionData = [];
 
   String? _sectionName;
+
   String? get sectionName => _sectionName;
 
   void setNextSectionData(String sectionName) {
@@ -38,7 +39,7 @@ class ChatBotViewModel extends ChangeNotifier {
       for (int i = 0; i < questionnaireSections.length; i++) {
         if (sectionName == questionnaireSections[i]) {
           questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i + 1].questionObj ?? []);
-          _sectionName = isarDB!.sections![i+1].sectionName;
+          _sectionName = isarDB!.sections![i + 1].sectionName;
         }
       }
     }
@@ -87,47 +88,82 @@ class ChatBotViewModel extends ChangeNotifier {
   void submitForm({required List<CRAModel> craData}) {
     List<String> sectionNames = [];
     List<CRAQuestionnaire> craQuestionnaireData = [];
+    List<CRASectionModel> craSectionModel = [];
     CRAQuestionnaire? craQuestionnaire;
+    // CRASectionModel? craModel;
+    // for(int i = 0; i < craData.length; i++) {
+    //   log("line 94 ${craData.length}");
+    //   sectionNames.add(craData[i].ehrCategoryMap.toString());
+    //   for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
+    //     craQuestionnaire = CRAQuestionnaire()
+    //       ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
+    //       ..versionNumber = "1.0"
+    //       ..value = craData[i].questionnaireList![j].toJson()['value']
+    //       ..inputs = []
+    //       ..timeAsked = craData[i].questionnaireList![j].toJson()['timeAsked']
+    //       ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
+    //       ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
+    //     craQuestionnaireData.add(craQuestionnaire);
+    //   }
+    //   craModel = CRASectionModel()
+    //     ..ehrCategoryMap = craData[i].ehrCategoryMap.toString()
+    //     ..questionnaireList = craQuestionnaireData;
+    // }
+    // List<CRASectionModel> craSectionModel = [];
+    // craSectionModel.add(craModel!);
+    // for (int i = 0; i < craData.length; i++) {
+    //   sectionNames.add(craData[i].ehrCategoryMap.toString());
+    //   for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
+    //     craQuestionnaire = CRAQuestionnaire()
+    //       ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
+    //       ..versionNumber = "1.0"
+    //       ..value = craData[i].questionnaireList![j].toJson()['value']
+    //       ..inputs = []
+    //       ..timeAsked = craData[i].questionnaireList![j].toJson()['timeAsked']
+    //       ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
+    //       ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
+    //   }
+    //   craQuestionnaireData.add(craQuestionnaire!);
+    // }
+    // CRASectionModel craModel = CRASectionModel()
+    //   ..ehrCategoryMap = sectionNames[0]
+    //   ..questionnaireList = craQuestionnaireData;
+    // craSectionModel.add(craModel);
+    List<CRAQuestionnaire> craQuestion = [];
     for (int i = 0; i < craData.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
-      for(int j = 0; j < craData[i].questionnaireList!.length; j++) {
-        List<Inputs>? inputs;
-        late Inputs input;
-        if (craData[i].questionnaireList![j].toJson()['inputs'] != []) {
-          for (int k = 0; k < craData[i].questionnaireList![j].toJson()['inputs'].length; k++ ) {
-            input = Inputs()
-                ..inputId = craData[i].questionnaireList![j].toJson()['inputs'][k]['inputId']
-                ..value = craData[i].questionnaireList![j].toJson()['inputs'][k]['value'];
-          }
-          inputs!.add(input);
-        }
-         craQuestionnaire = CRAQuestionnaire()
+      if (craData[i].questionnaireList != []) {
+        for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
+          craQuestionnaire = CRAQuestionnaire()
             ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
             ..versionNumber = "1.0"
             ..value = craData[i].questionnaireList![j].toJson()['value']
-            ..inputs = inputs ?? []
+            ..inputs = []
             ..timeAsked = craData[i].questionnaireList![j].toJson()['timeAsked']
             ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
             ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
+        }
+        craQuestion.add(craQuestionnaire!);
       }
-      craQuestionnaireData.add(craQuestionnaire!);
+      craQuestionnaireData.addAll(craQuestion);
+      CRASectionModel craModel = CRASectionModel()
+        ..ehrCategoryMap = sectionNames[i]
+        ..questionnaireList = craQuestionnaireData;
+      craSectionModel.add(craModel);
     }
-    CRASectionModel craModel = CRASectionModel()
-    ..ehrCategoryMap = sectionNames[0]
-    ..questionnaireList = craQuestionnaireData;
-    List<CRASectionModel> craSectionModel = [];
-    craSectionModel.add(craModel);
-    for (var e in craSectionModel) {
-      log(e.questionnaireList.toString());
-    }
+    // for (int i = 0; i < sectionNames.length; i++) {
+    //   CRASectionModel craModel = CRASectionModel()
+    //     ..ehrCategoryMap = sectionNames[i]
+    //     ..questionnaireList = craQuestionnaireData;
+    //   craSectionModel.add(craModel);
+    // }
     try {
       IsarDbService.isarDbService.saveCRA(CRAOfflineData()
         ..id = 01
         ..patientId = "CRA15150"
         ..caseId = "515"
         ..versionNumber = "1.0"
-        ..craSectionData = craSectionModel
-      );
+        ..craSectionData = craSectionModel);
     } catch (e) {
       log(e.toString());
     }
