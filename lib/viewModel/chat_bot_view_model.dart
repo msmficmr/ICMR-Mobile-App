@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
+import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
@@ -181,7 +182,7 @@ class ChatBotViewModel extends ChangeNotifier {
   }
 
   String randomPatientNumber() {
-    final uuid = Uuid();
+    const uuid = Uuid();
     final sixDigitUuid = uuid.v4().toString().substring(0, 6);
     savePatientId(sixDigitUuid);
     return sixDigitUuid;
@@ -190,7 +191,7 @@ class ChatBotViewModel extends ChangeNotifier {
   savePatientId(String randomId) => _patientId = randomId;
 
   String randomCaseNumber() {
-    final uuid = Uuid();
+    const uuid = Uuid();
     final sixDigitUuid = uuid.v4().toString().substring(0, 5);
     return sixDigitUuid;
   }
@@ -362,13 +363,4 @@ class ChatBotViewModel extends ChangeNotifier {
     );
     return textFieldQuestionnaire;
   }
-}
-
-class CRAModel {
-  String? ehrCategoryMap;
-  List<Questionnaire>? questionnaireList;
-
-  CRAModel(this.ehrCategoryMap, this.questionnaireList);
-
-  Map<String, dynamic> toJson() => {'ehrCategoryMapId': ehrCategoryMap, 'ehrNotes': questionnaireList};
 }
