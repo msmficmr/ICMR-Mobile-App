@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +5,9 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
@@ -18,7 +18,6 @@ import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:mhealth/model/questionnaire_form_model.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   static const routerPath = "/questionnaireScreen";
@@ -46,13 +45,15 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (chatBotViewModel.questionnaireList.isEmpty) {
       final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       String? locale = languageViewModel.selectedLanguage;
-      await chatBotViewModel.fetchQuestionnaireForRA("en_US", "");
+      await chatBotViewModel.fetchQuestionnaireForRA(locale, "");
     }
   }
 
   goToPreviousScreen() {
     if (chatBotViewModel.questionnaireSections[0] == chatBotViewModel.sectionName) {
       GoRouter.of(context).push(DashboardScreen.routerPath);
+      chatBotViewModel.questionnaireList = [];
+      chatBotViewModel.craSectionData = [];
     } else {
       chatBotViewModel.setPreviousSectionData(chatBotViewModel.sectionName!);
       GoRouter.of(context).push(QuestionnaireScreen.routerPath);
@@ -141,9 +142,15 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 }
                               }
                               if (isValid) {
-                                chatBotViewModel.setNextSectionData(chatBotViewModel.sectionName!);
-                                GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                                chatBotViewModel.setNextSectionData(chatBotViewModel.sectionName!, context);
+                                if (chatBotViewModel.allSectionsCompleted!) {
+                                  CommonFunctions.toastMessage("Completed Questionnaire");
+                                  GoRouter.of(context).go(DashboardScreen.routerPath);
+                                } else {
+                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                                }
                               } else {
+                                CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);
                                 setState(() {});
                               }
                             },

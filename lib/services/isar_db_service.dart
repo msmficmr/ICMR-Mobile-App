@@ -31,42 +31,42 @@ class IsarDbService {
     });
   }
 
-  Future<void> saveRiskAssessmentQuestionaire(RiskAssessmentQuestionaire riskAssessmentQuestionaire) async {
+  Future<void> saveRiskAssessmentQuestionnaire(RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
     Isar? db = await isar;
     await db.writeTxn(() async {
-      await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionaire);
+      await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionnaire);
     });
   }
 
   Future<RiskAssessmentQuestionaire?> getRiskAssessmentQuestionaireById() async {
     Isar? db = await isar;
-    final riskAssessmentQuestionaire = await db.riskAssessmentQuestionaires.where().findFirst();
-    return riskAssessmentQuestionaire;
+    final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.where().findFirst();
+    return riskAssessmentQuestionnaire;
   }
 
-  Future<RiskAssessmentQuestionaire?> getRiskAssessmentQuestionaireBySectionName(String sectionName) async {
+  Future<RiskAssessmentQuestionaire?> getRiskAssessmentQuestionnaireBySectionName(String sectionName) async {
     Isar? db = await isar;
-    final riskAssessmentQuestionaire = await db.riskAssessmentQuestionaires.filter().sectionsElement((q) => q.sectionNameEqualTo(sectionName)).findFirst();
-    return riskAssessmentQuestionaire;
+    final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.filter().sectionsElement((q) => q.sectionNameEqualTo(sectionName)).findFirst();
+    return riskAssessmentQuestionnaire;
   }
 
-  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionaire(String locale,RiskAssessmentQuestionaire riskAssessmentQuestionaire) async {
+  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionnaire(String locale,RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
     Isar? db = await isar;
     final response = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
     if (response != null) {
       await db.writeTxn(() async {
-        await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionaire);
+        await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionnaire);
       });
-      return riskAssessmentQuestionaire;
+      return riskAssessmentQuestionnaire;
     } else {
       return null;
     }
   }
 
-  Future<RiskAssessmentQuestionaire?> getRAQuestionaireByLocale(String locale) async {
+  Future<RiskAssessmentQuestionaire?> getRAQuestionnaireByLocale(String locale) async {
     Isar? db = await isar;
-    final riskAssessmentQuestionaire = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
-    return riskAssessmentQuestionaire;
+    final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
+    return riskAssessmentQuestionnaire;
   }
 }
 

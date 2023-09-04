@@ -36,6 +36,7 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   lottie: ^1.0.1
   bubble: ^1.2.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

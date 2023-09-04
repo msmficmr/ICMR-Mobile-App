@@ -11,8 +11,6 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
-import 'package:mhealth/views/language/language_selection_screen.dart';
-import 'package:mhealth/views/login/login_otp_screen.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -67,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
     String? userDetails = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
     if (userDetails == null) {
       if (context.mounted) {
-        GoRouter.of(context).go(LoginMobileScreen.routerPath);
+        GoRouter.of(context).go(LoginEmailScreen.routerPath);
       }
     } else {
       LoginViewModel.loginViewModel.loginUser(userDetails);

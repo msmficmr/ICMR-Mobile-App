@@ -8,6 +8,7 @@ class CRAOfflineData {
   String? patientId;
   String? caseId;
   String? versionNumber;
+  String? languageCode;
   List<CRASectionModel>? craSectionData;
 }
 
@@ -23,7 +24,7 @@ class CRAQuestionnaire {
   String? value;
   List<Inputs>? inputs;
   String? versionNumber;
-  String? timeAsked;
+  DateTime? timeAsked;
   String? snomed;
   String? lonic;
 
@@ -42,6 +43,27 @@ class CRAQuestionnaire {
 
 @embedded
 class Inputs {
+  String? inputId;
+  String? value;
+  String? snomed;
+  String? loinc;
+  DateTime? timeAsked;
+  InputsBranch? inputsBranch;
+
+  toJson() {
+    return {
+      "inputId" : inputId,
+      "value" : value,
+      "timeAsked" : timeAsked,
+      "snomed" : snomed,
+      "loinc" : loinc,
+      "inputs" : inputsBranch
+    };
+  }
+}
+
+@embedded
+class InputsBranch {
   String? inputId;
   String? value;
   String? snomed;

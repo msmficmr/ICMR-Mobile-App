@@ -43,11 +43,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     if (_buttonEnabled.value) {
       await LocationService.locationServiceInstance.checkPermission(context);
       String? locale = languageViewModel.selectedLanguage;
-      RiskAssessmentQuestionaire? RAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
-      if (RAQuestions != null) {
-        RiskAssessmentQuestionaire? riskAssessmentQuestionaire = await IsarDbService.isarDbService.updateRiskAssessmentQuestionaire(locale, RAQuestions);
-        if (riskAssessmentQuestionaire == null) {
-          await IsarDbService.isarDbService.saveRiskAssessmentQuestionaire(RAQuestions);
+      RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
+      if (rAQuestions != null) {
+        RiskAssessmentQuestionaire? riskAssessmentQuestionnaire = await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
+        if (riskAssessmentQuestionnaire == null) {
+          await IsarDbService.isarDbService.saveRiskAssessmentQuestionnaire(rAQuestions);
         }
       } else {
         CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
