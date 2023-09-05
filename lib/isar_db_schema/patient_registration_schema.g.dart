@@ -137,19 +137,9 @@ int _patientRegistrationEstimateSize(
     }
   }
   bytesCount += 3 + object.district.length * 3;
-  {
-    final value = object.dob;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.dob.length * 3;
   bytesCount += 3 + object.firstName.length * 3;
-  {
-    final value = object.gender;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.gender.length * 3;
   {
     final value = object.income;
     if (value != null) {
@@ -216,9 +206,9 @@ PatientRegistration _patientRegistrationDeserialize(
   object.consentDate = reader.readDateTime(offsets[3]);
   object.disclosedIncome = reader.readStringOrNull(offsets[4]);
   object.district = reader.readString(offsets[5]);
-  object.dob = reader.readStringOrNull(offsets[6]);
+  object.dob = reader.readString(offsets[6]);
   object.firstName = reader.readString(offsets[7]);
-  object.gender = reader.readStringOrNull(offsets[8]);
+  object.gender = reader.readString(offsets[8]);
   object.id = id;
   object.income = reader.readStringOrNull(offsets[9]);
   object.lastName = reader.readString(offsets[10]);
@@ -254,11 +244,11 @@ P _patientRegistrationDeserializeProp<P>(
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
       return (reader.readString(offset)) as P;
     case 8:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
@@ -1011,26 +1001,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      dobIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'dob',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      dobIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'dob',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       dobEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1044,7 +1016,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       dobGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1060,7 +1032,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       dobLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1076,8 +1048,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       dobBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1301,26 +1273,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      genderIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'gender',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      genderIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'gender',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       genderEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1334,7 +1288,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       genderGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1350,7 +1304,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       genderLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -1366,8 +1320,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       genderBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -3129,7 +3083,7 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, String?, QQueryOperations> dobProperty() {
+  QueryBuilder<PatientRegistration, String, QQueryOperations> dobProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dob');
     });
@@ -3142,8 +3096,7 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, String?, QQueryOperations>
-      genderProperty() {
+  QueryBuilder<PatientRegistration, String, QQueryOperations> genderProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'gender');
     });

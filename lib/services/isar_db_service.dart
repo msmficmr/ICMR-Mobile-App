@@ -22,6 +22,11 @@ class IsarDbService {
       await db.patientRegistrations.put(patientRegistration);
     });
   }
+    Future<List<PatientRegistration?>> getRegisteredPatientList() async {
+    Isar? db = await isar;
+    final registeredPatientList = await db.patientRegistrations.where().findAll();
+    return registeredPatientList;
+  }
 
   Future<void> saveRiskAssessmentQuestionaire(RiskAssessmentQuestionaire riskAssessmentQuestionaire) async {
     Isar? db = await isar;

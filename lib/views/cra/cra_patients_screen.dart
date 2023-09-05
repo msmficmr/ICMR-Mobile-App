@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_floating_button.dart';
 import 'package:mhealth/widgets/custom_patient_card.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
+import 'package:provider/provider.dart';
 
 class CRAPatientScreen extends StatefulWidget {
-  static const String routerPath =  "/cra-patients";
+  static const String routerPath = "/cra-patients";
   const CRAPatientScreen({Key? key}) : super(key: key);
 
   @override
@@ -30,6 +34,12 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final String KEY_PATIENT_ID = "key_patient_id";
 
   void onSearchFieldChanged(String? input) {}
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<PatientListViewModel>(context, listen: false).loadRegisteredPatients();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,39 +82,28 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               ],
             ),
             Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  CustomPatientCard(
-                    patientName: "Aparna Nair",
-                    patientId: "KH88383839399",
-                    gender: "Female",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                  CustomPatientCard(
-                    patientName: "Sahil Lalani",
-                    patientId: "KH88383839399",
-                    gender: "Male",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                  CustomPatientCard(
-                    patientName: "Aparna Nair",
-                    patientId: "KH88383839399",
-                    gender: "Female",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                ],
+              child: Selector<PatientListViewModel, List<PatientRegistration?>>(
+                selector: (context, provider) => provider.registeredPatients,
+                builder: (context, registeredPatients, child) {
+                  return ListView.builder(
+                    itemCount: registeredPatients.length,
+                    itemBuilder: (context, index) {
+                      final patient = registeredPatients[index];
+                      final fullName = "${patient?.firstName} ${patient?.lastName}";
+                      return CustomPatientCard(
+                        patientName: fullName,
+                        patientId: patient!.medicalId,
+                        gender: (patient.gender == "m") ? "Male" : "Female",
+                        dob: patient.age,
+                        phoneNumber: patient.mobile,
+                        patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                        patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                      );
+                    },
+                  );
+                },
               ),
-            )
+            ),
           ],
         ),
       ),

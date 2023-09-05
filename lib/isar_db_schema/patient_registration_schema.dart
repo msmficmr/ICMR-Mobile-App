@@ -9,8 +9,8 @@ class PatientRegistration {
   late DateTime consentDate;
   late String firstName;
   late String lastName;
-  late String? gender;
-  late String? dob;
+  late String gender;
+  late String dob;
   late String age;
   late String aadharId;
   late String medicalId;
