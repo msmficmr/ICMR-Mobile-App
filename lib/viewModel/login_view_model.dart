@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
@@ -136,6 +137,19 @@ class LoginViewModel extends ChangeNotifier {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     } finally {
       isOTPValidating = false;
+    }
+  }
+
+  Future<bool> logout() async {
+    try {
+      final Response response = await AuthService().logout();
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      rethrow;
     }
   }
 }

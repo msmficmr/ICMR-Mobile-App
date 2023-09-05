@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/myaccount/widgets/card_component_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,7 @@ import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mhealth/config/environment/environment.dart';
+import 'package:provider/provider.dart';
 
 class MyAccountScreen extends StatefulWidget {
   static const String routerPath = "/myAccountScreen";
@@ -53,6 +56,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
+  Future<void> onLogoutClick() async {
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    bool logout = await loginViewModel.logout();
+    if (logout) {
+      GoRouter.of(context).go(LoginEmailScreen.routerPath);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -67,8 +78,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         },
         backgroundColor: AppColorScheme.kGrayColor.shade50,
         trailingType: CustomAppBarTrailingType.SINGLE,
-        trailingWidget: SvgPicture.asset(
-          AppAssetsPath.icLogout,
+        trailingWidget: InkWell(
+          onTap: () {
+            onLogoutClick();
+          },
+          child: SvgPicture.asset(
+            AppAssetsPath.icLogout,
+          ),
         ),
         titleText: TranslationKeys.myAccount.translate(context),
       ),

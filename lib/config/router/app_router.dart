@@ -46,6 +46,13 @@ class AppRouter {
               ),
             ),
             GoRoute(
+              path: LoginEmailScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const LoginEmailScreen(),
+              ),
+            ),
+            GoRoute(
               path: DashboardScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
