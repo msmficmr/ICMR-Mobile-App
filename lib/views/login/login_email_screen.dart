@@ -74,8 +74,8 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   }
 
   Future<void> onContinueClick() async {
-    loginViewModel.isEmailLogin = true;
     if (formKey.currentState?.validate() ?? false) {
+      loginViewModel.isEmailLogin = true;
       loginViewModel.authFlow = LoginScreenTypes.EMAIL;
       await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,authType: AuthType.email);
     }
@@ -149,21 +149,26 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    child: ValueListenableBuilder<bool>(
-                      valueListenable: _buttonEnabled,
-                      builder: (context, isValid, _) {
-                        return PrimaryFilledButton(
-                          buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                          widgetKey: KEY_BUTTON_CONTINUE,
-                          isLoading: false,
-                          onPressed: !isValid
-                              ? null
-                              : () {
-                                  onContinueClick();
-                                },
+                    child: Selector<LoginViewModel, bool>(
+                      selector: (_, provider) => provider.isLoading,
+                      builder: (context, isLoading, __) {
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: _buttonEnabled,
+                          builder: (context, isValid, _) {
+                            return PrimaryFilledButton(
+                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                              buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                              widgetKey: KEY_BUTTON_CONTINUE,
+                              isLoading: isLoading,
+                              onPressed: !isValid
+                                  ? null
+                                  : () {
+                                      onContinueClick();
+                                    },
+                            );
+                          },
                         );
-                      },
+                      }
                     ),
                   ),
                 ],

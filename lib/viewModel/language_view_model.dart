@@ -5,12 +5,20 @@ class LanguageViewModel extends ChangeNotifier {
   int _selectedIndex = -1;
   String _selectedLanguage = "";
   Locale _locale = const Locale("en", "IN");
+  bool _isLoading = false;
 
   int get selectedIndex => _selectedIndex;
   String get selectedLanguage => _selectedLanguage;
   Locale get locale => _locale;
+  bool get isLoading => _isLoading;
+
+  set isLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
 
   Future<void> setSelectedLanguage({required String selectedLanguage, required int selectedIndex, required Locale locale}) async {
+    isLoading = true;
     _locale = locale;
     _selectedIndex = selectedIndex;
     _selectedLanguage = selectedLanguage;
