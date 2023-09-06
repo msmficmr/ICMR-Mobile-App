@@ -158,9 +158,11 @@ class CommonFunctions {
 
   static String getText({required String language, required String engText, required String hindiText}) {
     String text = "";
-    if (language == LanguageCodes.en_US.toString()) {
+    LanguageCodes english = LanguageCodes.en_US;
+    LanguageCodes hindi = LanguageCodes.hi;
+    if (language == english.toString()) {
       return engText;
-    } else if (language == LanguageCodes.hi.toString()) {
+    } else if (language == hindi.toString()) {
       return hindiText;
     }
     return text;

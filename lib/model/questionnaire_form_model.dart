@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/model/questionnaire_input_model.dart';
@@ -292,7 +293,8 @@ class SingleSelectionSubQuestionnaire extends Questionnaire {
         inputs.add(element.toJson());
       }
     }
-    if (questionType == QuestionType.SINGLE_SELECT_CHIP.toString()) {
+    QuestionType singleType = QuestionType.SINGLE_SELECT_CHIP;
+    if (questionType == singleType.toString()) {
       return {
         "inputid": questionId,
         "value": this.selectedOption?.optionId ?? "",
