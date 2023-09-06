@@ -162,7 +162,7 @@ class ChatBotViewModel extends ChangeNotifier {
       List<CRAQuestionnaire> craQuestionnaireData = [];
       craQuestionnaireData.addAll(craQuestion);
       CRASectionModel craModel = CRASectionModel()
-        ..ehrCategoryMap = sectionNames[i]
+        ..ehrCategoryMapId = sectionNames[i]
         ..questionnaireList = craQuestionnaireData;
       craSectionModel.add(craModel);
     }
