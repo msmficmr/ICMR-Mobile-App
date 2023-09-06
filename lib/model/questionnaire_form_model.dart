@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/model/questionnaire_input_model.dart';
+import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/multi_level_multi_select_widget_state.dart';
 
 abstract class Questionnaire {
@@ -15,8 +16,6 @@ abstract class Questionnaire {
 
   bool isValid();
 }
-
-Map<String, dynamic> externalResponse = {};
 
 class SingleMultiMultiSelectionQuestionnaire extends Questionnaire {
   QuestionObj questionObj;
@@ -41,7 +40,7 @@ class SingleMultiMultiSelectionQuestionnaire extends Questionnaire {
 
   @override
   Map<String, dynamic> toJson() {
-    return externalResponse;
+    return {};
   }
 
   @override
@@ -293,7 +292,7 @@ class SingleSelectionSubQuestionnaire extends Questionnaire {
         inputs.add(element.toJson());
       }
     }
-    if (questionType == "SINGLE_SELECT_CHIP") {
+    if (questionType == QuestionType.SINGLE_SELECT_CHIP.toString()) {
       return {
         "inputid": questionId,
         "value": this.selectedOption?.optionId ?? "",

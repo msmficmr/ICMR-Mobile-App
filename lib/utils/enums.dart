@@ -21,11 +21,6 @@ enum ScreenNames { REGISTRATION_SCREEN, TAKE_CRA_SCREEN }
 
 enum AuthType {mobile,email}
 
-/// Enum to describe the current status of ServiceFlow
-enum ServiceFlow { riskAssessment, none, registration, loginIntent, languageIntent }
+enum QuestionType { SINGLE_SELECT_CHIP }
 
-/// Enum to describe the current EncounterId
-enum EncounterIds { RISK_ASSESSMENT }
-
-/// Enum to describe the current status of Payment
-enum PhaseStatus { PAYMENT_SUCCESS, RISK_SCORE_CALCULATED, INPROGRESS, COMPLETED }
+enum LanguageCodes  { en_US, hi }

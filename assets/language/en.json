@@ -72,5 +72,7 @@
   "thank_you" : "Thank you",
   "registered_successfully" : "You are successfully registered with mHealth",
   "date" : "Date",
-  "submit" : "Submit"
+  "submit" : "Submit",
+  "this_field_is_mandatory" : "This field is mandatory",
+  "enter_valid_input_text" : "Enter Valid Input text"
 }

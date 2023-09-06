@@ -14,7 +14,7 @@ class CRAOfflineData {
 
 @embedded
 class CRASectionModel {
-  String? ehrCategoryMap;
+  String? ehrCategoryMapId;
   List<CRAQuestionnaire>? questionnaireList;
 }
 
@@ -48,7 +48,7 @@ class Inputs {
   String? snomed;
   String? loinc;
   DateTime? timeAsked;
-  InputsBranch? inputsBranch;
+  SubInput? subInput;
 
   toJson() {
     return {
@@ -57,13 +57,13 @@ class Inputs {
       "timeAsked" : timeAsked,
       "snomed" : snomed,
       "loinc" : loinc,
-      "inputs" : inputsBranch
+      "inputs" : subInput
     };
   }
 }
 
 @embedded
-class InputsBranch {
+class SubInput {
   String? inputId;
   String? value;
   String? snomed;

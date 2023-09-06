@@ -108,7 +108,6 @@ class LoginViewModel extends ChangeNotifier {
           loginScreenType = LoginScreenTypes.OTP_SCREEN;
       }
     } catch (e) {
-      log(e.toString());
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG+e.toString());
     } finally {
       isLoading = false;

@@ -7,11 +7,11 @@ import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
-class ChatBotViewModel extends ChangeNotifier {
+class QuestionnaireViewModel extends ChangeNotifier {
   Map<String, String> _languageMap = {};
 
   Map<String, String> get languageMapObject => _languageMap;
@@ -27,6 +27,7 @@ class ChatBotViewModel extends ChangeNotifier {
   List<Questionnaire> questionnaireList = [];
   List<Questionnaire> answeredQuestionnaire = [];
   List<CRAModel> craSectionData = [];
+  List<String> questionnaireSections = [];
 
   String? _sectionName;
   String? _versionNumber;
@@ -40,11 +41,14 @@ class ChatBotViewModel extends ChangeNotifier {
   String? get patientId => _patientId;
   bool? get allSectionsCompleted => _allSectionsCompleted;
 
+  Map<String, dynamic> sectionsData = {};
+
   setNextSectionData(String sectionName, BuildContext context) async {
     _allSectionsCompleted = false;
     List<Questionnaire> answeredQuestions = [];
     answeredQuestions.addAll(questionnaireList);
     answeredCRAData = CRAModel(sectionName, answeredQuestions);
+    sectionsData[sectionName] = answeredQuestions;
     for (int i = 0; i < craSectionData.length; i++) {
       if (craSectionData[i].ehrCategoryMap! == answeredCRAData.ehrCategoryMap) {
         craSectionData.removeAt(i);
@@ -62,6 +66,7 @@ class ChatBotViewModel extends ChangeNotifier {
         }
       }
     }
+    log("Sections data is $sectionsData");
     notifyListeners();
   }
 
@@ -79,8 +84,6 @@ class ChatBotViewModel extends ChangeNotifier {
   }
 
   setVersionNumber(String version) => _versionNumber = version;
-
-  List<String> questionnaireSections = [];
 
   /// Forces provider to setstate on external command
   void notify() => notifyListeners();
@@ -114,38 +117,38 @@ class ChatBotViewModel extends ChangeNotifier {
     List<CRASectionModel> craSectionModel = [];
     CRAQuestionnaire? craQuestionnaire;
     late Inputs inputs1;
-    InputsBranch? inputs2;
+    SubInput? subInput;
     List<CRAQuestionnaire> craQuestion = [];
     for (int i = 0; i < craData.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
       if (craData[i].questionnaireList != []) {
         craQuestion.clear();
         List<Inputs> inputsData = [];
-        List inputsData2 = [];
+        List subInputsData = [];
         for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
           inputsData = [];
           if (craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
             List inputsData1 = json.decode(craData[i].questionnaireList![j].toJson()['inputs']);
-            inputsData2 = [];
+            subInputsData = [];
             for (int k = 0; k < inputsData1.length; k++) {
-              inputsData2 = [];
+              subInputsData = [];
               if (inputsData1[k]['inputs'].runtimeType == String) {
-                inputsData2 = jsonDecode(inputsData1[k]['inputs']);
+                subInputsData = jsonDecode(inputsData1[k]['inputs']);
               } else if (inputsData1[k]['inputs'].runtimeType == List<dynamic>) {
-                inputsData2 = inputsData1[k]['inputs'];
+                subInputsData = inputsData1[k]['inputs'];
               }
-              if (inputsData2.isNotEmpty) {
-                inputs2 = InputsBranch()
-                    ..inputId = inputsData2[0]['inputid']
-                    ..value = inputsData2[0]['value'];
+              if (subInputsData.isNotEmpty) {
+                subInput = SubInput()
+                    ..inputId = subInputsData[0]['inputid']
+                    ..value = subInputsData[0]['value'];
               }
               inputs1 = Inputs()
                 ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
                 ..value = inputsData1[k]['value']
-                ..inputsBranch = inputs2
+                ..subInput = subInput
                 ..timeAsked = inputsData1[k]['timeAsked'] == null ? DateTime.now() : DateTime.parse(inputsData1[k]['timeAsked']);
               inputsData.add(inputs1);
-              inputs2 = null;
+              subInput = null;
             }
           }
           craQuestionnaire = CRAQuestionnaire()
@@ -170,7 +173,7 @@ class ChatBotViewModel extends ChangeNotifier {
       final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       IsarDbService.isarDbService.saveCRA(CRAOfflineData()
         ..patientId = patientId
-        ..caseId = randomCaseNumber()
+        ..caseId = CommonFunctions.randomNumber(5)
         ..versionNumber = versionNumber
         ..languageCode = languageViewModel.selectedLanguage
         ..craSectionData = craSectionModel);
@@ -181,20 +184,7 @@ class ChatBotViewModel extends ChangeNotifier {
     }
   }
 
-  String randomPatientNumber() {
-    const uuid = Uuid();
-    final sixDigitUuid = uuid.v4().toString().substring(0, 6);
-    savePatientId(sixDigitUuid);
-    return sixDigitUuid;
-  }
-
   savePatientId(String randomId) => _patientId = randomId;
-
-  String randomCaseNumber() {
-    const uuid = Uuid();
-    final sixDigitUuid = uuid.v4().toString().substring(0, 5);
-    return sixDigitUuid;
-  }
 
   List<Questionnaire> parseJsonForQuestionnaire(questionsList) {
     List<Questionnaire> questionnaires = [];

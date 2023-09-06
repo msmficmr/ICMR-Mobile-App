@@ -12,6 +12,8 @@ class AppConstant {
   static const String M_HEALTH_LABEL = "mHealth";
   static const String AI_BASED_CANCER_RISK_ASSESSMENT = "AI Based Cancer Risk Assessment";
 
+  static const String RISK_ASSESSMENT = "RISK ASSESSMENT";
+  static const String COMPLETED_QUESTIONNAIRE = "Completed Questionnaire";
   static const String EMAIL = "Email";
   static const String PAYMENT = "Payment";
   static const String VALUE = "value";

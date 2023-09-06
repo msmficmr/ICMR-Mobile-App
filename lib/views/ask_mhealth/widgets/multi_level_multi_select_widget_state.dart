@@ -3,8 +3,6 @@ class MultiLevelMultiSelectWidgetState {
   static bool isValidationOn = false;
   static bool isMandatoryQuestion = false;
   static String? validationMessage;
-  static String? textFieldRequiredMessage = 'This Field is Required';
-  static String? textFieldInvalidInputMessage = 'Enter Valid Input';
 
   static bool get getQuestionResponseStatus {
     var status = true;
@@ -33,7 +31,5 @@ class MultiLevelMultiSelectWidgetState {
     isValidationOn = false;
     isMandatoryQuestion = false;
     validationMessage = '';
-    textFieldRequiredMessage = 'This Field is Required';
-    textFieldInvalidInputMessage = 'Enter Valid Input';
   }
 }

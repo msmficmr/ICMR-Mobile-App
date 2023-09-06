@@ -55,7 +55,7 @@ const CRAOfflineDataSchema = CollectionSchema(
     r'CRASectionModel': CRASectionModelSchema,
     r'CRAQuestionnaire': CRAQuestionnaireSchema,
     r'Inputs': InputsSchema,
-    r'InputsBranch': InputsBranchSchema
+    r'SubInput': SubInputSchema
   },
   getId: _cRAOfflineDataGetId,
   getLinks: _cRAOfflineDataGetLinks,
@@ -1293,9 +1293,9 @@ const CRASectionModelSchema = Schema(
   name: r'CRASectionModel',
   id: -2175305491937674867,
   properties: {
-    r'ehrCategoryMap': PropertySchema(
+    r'ehrCategoryMapId': PropertySchema(
       id: 0,
-      name: r'ehrCategoryMap',
+      name: r'ehrCategoryMapId',
       type: IsarType.string,
     ),
     r'questionnaireList': PropertySchema(
@@ -1318,7 +1318,7 @@ int _cRASectionModelEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.ehrCategoryMap;
+    final value = object.ehrCategoryMapId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -1346,7 +1346,7 @@ void _cRASectionModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.ehrCategoryMap);
+  writer.writeString(offsets[0], object.ehrCategoryMapId);
   writer.writeObjectList<CRAQuestionnaire>(
     offsets[1],
     allOffsets,
@@ -1362,7 +1362,7 @@ CRASectionModel _cRASectionModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CRASectionModel();
-  object.ehrCategoryMap = reader.readStringOrNull(offsets[0]);
+  object.ehrCategoryMapId = reader.readStringOrNull(offsets[0]);
   object.questionnaireList = reader.readObjectList<CRAQuestionnaire>(
     offsets[1],
     CRAQuestionnaireSchema.deserialize,
@@ -1396,31 +1396,31 @@ P _cRASectionModelDeserializeProp<P>(
 extension CRASectionModelQueryFilter
     on QueryBuilder<CRASectionModel, CRASectionModel, QFilterCondition> {
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIsNull() {
+      ehrCategoryMapIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
       ));
     });
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIsNotNull() {
+      ehrCategoryMapIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
       ));
     });
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapEqualTo(
+      ehrCategoryMapIdEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1428,7 +1428,7 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapGreaterThan(
+      ehrCategoryMapIdGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1436,7 +1436,7 @@ extension CRASectionModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1444,7 +1444,7 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapLessThan(
+      ehrCategoryMapIdLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1452,7 +1452,7 @@ extension CRASectionModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1460,7 +1460,7 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapBetween(
+      ehrCategoryMapIdBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -1469,7 +1469,7 @@ extension CRASectionModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1480,13 +1480,13 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapStartsWith(
+      ehrCategoryMapIdStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1494,13 +1494,13 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapEndsWith(
+      ehrCategoryMapIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1508,10 +1508,10 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapContains(String value, {bool caseSensitive = true}) {
+      ehrCategoryMapIdContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -1519,10 +1519,10 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapMatches(String pattern, {bool caseSensitive = true}) {
+      ehrCategoryMapIdMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -1530,20 +1530,20 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIsEmpty() {
+      ehrCategoryMapIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: '',
       ));
     });
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIsNotEmpty() {
+      ehrCategoryMapIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'ehrCategoryMap',
+        property: r'ehrCategoryMapId',
         value: '',
       ));
     });
@@ -2818,21 +2818,21 @@ const InputsSchema = Schema(
       name: r'inputId',
       type: IsarType.string,
     ),
-    r'inputsBranch': PropertySchema(
-      id: 1,
-      name: r'inputsBranch',
-      type: IsarType.object,
-      target: r'InputsBranch',
-    ),
     r'loinc': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'loinc',
       type: IsarType.string,
     ),
     r'snomed': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'snomed',
       type: IsarType.string,
+    ),
+    r'subInput': PropertySchema(
+      id: 3,
+      name: r'subInput',
+      type: IsarType.object,
+      target: r'SubInput',
     ),
     r'timeAsked': PropertySchema(
       id: 4,
@@ -2864,14 +2864,6 @@ int _inputsEstimateSize(
     }
   }
   {
-    final value = object.inputsBranch;
-    if (value != null) {
-      bytesCount += 3 +
-          InputsBranchSchema.estimateSize(
-              value, allOffsets[InputsBranch]!, allOffsets);
-    }
-  }
-  {
     final value = object.loinc;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -2881,6 +2873,13 @@ int _inputsEstimateSize(
     final value = object.snomed;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.subInput;
+    if (value != null) {
+      bytesCount += 3 +
+          SubInputSchema.estimateSize(value, allOffsets[SubInput]!, allOffsets);
     }
   }
   {
@@ -2899,14 +2898,14 @@ void _inputsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.inputId);
-  writer.writeObject<InputsBranch>(
-    offsets[1],
+  writer.writeString(offsets[1], object.loinc);
+  writer.writeString(offsets[2], object.snomed);
+  writer.writeObject<SubInput>(
+    offsets[3],
     allOffsets,
-    InputsBranchSchema.serialize,
-    object.inputsBranch,
+    SubInputSchema.serialize,
+    object.subInput,
   );
-  writer.writeString(offsets[2], object.loinc);
-  writer.writeString(offsets[3], object.snomed);
   writer.writeDateTime(offsets[4], object.timeAsked);
   writer.writeString(offsets[5], object.value);
 }
@@ -2919,13 +2918,13 @@ Inputs _inputsDeserialize(
 ) {
   final object = Inputs();
   object.inputId = reader.readStringOrNull(offsets[0]);
-  object.inputsBranch = reader.readObjectOrNull<InputsBranch>(
-    offsets[1],
-    InputsBranchSchema.deserialize,
+  object.loinc = reader.readStringOrNull(offsets[1]);
+  object.snomed = reader.readStringOrNull(offsets[2]);
+  object.subInput = reader.readObjectOrNull<SubInput>(
+    offsets[3],
+    SubInputSchema.deserialize,
     allOffsets,
   );
-  object.loinc = reader.readStringOrNull(offsets[2]);
-  object.snomed = reader.readStringOrNull(offsets[3]);
   object.timeAsked = reader.readDateTimeOrNull(offsets[4]);
   object.value = reader.readStringOrNull(offsets[5]);
   return object;
@@ -2941,15 +2940,15 @@ P _inputsDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readObjectOrNull<InputsBranch>(
-        offset,
-        InputsBranchSchema.deserialize,
-        allOffsets,
-      )) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readObjectOrNull<SubInput>(
+        offset,
+        SubInputSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
@@ -3102,22 +3101,6 @@ extension InputsQueryFilter on QueryBuilder<Inputs, Inputs, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'inputId',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> inputsBranchIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'inputsBranch',
-      ));
-    });
-  }
-
-  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> inputsBranchIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'inputsBranch',
       ));
     });
   }
@@ -3414,6 +3397,22 @@ extension InputsQueryFilter on QueryBuilder<Inputs, Inputs, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> subInputIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'subInput',
+      ));
+    });
+  }
+
+  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> subInputIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'subInput',
+      ));
+    });
+  }
+
   QueryBuilder<Inputs, Inputs, QAfterFilterCondition> timeAskedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -3631,10 +3630,10 @@ extension InputsQueryFilter on QueryBuilder<Inputs, Inputs, QFilterCondition> {
 }
 
 extension InputsQueryObject on QueryBuilder<Inputs, Inputs, QFilterCondition> {
-  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> inputsBranch(
-      FilterQuery<InputsBranch> q) {
+  QueryBuilder<Inputs, Inputs, QAfterFilterCondition> subInput(
+      FilterQuery<SubInput> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'inputsBranch');
+      return query.object(q, r'subInput');
     });
   }
 }
@@ -3642,9 +3641,9 @@ extension InputsQueryObject on QueryBuilder<Inputs, Inputs, QFilterCondition> {
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-const InputsBranchSchema = Schema(
-  name: r'InputsBranch',
-  id: 6202409851886065768,
+const SubInputSchema = Schema(
+  name: r'SubInput',
+  id: 3031795931066401512,
   properties: {
     r'inputId': PropertySchema(
       id: 0,
@@ -3667,14 +3666,14 @@ const InputsBranchSchema = Schema(
       type: IsarType.string,
     )
   },
-  estimateSize: _inputsBranchEstimateSize,
-  serialize: _inputsBranchSerialize,
-  deserialize: _inputsBranchDeserialize,
-  deserializeProp: _inputsBranchDeserializeProp,
+  estimateSize: _subInputEstimateSize,
+  serialize: _subInputSerialize,
+  deserialize: _subInputDeserialize,
+  deserializeProp: _subInputDeserializeProp,
 );
 
-int _inputsBranchEstimateSize(
-  InputsBranch object,
+int _subInputEstimateSize(
+  SubInput object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -3706,8 +3705,8 @@ int _inputsBranchEstimateSize(
   return bytesCount;
 }
 
-void _inputsBranchSerialize(
-  InputsBranch object,
+void _subInputSerialize(
+  SubInput object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
@@ -3718,13 +3717,13 @@ void _inputsBranchSerialize(
   writer.writeString(offsets[3], object.value);
 }
 
-InputsBranch _inputsBranchDeserialize(
+SubInput _subInputDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = InputsBranch();
+  final object = SubInput();
   object.inputId = reader.readStringOrNull(offsets[0]);
   object.loinc = reader.readStringOrNull(offsets[1]);
   object.snomed = reader.readStringOrNull(offsets[2]);
@@ -3732,7 +3731,7 @@ InputsBranch _inputsBranchDeserialize(
   return object;
 }
 
-P _inputsBranchDeserializeProp<P>(
+P _subInputDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -3752,10 +3751,9 @@ P _inputsBranchDeserializeProp<P>(
   }
 }
 
-extension InputsBranchQueryFilter
-    on QueryBuilder<InputsBranch, InputsBranch, QFilterCondition> {
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdIsNull() {
+extension SubInputQueryFilter
+    on QueryBuilder<SubInput, SubInput, QFilterCondition> {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'inputId',
@@ -3763,8 +3761,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdIsNotNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'inputId',
@@ -3772,8 +3769,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdEqualTo(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -3786,8 +3782,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdGreaterThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3802,8 +3797,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdLessThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3818,8 +3812,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdBetween(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -3838,8 +3831,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdStartsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3852,8 +3844,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdEndsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3866,8 +3857,9 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'inputId',
@@ -3877,8 +3869,9 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'inputId',
@@ -3888,8 +3881,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdIsEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'inputId',
@@ -3898,8 +3890,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      inputIdIsNotEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> inputIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'inputId',
@@ -3908,8 +3899,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincIsNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'loinc',
@@ -3917,8 +3907,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincIsNotNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'loinc',
@@ -3926,7 +3915,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincEqualTo(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -3939,8 +3928,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincGreaterThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3955,7 +3943,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincLessThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3970,7 +3958,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincBetween(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -3989,8 +3977,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincStartsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4003,7 +3990,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincEndsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4016,7 +4003,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincContains(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4028,7 +4015,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> loincMatches(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4040,8 +4027,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincIsEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'loinc',
@@ -4050,8 +4036,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      loincIsNotEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> loincIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'loinc',
@@ -4060,8 +4045,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedIsNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'snomed',
@@ -4069,8 +4053,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedIsNotNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'snomed',
@@ -4078,7 +4061,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> snomedEqualTo(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -4091,8 +4074,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedGreaterThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -4107,8 +4089,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedLessThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -4123,7 +4104,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> snomedBetween(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -4142,8 +4123,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedStartsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4156,8 +4136,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedEndsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4170,8 +4149,9 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'snomed',
@@ -4181,7 +4161,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> snomedMatches(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4193,8 +4173,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedIsEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'snomed',
@@ -4203,8 +4182,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      snomedIsNotEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> snomedIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'snomed',
@@ -4213,8 +4191,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueIsNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'value',
@@ -4222,8 +4199,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueIsNotNull() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'value',
@@ -4231,7 +4207,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueEqualTo(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -4244,8 +4220,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueGreaterThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -4260,7 +4235,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueLessThan(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -4275,7 +4250,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueBetween(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -4294,8 +4269,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueStartsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4308,7 +4282,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueEndsWith(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -4321,7 +4295,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueContains(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4333,7 +4307,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition> valueMatches(
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4345,8 +4319,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueIsEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -4355,8 +4328,7 @@ extension InputsBranchQueryFilter
     });
   }
 
-  QueryBuilder<InputsBranch, InputsBranch, QAfterFilterCondition>
-      valueIsNotEmpty() {
+  QueryBuilder<SubInput, SubInput, QAfterFilterCondition> valueIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'value',
@@ -4366,5 +4338,5 @@ extension InputsBranchQueryFilter
   }
 }
 
-extension InputsBranchQueryObject
-    on QueryBuilder<InputsBranch, InputsBranch, QFilterCondition> {}
+extension SubInputQueryObject
+    on QueryBuilder<SubInput, SubInput, QFilterCondition> {}

@@ -6,9 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class CommonFunctions {
   /// opens browser with privacy policy link
@@ -156,9 +158,9 @@ class CommonFunctions {
 
   static String getText({required String language, required String engText, required String hindiText}) {
     String text = "";
-    if (language == "en_US") {
+    if (language == LanguageCodes.en_US.toString()) {
       return engText;
-    } else if (language == "hi") {
+    } else if (language == LanguageCodes.hi.toString()) {
       return hindiText;
     }
     return text;
@@ -225,38 +227,9 @@ class CommonFunctions {
     return conversionMap[currentLanguage]?[key] ?? "";
   }
 
-  /// Specifies the Chat Card Width size.
-  static double getCardWidth({required double screenWidth}) {
-    double cardWidth = 0;
-    if (screenWidth >= 1600) {
-      cardWidth = 700;
-    } else if (screenWidth >= 1400 && screenWidth <= 1600) {
-      cardWidth = 500;
-    } else if (screenWidth >= 700 && screenWidth <= 1400) {
-      cardWidth = 400;
-    } else if (screenWidth <= 700) {
-      cardWidth = screenWidth;
-    }
-    return cardWidth;
-  }
-
-  static getSectionQuestion({required bool isRegFlow, required String currentLanguage}) {
-    if (isRegFlow) {
-      switch (currentLanguage) {
-        case "hi":
-          return "अपना विवरण दर्ज करने के लिए धन्यवाद, कृपया जोखिम मूल्यांकन के साथ आगे बढ़ें, जारी रखने के लिए नीचे टैप करें";
-        case "en_US":
-        default:
-          return "Thanks for entering your details, please proceed with the risk assessment, tap below to continue";
-      }
-    } else {
-      switch (currentLanguage) {
-        case "hi":
-          return "कृपया नीचे दिए विकल्पों में से एक अनुभाग चुनें";
-        case "en_US":
-        default:
-          return "Please select a section from options below";
-      }
-    }
+  static String randomNumber(int length) {
+    const uuid = Uuid();
+    final randomUuid = uuid.v4().toString().substring(0, length);
+    return randomUuid;
   }
 }
