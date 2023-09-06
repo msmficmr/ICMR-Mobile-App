@@ -53,9 +53,9 @@ class AuthService implements IAuthService {
   }
   
   @override
-  Future logout() async {
+  Future<Response> logout() async {
     try {
-      Response? response = await ApiBaseHelper.httpGetRequestAfterLogin(AppEndpoints.logoutUrl);
+      Response? response = await ApiBaseHelper.httpGetRequest(AppEndpoints.logoutUrl);
       if (response != null) {
         return response;
       } else {

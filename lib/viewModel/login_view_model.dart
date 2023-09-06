@@ -23,6 +23,7 @@ class LoginViewModel extends ChangeNotifier {
     return loginViewModel;
   }
   UserModel? _userDetails;
+
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
   LoginScreenTypes _authFlow = LoginScreenTypes.MOBILE_NUMBER;
@@ -144,6 +145,7 @@ class LoginViewModel extends ChangeNotifier {
     try {
       final Response response = await AuthService().logout();
       if (response.statusCode == 200) {
+        await SharedPreferencesService.sharedPreferencesService.clearAll();
         return true;
       }
       return false;
