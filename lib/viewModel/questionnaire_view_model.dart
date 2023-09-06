@@ -41,14 +41,11 @@ class QuestionnaireViewModel extends ChangeNotifier {
   String? get patientId => _patientId;
   bool? get allSectionsCompleted => _allSectionsCompleted;
 
-  Map<String, dynamic> sectionsData = {};
-
   setNextSectionData(String sectionName, BuildContext context) async {
     _allSectionsCompleted = false;
     List<Questionnaire> answeredQuestions = [];
     answeredQuestions.addAll(questionnaireList);
     answeredCRAData = CRAModel(sectionName, answeredQuestions);
-    sectionsData[sectionName] = answeredQuestions;
     for (int i = 0; i < craSectionData.length; i++) {
       if (craSectionData[i].ehrCategoryMap! == answeredCRAData.ehrCategoryMap) {
         craSectionData.removeAt(i);
@@ -66,7 +63,6 @@ class QuestionnaireViewModel extends ChangeNotifier {
         }
       }
     }
-    log("Sections data is $sectionsData");
     notifyListeners();
   }
 

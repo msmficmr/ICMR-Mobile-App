@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
