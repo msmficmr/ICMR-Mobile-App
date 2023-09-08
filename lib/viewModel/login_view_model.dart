@@ -141,6 +141,7 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  /// Returning a true value if the status code of the logout is [200]
   Future<bool> logout() async {
     try {
       final Response response = await AuthService().logout();
