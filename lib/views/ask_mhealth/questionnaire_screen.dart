@@ -45,18 +45,18 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireList.isEmpty) {
       final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       String? locale = languageViewModel.selectedLanguage;
-      await questionnaireViewModel.fetchQuestionnaireForRA(locale, "");
+      await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     }
   }
 
   goToPreviousScreen() {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
-      GoRouter.of(context).push(DashboardScreen.routerPath);
+      GoRouter.of(context).pop(DashboardScreen.routerPath);
       questionnaireViewModel.questionnaireList = [];
       questionnaireViewModel.craSectionData = [];
     } else {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
-      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+      GoRouter.of(context).pop(QuestionnaireScreen.routerPath);
     }
   }
 

@@ -12,20 +12,10 @@ import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
 
 class QuestionnaireViewModel extends ChangeNotifier {
-  Map<String, String> _languageMap = {};
-
-  Map<String, String> get languageMapObject => _languageMap;
-
-  /// using global variable for using animations
-  final GlobalKey<AnimatedListState> animationKey = GlobalKey<AnimatedListState>();
-  final ScrollController scrollController = ScrollController();
-
-  late CRAModel answeredCRAData;
 
   RiskAssessmentQuestionaire? isarDB;
 
   List<Questionnaire> questionnaireList = [];
-  List<Questionnaire> answeredQuestionnaire = [];
   List<CRAModel> craSectionData = [];
   List<String> questionnaireSections = [];
 
@@ -41,42 +31,32 @@ class QuestionnaireViewModel extends ChangeNotifier {
   String? get patientId => _patientId;
   bool? get allSectionsCompleted => _allSectionsCompleted;
 
+  Map<String, List<Questionnaire>> sectionsData = {};
+
+  /// Updating the value of the [sectionsData] key
+  /// Getting the next section index from [questionnaireSections] and adding the values for [_sectionName] & [questionnaireList]
+  /// If all the sections are completed then submitting the form
   setNextSectionData(String sectionName, BuildContext context) async {
     _allSectionsCompleted = false;
-    List<Questionnaire> answeredQuestions = [];
-    answeredQuestions.addAll(questionnaireList);
-    answeredCRAData = CRAModel(sectionName, answeredQuestions);
-    for (int i = 0; i < craSectionData.length; i++) {
-      if (craSectionData[i].ehrCategoryMap! == answeredCRAData.ehrCategoryMap) {
-        craSectionData.removeAt(i);
-      }
-    }
-    craSectionData.add(answeredCRAData);
-    if (sectionName == isarDB!.sections![questionnaireSections.length - 1].sectionName) {
-      await submitForm(craData: craSectionData, context: context);
-      craSectionData = [];
+    sectionsData[sectionName] = questionnaireList;
+    craSectionData.add(CRAModel(sectionName, questionnaireList));
+    int currentIndex = questionnaireSections.indexOf(sectionName);
+    if (currentIndex == questionnaireSections.length - 1) {
+       await submitForm(craData: craSectionData, context: context);
     } else {
-      for (int i = 0; i < questionnaireSections.length; i++) {
-        if (sectionName == questionnaireSections[i]) {
-          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i + 1].questionObj ?? []);
-          _sectionName = isarDB!.sections![i + 1].sectionName;
-        }
-      }
+      _sectionName = questionnaireSections[currentIndex + 1];
+      questionnaireList = sectionsData[_sectionName]!;
     }
     notifyListeners();
   }
 
+  /// From the [sectionName] received in the parameter, we are finding in which index that particular
+  /// index is present in the [questionnaireSections] and saving the previous item as [_sectionName]
+  /// From the [_sectionName] fetching the previous section data which was saved in the [sectionsData]
   setPreviousSectionData(String sectionName) {
-    int previousIndex = questionnaireSections.indexOf(sectionName);
-    if (craSectionData.isNotEmpty) {
-      for (var section in craSectionData) {
-        String? key = section.ehrCategoryMap;
-        if (questionnaireSections[previousIndex - 1] == key) {
-          _sectionName = key;
-          questionnaireList = section.questionnaireList!;
-        }
-      }
-    }
+    int currentIndex = questionnaireSections.indexOf(sectionName);
+    _sectionName = questionnaireSections[currentIndex - 1];
+    questionnaireList = sectionsData[_sectionName]!;
   }
 
   setVersionNumber(String version) => _versionNumber = version;
@@ -84,37 +64,28 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// Forces provider to setstate on external command
   void notify() => notifyListeners();
 
-  fetchQuestionnaireForRA(String language, String sectionName) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
-    if (questionnaireSections.isEmpty) {
-      if (isarDB!.sections != null) {
-        for (var section in isarDB!.sections!) {
-          questionnaireSections.add(section.sectionName.toString());
-          if (versionNumber == null || versionNumber!.isEmpty) {
-            _versionNumber = section.versionNumber;
-          }
-        }
-      }
-    }
-
-    if (questionnaireList.isEmpty) {
-      _sectionName = questionnaireSections[0];
+  /// Fetching the Questionnaire based upon the [language] and saving it in the [sectionsData] Map Object
+  /// If the [_sectionName] is null|empty then adding the first section data saved in [sectionsData]
+  fetchQuestionnaireForRA(String language) async {
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
+    if (_sectionName == null) {
       for (int i = 0; i < isarDB!.sections!.length; i++) {
-        if (isarDB!.sections![i].sectionName == questionnaireSections[0]) {
-          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i].questionObj ?? []);
-        }
+        questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
+        sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
+      _sectionName = questionnaireSections[0];
+      questionnaireList = sectionsData[_sectionName]!;
     }
     notifyListeners();
   }
 
   submitForm({required List<CRAModel> craData, required BuildContext context}) async {
-    List<String> sectionNames = [];
-    List<CRASectionModel> craSectionModel = [];
-    CRAQuestionnaire? craQuestionnaire;
-    late Inputs inputs1;
     SubInput? subInput;
+    late Inputs inputs;
+    CRAQuestionnaire? craQuestionnaire;
+    List<String> sectionNames = [];
     List<CRAQuestionnaire> craQuestion = [];
+    List<CRASectionModel> craSectionModel = [];
     for (int i = 0; i < craData.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
       if (craData[i].questionnaireList != []) {
@@ -138,12 +109,12 @@ class QuestionnaireViewModel extends ChangeNotifier {
                     ..inputId = subInputsData[0]['inputid']
                     ..value = subInputsData[0]['value'];
               }
-              inputs1 = Inputs()
+              inputs = Inputs()
                 ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
                 ..value = inputsData1[k]['value']
                 ..subInput = subInput
                 ..timeAsked = inputsData1[k]['timeAsked'] == null ? DateTime.now() : DateTime.parse(inputsData1[k]['timeAsked']);
-              inputsData.add(inputs1);
+              inputsData.add(inputs);
               subInput = null;
             }
           }
@@ -174,15 +145,22 @@ class QuestionnaireViewModel extends ChangeNotifier {
         ..languageCode = languageViewModel.selectedLanguage
         ..craSectionData = craSectionModel);
       _allSectionsCompleted = true;
-      questionnaireList = [];
+      resetAll();
     } catch (e) {
       log(e.toString());
     }
   }
 
+  resetAll() {
+    questionnaireSections = [];
+    questionnaireList = [];
+    craSectionData = [];
+    _sectionName = null;
+  }
+
   savePatientId(String randomId) => _patientId = randomId;
 
-  List<Questionnaire> parseJsonForQuestionnaire(questionsList) {
+  List<Questionnaire> fetchDBQuestions(questionsList) {
     List<Questionnaire> questionnaires = [];
 
     for (var element in questionsList) {
