@@ -5,4 +5,5 @@ class AppEndpoints {
 
   static String get sendOtpUrl => "/auth/otp";
   static String get loginOtpUrl => "/auth/otp/login";
+  static String get logoutUrl => "/logout";
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
@@ -20,6 +21,7 @@ class LoginViewModel extends ChangeNotifier {
     return loginViewModel;
   }
   UserModel? _userDetails;
+
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
   LoginScreenTypes _authFlow = LoginScreenTypes.MOBILE_NUMBER;
@@ -133,6 +135,21 @@ class LoginViewModel extends ChangeNotifier {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     } finally {
       isOTPValidating = false;
+    }
+  }
+
+  /// Returning a true value if the status code of the logout is [200]
+  Future<bool> logout() async {
+    try {
+      final Response response = await AuthService().logout();
+      if (response.statusCode == 200) {
+        await SharedPreferencesService.sharedPreferencesService.clearAll();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      rethrow;
     }
   }
 }
