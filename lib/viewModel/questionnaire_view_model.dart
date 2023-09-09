@@ -15,21 +15,22 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   RiskAssessmentQuestionaire? isarDB;
 
-  List<Questionnaire> questionnaireList = [];
   List<CRAModel> craSectionData = [];
   List<String> questionnaireSections = [];
 
+  String? _caseId;
   String? _sectionName;
   String? _versionNumber;
   String? _languageCode;
   String? _patientId;
-  bool? _allSectionsCompleted;
+  bool _allSectionsCompleted = false;
 
+  String? get caseId => _caseId;
   String? get sectionName => _sectionName;
   String? get versionNumber => _versionNumber;
   String? get languageCode => _languageCode;
   String? get patientId => _patientId;
-  bool? get allSectionsCompleted => _allSectionsCompleted;
+  bool get allSectionsCompleted => _allSectionsCompleted;
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
@@ -38,16 +39,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// If all the sections are completed then submitting the form
   setNextSectionData(String sectionName, BuildContext context) async {
     _allSectionsCompleted = false;
-    sectionsData[sectionName] = questionnaireList;
-    craSectionData.add(CRAModel(sectionName, questionnaireList));
+    craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
     int currentIndex = questionnaireSections.indexOf(sectionName);
     if (currentIndex == questionnaireSections.length - 1) {
        await submitForm(craData: craSectionData, context: context);
     } else {
       _sectionName = questionnaireSections[currentIndex + 1];
-      questionnaireList = sectionsData[_sectionName]!;
     }
-    notifyListeners();
   }
 
   /// From the [sectionName] received in the parameter, we are finding in which index that particular
@@ -56,10 +54,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
   setPreviousSectionData(String sectionName) {
     int currentIndex = questionnaireSections.indexOf(sectionName);
     _sectionName = questionnaireSections[currentIndex - 1];
-    questionnaireList = sectionsData[_sectionName]!;
   }
 
   setVersionNumber(String version) => _versionNumber = version;
+
+  setCaseId() {
+    _caseId = CommonFunctions.randomNumber(5);
+  }
 
   /// Forces provider to setstate on external command
   void notify() => notifyListeners();
@@ -70,11 +71,14 @@ class QuestionnaireViewModel extends ChangeNotifier {
     isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
     if (_sectionName == null) {
       for (int i = 0; i < isarDB!.sections!.length; i++) {
+        if (_versionNumber == null || _versionNumber!.isEmpty) {
+          setCaseId();
+          setVersionNumber(isarDB!.sections![i].versionNumber.toString());
+        }
         questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
         sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
       _sectionName = questionnaireSections[0];
-      questionnaireList = sectionsData[_sectionName]!;
     }
     notifyListeners();
   }
@@ -86,6 +90,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     List<String> sectionNames = [];
     List<CRAQuestionnaire> craQuestion = [];
     List<CRASectionModel> craSectionModel = [];
+    final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
     for (int i = 0; i < craData.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
       if (craData[i].questionnaireList != []) {
@@ -132,15 +137,18 @@ class QuestionnaireViewModel extends ChangeNotifier {
       List<CRAQuestionnaire> craQuestionnaireData = [];
       craQuestionnaireData.addAll(craQuestion);
       CRASectionModel craModel = CRASectionModel()
+        ..locale = languageViewModel.selectedLanguage
+        ..patientId = patientId
+        ..version = versionNumber
+        ..caseId = caseId
         ..ehrCategoryMapId = sectionNames[i]
         ..questionnaireList = craQuestionnaireData;
       craSectionModel.add(craModel);
     }
     try {
-      final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       IsarDbService.isarDbService.saveCRA(CRAOfflineData()
         ..patientId = patientId
-        ..caseId = CommonFunctions.randomNumber(5)
+        ..caseId = _caseId
         ..versionNumber = versionNumber
         ..languageCode = languageViewModel.selectedLanguage
         ..craSectionData = craSectionModel);
@@ -153,9 +161,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   resetAll() {
     questionnaireSections = [];
-    questionnaireList = [];
     craSectionData = [];
     _sectionName = null;
+    _caseId = null;
+    _versionNumber = null;
   }
 
   savePatientId(String randomId) => _patientId = randomId;

@@ -14,7 +14,15 @@ class CRAOfflineData {
 
 @embedded
 class CRASectionModel {
+  String? createdBy;
+  DateTime createdTime = DateTime.now();
+  String? caseId;
+  String? patientId;
+  String categoryStatus = "DRAFT";
+  String? encounterEhrDiagnosisReports;
+  String? version;
   String? ehrCategoryMapId;
+  String? locale;
   List<CRAQuestionnaire>? questionnaireList;
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -42,17 +43,18 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   }
 
   fetchQuestions() async {
-    if (questionnaireViewModel.questionnaireList.isEmpty) {
+    if (widget.sectionName == "null") {
       final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       String? locale = languageViewModel.selectedLanguage;
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
+    } else {
+      await questionnaireViewModel.setNextSectionData(widget.sectionName, context);
     }
   }
 
   goToPreviousScreen() {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
       GoRouter.of(context).pop(DashboardScreen.routerPath);
-      questionnaireViewModel.questionnaireList = [];
       questionnaireViewModel.craSectionData = [];
     } else {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
@@ -79,7 +81,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
           child: Container(
             padding: const EdgeInsets.all(20.0),
             child: Selector<QuestionnaireViewModel, List<Questionnaire>> (
-              selector: (_, provider) => provider.questionnaireList,
+              selector: (_, provider) => provider.sectionsData[questionnaireViewModel.sectionName] ?? [],
               builder: (context, questionnaireList, child) {
                 if (questionnaireList.isEmpty) {
                   return SizedBox(
@@ -134,7 +136,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: PrimaryFilledButton(
-                            onPressed: () {
+                            onPressed: () async {
                               bool isValid = true;
                               for (var questionnaire in questionnaireList) {
                                 if (!questionnaire.isValid()) {
@@ -142,12 +144,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 }
                               }
                               if (isValid) {
-                                questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
-                                if (questionnaireViewModel.allSectionsCompleted!) {
+                                if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
+                                  questionnaireViewModel.craSectionData.add(CRAModel(questionnaireViewModel.sectionName, questionnaireViewModel.sectionsData[questionnaireViewModel.sectionName]));
+                                  await questionnaireViewModel.submitForm(craData: questionnaireViewModel.craSectionData, context: context);
                                   CommonFunctions.toastMessage(AppConstant.COMPLETED_QUESTIONNAIRE);
                                   GoRouter.of(context).go(DashboardScreen.routerPath);
                                 } else {
-                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
                                 }
                               } else {
                                 CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);
