@@ -12,7 +12,7 @@ class QuestionnaireService {
     try {
     switch (locale) {
   case "en_US":
-    sectionPath = [AppAssetsPath.personalHistoryQuestionnaire, AppAssetsPath.healthHabitQuestionnaire, AppAssetsPath.fagerstormQuestionnaire];
+    sectionPath = AppAssetsPath.questionnairesPath;
     break;
   case "hi":
     sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];

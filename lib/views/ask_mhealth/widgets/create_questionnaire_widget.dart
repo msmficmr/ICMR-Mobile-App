@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 
 Widget _getWidgetForQuestionnaire(BuildContext context,
     Questionnaire questionnaire,
@@ -80,7 +82,7 @@ Widget _getWidgetForSingleSelectionQuestionnaire(
         Visibility(
           visible: singleSelectionQuestionnaire.shouldShowError,
           child: Text(
-            "This field is mandatory",
+            TranslationKeys.thisFieldIsMandatory.translate(context),
             style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
           ),
         ),
@@ -136,7 +138,7 @@ Widget _getWidgetForSingleSelectionSubQuestionnaire(
         Visibility(
           visible: singleSelectionSubQuestionnaire.shouldShowError,
           child: Text(
-            "This field is mandatory",
+            TranslationKeys.thisFieldIsMandatory.translate(context),
             style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
           ),
         ),
@@ -206,7 +208,7 @@ Widget _getWidgetForMultiSelectionSubQuestionnaire(
         Visibility(
           visible: multiSelectionSubQuestionnaire.shouldShowError,
           child: Text(
-            "This field is mandatory",
+            TranslationKeys.thisFieldIsMandatory.translate(context),
             style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
           ),
         ),
@@ -250,7 +252,7 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
           child: Align(
             alignment: Alignment.topLeft,
             child: Text(
-              "This field is mandatory",
+              TranslationKeys.thisFieldIsMandatory.translate(context),
               style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
             ),
           ),

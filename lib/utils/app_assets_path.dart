@@ -47,9 +47,7 @@ class AppAssetsPath {
   static const String personalHistoryQuestionnaire = "assets/json/personal_history_en.json";
   static const String healthHabitQuestionnaire = "assets/json/health_habit_en.json";
   static const String fagerstormQuestionnaire = "assets/json/fagerstorm_en.json";
-
-  /// Loader
-  static const String loader = "assets/json/loader.json";
+  static const List<String> questionnairesPath = [personalHistoryQuestionnaire, healthHabitQuestionnaire, fagerstormQuestionnaire];
 
   static const editIcon = "assets/icons/edit_icon.png";
 }

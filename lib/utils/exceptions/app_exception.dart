@@ -75,15 +75,3 @@ class NetworkConnectTimeoutErrorException extends AppException {
   NetworkConnectTimeoutErrorException({Response? response, String? message, int? statusCode}) : super(response, message, statusCode);
 }
 
-class CustomException implements Exception {
-  String description;
-  int? errorCode;
-  Response? response;
-
-  CustomException({
-    required this.description,
-    this.errorCode,
-    this.response,
-  });
-}
-

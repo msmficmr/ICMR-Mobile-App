@@ -6,5 +6,5 @@ class CRAModel {
 
   CRAModel(this.ehrCategoryMap, this.questionnaireList);
 
-  Map<String, dynamic> toJson() => {'ehrCategoryMapId': ehrCategoryMap, 'ehrNotes': questionnaireList};
+  Map<String, dynamic> toJson() => {'ehrCategoryMapId': ehrCategoryMap, 'ehrNotes': (questionnaireList ?? []).map((Questionnaire e) => e.toJson())};
 }

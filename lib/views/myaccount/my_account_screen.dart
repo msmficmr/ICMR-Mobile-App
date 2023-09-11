@@ -60,7 +60,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     bool logout = await loginViewModel.logout();
     if (logout) {
-      GoRouter.of(context).go(LoginEmailScreen.routerPath);
+      loginViewModel.isLoggedIn = false;
+      GoRouter.of(context).go(LoginHome.routerPath);
     }
   }
 

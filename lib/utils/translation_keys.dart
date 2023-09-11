@@ -76,4 +76,6 @@ class TranslationKeys {
   static const String registeredSuccessfully = "registered_successfully";
   static const String date = "date";
   static const String submit = "submit";
+  static const String thisFieldIsMandatory = "this_field_is_mandatory";
+  static const String enterValidInputText = "enter_valid_input_text";
 }

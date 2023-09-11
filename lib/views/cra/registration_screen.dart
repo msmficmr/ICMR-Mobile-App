@@ -14,12 +14,13 @@ import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
-import 'package:mhealth/viewModel/chat_bot_view_model.dart';
+import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -46,7 +47,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   late AttachmentModel? _selectedAttachment;
-  late ChatBotViewModel chatBotViewModel;
+  late QuestionnaireViewModel questionnaireViewModel;
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
@@ -196,7 +197,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
-    chatBotViewModel = Provider.of<ChatBotViewModel>(context, listen: false);
+    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     initializeField();
   }
 
@@ -212,6 +213,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       AttachmentDb attachment = AttachmentDb()
         ..fileName = _selectedAttachment!.fileName
         ..image = _selectedAttachment!.bytes;
+      String patientId = CommonFunctions.randomNumber(6);
+      questionnaireViewModel.savePatientId(patientId);
       IsarDbService.isarDbService.savePatient(PatientRegistration()
         ..consentDate = DateTime.now()
         ..firstName = _firstNameController.text
@@ -229,7 +232,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ..disclosedIncome = _disclosedIncome.value
         ..income = _incomeController.text
         ..consent = attachment
-        ..patientId = chatBotViewModel.randomPatientNumber()
+        ..patientId = patientId
       );
 
       GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);

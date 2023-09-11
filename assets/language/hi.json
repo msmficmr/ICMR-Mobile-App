@@ -72,5 +72,7 @@
   "thank_you" : "धन्यवाद",
   "registered_successfully" : "आप mHealth के साथ सफलतापूर्वक पंजीकृत हो गए हैं",
   "date" : "दिनांक",
-  "submit" : "जमा करे"
+  "submit" : "जमा करे",
+  "this_field_is_mandatory" : "यह फील्ड अनिवार्य है",
+  "enter_valid_input_text" : "मान्य इनपुट टेक्स्ट दर्ज करें"
 }

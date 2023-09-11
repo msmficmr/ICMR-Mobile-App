@@ -7,145 +7,120 @@ import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
-class ChatBotViewModel extends ChangeNotifier {
-  Map<String, String> _languageMap = {};
-
-  Map<String, String> get languageMapObject => _languageMap;
-
-  /// using global variable for using animations
-  final GlobalKey<AnimatedListState> animationKey = GlobalKey<AnimatedListState>();
-  final ScrollController scrollController = ScrollController();
-
-  late CRAModel answeredCRAData;
+class QuestionnaireViewModel extends ChangeNotifier {
 
   RiskAssessmentQuestionaire? isarDB;
 
-  List<Questionnaire> questionnaireList = [];
-  List<Questionnaire> answeredQuestionnaire = [];
   List<CRAModel> craSectionData = [];
+  List<String> questionnaireSections = [];
 
+  String? _caseId;
   String? _sectionName;
   String? _versionNumber;
   String? _languageCode;
   String? _patientId;
-  bool? _allSectionsCompleted;
+  bool _allSectionsCompleted = false;
 
+  String? get caseId => _caseId;
   String? get sectionName => _sectionName;
   String? get versionNumber => _versionNumber;
   String? get languageCode => _languageCode;
   String? get patientId => _patientId;
-  bool? get allSectionsCompleted => _allSectionsCompleted;
+  bool get allSectionsCompleted => _allSectionsCompleted;
 
+  Map<String, List<Questionnaire>> sectionsData = {};
+
+  /// Updating the value of the [sectionsData] key
+  /// Getting the next section index from [questionnaireSections] and adding the values for [_sectionName] & [questionnaireList]
+  /// If all the sections are completed then submitting the form
   setNextSectionData(String sectionName, BuildContext context) async {
     _allSectionsCompleted = false;
-    List<Questionnaire> answeredQuestions = [];
-    answeredQuestions.addAll(questionnaireList);
-    answeredCRAData = CRAModel(sectionName, answeredQuestions);
-    for (int i = 0; i < craSectionData.length; i++) {
-      if (craSectionData[i].ehrCategoryMap! == answeredCRAData.ehrCategoryMap) {
-        craSectionData.removeAt(i);
-      }
-    }
-    craSectionData.add(answeredCRAData);
-    if (sectionName == isarDB!.sections![questionnaireSections.length - 1].sectionName) {
-      await submitForm(craData: craSectionData, context: context);
-      craSectionData = [];
+    craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
+    int currentIndex = questionnaireSections.indexOf(sectionName);
+    if (currentIndex == questionnaireSections.length - 1) {
+       await submitForm(craData: craSectionData, context: context);
     } else {
-      for (int i = 0; i < questionnaireSections.length; i++) {
-        if (sectionName == questionnaireSections[i]) {
-          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i + 1].questionObj ?? []);
-          _sectionName = isarDB!.sections![i + 1].sectionName;
-        }
-      }
+      _sectionName = questionnaireSections[currentIndex + 1];
     }
-    notifyListeners();
   }
 
+  /// From the [sectionName] received in the parameter, we are finding in which index that particular
+  /// index is present in the [questionnaireSections] and saving the previous item as [_sectionName]
+  /// From the [_sectionName] fetching the previous section data which was saved in the [sectionsData]
   setPreviousSectionData(String sectionName) {
-    int previousIndex = questionnaireSections.indexOf(sectionName);
-    if (craSectionData.isNotEmpty) {
-      for (var section in craSectionData) {
-        String? key = section.ehrCategoryMap;
-        if (questionnaireSections[previousIndex - 1] == key) {
-          _sectionName = key;
-          questionnaireList = section.questionnaireList!;
-        }
-      }
-    }
+    int currentIndex = questionnaireSections.indexOf(sectionName);
+    _sectionName = questionnaireSections[currentIndex - 1];
   }
 
   setVersionNumber(String version) => _versionNumber = version;
 
-  List<String> questionnaireSections = [];
+  setCaseId() {
+    _caseId = CommonFunctions.randomNumber(5);
+  }
 
   /// Forces provider to setstate on external command
   void notify() => notifyListeners();
 
-  fetchQuestionnaireForRA(String language, String sectionName) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
-    if (questionnaireSections.isEmpty) {
-      if (isarDB!.sections != null) {
-        for (var section in isarDB!.sections!) {
-          questionnaireSections.add(section.sectionName.toString());
-          if (versionNumber == null || versionNumber!.isEmpty) {
-            _versionNumber = section.versionNumber;
-          }
-        }
-      }
-    }
-
-    if (questionnaireList.isEmpty) {
-      _sectionName = questionnaireSections[0];
+  /// Fetching the Questionnaire based upon the [language] and saving it in the [sectionsData] Map Object
+  /// If the [_sectionName] is null|empty then adding the first section data saved in [sectionsData]
+  fetchQuestionnaireForRA(String language) async {
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
+    if (_sectionName == null) {
       for (int i = 0; i < isarDB!.sections!.length; i++) {
-        if (isarDB!.sections![i].sectionName == questionnaireSections[0]) {
-          questionnaireList = parseJsonForQuestionnaire(isarDB!.sections![i].questionObj ?? []);
+        if (_versionNumber == null || _versionNumber!.isEmpty) {
+          setCaseId();
+          setVersionNumber(isarDB!.sections![i].versionNumber.toString());
         }
+        questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
+        sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
+      _sectionName = questionnaireSections[0];
     }
     notifyListeners();
   }
 
   submitForm({required List<CRAModel> craData, required BuildContext context}) async {
-    List<String> sectionNames = [];
-    List<CRASectionModel> craSectionModel = [];
+    SubInput? subInput;
+    late Inputs inputs;
     CRAQuestionnaire? craQuestionnaire;
-    late Inputs inputs1;
-    InputsBranch? inputs2;
+    List<String> sectionNames = [];
     List<CRAQuestionnaire> craQuestion = [];
+    List<CRASectionModel> craSectionModel = [];
+    final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
     for (int i = 0; i < craData.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
       if (craData[i].questionnaireList != []) {
         craQuestion.clear();
         List<Inputs> inputsData = [];
-        List inputsData2 = [];
+        List subInputsData = [];
         for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
           inputsData = [];
           if (craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
             List inputsData1 = json.decode(craData[i].questionnaireList![j].toJson()['inputs']);
-            inputsData2 = [];
+            subInputsData = [];
             for (int k = 0; k < inputsData1.length; k++) {
-              inputsData2 = [];
+              subInputsData = [];
               if (inputsData1[k]['inputs'].runtimeType == String) {
-                inputsData2 = jsonDecode(inputsData1[k]['inputs']);
+                subInputsData = jsonDecode(inputsData1[k]['inputs']);
               } else if (inputsData1[k]['inputs'].runtimeType == List<dynamic>) {
-                inputsData2 = inputsData1[k]['inputs'];
+                subInputsData = inputsData1[k]['inputs'];
               }
-              if (inputsData2.isNotEmpty) {
-                inputs2 = InputsBranch()
-                    ..inputId = inputsData2[0]['inputid']
-                    ..value = inputsData2[0]['value'];
+              if (subInputsData.isNotEmpty) {
+                subInput = SubInput()
+                    ..inputId = subInputsData[0]['inputid']
+                    ..value = subInputsData[0]['value'];
               }
-              inputs1 = Inputs()
+              inputs = Inputs()
                 ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
                 ..value = inputsData1[k]['value']
-                ..inputsBranch = inputs2
+                ..subInput = subInput
                 ..timeAsked = inputsData1[k]['timeAsked'] == null ? DateTime.now() : DateTime.parse(inputsData1[k]['timeAsked']);
-              inputsData.add(inputs1);
-              inputs2 = null;
+              inputsData.add(inputs);
+              subInput = null;
             }
           }
           craQuestionnaire = CRAQuestionnaire()
@@ -162,41 +137,39 @@ class ChatBotViewModel extends ChangeNotifier {
       List<CRAQuestionnaire> craQuestionnaireData = [];
       craQuestionnaireData.addAll(craQuestion);
       CRASectionModel craModel = CRASectionModel()
-        ..ehrCategoryMap = sectionNames[i]
+        ..locale = languageViewModel.selectedLanguage
+        ..patientId = patientId
+        ..version = versionNumber
+        ..caseId = caseId
+        ..ehrCategoryMapId = sectionNames[i]
         ..questionnaireList = craQuestionnaireData;
       craSectionModel.add(craModel);
     }
     try {
-      final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       IsarDbService.isarDbService.saveCRA(CRAOfflineData()
         ..patientId = patientId
-        ..caseId = randomCaseNumber()
+        ..caseId = _caseId
         ..versionNumber = versionNumber
         ..languageCode = languageViewModel.selectedLanguage
         ..craSectionData = craSectionModel);
       _allSectionsCompleted = true;
-      questionnaireList = [];
+      resetAll();
     } catch (e) {
       log(e.toString());
     }
   }
 
-  String randomPatientNumber() {
-    const uuid = Uuid();
-    final sixDigitUuid = uuid.v4().toString().substring(0, 6);
-    savePatientId(sixDigitUuid);
-    return sixDigitUuid;
+  resetAll() {
+    questionnaireSections = [];
+    craSectionData = [];
+    _sectionName = null;
+    _caseId = null;
+    _versionNumber = null;
   }
 
   savePatientId(String randomId) => _patientId = randomId;
 
-  String randomCaseNumber() {
-    const uuid = Uuid();
-    final sixDigitUuid = uuid.v4().toString().substring(0, 5);
-    return sixDigitUuid;
-  }
-
-  List<Questionnaire> parseJsonForQuestionnaire(questionsList) {
+  List<Questionnaire> fetchDBQuestions(questionsList) {
     List<Questionnaire> questionnaires = [];
 
     for (var element in questionsList) {

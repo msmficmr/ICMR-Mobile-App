@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -11,7 +12,7 @@ import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
-import 'package:mhealth/viewModel/chat_bot_view_model.dart';
+import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/create_questionnaire_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -32,31 +33,32 @@ class QuestionnaireScreen extends StatefulWidget {
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
-  late ChatBotViewModel chatBotViewModel;
+  late QuestionnaireViewModel questionnaireViewModel;
 
   @override
   void initState() {
     super.initState();
-    chatBotViewModel = Provider.of<ChatBotViewModel>(context, listen: false);
+    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     fetchQuestions();
   }
 
   fetchQuestions() async {
-    if (chatBotViewModel.questionnaireList.isEmpty) {
+    if (widget.sectionName == "null") {
       final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
       String? locale = languageViewModel.selectedLanguage;
-      await chatBotViewModel.fetchQuestionnaireForRA(locale, "");
+      await questionnaireViewModel.fetchQuestionnaireForRA(locale);
+    } else {
+      await questionnaireViewModel.setNextSectionData(widget.sectionName, context);
     }
   }
 
   goToPreviousScreen() {
-    if (chatBotViewModel.questionnaireSections[0] == chatBotViewModel.sectionName) {
-      GoRouter.of(context).push(DashboardScreen.routerPath);
-      chatBotViewModel.questionnaireList = [];
-      chatBotViewModel.craSectionData = [];
+    if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
+      GoRouter.of(context).pop(DashboardScreen.routerPath);
+      questionnaireViewModel.craSectionData = [];
     } else {
-      chatBotViewModel.setPreviousSectionData(chatBotViewModel.sectionName!);
-      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+      questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
+      GoRouter.of(context).pop(QuestionnaireScreen.routerPath);
     }
   }
 
@@ -73,13 +75,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         appBar: CustomAppBar(
           onLeadingClick: () => goToPreviousScreen(),
           appBarTitleType: CustomAppBarTitleType.TEXT,
-          titleText: "RISK ASSESSMENT",
+          titleText: AppConstant.RISK_ASSESSMENT,
         ),
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(20.0),
-            child: Selector<ChatBotViewModel, List<Questionnaire>> (
-              selector: (_, provider) => provider.questionnaireList,
+            child: Selector<QuestionnaireViewModel, List<Questionnaire>> (
+              selector: (_, provider) => provider.sectionsData[questionnaireViewModel.sectionName] ?? [],
               builder: (context, questionnaireList, child) {
                 if (questionnaireList.isEmpty) {
                   return SizedBox(
@@ -101,7 +103,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              chatBotViewModel.sectionName!.sectionTitleName,
+                              questionnaireViewModel.sectionName!.sectionTitleName,
                               style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor),
                             ),
                           )
@@ -134,7 +136,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: PrimaryFilledButton(
-                            onPressed: () {
+                            onPressed: () async {
                               bool isValid = true;
                               for (var questionnaire in questionnaireList) {
                                 if (!questionnaire.isValid()) {
@@ -142,12 +144,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 }
                               }
                               if (isValid) {
-                                chatBotViewModel.setNextSectionData(chatBotViewModel.sectionName!, context);
-                                if (chatBotViewModel.allSectionsCompleted!) {
-                                  CommonFunctions.toastMessage("Completed Questionnaire");
+                                if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
+                                  questionnaireViewModel.craSectionData.add(CRAModel(questionnaireViewModel.sectionName, questionnaireViewModel.sectionsData[questionnaireViewModel.sectionName]));
+                                  await questionnaireViewModel.submitForm(craData: questionnaireViewModel.craSectionData, context: context);
+                                  CommonFunctions.toastMessage(AppConstant.COMPLETED_QUESTIONNAIRE);
                                   GoRouter.of(context).go(DashboardScreen.routerPath);
                                 } else {
-                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
                                 }
                               } else {
                                 CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);

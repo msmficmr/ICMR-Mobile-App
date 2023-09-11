@@ -12,6 +12,8 @@ class AppConstant {
   static const String M_HEALTH_LABEL = "mHealth";
   static const String AI_BASED_CANCER_RISK_ASSESSMENT = "AI Based Cancer Risk Assessment";
 
+  static const String RISK_ASSESSMENT = "RISK ASSESSMENT";
+  static const String COMPLETED_QUESTIONNAIRE = "Completed Questionnaire";
   static const String EMAIL = "Email";
   static const String PAYMENT = "Payment";
   static const String VALUE = "value";
@@ -71,8 +73,6 @@ class AppConstant {
   static const String PATIENT_GENDER_KEY = "PatientGender";
   static const String LOCATION_ID_KEY = "locationId";
   static const String TEMPLATE_VERSION = "template_version";
-  static const String ACCESS_TOKEN = "access_token";
-  static const String REFRESH_TOKEN = "refresh_token";
 
   //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [

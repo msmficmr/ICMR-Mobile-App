@@ -15,11 +15,6 @@ extension StringExtension on String {
     return AppLocalizations.of(context).getTranslate(this) ?? "";
   }
 
-  String get sectionName {
-    String section = replaceAll(" ", "_").toLowerCase();
-    return section;
-  }
-
   String get sectionTitleName {
     List<String> words = split('_');
     words = words.map((word) {
