@@ -8,7 +8,6 @@ import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
-import 'package:mhealth/views/login/widgets/login_text_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
@@ -75,6 +74,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   }
 
   Future<void> onContinueClick() async {
+    loginViewModel.isEmailLogin = true;
     if (formKey.currentState?.validate() ?? false) {
       loginViewModel.authFlow = LoginScreenTypes.EMAIL;
       await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,authType: AuthType.email);
@@ -140,11 +140,12 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  LoginTextWidget(
+                  /// Need to enable, when login with mobile is required
+                  /*LoginTextWidget(
                     widgetKey: KEY_LOGIN_TYPE,
                     loginType: loginViewModel.loginTypes[1],
                     onTap: redirectToLoginMobileScreen,
-                  ),
+                  ),*/
                   const SpaceWidget(height: 16),
                   SizedBox(
                     width: double.infinity,

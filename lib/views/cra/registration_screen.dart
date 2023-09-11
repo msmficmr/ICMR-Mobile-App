@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,11 +14,13 @@ import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -30,6 +34,7 @@ import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
+
   // final AttachmentModel? selectedAttachment; // Add this line
 
   //RegistrationScreen({Key? key, this.selectedAttachment}) : super(key: key); // Add this line
@@ -42,6 +47,7 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   late AttachmentModel? _selectedAttachment;
+  late QuestionnaireViewModel questionnaireViewModel;
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
@@ -188,8 +194,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
-     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
+    _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
+    _buttonEnabled = ValueNotifier<bool>(true);
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
+    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     initializeField();
   }
 
@@ -201,28 +209,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void onContinueClick() {
-    AttachmentDb attachment = AttachmentDb()
-      ..fileName = _selectedAttachment!.fileName
-      ..image = _selectedAttachment!.bytes;
-    IsarDbService.isarDbService.savePatient(PatientRegistration()
-    ..consentDate = DateTime.now()
-      ..firstName = _firstNameController.text
-      ..lastName = _lastNameController.text
-      ..gender = _gender.value
-      ..dob = _dobController.text
-      ..age = _ageController.text
-      ..aadharId = _aadharIDController.text
-      ..medicalId = _medicalIDIDController.text
-      ..mobile = _mobileFieldController.text
-      ..state = _stateController.text
-      ..pincode = _pincodeController.text
-      ..district = _districtController.text
-      ..signedConsent = _signedConsent.value
-      ..disclosedIncome =_disclosedIncome.value
-      ..income = _incomeController.text
-      ..consent = attachment);
+    if (formKey.currentState!.validate()) {
+      AttachmentDb attachment = AttachmentDb()
+        ..fileName = _selectedAttachment!.fileName
+        ..image = _selectedAttachment!.bytes;
+      String patientId = CommonFunctions.randomNumber(6);
+      questionnaireViewModel.savePatientId(patientId);
+      IsarDbService.isarDbService.savePatient(PatientRegistration()
+        ..consentDate = DateTime.now()
+        ..firstName = _firstNameController.text
+        ..lastName = _lastNameController.text
+        ..gender = _gender.value
+        ..dob = _dobController.text
+        ..age = _ageController.text
+        ..aadharId = _aadharIDController.text
+        ..medicalId = _medicalIDIDController.text
+        ..mobile = _mobileFieldController.text
+        ..state = _stateController.text
+        ..pincode = _pincodeController.text
+        ..district = _districtController.text
+        ..signedConsent = _signedConsent.value
+        ..disclosedIncome = _disclosedIncome.value
+        ..income = _incomeController.text
+        ..consent = attachment
+        ..patientId = patientId
+      );
 
-    GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+      GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+    }
   }
 
   void onConsentClicked() async {
@@ -257,14 +271,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SpaceWidget(height: 5),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
                   child: ValueListenableBuilder<bool>(
                     valueListenable: _isConsentButtonActiveNotifier,
                     builder: (context, isButtonActive, child) {
                       return PrimaryFilledIconButton(
-                       onPressed: () {
-                      onConsentClicked();
-                    },
+                        onPressed: () {
+                          onConsentClicked();
+                        },
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
                           enabledTextColor: isButtonActive ? Color(0xFFF4F5FF) : Color(0xFF2F43EE),
@@ -494,7 +511,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       chipList: AppConstant.BINARY_LIST,
                       onChanged: (value) {
                         _disclosedIncome.value = value;
-                        _discloseIncome.value = !_discloseIncome.value;
+                        if (value == 'y') {
+                          _discloseIncome.value = true;
+                        } else {
+                          _discloseIncome.value = false;
+                        }
                       },
                       validator: AppValidators.validateBinaryQuestion,
                       selectedItem: _disclosedIncome.value,
@@ -560,8 +581,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         onPressed: !isValid
                             ? null
                             : () {
-                                onContinueClick();
-                              },
+                          onContinueClick();
+                        },
                       );
                     },
                   ),

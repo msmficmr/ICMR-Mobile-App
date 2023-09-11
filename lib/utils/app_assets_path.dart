@@ -42,4 +42,12 @@ class AppAssetsPath {
   static const String icPhone = "assets/icons/ic_phone.svg";
   static const String icCopy = "assets/icons/ic_copy.svg";
   static const String icLogout = "assets/icons/ic_logout.svg";
+
+  /// Questionnaires
+  static const String personalHistoryQuestionnaire = "assets/json/personal_history_en.json";
+  static const String healthHabitQuestionnaire = "assets/json/health_habit_en.json";
+  static const String fagerstormQuestionnaire = "assets/json/fagerstorm_en.json";
+  static const List<String> questionnairesPath = [personalHistoryQuestionnaire, healthHabitQuestionnaire, fagerstormQuestionnaire];
+
+  static const editIcon = "assets/icons/edit_icon.png";
 }

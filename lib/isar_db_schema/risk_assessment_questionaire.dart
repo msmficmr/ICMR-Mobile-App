@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:isar/isar.dart';
 
 part 'risk_assessment_questionaire.g.dart';

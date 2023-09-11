@@ -14,4 +14,16 @@ extension StringExtension on String {
   String translate(context) {
     return AppLocalizations.of(context).getTranslate(this) ?? "";
   }
+
+  String get sectionTitleName {
+    List<String> words = split('_');
+    words = words.map((word) {
+      return word[0].toUpperCase() + word.substring(1);
+    }).toList();
+    return words.join(' ');
+  }
+
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
 }

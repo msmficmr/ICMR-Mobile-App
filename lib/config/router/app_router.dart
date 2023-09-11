@@ -93,7 +93,17 @@ class AppRouter {
                 key: state.pageKey,
                 child: const MyAccountScreen(),
               ),
-            )
+            ),
+            GoRoute(
+              path: QuestionnaireScreen.routerPath,
+              pageBuilder: (context, state) {
+                String sectionName = state.extra.toString();
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: QuestionnaireScreen(sectionName: sectionName,),
+                );
+              },
+            ),
           ],
         )
       ],

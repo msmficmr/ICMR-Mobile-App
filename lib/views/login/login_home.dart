@@ -31,11 +31,11 @@ class _LoginHomeState extends State<LoginHome> {
   }
 
   Future<bool> onBackPress() async {
-    if (loginViewModel.authFlow == LoginScreenTypes.MOBILE_NUMBER) {
-      loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
-    } else {
+    // if (loginViewModel.authFlow == LoginScreenTypes.MOBILE_NUMBER) {
+    //   loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
+    // } else {
       loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
-    }
+    // }
     return false;
   }
 
@@ -51,10 +51,11 @@ class _LoginHomeState extends State<LoginHome> {
               case LoginScreenTypes.OTP_SCREEN:
                 return const LoginOtpScreen();
               case LoginScreenTypes.EMAIL:
+                default:
                 return const LoginEmailScreen();
-              case LoginScreenTypes.MOBILE_NUMBER:
+              /*case LoginScreenTypes.MOBILE_NUMBER:
               default:
-                return const LoginMobileScreen();
+                return const LoginMobileScreen();*/
             }
           },
         ),

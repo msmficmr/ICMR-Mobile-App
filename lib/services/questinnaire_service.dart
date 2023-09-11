@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
+import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 
-class QuestionairService {
-  Future<RiskAssessmentQuestionaire?> loadQuestionairAsset(String locale) async {
+class QuestionnaireService {
+  Future<RiskAssessmentQuestionaire?> loadQuestionnaireAsset(String locale) async {
     List<String> sectionPath = [];
     try {
     switch (locale) {
   case "en_US":
-    sectionPath = ["assets/personal_history_en.json", "assets/health_habit_en.json","assets/fagerstorm_en.json" ];
+    sectionPath = AppAssetsPath.questionnairesPath;
     break;
   case "hi":
     sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];
