@@ -151,7 +151,7 @@ class AppValidators {
     if (value == null || value.isEmpty) {
       return kEmptyValidator;
     }
-    String pattern = r"^[a-zA-Z0-9]$";
+    String pattern = r"^[a-zA-Z0-9]{5}$";
     RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
       return kValidValidator;

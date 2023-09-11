@@ -20,3 +20,7 @@ enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
 enum ScreenNames { REGISTRATION_SCREEN, TAKE_CRA_SCREEN }
 
 enum AuthType {mobile,email}
+
+enum QuestionType { SINGLE_SELECT_CHIP }
+
+enum LanguageCodes  { en_US, hi }

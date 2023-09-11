@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:mhealth/config/environment/environment.dart';
@@ -24,7 +23,6 @@ class ApiBaseHelper {
       Response response = await client.get(
         Uri.parse('${Environment.runningEnv.baseUrl}$requestUrl'),
       );
-
       return response;
     } on SocketException {
       CommonFunctions.showRetrySnackbar();

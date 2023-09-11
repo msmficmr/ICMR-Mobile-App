@@ -21,4 +21,5 @@ class PatientRegistration {
   late String? signedConsent;
   late String? disclosedIncome;
   late String? income;
+  late String? patientId;
 }

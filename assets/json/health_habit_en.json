@@ -27,11 +27,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -53,7 +53,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -105,11 +105,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -131,7 +131,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -183,11 +183,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -209,7 +209,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -261,11 +261,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -287,7 +287,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -339,11 +339,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -365,7 +365,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -417,11 +417,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -443,7 +443,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",
@@ -495,11 +495,11 @@
                     },
                     {
                         "id": "current",
-                        "displayText": "current"
+                        "displayText": "Current"
                     },
                     {
                         "id": "not",
-                        "displayText": "Not"
+                        "displayText": "Not Answered"
                     }
                 ],
                 "placeholder": null,
@@ -521,7 +521,7 @@
                         "regex": null,
                         "minValidator": null,
                         "maxValidator": null,
-                        "type": "MULTI_SELECT_TEXTFORM",
+                        "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
                         "followup": [
                             {
                                 "inputId": "if_yes_quit_since",

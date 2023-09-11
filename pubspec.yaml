@@ -34,6 +34,10 @@ dependencies:
   isar: ^3.1.0+1
   path_provider: ^2.0.15
   isar_flutter_libs: ^3.1.0+1
+  lottie: ^1.0.1
+  bubble: ^1.2.1
+  uuid: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -48,9 +52,7 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/language/
-    - assets/personal_history_en.json
-    - assets/fagerstorm_en.json
-    - assets/health_habit_en.json
+    - assets/json/
 
   fonts:
     - family: Montserrat

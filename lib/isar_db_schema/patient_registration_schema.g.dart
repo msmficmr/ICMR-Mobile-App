@@ -84,18 +84,23 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'mobile',
       type: IsarType.string,
     ),
-    r'pincode': PropertySchema(
+    r'patientId': PropertySchema(
       id: 13,
+      name: r'patientId',
+      type: IsarType.string,
+    ),
+    r'pincode': PropertySchema(
+      id: 14,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'signedConsent': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'signedConsent',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'state',
       type: IsarType.string,
     )
@@ -149,6 +154,12 @@ int _patientRegistrationEstimateSize(
   bytesCount += 3 + object.lastName.length * 3;
   bytesCount += 3 + object.medicalId.length * 3;
   bytesCount += 3 + object.mobile.length * 3;
+  {
+    final value = object.patientId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.pincode.length * 3;
   {
     final value = object.signedConsent;
@@ -184,9 +195,10 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[10], object.lastName);
   writer.writeString(offsets[11], object.medicalId);
   writer.writeString(offsets[12], object.mobile);
-  writer.writeString(offsets[13], object.pincode);
-  writer.writeString(offsets[14], object.signedConsent);
-  writer.writeString(offsets[15], object.state);
+  writer.writeString(offsets[13], object.patientId);
+  writer.writeString(offsets[14], object.pincode);
+  writer.writeString(offsets[15], object.signedConsent);
+  writer.writeString(offsets[16], object.state);
 }
 
 PatientRegistration _patientRegistrationDeserialize(
@@ -214,9 +226,10 @@ PatientRegistration _patientRegistrationDeserialize(
   object.lastName = reader.readString(offsets[10]);
   object.medicalId = reader.readString(offsets[11]);
   object.mobile = reader.readString(offsets[12]);
-  object.pincode = reader.readString(offsets[13]);
-  object.signedConsent = reader.readStringOrNull(offsets[14]);
-  object.state = reader.readString(offsets[15]);
+  object.patientId = reader.readStringOrNull(offsets[13]);
+  object.pincode = reader.readString(offsets[14]);
+  object.signedConsent = reader.readStringOrNull(offsets[15]);
+  object.state = reader.readString(offsets[16]);
   return object;
 }
 
@@ -258,10 +271,12 @@ P _patientRegistrationDeserializeProp<P>(
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readString(offset)) as P;
-    case 14:
       return (reader.readStringOrNull(offset)) as P;
+    case 14:
+      return (reader.readString(offset)) as P;
     case 15:
+      return (reader.readStringOrNull(offset)) as P;
+    case 16:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2045,6 +2060,160 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'patientId',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'patientId',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'patientId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'patientId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'patientId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'patientId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      patientIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'patientId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       pincodeEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -2655,6 +2824,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPatientId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'patientId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPatientIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'patientId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByPincode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pincode', Sort.asc);
@@ -2882,6 +3065,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPatientId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'patientId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPatientIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'patientId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByPincode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pincode', Sort.asc);
@@ -3012,6 +3209,13 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByPatientId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'patientId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByPincode({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'pincode', caseSensitive: caseSensitive);
@@ -3126,6 +3330,13 @@ extension PatientRegistrationQueryProperty
   QueryBuilder<PatientRegistration, String, QQueryOperations> mobileProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'mobile');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+      patientIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'patientId');
     });
   }
 

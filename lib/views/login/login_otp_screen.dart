@@ -69,7 +69,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
   /// Implemented functionality resend otp to user mobile
   // after sending otp we will disable functionality of [onResendClick] for 30 sec.
   onResendClick() async {
-    bool isOtpSent = await loginViewModel.sendOtp(mobileNumberOrEmailText: loginViewModel.mobileNoOrEmailText);
+    bool isOtpSent = await loginViewModel.sendOtp(mobileNumberOrEmailText: loginViewModel.mobileNoOrEmailText, authType: loginViewModel.isEmailLogin ? AuthType.email : AuthType.mobile);
     if (isOtpSent) {
       _startResendTimer();
     }
