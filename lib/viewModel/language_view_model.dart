@@ -18,7 +18,6 @@ class LanguageViewModel extends ChangeNotifier {
   }
 
   Future<void> setSelectedLanguage({required String selectedLanguage, required int selectedIndex, required Locale locale}) async {
-    isLoading = true;
     _locale = locale;
     _selectedIndex = selectedIndex;
     _selectedLanguage = selectedLanguage;
