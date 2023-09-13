@@ -21,6 +21,7 @@ class LoginViewModel extends ChangeNotifier {
     return loginViewModel;
   }
   UserModel? _userDetails;
+  UserModel? get userDetails => _userDetails;
 
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
@@ -129,7 +130,7 @@ class LoginViewModel extends ChangeNotifier {
       if (response != null) {
           String userDetails = jsonEncode(response.toJson());
             await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-            loginUser(userDetails);
+            loginUser(jsonEncode(response.user!.toJson()));
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);

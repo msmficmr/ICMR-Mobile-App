@@ -7,7 +7,6 @@ class CRAOfflineData {
   Id? id;
   String? patientId;
   String? caseId;
-  String? versionNumber;
   String? languageCode;
   List<CRASectionModel>? craSectionData;
 }
@@ -20,10 +19,15 @@ class CRASectionModel {
   String? patientId;
   String categoryStatus = "DRAFT";
   String? encounterEhrDiagnosisReports;
-  String? version;
   String? ehrCategoryMapId;
   String? locale;
-  List<CRAQuestionnaire>? questionnaireList;
+  EHRNotes? ehrNotes;
+}
+
+@embedded
+class EHRNotes {
+  String? versionNumber;
+  List<CRAQuestionnaire>? questions;
 }
 
 @embedded
@@ -31,7 +35,6 @@ class CRAQuestionnaire {
   String? questionId;
   String? value;
   List<Inputs>? inputs;
-  String? versionNumber;
   DateTime? timeAsked;
   String? snomed;
   String? lonic;
@@ -41,7 +44,6 @@ class CRAQuestionnaire {
       "questionId" : questionId,
       "value" : value,
       "inputs" : (inputs ?? []).map((Inputs e) => e.toJson()),
-      "versionNumber" : versionNumber,
       "timeAsked" : timeAsked,
       "snomed" : snomed,
       "lonic" : lonic
