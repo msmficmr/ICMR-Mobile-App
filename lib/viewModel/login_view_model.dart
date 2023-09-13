@@ -93,6 +93,7 @@ class LoginViewModel extends ChangeNotifier {
   /// otherwise we will display message property of [SendOtpResponseModel]
   Future<bool> sendOtp({required String mobileNumberOrEmailText,AuthType authType=AuthType.mobile}) async {
     bool isOtpSentSuccess = false;
+    isLoading = true;
     Map<String, dynamic> otpPayload = {};
     if (authType == AuthType.email) {
       _isEmailLogin = true;
