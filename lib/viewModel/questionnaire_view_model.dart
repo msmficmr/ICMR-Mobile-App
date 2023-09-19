@@ -44,7 +44,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
     int currentIndex = questionnaireSections.indexOf(sectionName);
     if (currentIndex == questionnaireSections.length - 1) {
-       await submitForm(craData: craSectionData, context: context);
+      await submitForm(craData: craSectionData, context: context);
     } else {
       _sectionName = questionnaireSections[currentIndex + 1];
     }
@@ -83,6 +83,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  fetchInvestigationQuestionnaire() async {
+
+  }
+
   submitForm({required List<CRAModel> craData, required BuildContext context}) async {
     SubInput? subInput;
     late Inputs inputs;
@@ -111,8 +115,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
               }
               if (subInputsData.isNotEmpty) {
                 subInput = SubInput()
-                    ..inputId = subInputsData[0]['inputid']
-                    ..value = subInputsData[0]['value'];
+                  ..inputId = subInputsData[0]['inputid']
+                  ..value = subInputsData[0]['value'];
               }
               inputs = Inputs()
                 ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
@@ -193,6 +197,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
         return _parseMultiSelectionSubQuestionnaire(element);
       } else if (chipType == AppConstant.SINGLE_MULTI_MULTI_CHIP_OPTIONS) {
         return _parseSingleMultiMultiSelectionQuestionnaire(element);
+      } else if (chipType == AppConstant.TEXT_AREA) {
+        return _parseTextFormFieldQuestionnaire(element);
       }
     } else if (element.type == null) {
       return _parseTextFieldQuestionnaire(element);
@@ -321,6 +327,28 @@ class QuestionnaireViewModel extends ChangeNotifier {
   TextFieldQuestionnaire _parseTextFieldQuestionnaire(element) {
     String id = element.inputId.toString();
     String label = element.inputText.toString();
+    String? regex = element.regex.toString();
+    bool isRequired = false;
+
+    var isRequiredField = element.requiredValue.toString();
+    if (isRequiredField.isNotEmpty) {
+      isRequired = isRequiredField == "true";
+    }
+
+    TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
+      null,
+      id: id,
+      label: label,
+      regex: regex,
+      isRequired: isRequired,
+      shouldShowError: false,
+    );
+    return textFieldQuestionnaire;
+  }
+
+  TextFieldQuestionnaire _parseTextFormFieldQuestionnaire(QuestionObj element) {
+    String id = element.questionId.toString();
+    String label = element.questionText.toString();
     String? regex = element.regex.toString();
     bool isRequired = false;
 

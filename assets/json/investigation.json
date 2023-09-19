@@ -1,0 +1,137 @@
+{
+    "uiTemplateId": "community_risk_assessment_investigation",
+    "templateName": "COMMUNITY_RISK_ASSESSMENT_INVESTIGATION",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "imaging_full_mouth",
+    "fields": {
+        "imaging_full_mouth": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "imaging_full_mouth",
+                "questionText": "Imaging Full mouth",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "AFI",
+                        "displayText": "AFI"
+                    },
+                    {
+                        "id": "WLI",
+                        "displayText": "WLI"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "probe": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "probe",
+                "questionText": "Probe",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "AFI",
+                        "displayText": "AFI"
+                    },
+                    {
+                        "id": "WLI",
+                        "displayText": "WLI"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "saliva_collected": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "saliva_collected",
+                "questionText": "Saliva collected",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "saliva_collected": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "saliva_collected",
+                "questionText": "Saliva collected",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}
+
