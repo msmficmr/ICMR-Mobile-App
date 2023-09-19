@@ -85,6 +85,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               child: Selector<PatientListViewModel, List<PatientRegistration?>>(
                 selector: (context, provider) => provider.registeredPatients,
                 builder: (context, registeredPatients, child) {
+                  print(registeredPatients.length);
                   return ListView.builder(
                     itemCount: registeredPatients.length,
                     itemBuilder: (context, index) {
@@ -92,10 +93,10 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                       final fullName = "${patient?.firstName} ${patient?.lastName}";
                       return CustomPatientCard(
                         patientName: fullName,
-                        patientId: patient!.medicalId,
+                        patientId: patient!.patientId,
                         gender: (patient.gender == "m") ? "Male" : "Female",
-                        dob: patient.age,
-                        phoneNumber: patient.mobile,
+                        age: patient.age,
+                        phoneNumber: patient.phoneNumber,
                         patientNameKey: Key('KEY_PATIENT_NAME_$index'),
                         patientIdKey: Key('KEY_PATIENT_ID_$index'),
                       );

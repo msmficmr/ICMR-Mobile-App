@@ -80,7 +80,7 @@ class IsarDbService {
     return craOfflineData;
   }
 
-  Future<PatientRegistration?> getPatientDetails(String? patientId) async {
+  Future<PatientRegistration?> getPatientDetails(String patientId) async {
     Isar? db = await isar;
     final patientData = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
     return patientData;
