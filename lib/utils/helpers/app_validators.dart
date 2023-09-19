@@ -24,6 +24,21 @@ class AppValidators {
     return null;
   }
 
+
+  static String? validateAlternateNumber(value) {
+    const String kValidValidator = "Phone number is invalid";
+
+    String pattern = r"^[6-9]\d{9}$";
+    RegExp regExp = RegExp(pattern);
+
+    if(value.toString().isNotEmpty) {
+      if (!regExp.hasMatch(value)) {
+        return kValidValidator;
+      }
+    }
+    return null;
+  }
+
   static String? validateOTP(value) {
     const String kEmptyValidator = "Enter Valid OTP.";
     const String kValidValidator = "OTP must be of 6 digit.";
@@ -57,7 +72,7 @@ class AppValidators {
     return null;
   }
 
-  static String? requiredFiled(value) {
+  static String? requiredField(value) {
     const String kEmptyValidator = "This field is required.";
 
     if (value == null || value.isEmpty) {
@@ -105,6 +120,33 @@ class AppValidators {
 
     if (formattedDateNow == value.toString()) {
       return kDOBFutureValidator;
+    }
+
+    return null;
+  }
+
+  static String? validateDate(value) {
+    const String kDOVEmptyValidator = "Date Of Visit can't be empty.";
+    const String kDOVFutureValidator = "Date Of Visit can't be a future date.";
+    const String kValidDOVValidator = "Enter Valid Date Of Visit.";
+    if (value == null || value.isEmpty) {
+      return kDOVEmptyValidator;
+    }
+
+    String pattern = r"^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidDOVValidator;
+    } else {
+      try {
+        DateTime inputDate = DateFormat(AppValues.dobDateFormat).parse(value);
+        DateTime todayDate = DateTime.now();
+        if (inputDate.compareTo(todayDate) == 1) {
+          return kDOVFutureValidator;
+        }
+      } catch (e) {
+        return kValidDOVValidator;
+      }
     }
 
     return null;
@@ -169,15 +211,13 @@ class AppValidators {
   }
 
   static String? validatePincode(value) {
-    const String kEmptyValidator = "Enter Valid Pincode.";
     const String kValidValidator = "Pincode must be of 6 digit.";
-    if (value == null || value.isEmpty) {
-      return kEmptyValidator;
-    }
     String pattern = r"^\d{6}$";
     RegExp regExp = RegExp(pattern);
-    if (!regExp.hasMatch(value)) {
-      return kValidValidator;
+    if (value.toString().isNotEmpty) {
+      if (!regExp.hasMatch(value)) {
+        return kValidValidator;
+      }
     }
 
     return null;

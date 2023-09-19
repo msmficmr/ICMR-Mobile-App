@@ -43,6 +43,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     if (_buttonEnabled.value) {
       await LocationService.locationServiceInstance.checkPermission(context);
       String? locale = languageViewModel.selectedLanguage;
+      languageViewModel.isLoading = true;
       RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
       if (rAQuestions != null) {
         print("48");
@@ -137,21 +138,26 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           ),
           SizedBox(
             width: double.infinity,
-            child: ValueListenableBuilder<bool>(
-                valueListenable: _buttonEnabled,
-                builder: (context, isValid, _) {
-                  return PrimaryFilledButton(
-                    buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
-                    buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                    widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
-                    isLoading: false,
-                    onPressed: !isValid
-                        ? null
-                        : () {
-                            onContinueClick();
-                          },
-                  );
-                }),
+            child: Selector<LanguageViewModel, bool>(
+              selector: (_, provider) => provider.isLoading,
+              builder: (context, isLoading, __) {
+                return ValueListenableBuilder<bool>(
+                    valueListenable: _buttonEnabled,
+                    builder: (context, isValid, _) {
+                      return PrimaryFilledButton(
+                        buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
+                        buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                        widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
+                        isLoading: isLoading,
+                        onPressed: !isValid
+                            ? null
+                            : () {
+                                onContinueClick();
+                              },
+                      );
+                    });
+              }
+            ),
           ),
           const SpaceWidget(
             height: 10,

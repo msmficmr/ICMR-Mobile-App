@@ -259,17 +259,22 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
               left: 0,
               right: 0,
               bottom: 0,
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _isContinueButtonEnabled,
-                builder: (context, isEnabled, _) {
-                  return PrimaryFilledButton(
-                    buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                    buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                    widgetKey: KEY_BUTTON_CONTINUE,
-                    onPressed: !isEnabled ? null : onContinueClick,
-                     isLoading: loginViewModel.isOTPValidating,
+              child: Selector<LoginViewModel, bool>(
+                selector: (_, provider) => provider.isOTPValidating,
+                builder: (context, isLoading, __) {
+                  return ValueListenableBuilder<bool>(
+                    valueListenable: _isContinueButtonEnabled,
+                    builder: (context, isEnabled, _) {
+                      return PrimaryFilledButton(
+                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                        buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                        widgetKey: KEY_BUTTON_CONTINUE,
+                        onPressed: !isEnabled ? null : onContinueClick,
+                         isLoading: isLoading,
+                      );
+                    },
                   );
-                },
+                }
               ),
             )
           ],

@@ -21,6 +21,7 @@ class LoginViewModel extends ChangeNotifier {
     return loginViewModel;
   }
   UserModel? _userDetails;
+  UserModel? get userDetails => _userDetails;
 
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
@@ -93,6 +94,7 @@ class LoginViewModel extends ChangeNotifier {
   /// otherwise we will display message property of [SendOtpResponseModel]
   Future<bool> sendOtp({required String mobileNumberOrEmailText,AuthType authType=AuthType.mobile}) async {
     bool isOtpSentSuccess = false;
+    isLoading = true;
     Map<String, dynamic> otpPayload = {};
     if (authType == AuthType.email) {
       _isEmailLogin = true;
@@ -129,7 +131,7 @@ class LoginViewModel extends ChangeNotifier {
       if (response != null) {
           String userDetails = jsonEncode(response.toJson());
             await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-            loginUser(userDetails);
+            loginUser(jsonEncode(response.user!.toJson()));
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
