@@ -9,11 +9,13 @@ import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 
 class QuestionnaireViewModel extends ChangeNotifier {
 
   RiskAssessmentQuestionaire? isarDB;
+  LoginViewModel? loginViewModel;
 
   List<CRAModel> craSectionData = [];
   List<String> questionnaireSections = [];
@@ -71,10 +73,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
     isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
     if (_sectionName == null) {
       for (int i = 0; i < isarDB!.sections!.length; i++) {
-        if (_versionNumber == null || _versionNumber!.isEmpty) {
-          setCaseId();
-          setVersionNumber(isarDB!.sections![i].versionNumber.toString());
-        }
+        if (caseId == null || caseId!.isEmpty) setCaseId();
+        setVersionNumber(isarDB!.sections![i].versionNumber.toString());
         questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
         sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
@@ -125,7 +125,6 @@ class QuestionnaireViewModel extends ChangeNotifier {
           }
           craQuestionnaire = CRAQuestionnaire()
             ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
-            ..versionNumber = versionNumber
             ..value = craData[i].questionnaireList![j].toJson()['value']
             ..inputs = inputsData
             ..timeAsked = DateTime.parse(craData[i].questionnaireList![j].toJson()['timeAsked'])
@@ -136,20 +135,24 @@ class QuestionnaireViewModel extends ChangeNotifier {
       }
       List<CRAQuestionnaire> craQuestionnaireData = [];
       craQuestionnaireData.addAll(craQuestion);
+      loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+      String userId = loginViewModel!.userDetails!.userId ?? "";
+      EHRNotes ehrNotes = EHRNotes()
+        ..versionNumber = versionNumber
+        ..questions = craQuestionnaireData;
       CRASectionModel craModel = CRASectionModel()
+        ..createdBy = userId
         ..locale = languageViewModel.selectedLanguage
         ..patientId = patientId
-        ..version = versionNumber
         ..caseId = caseId
-        ..ehrCategoryMapId = sectionNames[i]
-        ..questionnaireList = craQuestionnaireData;
+        ..ehrCategoryMapId = isarDB!.sections![i].templateName.toString()
+        ..ehrNotes = ehrNotes;
       craSectionModel.add(craModel);
     }
     try {
       IsarDbService.isarDbService.saveCRA(CRAOfflineData()
         ..patientId = patientId
         ..caseId = _caseId
-        ..versionNumber = versionNumber
         ..languageCode = languageViewModel.selectedLanguage
         ..craSectionData = craSectionModel);
       _allSectionsCompleted = true;

@@ -234,4 +234,9 @@ class CommonFunctions {
     final randomUuid = uuid.v4().toString().substring(0, length);
     return randomUuid;
   }
+
+  static DateTime textToDateTime(String dateString) {
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+    return dateFormat.parse(dateString);
+  }
 }

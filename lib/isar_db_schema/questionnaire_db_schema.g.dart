@@ -37,11 +37,6 @@ const CRAOfflineDataSchema = CollectionSchema(
       id: 3,
       name: r'patientId',
       type: IsarType.string,
-    ),
-    r'versionNumber': PropertySchema(
-      id: 4,
-      name: r'versionNumber',
-      type: IsarType.string,
     )
   },
   estimateSize: _cRAOfflineDataEstimateSize,
@@ -53,6 +48,7 @@ const CRAOfflineDataSchema = CollectionSchema(
   links: {},
   embeddedSchemas: {
     r'CRASectionModel': CRASectionModelSchema,
+    r'EHRNotes': EHRNotesSchema,
     r'CRAQuestionnaire': CRAQuestionnaireSchema,
     r'Inputs': InputsSchema,
     r'SubInput': SubInputSchema
@@ -101,12 +97,6 @@ int _cRAOfflineDataEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final value = object.versionNumber;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -125,7 +115,6 @@ void _cRAOfflineDataSerialize(
   );
   writer.writeString(offsets[2], object.languageCode);
   writer.writeString(offsets[3], object.patientId);
-  writer.writeString(offsets[4], object.versionNumber);
 }
 
 CRAOfflineData _cRAOfflineDataDeserialize(
@@ -145,7 +134,6 @@ CRAOfflineData _cRAOfflineDataDeserialize(
   object.id = id;
   object.languageCode = reader.readStringOrNull(offsets[2]);
   object.patientId = reader.readStringOrNull(offsets[3]);
-  object.versionNumber = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -168,8 +156,6 @@ P _cRAOfflineDataDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
-    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -913,160 +899,6 @@ extension CRAOfflineDataQueryFilter
       ));
     });
   }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'versionNumber',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'versionNumber',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'versionNumber',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'versionNumber',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'versionNumber',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
-      versionNumberIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'versionNumber',
-        value: '',
-      ));
-    });
-  }
 }
 
 extension CRAOfflineDataQueryObject
@@ -1121,20 +953,6 @@ extension CRAOfflineDataQuerySortBy
       sortByPatientIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'patientId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterSortBy>
-      sortByVersionNumber() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'versionNumber', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterSortBy>
-      sortByVersionNumberDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'versionNumber', Sort.desc);
     });
   }
 }
@@ -1192,20 +1010,6 @@ extension CRAOfflineDataQuerySortThenBy
       return query.addSortBy(r'patientId', Sort.desc);
     });
   }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterSortBy>
-      thenByVersionNumber() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'versionNumber', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterSortBy>
-      thenByVersionNumberDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'versionNumber', Sort.desc);
-    });
-  }
 }
 
 extension CRAOfflineDataQueryWhereDistinct
@@ -1228,14 +1032,6 @@ extension CRAOfflineDataQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'patientId', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, CRAOfflineData, QDistinct>
-      distinctByVersionNumber({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'versionNumber',
-          caseSensitive: caseSensitive);
     });
   }
 }
@@ -1271,13 +1067,6 @@ extension CRAOfflineDataQueryProperty
   QueryBuilder<CRAOfflineData, String?, QQueryOperations> patientIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'patientId');
-    });
-  }
-
-  QueryBuilder<CRAOfflineData, String?, QQueryOperations>
-      versionNumberProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'versionNumber');
     });
   }
 }
@@ -1318,30 +1107,25 @@ const CRASectionModelSchema = Schema(
       name: r'ehrCategoryMapId',
       type: IsarType.string,
     ),
-    r'encounterEhrDiagnosisReports': PropertySchema(
+    r'ehrNotes': PropertySchema(
       id: 5,
+      name: r'ehrNotes',
+      type: IsarType.object,
+      target: r'EHRNotes',
+    ),
+    r'encounterEhrDiagnosisReports': PropertySchema(
+      id: 6,
       name: r'encounterEhrDiagnosisReports',
       type: IsarType.string,
     ),
     r'locale': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'locale',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 7,
-      name: r'patientId',
-      type: IsarType.string,
-    ),
-    r'questionnaireList': PropertySchema(
       id: 8,
-      name: r'questionnaireList',
-      type: IsarType.objectList,
-      target: r'CRAQuestionnaire',
-    ),
-    r'version': PropertySchema(
-      id: 9,
-      name: r'version',
+      name: r'patientId',
       type: IsarType.string,
     )
   },
@@ -1377,6 +1161,13 @@ int _cRASectionModelEstimateSize(
     }
   }
   {
+    final value = object.ehrNotes;
+    if (value != null) {
+      bytesCount += 3 +
+          EHRNotesSchema.estimateSize(value, allOffsets[EHRNotes]!, allOffsets);
+    }
+  }
+  {
     final value = object.encounterEhrDiagnosisReports;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -1390,26 +1181,6 @@ int _cRASectionModelEstimateSize(
   }
   {
     final value = object.patientId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
-    final list = object.questionnaireList;
-    if (list != null) {
-      bytesCount += 3 + list.length * 3;
-      {
-        final offsets = allOffsets[CRAQuestionnaire]!;
-        for (var i = 0; i < list.length; i++) {
-          final value = list[i];
-          bytesCount +=
-              CRAQuestionnaireSchema.estimateSize(value, offsets, allOffsets);
-        }
-      }
-    }
-  }
-  {
-    final value = object.version;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -1428,16 +1199,15 @@ void _cRASectionModelSerialize(
   writer.writeString(offsets[2], object.createdBy);
   writer.writeDateTime(offsets[3], object.createdTime);
   writer.writeString(offsets[4], object.ehrCategoryMapId);
-  writer.writeString(offsets[5], object.encounterEhrDiagnosisReports);
-  writer.writeString(offsets[6], object.locale);
-  writer.writeString(offsets[7], object.patientId);
-  writer.writeObjectList<CRAQuestionnaire>(
-    offsets[8],
+  writer.writeObject<EHRNotes>(
+    offsets[5],
     allOffsets,
-    CRAQuestionnaireSchema.serialize,
-    object.questionnaireList,
+    EHRNotesSchema.serialize,
+    object.ehrNotes,
   );
-  writer.writeString(offsets[9], object.version);
+  writer.writeString(offsets[6], object.encounterEhrDiagnosisReports);
+  writer.writeString(offsets[7], object.locale);
+  writer.writeString(offsets[8], object.patientId);
 }
 
 CRASectionModel _cRASectionModelDeserialize(
@@ -1452,16 +1222,14 @@ CRASectionModel _cRASectionModelDeserialize(
   object.createdBy = reader.readStringOrNull(offsets[2]);
   object.createdTime = reader.readDateTime(offsets[3]);
   object.ehrCategoryMapId = reader.readStringOrNull(offsets[4]);
-  object.encounterEhrDiagnosisReports = reader.readStringOrNull(offsets[5]);
-  object.locale = reader.readStringOrNull(offsets[6]);
-  object.patientId = reader.readStringOrNull(offsets[7]);
-  object.questionnaireList = reader.readObjectList<CRAQuestionnaire>(
-    offsets[8],
-    CRAQuestionnaireSchema.deserialize,
+  object.ehrNotes = reader.readObjectOrNull<EHRNotes>(
+    offsets[5],
+    EHRNotesSchema.deserialize,
     allOffsets,
-    CRAQuestionnaire(),
   );
-  object.version = reader.readStringOrNull(offsets[9]);
+  object.encounterEhrDiagnosisReports = reader.readStringOrNull(offsets[6]);
+  object.locale = reader.readStringOrNull(offsets[7]);
+  object.patientId = reader.readStringOrNull(offsets[8]);
   return object;
 }
 
@@ -1483,19 +1251,16 @@ P _cRASectionModelDeserializeProp<P>(
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readObjectOrNull<EHRNotes>(
+        offset,
+        EHRNotesSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readObjectList<CRAQuestionnaire>(
-        offset,
-        CRAQuestionnaireSchema.deserialize,
-        allOffsets,
-        CRAQuestionnaire(),
-      )) as P;
-    case 9:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2159,6 +1924,24 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      ehrNotesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'ehrNotes',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      ehrNotesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'ehrNotes',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
       encounterEhrDiagnosisReportsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2621,30 +2404,148 @@ extension CRASectionModelQueryFilter
       ));
     });
   }
+}
 
+extension CRASectionModelQueryObject
+    on QueryBuilder<CRASectionModel, CRASectionModel, QFilterCondition> {
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListIsNull() {
+      ehrNotes(FilterQuery<EHRNotes> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'ehrNotes');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const EHRNotesSchema = Schema(
+  name: r'EHRNotes',
+  id: -3522610765980567247,
+  properties: {
+    r'questions': PropertySchema(
+      id: 0,
+      name: r'questions',
+      type: IsarType.objectList,
+      target: r'CRAQuestionnaire',
+    ),
+    r'versionNumber': PropertySchema(
+      id: 1,
+      name: r'versionNumber',
+      type: IsarType.string,
+    )
+  },
+  estimateSize: _eHRNotesEstimateSize,
+  serialize: _eHRNotesSerialize,
+  deserialize: _eHRNotesDeserialize,
+  deserializeProp: _eHRNotesDeserializeProp,
+);
+
+int _eHRNotesEstimateSize(
+  EHRNotes object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final list = object.questions;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[CRAQuestionnaire]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount +=
+              CRAQuestionnaireSchema.estimateSize(value, offsets, allOffsets);
+        }
+      }
+    }
+  }
+  {
+    final value = object.versionNumber;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _eHRNotesSerialize(
+  EHRNotes object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeObjectList<CRAQuestionnaire>(
+    offsets[0],
+    allOffsets,
+    CRAQuestionnaireSchema.serialize,
+    object.questions,
+  );
+  writer.writeString(offsets[1], object.versionNumber);
+}
+
+EHRNotes _eHRNotesDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = EHRNotes();
+  object.questions = reader.readObjectList<CRAQuestionnaire>(
+    offsets[0],
+    CRAQuestionnaireSchema.deserialize,
+    allOffsets,
+    CRAQuestionnaire(),
+  );
+  object.versionNumber = reader.readStringOrNull(offsets[1]);
+  return object;
+}
+
+P _eHRNotesDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readObjectList<CRAQuestionnaire>(
+        offset,
+        CRAQuestionnaireSchema.deserialize,
+        allOffsets,
+        CRAQuestionnaire(),
+      )) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension EHRNotesQueryFilter
+    on QueryBuilder<EHRNotes, EHRNotes, QFilterCondition> {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> questionsIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'questionnaireList',
+        property: r'questions',
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListIsNotNull() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> questionsIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'questionnaireList',
+        property: r'questions',
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListLengthEqualTo(int length) {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      questionsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         length,
         true,
         length,
@@ -2653,11 +2554,10 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListIsEmpty() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> questionsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         0,
         true,
         0,
@@ -2666,11 +2566,11 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListIsNotEmpty() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      questionsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         0,
         false,
         999999,
@@ -2679,14 +2579,14 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListLengthLessThan(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      questionsLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         0,
         true,
         length,
@@ -2695,14 +2595,14 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListLengthGreaterThan(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      questionsLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         length,
         include,
         999999,
@@ -2711,8 +2611,8 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListLengthBetween(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      questionsLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -2720,7 +2620,7 @@ extension CRASectionModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
-        r'questionnaireList',
+        r'questions',
         lower,
         includeLower,
         upper,
@@ -2729,40 +2629,39 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionIsNull() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'version',
+        property: r'versionNumber',
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionIsNotNull() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'version',
+        property: r'versionNumber',
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionEqualTo(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionGreaterThan(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2770,15 +2669,14 @@ extension CRASectionModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionLessThan(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2786,15 +2684,14 @@ extension CRASectionModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionBetween(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -2803,7 +2700,7 @@ extension CRASectionModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'version',
+        property: r'versionNumber',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -2813,83 +2710,84 @@ extension CRASectionModelQueryFilter
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionStartsWith(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionEndsWith(
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'version',
+        property: r'versionNumber',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> versionNumberMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'version',
+        property: r'versionNumber',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionIsEmpty() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'version',
+        property: r'versionNumber',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      versionIsNotEmpty() {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition>
+      versionNumberIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'version',
+        property: r'versionNumber',
         value: '',
       ));
     });
   }
 }
 
-extension CRASectionModelQueryObject
-    on QueryBuilder<CRASectionModel, CRASectionModel, QFilterCondition> {
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      questionnaireListElement(FilterQuery<CRAQuestionnaire> q) {
+extension EHRNotesQueryObject
+    on QueryBuilder<EHRNotes, EHRNotes, QFilterCondition> {
+  QueryBuilder<EHRNotes, EHRNotes, QAfterFilterCondition> questionsElement(
+      FilterQuery<CRAQuestionnaire> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'questionnaireList');
+      return query.object(q, r'questions');
     });
   }
 }
@@ -2930,11 +2828,6 @@ const CRAQuestionnaireSchema = Schema(
     r'value': PropertySchema(
       id: 5,
       name: r'value',
-      type: IsarType.string,
-    ),
-    r'versionNumber': PropertySchema(
-      id: 6,
-      name: r'versionNumber',
       type: IsarType.string,
     )
   },
@@ -2987,12 +2880,6 @@ int _cRAQuestionnaireEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final value = object.versionNumber;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -3013,7 +2900,6 @@ void _cRAQuestionnaireSerialize(
   writer.writeString(offsets[3], object.snomed);
   writer.writeDateTime(offsets[4], object.timeAsked);
   writer.writeString(offsets[5], object.value);
-  writer.writeString(offsets[6], object.versionNumber);
 }
 
 CRAQuestionnaire _cRAQuestionnaireDeserialize(
@@ -3034,7 +2920,6 @@ CRAQuestionnaire _cRAQuestionnaireDeserialize(
   object.snomed = reader.readStringOrNull(offsets[3]);
   object.timeAsked = reader.readDateTimeOrNull(offsets[4]);
   object.value = reader.readStringOrNull(offsets[5]);
-  object.versionNumber = reader.readStringOrNull(offsets[6]);
   return object;
 }
 
@@ -3061,8 +2946,6 @@ P _cRAQuestionnaireDeserializeProp<P>(
     case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
-    case 6:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -3863,160 +3746,6 @@ extension CRAQuestionnaireQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'value',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'versionNumber',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'versionNumber',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'versionNumber',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'versionNumber',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'versionNumber',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'versionNumber',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRAQuestionnaire, CRAQuestionnaire, QAfterFilterCondition>
-      versionNumberIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'versionNumber',
         value: '',
       ));
     });
