@@ -55,16 +55,16 @@ class IsarDbService {
     return riskAssessmentQuestionnaire;
   }
 
-  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionnaire(String locale,RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
+  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionnaire(String locale, RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
     Isar? db = await isar;
     final response = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
-    if (response != null) {
+    if (response == null) {
       await db.writeTxn(() async {
         await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionnaire);
       });
       return riskAssessmentQuestionnaire;
     } else {
-      return null;
+      return response;
     }
   }
 
@@ -73,5 +73,16 @@ class IsarDbService {
     final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
     return riskAssessmentQuestionnaire;
   }
-}
 
+  Future<List<CRAOfflineData?>> getListCRAOfflineData() async {
+    Isar? db = await isar;
+    final craOfflineData = await db.cRAOfflineDatas.where().findAll();
+    return craOfflineData;
+  }
+
+  Future<PatientRegistration?> getPatientDetails(String? patientId) async {
+    Isar? db = await isar;
+    final patientData = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
+    return patientData;
+  }
+}

@@ -45,10 +45,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       String? locale = languageViewModel.selectedLanguage;
       RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
       if (rAQuestions != null) {
-        RiskAssessmentQuestionaire? riskAssessmentQuestionnaire = await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
-        if (riskAssessmentQuestionnaire == null) {
-          await IsarDbService.isarDbService.saveRiskAssessmentQuestionnaire(rAQuestions);
-        }
+        print("48");
+        await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
       } else {
         CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
       }
