@@ -100,11 +100,43 @@
             "previousQuestionId": null,
             "lastQuestion": false
         },
-        "saliva_collected": {
+        "saliva_collected_rna": {
             "questionObject": {
                 "type": "CHIP_OPTIONS",
                 "questionId": "saliva_collected",
                 "questionText": "Saliva collected",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "rna",
+                        "displayText": "RNA"
+                    },
+                    {
+                        "id": "not_rna",
+                        "displayText": "Not in RNA"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "cytology _collected": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "cytology_collected",
+                "questionText": "Cytology collected",
                 "required": "true",
                 "validationMessage": null,
                 "regex": null,
@@ -120,6 +152,38 @@
                     {
                         "id": "no",
                         "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "cytology_collected_rna": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "cytology_collected",
+                "questionText": "Cytology collected",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "rna",
+                        "displayText": "RNA"
+                    },
+                    {
+                        "id": "not_rna",
+                        "displayText": "Not in RNA"
                     }
                 ],
                 "placeholder": null,

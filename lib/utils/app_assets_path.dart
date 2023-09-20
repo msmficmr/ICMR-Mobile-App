@@ -48,7 +48,7 @@ class AppAssetsPath {
   static const String detailsOfHabitQuestionnaire = "assets/json/details_of_habit.json";
   static const String investigationQuestionnaire = "assets/json/investigation.json";
   static const String measurementLesionQuestionnaire = "assets/json/measurement_lesion.json";
-  static const List<String> questionnairesPath = [baselineSignsQuestionnaire, detailsOfHabitQuestionnaire, investigationQuestionnaire, measurementLesionQuestionnaire];
+  static const List<String> questionnairesPath = [detailsOfHabitQuestionnaire, baselineSignsQuestionnaire, investigationQuestionnaire];
   static const String periodontalStatusImage = "assets/images/periodontal_status.png";
 
   static const editIcon = "assets/icons/edit_icon.png";

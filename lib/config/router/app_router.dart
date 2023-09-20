@@ -140,6 +140,13 @@ class AppRouter {
                 child: const LesionLocationScreen(),
               ),
             ),
+            GoRoute(
+              path: MeasurementLesionsScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const MeasurementLesionsScreen(),
+              ),
+            ),
           ],
         )
       ],

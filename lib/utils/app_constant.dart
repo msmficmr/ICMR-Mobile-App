@@ -33,6 +33,7 @@ class AppConstant {
   static const String LOGIN_INTENT = "loginIntent";
   static const String RETURN_TO_HOME = "Return To Home";
   static const double TEXT_HEIGHT = 1.6;
+  static const List<String> WHITE_LISTED_SECTIONS = ["Details Of Habits", "Baseline Signs Or Symptoms", "Periodontal Status", "Lesion Location", "Measurement of lesions", "Investigations", "Verification form"];
 
   //Languages
   static const List<Locale> appLocales = [

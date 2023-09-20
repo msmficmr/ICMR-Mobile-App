@@ -11,6 +11,8 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/questionnaire_view_model.dart';
+import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/verification_checkbox_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_dropdown.dart';
@@ -18,6 +20,7 @@ import 'package:mhealth/widgets/custom_signature_widget.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 
 class VerificationScreen extends StatefulWidget {
   static const routerPath = "/verificationScreen";
@@ -35,9 +38,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late ValueNotifier<Uint8List?> _patientConsent;
   late ValueNotifier<bool> _buttonEnabled;
 
+  late QuestionnaireViewModel questionnaireViewModel;
+
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
-  final TextEditingController _participantController = TextEditingController();
+  late TextEditingController _participantController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
 
   //Widget Keys
@@ -70,6 +75,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   initializeField() {
+    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    _participantController = TextEditingController(text: questionnaireViewModel.patientId);
     _institutionCode = ValueNotifier<String?>(null);
     _visitType = ValueNotifier<String?>(null);
     _hasConsent = ValueNotifier<bool>(false);
@@ -82,22 +89,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   Future<void> getSignature() async {
-    bool? result = await CommonFunctions.openDialog<bool?>(
-      context: context,
-      buttonCancelText: "No",
-      buttonText: "Yes",
-      subtitle: "Patient Consent",
-      action: (context) {
-        Navigator.of(context).pop(true);
-      },
-      onCancelAction: (context) {
-        Navigator.pop(context);
-      },
-      title: "Title",
-    );
-    if (result != null && result && context.mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen()));
-    }
+    _patientConsent.value = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen()));
   }
 
   @override
@@ -117,9 +109,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SpaceWidget(
-                      height: 15,
-                    ),
+                    const SectionNameWidget(sectionName: "Verification Form"),
                     //INSTITUTION CODE
                     ValueListenableBuilder<String?>(
                       valueListenable: _institutionCode,
@@ -142,6 +132,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     ),
                     //PARTICIPANT ID
                     CustomTextField(
+                      enabled: false,
                       controller: _participantController,
                       widgetKey: Key(KEY_FIELD_PARTICIPANT_ID),
                       hintText: TranslationKeys.enterHere.translate(context),
@@ -240,7 +231,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       buttonTitle: TranslationKeys.submit.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
-                      onPressed: () {},
+                      onPressed: () async {
+                        await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
+                      },
                     );
                   },
                 ),

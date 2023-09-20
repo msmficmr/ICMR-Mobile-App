@@ -15,3 +15,4 @@ export 'package:mhealth/views/ask_mhealth/criteria_screen.dart';
 export 'package:mhealth/views/ask_mhealth/verification_screen.dart';
 export 'package:mhealth/views/ask_mhealth/signature_screen.dart';
 export 'package:mhealth/views/ask_mhealth/lesion_location_screen.dart';
+export 'package:mhealth/views/ask_mhealth/measurement_lesions_screen.dart';

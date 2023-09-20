@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
@@ -7,6 +9,7 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
@@ -37,6 +40,7 @@ class CriteriaScreen extends StatelessWidget {
             Positioned.fill(
               child: Column(
                 children: [
+                  const SectionNameWidget(sectionName: "Criteria"),
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                     decoration: const BoxDecoration(
@@ -96,7 +100,9 @@ class CriteriaScreen extends StatelessWidget {
                     buttonTitle: TranslationKeys.continueText.translate(context),
                     widgetKey: KEY_BUTTON_CONTINUE,
                     isLoading: false,
-                    onPressed: () {},
+                    onPressed: () {
+                      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                    },
                   ),
                 ))
           ],

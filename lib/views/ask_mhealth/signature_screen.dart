@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -59,9 +60,11 @@ class _SignatureScreenState extends State<SignatureScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        onLeadingClick: () {},
         appBarTitleType: CustomAppBarTitleType.TEXT,
-        titleText: AppConstant.RISK_ASSESSMENT,
+        titleText: "",
+        onLeadingClick: () {
+          GoRouter.of(context).pop();
+        },
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
