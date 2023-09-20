@@ -26,5 +26,5 @@ class PatientRegistration {
   late DateTime consentDate;
   late String signedConsent;
   late String signedConsentNoReason;
-  late String? patientId;
+  late String patientId;
 }
