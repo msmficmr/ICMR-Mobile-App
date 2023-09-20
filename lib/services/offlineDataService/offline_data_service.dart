@@ -12,14 +12,13 @@ class OfflineDataService implements IOfflineDataService {
   Future<OfflineDataModel?> fetchDataSync({required String userId}) async {
     try {
       Response? response = await ApiBaseHelper.httpGetRequest("${AppEndpoints.syncNumber}?userId=$userId&syncStatus=true");
-      print(response?.statusCode);
       if (response != null) {
         OfflineDataModel syncNumber = offlineDataModelFromJson(response.body);
         return syncNumber;
       } else {
         throw AppException(null, AppConstant.ERROR_SOMETHING_WENT_WRONG, 500);
       }
-    } catch (e, s) {}
+    } catch (e) {}
   }
 
   @override
@@ -29,10 +28,7 @@ class OfflineDataService implements IOfflineDataService {
         AppEndpoints.syncData,
         payload: payLoadObj,
       );
-      print("33 $response");
-    } catch (e, s) {
-      print("35 $e");
-      print("36 $s");
+    } catch (e) {
     }
   }
 }

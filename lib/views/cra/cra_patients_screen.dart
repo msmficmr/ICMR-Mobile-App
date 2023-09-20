@@ -82,26 +82,30 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               ],
             ),
             Expanded(
-              child: Selector<PatientListViewModel, List<PatientRegistration?>>(
-                selector: (context, provider) => provider.registeredPatients,
-                builder: (context, registeredPatients, child) {
-                  print(registeredPatients.length);
-                  return ListView.builder(
-                    itemCount: registeredPatients.length,
-                    itemBuilder: (context, index) {
-                      final patient = registeredPatients[index];
-                      final fullName = "${patient?.firstName} ${patient?.lastName}";
-                      return CustomPatientCard(
-                        patientName: fullName,
-                        patientId: patient!.patientId,
-                        gender: (patient.gender == "m") ? "Male" : "Female",
-                        age: patient.age,
-                        phoneNumber: patient.phoneNumber,
-                        patientNameKey: Key('KEY_PATIENT_NAME_$index'),
-                        patientIdKey: Key('KEY_PATIENT_ID_$index'),
-                      );
-                    },
-                  );
+              child: Selector<PatientListViewModel, bool>(
+                selector: (context, provider) => provider.isLoading,
+                builder: (context, isLoading, child) {
+                  if (isLoading) {
+                    return CircularProgressIndicator();
+                  } else {
+                    final registeredPatients = Provider.of<PatientListViewModel>(context).registeredPatients;
+                    return ListView.builder(
+                      itemCount: registeredPatients.length,
+                      itemBuilder: (context, index) {
+                        final patient = registeredPatients[index];
+                        final fullName = "${patient?.firstName} ${patient?.lastName}";
+                        return CustomPatientCard(
+                          patientName: fullName,
+                          patientId: patient!.patientId,
+                          gender: (patient.gender == "m") ? "Male" : "Female",
+                          age: patient.age,
+                          phoneNumber: patient.phoneNumber,
+                          patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                          patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                        );
+                      },
+                    );
+                  }
                 },
               ),
             ),
