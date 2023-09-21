@@ -199,12 +199,7 @@ int _patientRegistrationEstimateSize(
     }
   }
   bytesCount += 3 + object.occupation.length * 3;
-  {
-    final value = object.patientId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.patientId.length * 3;
   {
     final value = object.permanentAddress;
     if (value != null) {
@@ -291,7 +286,7 @@ PatientRegistration _patientRegistrationDeserialize(
   object.lastName = reader.readString(offsets[11]);
   object.medicalRecordNumber = reader.readStringOrNull(offsets[12]);
   object.occupation = reader.readString(offsets[13]);
-  object.patientId = reader.readStringOrNull(offsets[14]);
+  object.patientId = reader.readString(offsets[14]);
   object.permanentAddress = reader.readStringOrNull(offsets[15]);
   object.phoneNumber = reader.readString(offsets[16]);
   object.pincode = reader.readStringOrNull(offsets[17]);
@@ -342,7 +337,7 @@ P _patientRegistrationDeserializeProp<P>(
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 15:
       return (reader.readStringOrNull(offset)) as P;
     case 16:
@@ -2267,26 +2262,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      patientIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'patientId',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      patientIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'patientId',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       patientIdEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -2300,7 +2277,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       patientIdGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -2316,7 +2293,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       patientIdLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -2332,8 +2309,8 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       patientIdBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -4310,7 +4287,7 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
       patientIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'patientId');

@@ -133,4 +133,6 @@ class AppConstant {
   static const String CONSENT_HEADER_LOGO_TAG = "hero_small_logo";
   static const String CONSENT_HEADER_HEADING_TAG = "hero_label";
   static const String CONSENT_HEADER_SUB_HEADING_TAG = "hero_subtext";
+
+  static const String NO_INTERNET_MESSAGE = "No internet.. Please try again later!";
 }
