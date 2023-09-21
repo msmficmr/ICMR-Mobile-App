@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
-import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -15,6 +16,7 @@ import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/create_questionnaire_widget.dart';
+import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
@@ -65,7 +67,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         goToPreviousScreen();
@@ -93,25 +94,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            AppAssetsPath.dottedIcon,
-                          ),
-                          SizedBox(
-                            width: width * 0.01,
-                          ),
-                          Expanded(
-                            child: Text(
-                              questionnaireViewModel.sectionName!.sectionTitleName,
-                              style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor),
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: height * 0.01,
-                      ),
+                      SectionNameWidget(sectionName: questionnaireViewModel.sectionName!.sectionTitleName),
                       ListView.separated(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -144,11 +127,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                                 }
                               }
                               if (isValid) {
-                                if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
-                                  questionnaireViewModel.craSectionData.add(CRAModel(questionnaireViewModel.sectionName, questionnaireViewModel.sectionsData[questionnaireViewModel.sectionName]));
-                                  await questionnaireViewModel.submitForm(craData: questionnaireViewModel.craSectionData, context: context);
-                                  CommonFunctions.toastMessage(AppConstant.COMPLETED_QUESTIONNAIRE);
-                                  GoRouter.of(context).go(DashboardScreen.routerPath);
+                                if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 2]) {
+                                  questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                  GoRouter.of(context).push(PeriodontalScreen.routerPath);
+                                } else if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
+                                  questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                  GoRouter.of(context).push(VerificationScreen.routerPath);
                                 } else {
                                   GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
                                 }

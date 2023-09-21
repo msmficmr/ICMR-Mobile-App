@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/router/router_transition.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/views/ask_mhealth/verification_screen.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -21,7 +22,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: SplashScreen.routerPath,
+      initialLocation: LanguageSelectionScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {
@@ -103,6 +104,48 @@ class AppRouter {
                   child: QuestionnaireScreen(sectionName: sectionName,),
                 );
               },
+            ),
+            GoRoute(
+              path: PeriodontalScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: PeriodontalScreen(),
+              ),
+            ),
+            GoRoute(
+              path: CriteriaScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: CriteriaScreen(),
+              ),
+            ),
+            GoRoute(
+              path: VerificationScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const VerificationScreen(),
+              ),
+            ),
+            GoRoute(
+              path: SignatureScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const SignatureScreen(),
+              ),
+            ),
+            GoRoute(
+              path: LesionLocationScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const LesionLocationScreen(),
+              ),
+            ),
+            GoRoute(
+              path: MeasurementLesionsScreen.routerPath,
+              pageBuilder: (context, state) => RouterTransition(
+                key: state.pageKey,
+                child: const MeasurementLesionsScreen(),
+              ),
             ),
           ],
         )

@@ -5,9 +5,11 @@ import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
+import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   LoginViewModel? loginViewModel;
 
   List<CRAModel> craSectionData = [];
+  List<StaticQuestionnaireModel> staticCraSectionData = [];
   List<String> questionnaireSections = [];
 
   String? _caseId;
@@ -39,14 +42,21 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// Updating the value of the [sectionsData] key
   /// Getting the next section index from [questionnaireSections] and adding the values for [_sectionName] & [questionnaireList]
   /// If all the sections are completed then submitting the form
-  setNextSectionData(String sectionName, BuildContext context) async {
+  setNextSectionData(String sectionName, BuildContext context, {List<StaticQuestionModel>? staticSectionsData}) async {
     _allSectionsCompleted = false;
-    craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
-    int currentIndex = questionnaireSections.indexOf(sectionName);
-    if (currentIndex == questionnaireSections.length - 1) {
-       await submitForm(craData: craSectionData, context: context);
+    if (questionnaireSections.contains(sectionName)) {
+      craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
+      int currentIndex = questionnaireSections.indexOf(sectionName);
+      if (currentIndex == questionnaireSections.length - 1) {
+        _sectionName = questionnaireSections[currentIndex];
+      } else {
+        _sectionName = questionnaireSections[currentIndex + 1];
+      }
     } else {
-      _sectionName = questionnaireSections[currentIndex + 1];
+      staticCraSectionData.add(StaticQuestionnaireModel(sectionName, staticSectionsData));
+    }
+    if (sectionName.sectionTitleName == AppConstant.WHITE_LISTED_SECTIONS[AppConstant.WHITE_LISTED_SECTIONS.length - 1]) {
+      submitForm(craData: craSectionData, context: context, staticCraData: staticCraSectionData);
     }
   }
 
@@ -83,15 +93,16 @@ class QuestionnaireViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  submitForm({required List<CRAModel> craData, required BuildContext context}) async {
+  submitForm({required List<CRAModel> craData, required BuildContext context, required List<StaticQuestionnaireModel> staticCraData}) async {
     SubInput? subInput;
     late Inputs inputs;
     CRAQuestionnaire? craQuestionnaire;
     List<String> sectionNames = [];
     List<CRAQuestionnaire> craQuestion = [];
+    List<StaticQuestionModel> staticCraQuestion = [];
     List<CRASectionModel> craSectionModel = [];
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    for (int i = 0; i < craData.length; i++) {
+    for (int i = 0; i < isarDB!.sections!.length; i++) {
       sectionNames.add(craData[i].ehrCategoryMap.toString());
       if (craData[i].questionnaireList != []) {
         craQuestion.clear();
@@ -99,7 +110,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
         List subInputsData = [];
         for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
           inputsData = [];
-          if (craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
+          if (craData[i].questionnaireList![j].toJson().containsKey("inputs") && craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
             List inputsData1 = json.decode(craData[i].questionnaireList![j].toJson()['inputs']);
             subInputsData = [];
             for (int k = 0; k < inputsData1.length; k++) {
@@ -111,8 +122,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
               }
               if (subInputsData.isNotEmpty) {
                 subInput = SubInput()
-                    ..inputId = subInputsData[0]['inputid']
-                    ..value = subInputsData[0]['value'];
+                  ..inputId = subInputsData[0]['inputid']
+                  ..value = subInputsData[0]['value'];
               }
               inputs = Inputs()
                 ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
@@ -127,7 +138,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
             ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
             ..value = craData[i].questionnaireList![j].toJson()['value']
             ..inputs = inputsData
-            ..timeAsked = DateTime.parse(craData[i].questionnaireList![j].toJson()['timeAsked'])
+            ..timeAsked = DateTime.now()
             ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
             ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
           craQuestion.add(craQuestionnaire);
@@ -136,7 +147,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
       List<CRAQuestionnaire> craQuestionnaireData = [];
       craQuestionnaireData.addAll(craQuestion);
       loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-      String userId = loginViewModel!.userDetails!.userId ?? "";
+      String userId = loginViewModel?.userDetails?.userId ?? "";
       EHRNotes ehrNotes = EHRNotes()
         ..versionNumber = versionNumber
         ..questions = craQuestionnaireData;
@@ -145,7 +156,37 @@ class QuestionnaireViewModel extends ChangeNotifier {
         ..locale = languageViewModel.selectedLanguage
         ..patientId = patientId
         ..caseId = caseId
-        ..ehrCategoryMapId = isarDB!.sections![i].templateName.toString()
+        ..ehrCategoryMapId = craData[i].ehrCategoryMap
+        ..ehrNotes = ehrNotes;
+      craSectionModel.add(craModel);
+    }
+    for (int i = 0; i < staticCraData.length; i++) {
+      sectionNames.add(staticCraData[i].ehrCategoryMap.toString());
+      if (staticCraData[i].questionnaireList != []) {
+        staticCraQuestion.clear();
+        for (int j = 0; j < staticCraData[i].questionnaireList!.length; j++) {
+          craQuestionnaire = CRAQuestionnaire()
+              ..questionId = staticCraData[i].questionnaireList![j].toJson()['questionid']
+              ..value = staticCraData[i].questionnaireList![j].toJson()['value']
+              ..timeAsked = DateTime.now()
+              ..lonic = staticCraData[i].questionnaireList![j].toJson()['loinc']
+             ..snomed = staticCraData[i].questionnaireList![j].toJson()['snomed'];
+          craQuestion.add(craQuestionnaire);
+        }
+      }
+      List<CRAQuestionnaire> craQuestionnaireData = [];
+      craQuestionnaireData.addAll(craQuestion);
+      loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+      String userId = loginViewModel?.userDetails?.userId ?? "";
+      EHRNotes ehrNotes = EHRNotes()
+        ..versionNumber = versionNumber
+        ..questions = staticCraData[i].questionnaireList.toString() == "[]" ? [] : craQuestionnaireData;
+      CRASectionModel craModel = CRASectionModel()
+        ..createdBy = userId
+        ..locale = languageViewModel.selectedLanguage
+        ..patientId = patientId
+        ..caseId = caseId
+        ..ehrCategoryMapId = staticCraData[i].ehrCategoryMap
         ..ehrNotes = ehrNotes;
       craSectionModel.add(craModel);
     }
@@ -193,6 +234,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
         return _parseMultiSelectionSubQuestionnaire(element);
       } else if (chipType == AppConstant.SINGLE_MULTI_MULTI_CHIP_OPTIONS) {
         return _parseSingleMultiMultiSelectionQuestionnaire(element);
+      } else if (chipType == AppConstant.TEXT_AREA) {
+        return _parseTextFormFieldQuestionnaire(element);
       }
     } else if (element.type == null) {
       return _parseTextFieldQuestionnaire(element);
@@ -321,6 +364,28 @@ class QuestionnaireViewModel extends ChangeNotifier {
   TextFieldQuestionnaire _parseTextFieldQuestionnaire(element) {
     String id = element.inputId.toString();
     String label = element.inputText.toString();
+    String? regex = element.regex.toString();
+    bool isRequired = false;
+
+    var isRequiredField = element.requiredValue.toString();
+    if (isRequiredField.isNotEmpty) {
+      isRequired = isRequiredField == "true";
+    }
+
+    TextFieldQuestionnaire textFieldQuestionnaire = TextFieldQuestionnaire(
+      null,
+      id: id,
+      label: label,
+      regex: regex,
+      isRequired: isRequired,
+      shouldShowError: false,
+    );
+    return textFieldQuestionnaire;
+  }
+
+  TextFieldQuestionnaire _parseTextFormFieldQuestionnaire(QuestionObj element) {
+    String id = element.questionId.toString();
+    String label = element.questionText.toString();
     String? regex = element.regex.toString();
     bool isRequired = false;
 
