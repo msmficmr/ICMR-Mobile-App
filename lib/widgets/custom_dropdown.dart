@@ -28,7 +28,7 @@ class CustomDropdown<T> extends StatelessWidget {
   final bool Function(T, String)? filterFn;
 
   /// [showSearchBox] enable or disable search field for dropdown items. default value is `true`
-  final bool showSearchBox;
+  final bool? showSearchBox;
 
   /// [headingKey] is assigned to label of Dropdown i.e Text Widget so that it can used for automation
   final Key? headingKey;
@@ -54,10 +54,10 @@ class CustomDropdown<T> extends StatelessWidget {
     this.selectedItem,
     this.validator,
     this.filterFn,
+    this.showSearchBox,
     required this.widgetKey,
     required this.items,
     required this.onChanged,
-    this.showSearchBox = true,
   }) : assert(_getHeadingAssert(heading, headingKey));
 
   @override
@@ -95,7 +95,7 @@ class CustomDropdown<T> extends StatelessWidget {
           validator: validator,
           filterFn: filterFn,
           popupProps: PopupProps.menu(
-            showSearchBox: showSearchBox,
+            showSearchBox: (items.length >= 10) ? true : false,
             fit: FlexFit.loose,
             showSelectedItems: true,
             searchFieldProps: TextFieldProps(

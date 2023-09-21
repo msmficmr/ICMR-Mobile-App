@@ -10,16 +10,16 @@ class QuestionnaireService {
   Future<RiskAssessmentQuestionaire?> loadQuestionnaireAsset(String locale) async {
     List<String> sectionPath = [];
     try {
-    switch (locale) {
-  case "en_US":
-    sectionPath = AppAssetsPath.questionnairesPath;
-    break;
-  case "hi":
-    sectionPath = ["assets/personal_history_hi.json", "assets/health_habit_hi.json", "assets/personal_history_hi.json","assets/fagerstorm_hi.json",];
-    break;
-  default:
-    CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
-}
+      switch (locale) {
+        case "en_US":
+          sectionPath = AppAssetsPath.questionnairesPath;
+          break;
+        case "hi":
+          sectionPath = [];
+          break;
+        default:
+          CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      }
 
       RiskAssessmentQuestionaire object = RiskAssessmentQuestionaire();
       List<QuestionnairesModel>? sections = [];

@@ -113,7 +113,7 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CardWidget(key: Key(KEY_TAKE_CRA_CARD), title: TranslationKeys.takeCRA.translate(context), image: AppAssetsPath.icCRA, onTap: () {
-                      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                      GoRouter.of(context).push(CriteriaScreen.routerPath);
                     },),
                     CardWidget(key: Key(KEY_NEW_REGISTRATION_CARD), title: TranslationKeys.newRegistration.translate(context), image: AppAssetsPath.icAddCircular),
                   ],

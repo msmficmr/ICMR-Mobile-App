@@ -44,10 +44,12 @@ class AppAssetsPath {
   static const String icLogout = "assets/icons/ic_logout.svg";
 
   /// Questionnaires
-  static const String personalHistoryQuestionnaire = "assets/json/personal_history_en.json";
-  static const String healthHabitQuestionnaire = "assets/json/health_habit_en.json";
-  static const String fagerstormQuestionnaire = "assets/json/fagerstorm_en.json";
-  static const List<String> questionnairesPath = [personalHistoryQuestionnaire, healthHabitQuestionnaire, fagerstormQuestionnaire];
+  static const String baselineSignsQuestionnaire = "assets/json/baseline_signs_symptoms.json";
+  static const String detailsOfHabitQuestionnaire = "assets/json/details_of_habit.json";
+  static const String investigationQuestionnaire = "assets/json/investigation.json";
+  static const String measurementLesionQuestionnaire = "assets/json/measurement_lesion.json";
+  static const List<String> questionnairesPath = [detailsOfHabitQuestionnaire, baselineSignsQuestionnaire, investigationQuestionnaire];
+  static const String periodontalStatusImage = "assets/images/periodontal_status.png";
 
   static const editIcon = "assets/icons/edit_icon.png";
 }
