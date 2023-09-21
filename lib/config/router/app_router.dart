@@ -122,6 +122,9 @@ class AppRouter {
           if (navigationRoute == LoginHome.routerPath) {
             return LanguageSelectionScreen.routerPath;
           }
+          if (navigationRoute == SplashScreen.routerPath) {
+            return DashboardScreen.routerPath;
+          }
         }
 
         /// if user is logged we are null so that it will navigate from one screen to another without any redirect
