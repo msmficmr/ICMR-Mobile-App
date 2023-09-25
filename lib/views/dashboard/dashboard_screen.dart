@@ -106,9 +106,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: 20,
                       ),
                       Selector<OfflineDataViewModel, String>(
-                        selector: (context, offlineDataViewModel) => offlineDataViewModel.syncedNumbers.toString(),
+                        selector: (context, offlineDataViewModel) => (offlineDataViewModel.syncedNumbers ?? 0).toString(),
                         builder: (context, count, child) {
-                          count = count;
                           return DashboardCardWidget(
                             assetPath: AppAssetsPath.icSync,
                             count: count,
