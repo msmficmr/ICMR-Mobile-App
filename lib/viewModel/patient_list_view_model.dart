@@ -12,7 +12,6 @@ class PatientListViewModel with ChangeNotifier {
   Future<void> loadRegisteredPatients() async {
     try {
       _isLoading = true;
-      notifyListeners();
       _registeredPatients = await IsarDbService.isarDbService.getPatientsList();
       notifyListeners();
     } catch (e) {

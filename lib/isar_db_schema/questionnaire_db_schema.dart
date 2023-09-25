@@ -9,6 +9,16 @@ class CRAOfflineData {
   String? caseId;
   String? languageCode;
   List<CRASectionModel>? craSectionData;
+
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'patientId': patientId,
+      'caseId': caseId,
+      'languageCode': languageCode,
+      'craSectionData': craSectionData?.map((section) => section.toJson()).toList(),
+    };
+  }
 }
 
 @embedded
@@ -22,12 +32,33 @@ class CRASectionModel {
   String? ehrCategoryMapId;
   String? locale;
   EHRNotes? ehrNotes;
+
+    Map<String, dynamic> toJson() {
+    return {
+      'createdBy': createdBy,
+      'createdTime': createdTime.toIso8601String(),
+      'caseId': caseId,
+      'patientId': patientId,
+      'categoryStatus': categoryStatus,
+      'encounterEhrDiagnosisReports': encounterEhrDiagnosisReports,
+      'ehrCategoryMapId': ehrCategoryMapId,
+      'locale': locale,
+      'ehrNotes': ehrNotes?.toJson(),
+    };
+  }
 }
 
 @embedded
 class EHRNotes {
   String? versionNumber;
   List<CRAQuestionnaire>? questions;
+
+    Map<String, dynamic> toJson() {
+    return {
+      'versionNumber': versionNumber,
+      'questions': questions?.map((question) => question.toJson()).toList(),
+    };
+  }
 }
 
 @embedded

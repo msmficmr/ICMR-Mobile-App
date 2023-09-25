@@ -14,6 +14,7 @@ import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
+// ignore: must_be_immutable
 class CriteriaScreen extends StatelessWidget {
   static const routerPath = "/criteriaScreen";
 
@@ -50,39 +51,47 @@ class CriteriaScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Inclusion Criteria", style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),),
-                        ListView.builder(
-                          shrinkWrap: true,
-                            itemCount: subText1.length,
-                            itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(subText1[index]),
-                          );
-                        })
+                        Text(
+                          "Inclusion Criteria",
+                          style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(subText1[0]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(subText1[1]),
+                        )
                       ],
                     ),
                   ),
-                  const SpaceWidget(height: 20,),
+                  const SpaceWidget(
+                    height: 20,
+                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                     decoration: const BoxDecoration(
                       color: AppColorScheme.kEnabledButtonColor,
-                      borderRadius: BorderRadius.all(Radius.circular(10),),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Exclusion Criteria", style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),),
-                        ListView.builder(
-                          shrinkWrap: true,
-                            itemCount: subText2.length,
-                            itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(subText2[index]),
-                          );
-                        })
+                        Text(
+                          "Exclusion Criteria",
+                          style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(subText2[0]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Text(subText2[1]),
+                        )
                       ],
                     ),
                   ),
