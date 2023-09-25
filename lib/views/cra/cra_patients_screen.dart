@@ -86,7 +86,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                 selector: (context, provider) => provider.isLoading,
                 builder: (context, isLoading, child) {
                   if (isLoading) {
-                    return CircularProgressIndicator();
+                    return Center(child: CircularProgressIndicator());
                   } else {
                     final registeredPatients = Provider.of<PatientListViewModel>(context).registeredPatients;
                     return ListView.builder(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
@@ -37,7 +38,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<Uint8List?> _patientConsent;
   late ValueNotifier<bool> _buttonEnabled;
-
+  List<StaticQuestionModel> staticQuestionnaires = [];
   late QuestionnaireViewModel questionnaireViewModel;
 
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
@@ -213,6 +214,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         );
                       },
                     ),
+                    SpaceWidget(
+                      height: 80,
+                    )
                   ],
                 ),
               ),
@@ -233,6 +237,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       isLoading: false,
                       onPressed: () async {
                         await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
+                        await questionnaireViewModel.removeAllAttachment();
+                        GoRouter.of(context).push(DashboardScreen.routerPath);
                       },
                     );
                   },
@@ -243,5 +249,25 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
+  }
+
+  saveVerificationData() {
+    if (_institutionCode.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value, null, null, DateTime.now(), null, null));
+    }
+    if (_participantController.text.isNotEmpty) {
+      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
+    }
+    if (_visitType.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", _visitType.value, null, null, DateTime.now(), null, null));
+    }
+    if (_fromDateController.text.isNotEmpty) {
+      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text, null, null, DateTime.now(), null, null));
+    }
+    if (_patientConsent.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(), null, null, DateTime.now(), null, null));
+    }
+    final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: staticQuestionnaires);
   }
 }

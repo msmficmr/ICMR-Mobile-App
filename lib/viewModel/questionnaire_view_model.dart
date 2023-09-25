@@ -15,13 +15,13 @@ import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 
 class QuestionnaireViewModel extends ChangeNotifier {
-
   RiskAssessmentQuestionaire? isarDB;
   LoginViewModel? loginViewModel;
 
   List<CRAModel> craSectionData = [];
   List<StaticQuestionnaireModel> staticCraSectionData = [];
   List<String> questionnaireSections = [];
+  List<AttachmentModel?> attachmentList = [];
 
   String? _caseId;
   String? _sectionName;
@@ -166,11 +166,11 @@ class QuestionnaireViewModel extends ChangeNotifier {
         staticCraQuestion.clear();
         for (int j = 0; j < staticCraData[i].questionnaireList!.length; j++) {
           craQuestionnaire = CRAQuestionnaire()
-              ..questionId = staticCraData[i].questionnaireList![j].toJson()['questionid']
-              ..value = staticCraData[i].questionnaireList![j].toJson()['value']
-              ..timeAsked = DateTime.now()
-              ..lonic = staticCraData[i].questionnaireList![j].toJson()['loinc']
-             ..snomed = staticCraData[i].questionnaireList![j].toJson()['snomed'];
+            ..questionId = staticCraData[i].questionnaireList![j].toJson()['questionid']
+            ..value = staticCraData[i].questionnaireList![j].toJson()['value']
+            ..timeAsked = DateTime.now()
+            ..lonic = staticCraData[i].questionnaireList![j].toJson()['loinc']
+            ..snomed = staticCraData[i].questionnaireList![j].toJson()['snomed'];
           craQuestion.add(craQuestionnaire);
         }
       }
@@ -403,5 +403,25 @@ class QuestionnaireViewModel extends ChangeNotifier {
       shouldShowError: false,
     );
     return textFieldQuestionnaire;
+  }
+
+  saveAttachment(AttachmentModel model) {
+    bool fileExists = attachmentList.any((attachment) => attachment?.fileName == model.fileName);
+    if (fileExists) {
+      CommonFunctions.toastMessage("Image already exists for this ${model.fileName}");
+    } else {
+      attachmentList.add(model);
+    }
+    notifyListeners();
+  }
+
+  removeAttachment(int index) {
+    attachmentList.removeAt(index);
+    notifyListeners();
+  }
+
+  removeAllAttachment() {
+    attachmentList.clear();
+    notifyListeners();
   }
 }
