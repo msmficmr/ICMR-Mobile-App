@@ -104,7 +104,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               final fullName = "${patient?.firstName} ${patient?.lastName}";
                               return CustomPatientCard(
                                 patientName: fullName,
-                                patientId: patient!.patientId!,
+                                patientId: patient!.patientId,
                                 gender: (patient.gender == "m") ? "Male" : "Female",
                                 age: patient.age,
                                 phoneNumber: patient.phoneNumber,

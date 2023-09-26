@@ -328,7 +328,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                   builder: (context, isValid, _) {
                     return PrimaryFilledButton(
                       buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: TranslationKeys.submit.translate(context),
+                      buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
                       onPressed: () async {

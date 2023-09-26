@@ -22,6 +22,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   List<CRAModel> craSectionData = [];
   List<StaticQuestionnaireModel> staticCraSectionData = [];
   List<String> questionnaireSections = [];
+  List<AttachmentModel?> attachmentList = [];
 
   String? _caseId;
   String? _sectionName;
@@ -103,64 +104,64 @@ class QuestionnaireViewModel extends ChangeNotifier {
     List<CRASectionModel> craSectionModel = [];
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
     int sectionsLength = isarDB?.sections?.length ?? 0;
-    // for (int i = 0; i < craData.length; i++) {
-    //   sectionNames.add(craData[i].ehrCategoryMap.toString());
-    //   if (craData[i].questionnaireList != []) {
-    //     craQuestion.clear();
-    //     List<Inputs> inputsData = [];
-    //     List subInputsData = [];
-    //     for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
-    //       inputsData = [];
-    //       if (craData[i].questionnaireList![j].toJson().containsKey("inputs") && craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
-    //         List inputsData1 = json.decode(craData[i].questionnaireList![j].toJson()['inputs']);
-    //         subInputsData = [];
-    //         for (int k = 0; k < inputsData1.length; k++) {
-    //           subInputsData = [];
-    //           if (inputsData1[k]['inputs'].runtimeType == String) {
-    //             subInputsData = jsonDecode(inputsData1[k]['inputs']);
-    //           } else if (inputsData1[k]['inputs'].runtimeType == List<dynamic>) {
-    //             subInputsData = inputsData1[k]['inputs'];
-    //           }
-    //           if (subInputsData.isNotEmpty) {
-    //             subInput = SubInput()
-    //               ..inputId = subInputsData[0]['inputid']
-    //               ..value = subInputsData[0]['value'];
-    //           }
-    //           inputs = Inputs()
-    //             ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
-    //             ..value = inputsData1[k]['value']
-    //             ..subInput = subInput
-    //             ..timeAsked = inputsData1[k]['timeAsked'] == null ? DateTime.now() : DateTime.parse(inputsData1[k]['timeAsked']);
-    //           inputsData.add(inputs);
-    //           subInput = null;
-    //         }
-    //       }
-    //       craQuestionnaire = CRAQuestionnaire()
-    //         ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
-    //         ..value = craData[i].questionnaireList![j].toJson()['value']
-    //         ..inputs = inputsData
-    //         ..timeAsked = DateTime.now()
-    //         ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
-    //         ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
-    //       craQuestion.add(craQuestionnaire);
-    //     }
-    //   }
-    //   List<CRAQuestionnaire> craQuestionnaireData = [];
-    //   craQuestionnaireData.addAll(craQuestion);
-    //   loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    //   String userId = loginViewModel?.userDetails?.userId ?? "";
-    //   EHRNotes ehrNotes = EHRNotes()
-    //     ..versionNumber = versionNumber
-    //     ..questions = craQuestionnaireData;
-    //   CRASectionModel craModel = CRASectionModel()
-    //     ..createdBy = userId
-    //     ..locale = languageViewModel.selectedLanguage
-    //     ..patientId = patientId
-    //     ..caseId = caseId
-    //     ..ehrCategoryMapId = craData[i].ehrCategoryMap
-    //     ..ehrNotes = ehrNotes;
-    //   craSectionModel.add(craModel);
-    // }
+    for (int i = 0; i < sectionsLength; i++) {
+      sectionNames.add(craData[i].ehrCategoryMap.toString());
+      if (craData[i].questionnaireList != []) {
+        craQuestion.clear();
+        List<Inputs> inputsData = [];
+        List subInputsData = [];
+        for (int j = 0; j < craData[i].questionnaireList!.length; j++) {
+          inputsData = [];
+          if (craData[i].questionnaireList![j].toJson().containsKey("inputs") && craData[i].questionnaireList![j].toJson()['inputs'] != "[]") {
+            List inputsData1 = json.decode(craData[i].questionnaireList![j].toJson()['inputs']);
+            subInputsData = [];
+            for (int k = 0; k < inputsData1.length; k++) {
+              subInputsData = [];
+              if (inputsData1[k]['inputs'].runtimeType == String) {
+                subInputsData = jsonDecode(inputsData1[k]['inputs']);
+              } else if (inputsData1[k]['inputs'].runtimeType == List<dynamic>) {
+                subInputsData = inputsData1[k]['inputs'];
+              }
+              if (subInputsData.isNotEmpty) {
+                subInput = SubInput()
+                  ..inputId = subInputsData[0]['inputid']
+                  ..value = subInputsData[0]['value'];
+              }
+              inputs = Inputs()
+                ..inputId = inputsData1[k]['inputid'] ?? inputsData1[k]['questionid']
+                ..value = inputsData1[k]['value']
+                ..subInput = subInput
+                ..timeAsked = inputsData1[k]['timeAsked'] == null ? DateTime.now() : DateTime.parse(inputsData1[k]['timeAsked']);
+              inputsData.add(inputs);
+              subInput = null;
+            }
+          }
+          craQuestionnaire = CRAQuestionnaire()
+            ..questionId = craData[i].questionnaireList![j].toJson()['questionid']
+            ..value = craData[i].questionnaireList![j].toJson()['value']
+            ..inputs = inputsData
+            ..timeAsked = DateTime.now()
+            ..lonic = craData[i].questionnaireList![j].toJson()['loinc']
+            ..snomed = craData[i].questionnaireList![j].toJson()['snomed'];
+          craQuestion.add(craQuestionnaire);
+        }
+      }
+      List<CRAQuestionnaire> craQuestionnaireData = [];
+      craQuestionnaireData.addAll(craQuestion);
+      loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+      String userId = loginViewModel?.userDetails?.userId ?? "";
+      EHRNotes ehrNotes = EHRNotes()
+        ..versionNumber = versionNumber
+        ..questions = craQuestionnaireData;
+      CRASectionModel craModel = CRASectionModel()
+        ..createdBy = userId
+        ..locale = languageViewModel.selectedLanguage
+        ..patientId = patientId
+        ..caseId = caseId
+        ..ehrCategoryMapId = craData[i].ehrCategoryMap
+        ..ehrNotes = ehrNotes;
+      craSectionModel.add(craModel);
+    }
 
 
     for (int i = 0; i < staticCraData.length; i++) {
@@ -169,11 +170,11 @@ class QuestionnaireViewModel extends ChangeNotifier {
         staticCraQuestion.clear();
         for (int j = 0; j < staticCraData[i].questionnaireList!.length; j++) {
           craQuestionnaire = CRAQuestionnaire()
-              ..questionId = staticCraData[i].questionnaireList![j].toJson()['questionid']
-              ..value = staticCraData[i].questionnaireList![j].toJson()['value']
-              ..timeAsked = DateTime.now()
-              ..lonic = staticCraData[i].questionnaireList![j].toJson()['loinc']
-             ..snomed = staticCraData[i].questionnaireList![j].toJson()['snomed'];
+            ..questionId = staticCraData[i].questionnaireList![j].toJson()['questionid']
+            ..value = staticCraData[i].questionnaireList![j].toJson()['value']
+            ..timeAsked = DateTime.now()
+            ..lonic = staticCraData[i].questionnaireList![j].toJson()['loinc']
+            ..snomed = staticCraData[i].questionnaireList![j].toJson()['snomed'];
           craQuestion.add(craQuestionnaire);
         }
       }
@@ -406,5 +407,25 @@ class QuestionnaireViewModel extends ChangeNotifier {
       shouldShowError: false,
     );
     return textFieldQuestionnaire;
+  }
+
+  saveAttachment(AttachmentModel model) {
+    bool fileExists = attachmentList.any((attachment) => attachment?.fileName == model.fileName);
+    if (fileExists) {
+      CommonFunctions.toastMessage("Image already exists for this ${model.fileName}");
+    } else {
+      attachmentList.add(model);
+    }
+    notifyListeners();
+  }
+
+  removeAttachment(int index) {
+    attachmentList.removeAt(index);
+    notifyListeners();
+  }
+
+  removeAllAttachment() {
+    attachmentList.clear();
+    notifyListeners();
   }
 }

@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
@@ -218,6 +216,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         );
                       },
                     ),
+                    const SpaceWidget(
+                      height: 80,
+                    )
                   ],
                 ),
               ),
@@ -239,6 +240,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       onPressed: () async {
                         saveVerificationData();
                         await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
+                        await questionnaireViewModel.removeAllAttachment();
+                        GoRouter.of(context).push(DashboardScreen.routerPath);
                       },
                     );
                   },

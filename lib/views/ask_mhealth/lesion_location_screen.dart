@@ -6,6 +6,7 @@ import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
@@ -39,6 +40,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> errorText;
   late ValueNotifier<bool> _buttonEnabled;
+  late QuestionnaireViewModel provider;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ValueNotifier<AttachmentModel?> _selectedAttachment = ValueNotifier<AttachmentModel?>(null);
 
@@ -76,6 +78,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   List<StaticQuestionModel> staticQuestionnaires = [];
 
   //Titles
+  static const String ATTACHMENT = "Attachment";
   final String SITE_TITLE = "Site";
   final String LOCATION_TITLE = "Location";
   final String CONSENT_TEXT = 'I have capture all the images of lesions';
@@ -84,6 +87,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   @override
   void initState() {
     super.initState();
+    provider = Provider.of<QuestionnaireViewModel>(context, listen: false);
     initializeField();
   }
 
@@ -104,6 +108,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     if (file != null) {
       Uint8List bytes = await file.readAsBytes();
       AttachmentModel model = AttachmentModel(bytes: bytes, fileName: "${_location.value} ${_site.value}");
+      provider.saveAttachment(model);
       _selectedAttachment.value = model;
     }
   }
@@ -188,28 +193,45 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                     const SpaceWidget(
                       height: 15,
                     ),
-                    ValueListenableBuilder<AttachmentModel?>(
-                        valueListenable: _selectedAttachment,
-                        builder: (context, attachment, _) {
-                          if (attachment != null) {
-                            saveLesionLocationData(_site.value!, _location.value!, attachment.bytes);
-                            return AttachmentWidget(
-                              title: attachment.fileName,
-                              titleKey: Key(KEY_ATTACHMENT_TITLE),
-                              viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
-                              removeButtonKey: Key(KEY_REMOVE_BUTTON),
-                              onRemoveClick: () {
-                                _buttonEnabled.value = false;
-                                _selectedAttachment.value = null;
-                              },
-                              viewPictureClick: () {
-                                CommonFunctions.viewImage(context: context, bytes: _selectedAttachment.value!.bytes);
-                              },
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
+                    if (provider.attachmentList.isNotEmpty)
+                      Text(
+                        ATTACHMENT,
+                        style: AppStyles.appBarStyle.copyWith(color: AppColorScheme.kBlack),
+                      ),
+                    Selector<QuestionnaireViewModel, int>(
+                      selector: (_, provider) => provider.attachmentList.length,
+                      builder: (context, value, child) => Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(
+                          provider.attachmentList.length,
+                          (index) => Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ValueListenableBuilder<AttachmentModel?>(
+                                  valueListenable: _selectedAttachment,
+                                  builder: (context, attachment, _) {
+                                    return AttachmentWidget(
+                                      title: provider.attachmentList[index]!.fileName,
+                                      titleKey: Key(KEY_ATTACHMENT_TITLE),
+                                      viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
+                                      removeButtonKey: Key(KEY_REMOVE_BUTTON),
+                                      onRemoveClick: () {
+                                        provider.removeAttachment(index); // Remove the attachment from the list
+                                        _selectedAttachment.value = null;
+                                      },
+                                      viewPictureClick: () {
+                                        CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
+                                      },
+                                    );
+                                  }),
+                              const SpaceWidget(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -277,8 +299,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   }
 
   saveLesionLocationsData() async {
-    final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    await questionnaireViewModel.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
+    await provider.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
   }
 }
 

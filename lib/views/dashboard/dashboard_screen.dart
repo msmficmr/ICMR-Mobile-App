@@ -9,11 +9,14 @@ import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/views/dashboard/widgets/count_card_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_icon_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const String routerPath = "/dashboard";
@@ -25,6 +28,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late String count = "0";
+  LoginViewModel? loginViewModel;
 
   //Keys
   final String KEY_DASHBOARD_APPBAR = "key_dashboard_appbar";
@@ -33,12 +38,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final String KEY_BUTTON_TAKE_CRA = "key_button_take_cra";
   final String KEY_BUTTON_SYNC = "key_button_sync";
 
-  redirectToCRAScreen() {
+  redirectToCRAScreen() async {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
   redirectToMyAccountsScreen() {
     GoRouter.of(context).push(MyAccountScreen.routerPath);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    String userId = loginViewModel?.userDetails?.userId ?? "";
+    Provider.of<OfflineDataViewModel>(context, listen: false).fetchOfflineSyncedNumbers(userId: userId);
   }
 
   @override
@@ -92,13 +105,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SpaceWidget(
                         width: 20,
                       ),
-                      DashboardCardWidget(
-                        assetPath: AppAssetsPath.icSync,
-                        count: "130",
-                        title: TranslationKeys.totalCRASync.translate(context),
-                        countKey: Key(KEY_CARD_COUNT),
-                        titleKey: Key(KEY_CARD_TITLE),
-                      ),
+                      Selector<OfflineDataViewModel, String>(
+                        selector: (context, offlineDataViewModel) => (offlineDataViewModel.syncedNumbers ?? 0).toString(),
+                        builder: (context, count, child) {
+                          return DashboardCardWidget(
+                            assetPath: AppAssetsPath.icSync,
+                            count: count,
+                            title: TranslationKeys.totalCRASync.translate(context),
+                            countKey: Key(KEY_CARD_COUNT),
+                            titleKey: Key(KEY_CARD_TITLE),
+                          );
+                        },
+                      )
                     ],
                   )
                 ],

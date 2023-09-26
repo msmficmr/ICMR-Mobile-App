@@ -9,6 +9,7 @@ import 'package:mhealth/utils/app_localization.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,10 @@ class MHealthApp extends StatelessWidget {
         ChangeNotifierProvider<PatientListViewModel>(
           lazy: false,
           create: (BuildContext createContext) => PatientListViewModel(),
+        ),
+         ChangeNotifierProvider<OfflineDataViewModel>(
+          lazy: false,
+          create: (BuildContext createContext) => OfflineDataViewModel(),
         ),
         Provider<AppRouter>(
           lazy: false,

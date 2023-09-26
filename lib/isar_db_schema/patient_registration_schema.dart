@@ -26,5 +26,35 @@ class PatientRegistration {
   late DateTime consentDate;
   late String signedConsent;
   late String signedConsentNoReason;
-  late String? patientId;
+  late String patientId;
+
+  // Add a toJson method to convert the object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'consent': consent?.toJson(),
+      'dateOfVisit': dateOfVisit.toIso8601String(),
+      'institutionCode': institutionCode,
+      'studyCode': studyCode,
+      'firstName': firstName,
+      'lastName': lastName,
+      'age': age,
+      'gender': gender,
+      'address': address,
+      'district': district,
+      'state': state,
+      'pincode': pincode,
+      'permanentAddress': permanentAddress,
+      'occupation': occupation,
+      'phoneNumber': phoneNumber,
+      'alternatePhoneNumber': alternatePhoneNumber,
+      'medicalRecordNumber': medicalRecordNumber,
+      'aadharId': aadharId,
+      'consentDate': consentDate.toIso8601String(),
+      'signedConsent': signedConsent,
+      'signedConsentNoReason': signedConsentNoReason,
+      'patientId': patientId,
+    };
+  }
 }
+

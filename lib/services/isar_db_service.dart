@@ -23,6 +23,11 @@ class IsarDbService {
       await db.patientRegistrations.put(patientRegistration);
     });
   }
+    Future<List<PatientRegistration>> getPatientsList() async {
+    Isar? db = await isar;
+    final registeredPatientList = await db.patientRegistrations.where().findAll();
+    return registeredPatientList;
+  }
 
   Future<void> saveCRA(CRAOfflineData craData) async {
     Isar? db = await isar;
@@ -50,16 +55,16 @@ class IsarDbService {
     return riskAssessmentQuestionnaire;
   }
 
-  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionnaire(String locale,RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
+  Future<RiskAssessmentQuestionaire?> updateRiskAssessmentQuestionnaire(String locale, RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
     Isar? db = await isar;
     final response = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
-    if (response != null) {
+    if (response == null) {
       await db.writeTxn(() async {
         await db.riskAssessmentQuestionaires.put(riskAssessmentQuestionnaire);
       });
       return riskAssessmentQuestionnaire;
     } else {
-      return null;
+      return response;
     }
   }
 
@@ -69,10 +74,15 @@ class IsarDbService {
     return riskAssessmentQuestionnaire;
   }
 
-  Future<List<PatientRegistration>> getPatientsList() async {
+  Future<List<CRAOfflineData?>> getListCRAOfflineData() async {
     Isar? db = await isar;
-    final registeredPatientList = await db.patientRegistrations.where().findAll();
-    return registeredPatientList;
-    }
-}
+    final craOfflineData = await db.cRAOfflineDatas.where().findAll();
+    return craOfflineData;
+  }
 
+  Future<PatientRegistration?> getPatientDetails(String patientId) async {
+    Isar? db = await isar;
+    final patientData = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
+    return patientData;
+  }
+}

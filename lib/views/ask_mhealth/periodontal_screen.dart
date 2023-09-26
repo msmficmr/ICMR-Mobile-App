@@ -279,7 +279,7 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                       ],
                     ),
                     const SpaceWidget(
-                      height: 20,
+                      height: 80,
                     ),
                   ],
                 ),

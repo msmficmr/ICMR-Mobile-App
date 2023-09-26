@@ -270,6 +270,7 @@ Widget _getWidgetForQuestionnaireOption(QuestionnaireOption questionnaireOption,
     onTap: () {
       onClick(questionnaireOption);
     },
+    splashColor: Colors.transparent,
     child: Container(
       padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20, right: 20),
       margin: const EdgeInsets.only(top: 5),
