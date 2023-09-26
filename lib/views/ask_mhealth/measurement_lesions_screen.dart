@@ -57,18 +57,18 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   final _otherClinicalController = TextEditingController();
 
   final List<String> autofluorescenceValues = ["Normal", "Loss", "Gain", "NA"];
-  final List<String> provisionalDiagnosisValues = [
-    "Normal",
-    "Benign",
-    "Tobacco pouch keratosis",
-    "Homogenous leukoplakia",
-    "Non Homogenous Leukoplakia",
-    "Verrucous Leukoplakia",
-    "Oral Lichen Planus",
-    "OSMF",
-    "Malignancy",
-    "Other"
-  ];
+  final Map<int, String> provisionalDiagnosisValues = {
+    1: "Normal",
+    2: "Benign",
+    3: "Tobacco pouch keratosis",
+    4: "Homogenous leukoplakia",
+    5: "Non Homogenous Leukoplakia",
+    6: "Verrucous Leukoplakia",
+    7: "Oral Lichen Planus",
+    8: "OSMF",
+    9: "Malignancy",
+    10: "Other"
+  };
   List<StaticQuestionModel> staticQuestionnaires = [];
 
   //Widget Keys
@@ -275,7 +275,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                               staticQuestionnaires.add(StaticQuestionModel("provisional_diagnosis", _provisionalDiagnosis.value, null, null, DateTime.now(), null, null));
                                             },
                                             selectedItem: _provisionalDiagnosis.value,
-                                            items: provisionalDiagnosisValues,
+                                            items: provisionalDiagnosisValues.values.map((e) => e).toList(),
                                           );
                                         }),
                                     const SpaceWidget(
@@ -331,8 +331,8 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                       buttonTitle: TranslationKeys.submit.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
-                      onPressed: () {
-                        saveMeasurementLesionsData();
+                      onPressed: () async {
+                        await saveMeasurementLesionsData();
                         GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
                       },
                     );
@@ -346,7 +346,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     );
   }
 
-  saveMeasurementLesionsData() {
+  saveMeasurementLesionsData() async {
     if (_lesionsController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("number_of_lesion", _lesionsController.text, null, null, DateTime.now(), null, null));
     }
@@ -363,6 +363,6 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
       staticQuestionnaires.add(StaticQuestionModel("product", _productController.text, null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    questionnaireViewModel.setNextSectionData("community_risk_assessment_measurement_lesions", context, staticSectionsData: staticQuestionnaires);
+    await questionnaireViewModel.setNextSectionData("community_risk_assessment_measurement_lesions", context, staticSectionsData: staticQuestionnaires);
   }
 }

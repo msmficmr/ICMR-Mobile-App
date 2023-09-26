@@ -22,7 +22,7 @@ class AppRouter {
       /// it will call redirect callback and screen will be redirected to [LoginScreen]
       refreshListenable: loginViewModel,
       routerNeglect: true,
-      initialLocation: LanguageSelectionScreen.routerPath,
+      initialLocation: CriteriaScreen.routerPath,
       routes: [
         ShellRoute(
           builder: (context, state, child) {

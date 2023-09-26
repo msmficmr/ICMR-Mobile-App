@@ -9,6 +9,7 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/views/ask_mhealth/widgets/criteria_widget.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
@@ -22,8 +23,11 @@ class CriteriaScreen extends StatelessWidget {
   //Widget Keys
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
-  List<String> subText1 = ['1. Clinically suspecious oral lesions (including leukoplakia, erythroplakia,lichen planus,benign lesions –epithelial tumors, ulcers, vesiculobullous lesions like pemphigus vulgaris) which are indicated for biopsy.', '2. More than 18 years of age'];
-  List<String> subText2 = ['1. Less than or equal to 18 years of age.', '2. Currently undergoing treatment for malignancy', '3. Pregnancy', '4. Under treatment for tuberculosis or suffering from any acute illness'];
+  String inclusionCriteria = "Inclusion Criteria";
+  String exclusionCriteria = "Exclusion Criteria";
+
+  List<String> inclusionCriteriaDescription = ['1. Clinically suspecious oral lesions (including leukoplakia, erythroplakia,lichen planus,benign lesions –epithelial tumors, ulcers, vesiculobullous lesions like pemphigus vulgaris) which are indicated for biopsy.', '2. More than 18 years of age'];
+  List<String> exclusionCriteriaDescription = ['1. Less than or equal to 18 years of age.', '2. Currently undergoing treatment for malignancy', '3. Pregnancy', '4. Under treatment for tuberculosis or suffering from any acute illness'];
 
   @override
   Widget build(BuildContext context) {
@@ -41,51 +45,9 @@ class CriteriaScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SectionNameWidget(sectionName: "Criteria"),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    decoration: const BoxDecoration(
-                      color: AppColorScheme.kEnabledButtonColor,
-                      borderRadius: BorderRadius.all(Radius.circular(10),),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Inclusion Criteria", style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),),
-                        ListView.builder(
-                          shrinkWrap: true,
-                            itemCount: subText1.length,
-                            itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(subText1[index]),
-                          );
-                        })
-                      ],
-                    ),
-                  ),
+                  CriteriaWidget(title: inclusionCriteria, description: inclusionCriteriaDescription),
                   const SpaceWidget(height: 20,),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                    decoration: const BoxDecoration(
-                      color: AppColorScheme.kEnabledButtonColor,
-                      borderRadius: BorderRadius.all(Radius.circular(10),),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Exclusion Criteria", style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),),
-                        ListView.builder(
-                          shrinkWrap: true,
-                            itemCount: subText2.length,
-                            itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Text(subText2[index]),
-                          );
-                        })
-                      ],
-                    ),
-                  ),
+                  CriteriaWidget(title: exclusionCriteria, description: exclusionCriteriaDescription)
                 ],
               ),
             ),

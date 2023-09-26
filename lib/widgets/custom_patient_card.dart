@@ -8,7 +8,8 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
 class CustomPatientCard extends StatelessWidget {
-  final String patientName, patientId, gender, dob, phoneNumber;
+  final String patientName, patientId, age, phoneNumber;
+  final String? gender;
 
   final Key patientNameKey, patientIdKey;
 
@@ -19,7 +20,7 @@ class CustomPatientCard extends StatelessWidget {
     required this.patientName,
     required this.patientId,
     required this.gender,
-    required this.dob,
+    required this.age,
     required this.phoneNumber,
     required this.patientNameKey,
     required this.patientIdKey,
@@ -43,12 +44,14 @@ class CustomPatientCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              patientName, key: patientNameKey,
+              patientName,
+              key: patientNameKey,
               style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
             ),
             const SpaceWidget(height: 5),
             Text(
-              "KHID: $patientId", key: patientIdKey,
+              "KHID: $patientId",
+              key: patientIdKey,
               style: AppStyles.titleMedium.copyWith(color: textColor),
             ),
             const SpaceWidget(height: 5),
@@ -57,8 +60,8 @@ class CustomPatientCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RowTextWidget(image: gender == "Female" ? AppAssetsPath.icFemale : AppAssetsPath.icMale, text: gender),
-                  RowTextWidget(image: AppAssetsPath.icGroup, text: dob),
+                  RowTextWidget(image: gender == "Female" ? AppAssetsPath.icFemale : AppAssetsPath.icMale, text: gender!),
+                  RowTextWidget(image: AppAssetsPath.icGroup, text: age),
                   RowTextWidget(image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
                 ],
               ),
@@ -84,7 +87,9 @@ class RowTextWidget extends StatelessWidget {
     return Row(
       children: [
         SvgPicture.asset(image),
-        const SpaceWidget(width: 5,),
+        const SpaceWidget(
+          width: 5,
+        ),
         Text(
           text,
           style: AppStyles.titleMedium,

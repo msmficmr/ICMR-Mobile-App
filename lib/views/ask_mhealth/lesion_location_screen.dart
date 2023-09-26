@@ -37,6 +37,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   late ValueNotifier<String?> _site;
   late ValueNotifier<String?> _location;
   late ValueNotifier<bool> _hasConsent;
+  late ValueNotifier<bool> errorText;
   late ValueNotifier<bool> _buttonEnabled;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ValueNotifier<AttachmentModel?> _selectedAttachment = ValueNotifier<AttachmentModel?>(null);
@@ -53,29 +54,31 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   final String KEY_CHECKBOX_CONSENT = "key_checkbox_consent";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
-  final List<String> sites = [
-    'Upper lip',
-    'Lower lip',
-    'Cheek',
-    'Tongue lateral',
-    'Dorsal',
-    'Ventral',
-    'Base of the tongue',
-    'Palate',
-    'Upper vestibule',
-    'Lower vestibule',
-    'Retromolar trigone (RMT)',
-    'Gingiva -upper',
-    'Gingiva-lower',
-    'Floor of the mouth'
-  ];
+  final Map<String, String> siteMaps = {
+    "1": "Upper lip",
+    "2": "Lower lip",
+    "3": "Cheek",
+    "4": "Tongue lateral",
+    "5": "Tongue lateral",
+    "6": "Dorsal",
+    "7": "Ventral",
+    "8": "Base of the tongue",
+    "9": "Palate",
+    "10": "Upper vestibule",
+    "11": "Lower vestibule",
+    "12": "Retromolar trigone (RMT)",
+    "13": "Gingiva-upper",
+    "14": "Gingiva-lower",
+    "15": "Floor of the mouth"
+  };
+
   final List<String> siteLocation = ['Left', 'Right'];
   List<StaticQuestionModel> staticQuestionnaires = [];
 
   //Titles
   final String SITE_TITLE = "Site";
   final String LOCATION_TITLE = "Location";
-  final String CONSENT_TEXT = 'I have capture  all the images of lesions';
+  final String CONSENT_TEXT = 'I have capture all the images of lesions';
   final String CAPTURE_IMAGE_TITLE = "Capture Image";
 
   @override
@@ -88,6 +91,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     _site = ValueNotifier<String?>(null);
     _location = ValueNotifier<String?>(null);
     _hasConsent = ValueNotifier<bool>(false);
+    errorText = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
   }
 
@@ -139,7 +143,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             _site.value = val;
                           },
                           selectedItem: _site.value,
-                          items: sites,
+                          items: siteMaps.values.map((e) => e).toList(),
                         );
                       },
                     ),
@@ -218,11 +222,17 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                     ValueListenableBuilder(
                       valueListenable: _hasConsent,
                       builder: (context, _, __) {
-                        return QuestionnaireCheckBox(
-                          onChanged: onConsentChanged,
-                          checkboxStatus: _hasConsent.value,
-                          widgetKey: KEY_CHECKBOX_CONSENT,
-                          text: CONSENT_TEXT,
+                        return ValueListenableBuilder(
+                          valueListenable: errorText,
+                          builder: (context, _, __) {
+                            return QuestionnaireCheckBox(
+                              onChanged: onConsentChanged,
+                              checkboxStatus: _hasConsent.value,
+                              widgetKey: KEY_CHECKBOX_CONSENT,
+                              text: CONSENT_TEXT,
+                              errorText: errorText.value,
+                            );
+                          },
                         );
                       },
                     ),
@@ -240,8 +250,12 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             widgetKey: KEY_BUTTON_CONTINUE,
                             isLoading: false,
                             onPressed: () async {
-                              await saveLesionLocationsData();
-                              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                              if (_selectedAttachment.value != null && errorText.value == false) {
+                                errorText.value = true;
+                              } else {
+                                await saveLesionLocationsData();
+                                GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                              }
                             },
                           );
                         },
@@ -262,9 +276,15 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     staticQuestionnaires.add(staticQuestion);
   }
 
-
   saveLesionLocationsData() async {
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     await questionnaireViewModel.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
   }
+}
+
+class SiteModel {
+  String id;
+  String site;
+
+  SiteModel(this.id, this.site);
 }

@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_floating_button.dart';
 import 'package:mhealth/widgets/custom_patient_card.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
+import 'package:provider/provider.dart';
 
 class CRAPatientScreen extends StatefulWidget {
-  static const String routerPath =  "/cra-patients";
+  static const String routerPath = "/cra-patients";
+
   const CRAPatientScreen({Key? key}) : super(key: key);
 
   @override
@@ -21,6 +26,7 @@ class CRAPatientScreen extends StatefulWidget {
 
 class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final TextEditingController _searchFieldController = TextEditingController();
+  late PatientListViewModel patientListViewModel;
 
   //Widget Keys
   final String KEY_TEXTFIELD_SEARCH = "key_search_textfield";
@@ -29,7 +35,16 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_PATIENT_ID = "key_patient_id";
 
-  void onSearchFieldChanged(String? input) {}
+  void onSearchFieldChanged(String input) {
+    patientListViewModel.searchPatient(input);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    patientListViewModel = Provider.of<PatientListViewModel>(context, listen: false);
+    patientListViewModel.loadRegisteredPatients();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,39 +87,41 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               ],
             ),
             Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  CustomPatientCard(
-                    patientName: "Aparna Nair",
-                    patientId: "KH88383839399",
-                    gender: "Female",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                  CustomPatientCard(
-                    patientName: "Sahil Lalani",
-                    patientId: "KH88383839399",
-                    gender: "Male",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                  CustomPatientCard(
-                    patientName: "Aparna Nair",
-                    patientId: "KH88383839399",
-                    gender: "Female",
-                    dob: "45",
-                    phoneNumber: "9741814444",
-                    patientNameKey: Key(KEY_PATIENT_NAME),
-                    patientIdKey: Key(KEY_PATIENT_ID),
-                  ),
-                ],
+              child: Selector<PatientListViewModel, bool>(
+                selector: (context, provider) => provider.isLoading,
+                builder: (context, isLoading, child) {
+                  if (isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return Consumer<PatientListViewModel>(
+                      builder: (context, patientName, child) {
+                        final items = _searchFieldController.text.isEmpty ? patientName.registeredPatients : patientName.filteredItems;
+                        if (items.isNotEmpty) {
+                          return ListView.builder(
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final patient = items[index];
+                              final fullName = "${patient?.firstName} ${patient?.lastName}";
+                              return CustomPatientCard(
+                                patientName: fullName,
+                                patientId: patient!.patientId!,
+                                gender: (patient.gender == "m") ? "Male" : "Female",
+                                age: patient.age,
+                                phoneNumber: patient.phoneNumber,
+                                patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                                patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                              );
+                            },
+                          );
+                        } else {
+                          return const Center(child: Text(AppConstant.NO_RECORD_FOUND));
+                        }
+                      },
+                    );
+                  }
+                },
               ),
-            )
+            ),
           ],
         ),
       ),

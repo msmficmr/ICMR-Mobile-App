@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/config/environment/environment.dart';
 import 'package:mhealth/config/router/app_router.dart';
 import 'package:mhealth/config/theme/app_theme.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_localization.dart';
@@ -37,6 +38,10 @@ class MHealthApp extends StatelessWidget {
         ChangeNotifierProvider<QuestionnaireViewModel>(
           lazy: false,
           create: (BuildContext createContext) => QuestionnaireViewModel(),
+        ),
+        ChangeNotifierProvider<PatientListViewModel>(
+          lazy: false,
+          create: (BuildContext createContext) => PatientListViewModel(),
         ),
         Provider<AppRouter>(
           lazy: false,

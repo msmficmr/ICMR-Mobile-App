@@ -68,5 +68,11 @@ class IsarDbService {
     final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.filter().localeEqualTo(locale).findFirst();
     return riskAssessmentQuestionnaire;
   }
+
+  Future<List<PatientRegistration>> getPatientsList() async {
+    Isar? db = await isar;
+    final registeredPatientList = await db.patientRegistrations.where().findAll();
+    return registeredPatientList;
+    }
 }
 

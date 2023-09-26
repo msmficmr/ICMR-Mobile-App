@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
@@ -39,6 +42,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late ValueNotifier<bool> _buttonEnabled;
 
   late QuestionnaireViewModel questionnaireViewModel;
+
+  List<StaticQuestionModel> staticQuestionnaires = [];
 
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
@@ -232,6 +237,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
                       onPressed: () async {
+                        saveVerificationData();
                         await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
                       },
                     );
@@ -243,5 +249,25 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
+  }
+
+  saveVerificationData() {
+    if (_institutionCode.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value,  null, null, DateTime.now(), null, null));
+    }
+    if (_participantController.text.isNotEmpty) {
+      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text,  null, null, DateTime.now(), null, null));
+    }
+    if (_visitType.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", _visitType.value,  null, null, DateTime.now(), null, null));
+    }
+    if (_fromDateController.text.isNotEmpty) {
+      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text,  null, null, DateTime.now(), null, null));
+    }
+    if (_patientConsent.value != null) {
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(),  null, null, DateTime.now(), null, null));
+    }
+    final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: staticQuestionnaires);
   }
 }
