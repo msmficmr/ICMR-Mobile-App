@@ -16,7 +16,7 @@ class CRAOfflineData {
       'patientId': patientId,
       'caseId': caseId,
       'languageCode': languageCode,
-      'craSectionData': craSectionData?.map((section) => section.toJson()).toList(),
+    'craSectionModel': List<dynamic>.from((craSectionData??[]).map((e) => e.toJson(),))
     };
   }
 }
@@ -29,7 +29,7 @@ class CRASectionModel {
   String? patientId;
   String categoryStatus = "DRAFT";
   String? encounterEhrDiagnosisReports;
-  String? ehrCategoryMapId;
+  String? encounterCategoryMapId;
   String? locale;
   EHRNotes? ehrNotes;
 
@@ -41,7 +41,7 @@ class CRASectionModel {
       'patientId': patientId,
       'categoryStatus': categoryStatus,
       'encounterEhrDiagnosisReports': encounterEhrDiagnosisReports,
-      'ehrCategoryMapId': ehrCategoryMapId,
+      'encounterCategoryMapId': encounterCategoryMapId,
       'locale': locale,
       'ehrNotes': ehrNotes?.toJson(),
     };
@@ -56,7 +56,9 @@ class EHRNotes {
     Map<String, dynamic> toJson() {
     return {
       'versionNumber': versionNumber,
-      'questions': questions?.map((question) => question.toJson()).toList(),
+      //'questions': questions?.map((question) => question.toJson()).toList(),
+      'questions':  List<dynamic>.from((questions??[]).map((e) => e.toJson(),))
+     // 'craSectionModel': List<dynamic>.from((craSectionData??[]).map((e) => e.toJson(),))
     };
   }
 }
@@ -74,8 +76,10 @@ class CRAQuestionnaire {
     return {
       "questionId" : questionId,
       "value" : value,
-      "inputs" : (inputs ?? []).map((Inputs e) => e.toJson()),
-      "timeAsked" : timeAsked,
+     // "inputs" : (inputs ?? []).map((Inputs e) => e.toJson()),
+      "inputs" : List<dynamic>.from((inputs??[]).map((e) => e.toJson(),)),
+     // 'craSectionModel': List<dynamic>.from((craSectionData??[]).map((e) => e.toJson(),))
+      "timeAsked" : timeAsked?.toIso8601String(),
       "snomed" : snomed,
       "lonic" : lonic
     };
@@ -95,7 +99,7 @@ class Inputs {
     return {
       "inputId" : inputId,
       "value" : value,
-      "timeAsked" : timeAsked,
+      "timeAsked" : timeAsked?.toIso8601String(),
       "snomed" : snomed,
       "loinc" : loinc,
       "inputs" : subInput

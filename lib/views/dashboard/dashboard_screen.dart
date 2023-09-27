@@ -3,8 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -42,7 +44,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     GoRouter.of(context).push(CRAPatientScreen.routerPath);
   }
 
-  redirectToMyAccountsScreen() {
+  redirectToMyAccountsScreen() async {
+    await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
     GoRouter.of(context).push(MyAccountScreen.routerPath);
   }
 
@@ -131,7 +134,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.5,
                     child: PrimaryFilledIconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          redirectToMyAccountsScreen();
+                        },
                         isLoading: false,
                         buttonThemeStyle: const FilledButtonThemeStyle(
                           enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
@@ -151,7 +156,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
                       buttonTitle: TranslationKeys.takeCRA.translate(context),
                       widgetKey: KEY_BUTTON_TAKE_CRA,
-                      isLoading: false, //TODO: will change in the upcoming MR
+                      isLoading: false,
                       onPressed: () => redirectToCRAScreen(),
                       icon: SvgPicture.asset(
                         AppAssetsPath.icCRA,

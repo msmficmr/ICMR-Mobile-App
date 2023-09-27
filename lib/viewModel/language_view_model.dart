@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class LanguageViewModel extends ChangeNotifier {
@@ -28,7 +30,10 @@ class LanguageViewModel extends ChangeNotifier {
 class AttachmentModel {
   String fileName;
   List<int> bytes;
-  AttachmentModel({required this.fileName, required this.bytes});
+  String? baseImage;
+  AttachmentModel({required this.fileName, required this.bytes}) {
+    this.baseImage = base64.encode(this.bytes);
+  }
   factory AttachmentModel.fromJson(Map<String, dynamic> json) => AttachmentModel(
         fileName: json["fileName"],
         bytes: List<int>.from(json["bytes"].map((e) => e)),

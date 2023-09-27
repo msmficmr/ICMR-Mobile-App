@@ -13,15 +13,15 @@ const AttachmentDbSchema = Schema(
   name: r'AttachmentDb',
   id: -4311835033879244519,
   properties: {
-    r'fileName': PropertySchema(
+    r'dataBytes': PropertySchema(
       id: 0,
-      name: r'fileName',
+      name: r'dataBytes',
       type: IsarType.string,
     ),
-    r'image': PropertySchema(
+    r'fileName': PropertySchema(
       id: 1,
-      name: r'image',
-      type: IsarType.byteList,
+      name: r'fileName',
+      type: IsarType.string,
     )
   },
   estimateSize: _attachmentDbEstimateSize,
@@ -37,15 +37,15 @@ int _attachmentDbEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.fileName;
+    final value = object.dataBytes;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
   {
-    final value = object.image;
+    final value = object.fileName;
     if (value != null) {
-      bytesCount += 3 + value.length;
+      bytesCount += 3 + value.length * 3;
     }
   }
   return bytesCount;
@@ -57,8 +57,8 @@ void _attachmentDbSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.fileName);
-  writer.writeByteList(offsets[1], object.image);
+  writer.writeString(offsets[0], object.dataBytes);
+  writer.writeString(offsets[1], object.fileName);
 }
 
 AttachmentDb _attachmentDbDeserialize(
@@ -68,8 +68,8 @@ AttachmentDb _attachmentDbDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = AttachmentDb();
-  object.fileName = reader.readStringOrNull(offsets[0]);
-  object.image = reader.readByteList(offsets[1]);
+  object.dataBytes = reader.readStringOrNull(offsets[0]);
+  object.fileName = reader.readStringOrNull(offsets[1]);
   return object;
 }
 
@@ -83,7 +83,7 @@ P _attachmentDbDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readByteList(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -91,6 +91,160 @@ P _attachmentDbDeserializeProp<P>(
 
 extension AttachmentDbQueryFilter
     on QueryBuilder<AttachmentDb, AttachmentDb, QFilterCondition> {
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'dataBytes',
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'dataBytes',
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dataBytes',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'dataBytes',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'dataBytes',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dataBytes',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
+      dataBytesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'dataBytes',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
       fileNameIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -242,169 +396,6 @@ extension AttachmentDbQueryFilter
         property: r'fileName',
         value: '',
       ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'image',
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'image',
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageElementEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'image',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'image',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'image',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'image',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<AttachmentDb, AttachmentDb, QAfterFilterCondition>
-      imageLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'image',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
     });
   }
 }

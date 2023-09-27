@@ -33,8 +33,17 @@ class AppConstant {
   static const String LOGIN_INTENT = "loginIntent";
   static const String RETURN_TO_HOME = "Return To Home";
   static const double TEXT_HEIGHT = 1.6;
-  static const List<String> WHITE_LISTED_SECTIONS = ["Details Of Habits", "Baseline Signs Or Symptoms", "Periodontal Status", "Lesion Location", "Measurement of lesions", "Investigations", "Verification form"];
-
+  static const List<String> WHITE_LISTED_SECTIONS = [
+    "Details Of Habits",
+    "Baseline Signs Or Symptoms",
+    "Periodontal Status",
+    "Lesion Location",
+    "Measurement of lesions",
+    "Investigations",
+    "Verification form"
+  ];
+  static const SYNC_COMPLETED = "Sync completed";
+  static const NO_DATA_TO_SYNC_COMPLETED = "No data to sync";
   //Languages
   static const List<Locale> appLocales = [
     Locale('en', 'IN'),
@@ -55,8 +64,8 @@ class AppConstant {
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
   static const String AN_UNKNOWN_ERROR = "An Unknown error occurred! Please Try again later!";
   static const String YOU_HAVE_SET_HAS_FOLLOW_UP_AS_TRUE = "You have set hasFollowUp as false, "
-  "but followupQuestions is not empty or You have set hasFollowUp as true,"
-  " but followupQuestions is empty.";
+      "but followupQuestions is not empty or You have set hasFollowUp as true,"
+      " but followupQuestions is empty.";
   static const String YOU_HAVE_SET_HAS_OPTIONS_AS_TRUE = "You have set hasOptions as true, but options is empty or You have "
       "set hasOptions as false, but options is not empty.";
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
@@ -126,7 +135,6 @@ class AppConstant {
     CustomChipItem(text: 'yes', data: 'y'),
     CustomChipItem(text: 'no', data: 'n'),
   ];
-
 
   // HERO TAGS
   static const String CONSENT_HEADER_BACKGROUND_TAG = "hero_background";
