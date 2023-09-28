@@ -54,6 +54,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   //Constant text
   final String PATIENT_ID = "Patient ID";
+  OfflineDataViewModel viewModel = OfflineDataViewModel();
 
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: patientID));
@@ -71,41 +72,75 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     }
   }
 
-  Future showDataSyncLoading(BuildContext context, double height, double width) {
-  return showDialog(
-    context: context,
-    builder: (context) => Center(
-      child: WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: Dialog(
-          child: Container(
-            height: height * 0.15,
+  Future showDataSyncLoading(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: Dialog(
             child: Column(
+              mainAxisSize : MainAxisSize.min,
               children: [
-                SizedBox(height: height * 0.02),
+                const SpaceWidget(height: 10),
                 const CircularProgressIndicator(),
-                SizedBox(height: height * 0.03),
+                 const SpaceWidget(height: 10),
                 Text(
                   'Syncing data Please wait',
                   style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryColor),
                 ),
+                 const SpaceWidget(height: 10),
               ],
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  onSyncClick() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      if (response.isEmpty) {
+        CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
+      } else {
+        showDataSyncLoading(context);
+        for (int i = 0; i < response.length; i++) {
+          List<dynamic> payLoadObjList = [];
+          String? patienId = response[i]?.patientId;
+          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId!);
+          Map<String, dynamic>? patientJson = resp?.toJson();
+          Map<String, dynamic> patientData = {"patientData": patientJson};
+          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+          Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+          List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+          Map<String, dynamic> cdrPostObj = {
+            "cdrPostObj": [
+              {response[i]?.caseId: craSectionModel}
+            ]
+          };
+          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+          payLoadObjList.add({response[i]?.patientId: patientDataList});
+          Map<String, dynamic> payLoadObj = {
+            "payloadObj": payLoadObjList,
+            "appVersion": "45",
+          };
+          await viewModel.postOffllineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
+        }
+        Navigator.of(context, rootNavigator: true).pop();
+        CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
+      }
+    } else {
+      CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    OfflineDataViewModel viewModel = OfflineDataViewModel();
-
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isSmallScreen = screenWidth < 600;
 
     return Scaffold(
@@ -212,43 +247,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             leadingIconPath: AppAssetsPath.icLanguage,
           ),
           InkWell(
-            onTap: () async {
-              var connectivityResult = await (Connectivity().checkConnectivity());
-              if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-                List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-                if (response.isEmpty) {
-                  CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
-                }else{
-                  showDataSyncLoading(context,screenHeight,screenWidth);
-                     for (int i = 0; i < response.length; i++) {
-                  List<dynamic> payLoadObjList = [];
-                  String? patienId = response[i]?.patientId;
-                  PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId!);
-                  Map<String, dynamic>? patientJson = resp?.toJson();
-                  Map<String, dynamic> patientData = {"patientData": patientJson};
-                  Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-                  Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
-                  List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
-                  Map<String, dynamic> cdrPostObj = {
-                    "cdrPostObj": [
-                      {response[i]?.caseId: craSectionModel}
-                    ]
-                  };
-                  List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-                  payLoadObjList.add({response[i]?.patientId: patientDataList});
-                  Map<String, dynamic> payLoadObj = {
-                    "payloadObj": payLoadObjList,
-                    "appVersion": "45",
-                  };
-                  await viewModel.postOffllineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
-                }
-                  Navigator.of(context, rootNavigator: true).pop();
-                   CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
-                }
-             
-              } else {
-                CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
-              }
+            onTap: () {
+              onSyncClick();
             },
             child: AccountCard(
               key: Key(KEY_DATA_SYNC_CARD),
