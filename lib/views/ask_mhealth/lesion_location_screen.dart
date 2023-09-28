@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -272,11 +273,16 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             widgetKey: KEY_BUTTON_CONTINUE,
                             isLoading: false,
                             onPressed: () async {
-                              if (_selectedAttachment.value != null && errorText.value == false) {
+                              if (_selectedAttachment.value != null && _hasConsent.value == false) {
                                 errorText.value = true;
                               } else {
+                                errorText.value = false;
                                 await saveLesionLocationsData();
-                                GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                                if (provider.attachmentList.isNotEmpty) {
+                                  GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                                } else {
+                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
+                                }
                               }
                             },
                           );
@@ -293,13 +299,16 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     );
   }
 
-  saveLesionLocationData(String site, String location, List<int> image) {
-    final staticQuestion = StaticQuestionModel("${site}_$location", image.toString(), null, null, DateTime.now(), null, null);
-    staticQuestionnaires.add(staticQuestion);
+  saveLesionLocationsData() async {
+    if (provider.attachmentList.isNotEmpty) saveLesionLocationData();
+    await provider.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
   }
 
-  saveLesionLocationsData() async {
-    await provider.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
+  saveLesionLocationData() {
+    for (int i = 0; i < provider.attachmentList.length; i++) {
+      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText, provider.attachmentList[i]!.bytes.toString(), null, null, DateTime.now(), null, null);
+      staticQuestionnaires.add(staticQuestion);
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
@@ -105,7 +106,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               return CustomPatientCard(
                                 patientName: fullName,
                                 patientId: patient!.patientId,
-                                gender: (patient.gender == "m") ? "Male" : "Female",
+                                gender: CommonFunctions.getGender(patient.gender.toString()),
                                 age: patient.age,
                                 phoneNumber: patient.phoneNumber,
                                 patientNameKey: Key('KEY_PATIENT_NAME_$index'),
