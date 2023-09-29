@@ -6,8 +6,8 @@ part 'patient_registration_schema.g.dart';
 class PatientRegistration {
   Id? id;
   AttachmentDb? consent;
-  late DateTime dateOfVisit;
-  late String institutionCode;
+  late DateTime visitDate;
+  late String institutionCodeID;
   late String studyCode;
   late String firstName;
   late String lastName;
@@ -33,8 +33,8 @@ class PatientRegistration {
     return {
       'id': id,
       'consent': consent?.toJson(),
-      'dateOfVisit': dateOfVisit.toIso8601String(),
-      'institutionCode': institutionCode,
+      'visitDate': visitDate.toIso8601String(),
+      'institutionCodeID': institutionCodeID,
       'studyCode': studyCode,
       'firstName': firstName,
       'lastName': lastName,

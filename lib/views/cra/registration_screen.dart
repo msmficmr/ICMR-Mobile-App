@@ -204,12 +204,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (formKey.currentState!.validate()) {
       AttachmentDb attachment = AttachmentDb()
         ..fileName = _selectedAttachment!.fileName
-        ..image = _selectedAttachment!.bytes;
+        ..dataBytes = _selectedAttachment!.baseImage;
       String patientId = CommonFunctions.randomNumber(6);
       questionnaireViewModel.savePatientId(patientId);
       IsarDbService.isarDbService.savePatient(PatientRegistration()
-        ..dateOfVisit = CommonFunctions.textToDateTime(_dateOfVisitController.text)
-        ..institutionCode = _institutionCode.value ?? ""
+        ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
+        ..institutionCodeID = _institutionCode.value ?? ""
         ..studyCode = _studyCode.value ?? ""
         ..firstName = _firstNameController.text
         ..lastName = _lastNameController.text

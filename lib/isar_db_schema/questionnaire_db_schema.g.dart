@@ -1102,16 +1102,16 @@ const CRASectionModelSchema = Schema(
       name: r'createdTime',
       type: IsarType.dateTime,
     ),
-    r'ehrCategoryMapId': PropertySchema(
-      id: 4,
-      name: r'ehrCategoryMapId',
-      type: IsarType.string,
-    ),
     r'ehrNotes': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'ehrNotes',
       type: IsarType.object,
       target: r'EHRNotes',
+    ),
+    r'encounterCategoryMapId': PropertySchema(
+      id: 5,
+      name: r'encounterCategoryMapId',
+      type: IsarType.string,
     ),
     r'encounterEhrDiagnosisReports': PropertySchema(
       id: 6,
@@ -1155,16 +1155,16 @@ int _cRASectionModelEstimateSize(
     }
   }
   {
-    final value = object.ehrCategoryMapId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
     final value = object.ehrNotes;
     if (value != null) {
       bytesCount += 3 +
           EHRNotesSchema.estimateSize(value, allOffsets[EHRNotes]!, allOffsets);
+    }
+  }
+  {
+    final value = object.encounterCategoryMapId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
   {
@@ -1198,13 +1198,13 @@ void _cRASectionModelSerialize(
   writer.writeString(offsets[1], object.categoryStatus);
   writer.writeString(offsets[2], object.createdBy);
   writer.writeDateTime(offsets[3], object.createdTime);
-  writer.writeString(offsets[4], object.ehrCategoryMapId);
   writer.writeObject<EHRNotes>(
-    offsets[5],
+    offsets[4],
     allOffsets,
     EHRNotesSchema.serialize,
     object.ehrNotes,
   );
+  writer.writeString(offsets[5], object.encounterCategoryMapId);
   writer.writeString(offsets[6], object.encounterEhrDiagnosisReports);
   writer.writeString(offsets[7], object.locale);
   writer.writeString(offsets[8], object.patientId);
@@ -1221,12 +1221,12 @@ CRASectionModel _cRASectionModelDeserialize(
   object.categoryStatus = reader.readString(offsets[1]);
   object.createdBy = reader.readStringOrNull(offsets[2]);
   object.createdTime = reader.readDateTime(offsets[3]);
-  object.ehrCategoryMapId = reader.readStringOrNull(offsets[4]);
   object.ehrNotes = reader.readObjectOrNull<EHRNotes>(
-    offsets[5],
+    offsets[4],
     EHRNotesSchema.deserialize,
     allOffsets,
   );
+  object.encounterCategoryMapId = reader.readStringOrNull(offsets[5]);
   object.encounterEhrDiagnosisReports = reader.readStringOrNull(offsets[6]);
   object.locale = reader.readStringOrNull(offsets[7]);
   object.patientId = reader.readStringOrNull(offsets[8]);
@@ -1249,13 +1249,13 @@ P _cRASectionModelDeserializeProp<P>(
     case 3:
       return (reader.readDateTime(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (reader.readObjectOrNull<EHRNotes>(
         offset,
         EHRNotesSchema.deserialize,
         allOffsets,
       )) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
@@ -1770,160 +1770,6 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'ehrCategoryMapId',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'ehrCategoryMapId',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'ehrCategoryMapId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'ehrCategoryMapId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'ehrCategoryMapId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ehrCategoryMapId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      ehrCategoryMapIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'ehrCategoryMapId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
       ehrNotesIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1937,6 +1783,162 @@ extension CRASectionModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'ehrNotes',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'encounterCategoryMapId',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'encounterCategoryMapId',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'encounterCategoryMapId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdContains(String value,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'encounterCategoryMapId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdMatches(String pattern,
+          {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'encounterCategoryMapId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'encounterCategoryMapId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterCategoryMapIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'encounterCategoryMapId',
+        value: '',
       ));
     });
   }
