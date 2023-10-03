@@ -20,14 +20,10 @@ class AppAssetsPath {
   static const String dottedIcon = "assets/icons/dotted_icon.svg";
   static const String icCamera = "assets/icons/ic_camera.svg";
   static const String icUpload = "assets/icons/ic_upload.svg";
-  static const String icMyAccount = "assets/icons/ic_my_account.svg";
   static const String icLanguage = "assets/icons/ic_language.svg";
   static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
-  static const String icRegistrationBack = "assets/icons/ic_registration_back.svg";
   static const String icCra = "assets/icons/ic_cra.svg";
-  static const String icEdit = "assets/icons/ic_edit.svg";
   static const String icChevronRight = "assets/icons/ic_chevron_right.svg";
-  static const String icTick = "assets/icons/ic_tick.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
@@ -44,12 +40,10 @@ class AppAssetsPath {
   static const String icLogout = "assets/icons/ic_logout.svg";
 
   /// Questionnaires
-  static const String baselineSignsQuestionnaire = "assets/json/baseline_signs_symptoms.json";
-  static const String detailsOfHabitQuestionnaire = "assets/json/details_of_habit.json";
-  static const String investigationQuestionnaire = "assets/json/investigation.json";
-  static const String measurementLesionQuestionnaire = "assets/json/measurement_lesion.json";
+  static const String baselineSignsQuestionnaire = "assets/json/en_baseline_signs_symptoms.json";
+  static const String detailsOfHabitQuestionnaire = "assets/json/en_details_of_habit.json";
+  static const String investigationQuestionnaire = "assets/json/en_investigation.json";
   static const List<String> questionnairesPath = [detailsOfHabitQuestionnaire, baselineSignsQuestionnaire, investigationQuestionnaire];
   static const String periodontalStatusImage = "assets/images/periodontal_status.png";
 
-  static const editIcon = "assets/icons/edit_icon.png";
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mhealth/utils/app_styles.dart';
-import 'package:mhealth/widgets/shimmer_placeholders.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../utils/app_assets_path.dart';
 
@@ -48,76 +48,61 @@ class AttachmentWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child:  Container(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Row(
-          children: [
-               Expanded(
-              child: isLoading
-                  ? const ShimmerPlaceHolders(
-                        child: TitlePlaceholder(
-                          height: 24,
-                          width: 24,
-                        ),
-                      )
-                  : Text(
-                      key: titleKey,
-                      title,
-                      style: textStyle ?? AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w600),
-                    ),
+        child: Row(children: [
+          Expanded(
+            child: Skeletonizer(
+              enabled: isLoading,
+              child: Text(
+                key: titleKey,
+                title,
+                style: textStyle ?? AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w600),
+              ),
             ),
-             const SpaceWidget(
-              width: 10,
-            ),
-             InkWell(
-              key: removeButtonKey,
-              onTap: isLoading ? null : onRemoveClick,
-              borderRadius: BorderRadius.circular(40),
-              child: SizedBox(
+          ),
+          const SpaceWidget(
+            width: 10,
+          ),
+          InkWell(
+            key: removeButtonKey,
+            onTap: isLoading ? null : onRemoveClick,
+            borderRadius: BorderRadius.circular(40),
+            child: SizedBox(
                 height: 40,
                 width: 40,
-                child: isLoading
-                    ? const ShimmerPlaceHolders(
-                        child: TitlePlaceholder(
-                          height: 24,
-                          width: 24,
-                        ),
-                      )
-                    : Center(
-                        child: SvgPicture.asset(
-                          AppAssetsPath.icClose,
-                          height: 24,
-                          width: 24,
-                        ),
-                      ),
-              ),
-            ),
-              const SpaceWidget(
-              width: 10,
-            ),
-             InkWell(
-              key: viewKey,
-              onTap: isLoading ? null : viewPictureClick,
-              borderRadius: BorderRadius.circular(40),
-              child: SizedBox(
+                child: Skeletonizer(
+                  enabled: isLoading,
+                  child: Center(
+                    child: SvgPicture.asset(
+                      AppAssetsPath.icClose,
+                      height: 24,
+                      width: 24,
+                    ),
+                  ),
+                )),
+          ),
+          const SpaceWidget(
+            width: 10,
+          ),
+          InkWell(
+            key: viewKey,
+            onTap: isLoading ? null : viewPictureClick,
+            borderRadius: BorderRadius.circular(40),
+            child: SizedBox(
                 height: 24,
                 width: 24,
-                child: isLoading
-                    ? const ShimmerPlaceHolders(
-                        child: TitlePlaceholder(
-                          height: 24,
-                          width: 24,
-                        ),
-                      )
-                    : SvgPicture.asset(
-                        AppAssetsPath.icFile,
-                        height: 24,
-                        width: 24,
-                      ),
-              ),
-            ),
-          ]),
-        ),
+                child: Skeletonizer(
+                  enabled: isLoading,
+                  child: SvgPicture.asset(
+                    AppAssetsPath.icFile,
+                    height: 24,
+                    width: 24,
+                  ),
+                )),
+          ),
+        ]),
+      ),
     );
   }
 }

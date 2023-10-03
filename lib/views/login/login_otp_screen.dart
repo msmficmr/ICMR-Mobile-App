@@ -260,7 +260,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
               right: 0,
               bottom: 0,
               child: Selector<LoginViewModel, bool>(
-                selector: (_, provider) => provider.isOTPValidating,
+                selector: (_, provider) => provider.isLoading,
                 builder: (context, isLoading, __) {
                   return ValueListenableBuilder<bool>(
                     valueListenable: _isContinueButtonEnabled,

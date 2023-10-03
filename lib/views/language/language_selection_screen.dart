@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
@@ -41,16 +43,20 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   onContinueClick() async {
     if (_buttonEnabled.value) {
-      await LocationService.locationServiceInstance.checkPermission(context);
-      String? locale = languageViewModel.selectedLanguage;
-      languageViewModel.isLoading = true;
-      RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
-      if (rAQuestions != null) {
-        await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
-      } else {
-        CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      try {
+        await LocationService.locationServiceInstance.checkPermission(context);
+        String? locale = languageViewModel.selectedLanguage;
+        languageViewModel.isLoading = true;
+        RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
+        if (rAQuestions != null) {
+          await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
+        } else {
+          CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+        }
+        GoRouter.of(context).go(DashboardScreen.routerPath);
+      } catch (e) {
+        CommonFunctions.toastMessage("Please enable location");
       }
-      GoRouter.of(context).go(DashboardScreen.routerPath);
     }
   }
 

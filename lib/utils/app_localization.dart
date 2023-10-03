@@ -33,7 +33,8 @@ class AppLocalizations {
   /// This method checks for the supported locales & the locale for the phone language,
   /// If the phone language is supported by the app it will return the language
   /// else it will return english language
-  static Locale? localeResolutionCallBack(Locale? locale, Iterable<Locale>? supportedLocales) {
+  static Locale?
+  localeResolutionCallBack(Locale? locale, Iterable<Locale>? supportedLocales) {
     if (supportedLocales != null && locale != null) {
       return supportedLocales.firstWhere((element) => element.languageCode == locale.languageCode, orElse: () => supportedLocales.first);
     }
@@ -65,5 +66,5 @@ class _ApplicationLocalizationsDelegate extends LocalizationsDelegate<AppLocaliz
   }
 
   @override
-  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) => false;
+  bool shouldReload(covariant LocalizationsDelegate<AppLocalizations> old) => true;
 }

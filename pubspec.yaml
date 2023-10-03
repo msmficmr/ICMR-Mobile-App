@@ -16,7 +16,6 @@ dependencies:
   go_router: ^7.0.1
   provider: ^6.0.5
   dropdown_search: ^5.0.6
-  location: ^5.0.0
   geolocator: ^9.0.2
   fluttertoast: ^8.2.2
   pin_input_text_field: ^4.5.0
@@ -25,7 +24,7 @@ dependencies:
 
 
   shared_preferences: ^2.0.8
-  shimmer: ^3.0.0
+  skeletonizer: ^0.8.0
   permission_handler: ^10.4.3
   image_picker: ^1.0.1
   dotted_border: ^2.0.0+3
@@ -34,8 +33,6 @@ dependencies:
   isar: ^3.1.0+1
   path_provider: ^2.0.15
   isar_flutter_libs: ^3.1.0+1
-  lottie: ^1.0.1
-  bubble: ^1.2.1
   uuid: ^3.0.7
   flutter_signature_pad: ^3.0.1
 

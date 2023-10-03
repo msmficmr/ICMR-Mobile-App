@@ -1,9 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
-import 'package:location/location.dart';
-
 class LocationService {
   LocationService._();
 
@@ -15,17 +14,18 @@ class LocationService {
 
   static LocationService locationServiceInstance = LocationService._();
 
-  final Location _location = Location();
+  late LocationPermission permission;
 
-  Future<LocationPermissionStatus> getPermissionStatus(PermissionStatus permissionStatus) async {
+
+  Future<LocationPermissionStatus> getPermissionStatus(LocationPermission permissionStatus) async {
     switch (permissionStatus) {
-      case PermissionStatus.granted:
+      case LocationPermission.always:
         return LocationPermissionStatus.GRANTED;
-      case PermissionStatus.grantedLimited:
+      case LocationPermission.whileInUse:
         return LocationPermissionStatus.WHILE_IN_USE;
-      case PermissionStatus.denied:
+      case LocationPermission.denied:
         return LocationPermissionStatus.DENIED;
-      case PermissionStatus.deniedForever:
+      case LocationPermission.deniedForever:
         return LocationPermissionStatus.FOREVER_DENIED;
       default:
         return LocationPermissionStatus.GRANTED;
@@ -33,12 +33,12 @@ class LocationService {
   }
 
   Future<LocationPermissionStatus> requestLocationService() async {
-    bool isLocationServiceEnabled = await _location.serviceEnabled();
+    bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isLocationServiceEnabled) {
       return LocationPermissionStatus.SERVICE_DISABLED;
     }
 
-    PermissionStatus permissionStatus = await _location.hasPermission();
+    LocationPermission permissionStatus = await Geolocator.requestPermission();
     return getPermissionStatus(permissionStatus);
   }
 
@@ -58,9 +58,9 @@ class LocationService {
             },
           );
         }
-        PermissionStatus requestPermissionStatus = await _location.requestPermission();
+        LocationPermission requestPermissionStatus = await Geolocator.requestPermission();
 
-        if (requestPermissionStatus == PermissionStatus.granted) {
+        if (requestPermissionStatus == LocationPermission.always || requestPermissionStatus == LocationPermission.whileInUse) {
           return true;
         } else {
           LocationPermissionStatus permissionStatus = await getPermissionStatus(requestPermissionStatus);
