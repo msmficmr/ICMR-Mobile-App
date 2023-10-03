@@ -315,6 +315,11 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
 
   saveQuestion(String questionId, String value) {
     final staticQuestion = StaticQuestionModel(questionId, value, null, null, DateTime.now(), null, null);
+    for (int i = 0; i < staticQuestionnaires.length; i++) {
+      if (staticQuestionnaires[i].questionid == staticQuestion.questionid) {
+        staticQuestionnaires.removeAt(i);
+      }
+    }
     staticQuestionnaires.add(staticQuestion);
   }
 

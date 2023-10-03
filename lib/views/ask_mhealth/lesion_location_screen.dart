@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -38,9 +39,11 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   late ValueNotifier<String?> _site;
   late ValueNotifier<String?> _location;
   late ValueNotifier<bool> _hasConsent;
+  late ValueNotifier<bool> errorText;
   late ValueNotifier<bool> _buttonEnabled;
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late QuestionnaireViewModel provider;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final ValueNotifier<AttachmentModel?> _selectedAttachment = ValueNotifier<AttachmentModel?>(null);
 
   //Widget Keys
   final String KEY_FIELD_SITE = "key_textfield_site";
@@ -54,22 +57,24 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   final String KEY_CHECKBOX_CONSENT = "key_checkbox_consent";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
-  final List<String> sites = [
-    'Upper lip',
-    'Lower lip',
-    'Cheek',
-    'Tongue lateral',
-    'Dorsal',
-    'Ventral',
-    'Base of the tongue',
-    'Palate',
-    'Upper vestibule',
-    'Lower vestibule',
-    'Retromolar trigone (RMT)',
-    'Gingiva -upper',
-    'Gingiva-lower',
-    'Floor of the mouth'
-  ];
+  final Map<String, String> siteMaps = {
+    "1": "Upper lip",
+    "2": "Lower lip",
+    "3": "Cheek",
+    "4": "Tongue lateral",
+    "5": "Tongue lateral",
+    "6": "Dorsal",
+    "7": "Ventral",
+    "8": "Base of the tongue",
+    "9": "Palate",
+    "10": "Upper vestibule",
+    "11": "Lower vestibule",
+    "12": "Retromolar trigone (RMT)",
+    "13": "Gingiva-upper",
+    "14": "Gingiva-lower",
+    "15": "Floor of the mouth"
+  };
+
   final List<String> siteLocation = ['Left', 'Right'];
   List<StaticQuestionModel> staticQuestionnaires = [];
 
@@ -77,7 +82,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   static const String ATTACHMENT = "Attachment";
   final String SITE_TITLE = "Site";
   final String LOCATION_TITLE = "Location";
-  final String CONSENT_TEXT = 'I have capture  all the images of lesions';
+  final String CONSENT_TEXT = 'I have capture all the images of lesions';
   final String CAPTURE_IMAGE_TITLE = "Capture Image";
 
   @override
@@ -91,6 +96,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     _site = ValueNotifier<String?>(null);
     _location = ValueNotifier<String?>(null);
     _hasConsent = ValueNotifier<bool>(false);
+    errorText = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
   }
 
@@ -104,9 +110,9 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
       Uint8List bytes = await file.readAsBytes();
       AttachmentModel model = AttachmentModel(bytes: bytes, fileName: "${_location.value} ${_site.value}");
       provider.saveAttachment(model);
+      _selectedAttachment.value = model;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +149,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             _site.value = val;
                           },
                           selectedItem: _site.value,
-                          items: sites,
+                          items: siteMaps.values.map((e) => e).toList(),
                         );
                       },
                     ),
@@ -204,18 +210,23 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AttachmentWidget(
-                                title: provider.attachmentList[index]!.fileName, 
-                                titleKey: Key(KEY_ATTACHMENT_TITLE),
-                                viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
-                                removeButtonKey: Key(KEY_REMOVE_BUTTON),
-                                onRemoveClick: () {
-                                  provider.removeAttachment(index); // Remove the attachment from the list
-                                },
-                                viewPictureClick: () {
-                                  CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
-                                },
-                              ),
+                              ValueListenableBuilder<AttachmentModel?>(
+                                  valueListenable: _selectedAttachment,
+                                  builder: (context, attachment, _) {
+                                    return AttachmentWidget(
+                                      title: provider.attachmentList[index]!.fileName,
+                                      titleKey: Key(KEY_ATTACHMENT_TITLE),
+                                      viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
+                                      removeButtonKey: Key(KEY_REMOVE_BUTTON),
+                                      onRemoveClick: () {
+                                        provider.removeAttachment(index); // Remove the attachment from the list
+                                        _selectedAttachment.value = null;
+                                      },
+                                      viewPictureClick: () {
+                                        CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
+                                      },
+                                    );
+                                  }),
                               const SpaceWidget(),
                             ],
                           ),
@@ -234,11 +245,17 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                     ValueListenableBuilder(
                       valueListenable: _hasConsent,
                       builder: (context, _, __) {
-                        return QuestionnaireCheckBox(
-                          onChanged: onConsentChanged,
-                          checkboxStatus: _hasConsent.value,
-                          widgetKey: KEY_CHECKBOX_CONSENT,
-                          text: CONSENT_TEXT,
+                        return ValueListenableBuilder(
+                          valueListenable: errorText,
+                          builder: (context, _, __) {
+                            return QuestionnaireCheckBox(
+                              onChanged: onConsentChanged,
+                              checkboxStatus: _hasConsent.value,
+                              widgetKey: KEY_CHECKBOX_CONSENT,
+                              text: CONSENT_TEXT,
+                              errorText: errorText.value,
+                            );
+                          },
                         );
                       },
                     ),
@@ -256,8 +273,17 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             widgetKey: KEY_BUTTON_CONTINUE,
                             isLoading: false,
                             onPressed: () async {
-                              await saveLesionLocationsData();
-                              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                              if (_selectedAttachment.value != null && _hasConsent.value == false) {
+                                errorText.value = true;
+                              } else {
+                                errorText.value = false;
+                                await saveLesionLocationsData();
+                                if (provider.attachmentList.isNotEmpty) {
+                                  GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                                } else {
+                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
+                                }
+                              }
                             },
                           );
                         },
@@ -273,13 +299,22 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     );
   }
 
-  saveLesionLocationData(String site, String location, List<int> image) {
-    final staticQuestion = StaticQuestionModel("${site}_$location", image.toString(), null, null, DateTime.now(), null, null);
-    staticQuestionnaires.add(staticQuestion);
-  }
-
-
   saveLesionLocationsData() async {
+    if (provider.attachmentList.isNotEmpty) saveLesionLocationData();
     await provider.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
   }
+
+  saveLesionLocationData() {
+    for (int i = 0; i < provider.attachmentList.length; i++) {
+      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText, provider.attachmentList[i]!.bytes.toString(), null, null, DateTime.now(), null, null);
+      staticQuestionnaires.add(staticQuestion);
+    }
+  }
+}
+
+class SiteModel {
+  String id;
+  String site;
+
+  SiteModel(this.id, this.site);
 }

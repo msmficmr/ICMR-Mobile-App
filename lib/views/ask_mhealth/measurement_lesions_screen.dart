@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -33,11 +32,8 @@ class MeasurementLesionsScreen extends StatefulWidget {
 class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   late ValueNotifier<bool> _onSiteValue;
   late ValueNotifier<String?> _onSiteSpecialist;
-  late ValueNotifier<String?> _fhpOpinion;
-  late ValueNotifier<bool> _fhpOpinionValue;
-  late ValueNotifier<String?> _autofluorescenceImpression;
-  late ValueNotifier<String?> _provisionalDiagnosis;
   late ValueNotifier<bool> _buttonEnabled;
+  late QuestionnaireViewModel questionnaireViewModel;
 
   //Titles
   final String TOTAL_LESIONS_TITLE = "Number of Lesion";
@@ -50,25 +46,19 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   final String PROVISIONAL_DIAGNOSIS_TITLE = "Provisional diagnosis by an Onsite specialist";
   final String OTHER_CLINICAL_TITLE = "Other clinical impression";
 
-  final _lesionsController = TextEditingController();
-  final _lengthController = TextEditingController();
-  final _breadthController = TextEditingController();
-  final _productController = TextEditingController();
-  final _otherClinicalController = TextEditingController();
-
   final List<String> autofluorescenceValues = ["Normal", "Loss", "Gain", "NA"];
-  final List<String> provisionalDiagnosisValues = [
-    "Normal",
-    "Benign",
-    "Tobacco pouch keratosis",
-    "Homogenous leukoplakia",
-    "Non Homogenous Leukoplakia",
-    "Verrucous Leukoplakia",
-    "Oral Lichen Planus",
-    "OSMF",
-    "Malignancy",
-    "Other"
-  ];
+  final Map<int, String> provisionalDiagnosisValues = {
+    1: "Normal",
+    2: "Benign",
+    3: "Tobacco pouch keratosis",
+    4: "Homogenous leukoplakia",
+    5: "Non Homogenous Leukoplakia",
+    6: "Verrucous Leukoplakia",
+    7: "Oral Lichen Planus",
+    8: "OSMF",
+    9: "Malignancy",
+    10: "Other"
+  };
   List<StaticQuestionModel> staticQuestionnaires = [];
 
   //Widget Keys
@@ -89,6 +79,16 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   final String KEY_HEADING_OTHER_IMPRESSION = "key_heading_other_impression";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
+  final _lesionsController = TextEditingController();
+  final _lengthControllers = <TextEditingController>[];
+  final _breadthControllers = <TextEditingController>[];
+  final _productControllers = <TextEditingController>[];
+  final _otherControllers = <TextEditingController>[];
+  List<ValueNotifier<String?>> _fhpOpinions = [];
+  List<ValueNotifier<bool>> _fhpOpinionValue = [];
+  List<ValueNotifier<String?>> _autofluorescenceImpression = [];
+  List<ValueNotifier<String?>> _provisionalDiagnosis = [];
+
   @override
   void initState() {
     super.initState();
@@ -98,11 +98,44 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   initializeField() {
     _onSiteSpecialist = ValueNotifier<String?>(null);
     _onSiteValue = ValueNotifier<bool>(false);
-    _fhpOpinion = ValueNotifier<String?>(null);
-    _fhpOpinionValue = ValueNotifier<bool>(false);
-    _autofluorescenceImpression = ValueNotifier<String?>(null);
-    _provisionalDiagnosis = ValueNotifier<String?>(null);
     _buttonEnabled = ValueNotifier<bool>(true);
+    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    _lesionsController.text = questionnaireViewModel.attachmentList.length.toString();
+    _fhpOpinions = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    _fhpOpinionValue = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<bool>(false));
+    _autofluorescenceImpression = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    _provisionalDiagnosis = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    getLesionsData();
+  }
+
+  getLesionsData() {
+    for (var element in questionnaireViewModel.attachmentList) {
+      var lengthController = TextEditingController();
+      _lengthControllers.add(lengthController);
+      var breadthController = TextEditingController();
+      _breadthControllers.add(breadthController);
+      var productController = TextEditingController();
+      _productControllers.add(productController);
+      var otherController = TextEditingController();
+      _otherControllers.add(otherController);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final lengthController in _lengthControllers) {
+      lengthController.dispose();
+    }
+    for (final breadthController in _breadthControllers) {
+      breadthController.dispose();
+    }
+    for (final productController in _productControllers) {
+      productController.dispose();
+    }
+    for (final otherController in _otherControllers) {
+      otherController.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -167,149 +200,160 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                           const SpaceWidget(
                             height: 20,
                           ),
-                          CustomTextField(
-                            controller: _lengthController,
-                            keyboardType: TextInputType.number,
-                            widgetKey: Key(KEY_FIELD_LENGTH),
-                            hintText: TranslationKeys.enterHere.translate(context),
-                            heading: LENGTH_TITLE,
-                            headingKey: Key(KEY_HEADING_LENGTH),
-                            validator: AppValidators.requiredField,
-                            inputFormatters: [
-                              AppValues.stringInputFormatter,
-                            ],
-                          ),
-                          const SpaceWidget(
-                            height: 20,
-                          ),
-                          CustomTextField(
-                            controller: _breadthController,
-                            keyboardType: TextInputType.number,
-                            widgetKey: Key(KEY_FIELD_LENGTH),
-                            hintText: TranslationKeys.enterHere.translate(context),
-                            heading: BREADTH_TITLE,
-                            headingKey: Key(KEY_HEADING_BREADTH),
-                            validator: AppValidators.requiredField,
-                            inputFormatters: [
-                              AppValues.stringInputFormatter,
-                            ],
-                          ),
-                          const SpaceWidget(
-                            height: 20,
-                          ),
-                          CustomTextField(
-                            controller: _productController,
-                            keyboardType: TextInputType.number,
-                            widgetKey: Key(KEY_FIELD_PRODUCT),
-                            hintText: TranslationKeys.enterHere.translate(context),
-                            heading: PRODUCT_TITLE,
-                            headingKey: Key(KEY_HEADING_PRODUCT),
-                            validator: AppValidators.requiredField,
-                            inputFormatters: [
-                              AppValues.stringInputFormatter,
-                            ],
-                          ),
-                          const SpaceWidget(
-                            height: 20,
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: _fhpOpinion,
-                            builder: (context, _, __) {
-                              return CustomChipWidget<String?>(
-                                shouldTranslate: true,
-                                chipList: AppConstant.BINARY_LIST,
-                                onChanged: (value) {
-                                  _fhpOpinion.value = value;
-                                  if (value == 'n') {
-                                    _fhpOpinionValue.value = true;
-                                  } else {
-                                    _fhpOpinionValue.value = false;
-                                  }
-                                  staticQuestionnaires.add(StaticQuestionModel("fhp_opinion_suspicious", _fhpOpinionValue.value.toString(), null, null, DateTime.now(), null, null));
-                                },
-                                validator: AppValidators.validateBinaryQuestion,
-                                selectedItem: _fhpOpinion.value,
-                                heading: FHP_TITLE,
-                                headingKey: Key(KEY_FIELD_ON_SITE),
+                          ListView.builder(
+                            itemCount: questionnaireViewModel.attachmentList.length,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "${index + 1}. ${questionnaireViewModel.attachmentList[index]?.fileName ?? ""}",
+                                    style: AppStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  const SpaceWidget(
+                                    height: 20,
+                                  ),
+                                  CustomTextField(
+                                    controller: _lengthControllers[index],
+                                    keyboardType: TextInputType.number,
+                                    widgetKey: Key(KEY_FIELD_LENGTH),
+                                    hintText: TranslationKeys.enterHere.translate(context),
+                                    heading: LENGTH_TITLE,
+                                    headingKey: Key(KEY_HEADING_LENGTH),
+                                    validator: AppValidators.requiredField,
+                                  ),
+                                  const SpaceWidget(
+                                    height: 20,
+                                  ),
+                                  CustomTextField(
+                                    controller: _breadthControllers[index],
+                                    keyboardType: TextInputType.number,
+                                    widgetKey: Key(KEY_FIELD_LENGTH),
+                                    hintText: TranslationKeys.enterHere.translate(context),
+                                    heading: BREADTH_TITLE,
+                                    headingKey: Key(KEY_HEADING_BREADTH),
+                                    validator: AppValidators.requiredField,
+                                  ),
+                                  const SpaceWidget(
+                                    height: 20,
+                                  ),
+                                  CustomTextField(
+                                    controller: _productControllers[index],
+                                    keyboardType: TextInputType.number,
+                                    widgetKey: Key(KEY_FIELD_PRODUCT),
+                                    hintText: TranslationKeys.enterHere.translate(context),
+                                    heading: PRODUCT_TITLE,
+                                    headingKey: Key(KEY_HEADING_PRODUCT),
+                                    validator: AppValidators.requiredField,
+                                  ),
+                                  const SpaceWidget(
+                                    height: 20,
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: _fhpOpinions[index],
+                                    builder: (context, _, __) {
+                                      return CustomChipWidget<String?>(
+                                        shouldTranslate: true,
+                                        chipList: AppConstant.BINARY_LIST,
+                                        onChanged: (value) {
+                                          _fhpOpinions[index].value = value;
+                                          if (value == 'n') {
+                                            _fhpOpinionValue[index].value = true;
+                                          } else {
+                                            _fhpOpinionValue[index].value = false;
+                                          }
+                                          staticQuestionnaires.add(StaticQuestionModel("fhp_opinion_suspicious", _fhpOpinionValue[index].value.toString(), null, null, DateTime.now(), null, null));
+                                        },
+                                        validator: AppValidators.validateBinaryQuestion,
+                                        selectedItem: _fhpOpinions[index].value,
+                                        heading: FHP_TITLE,
+                                        headingKey: Key(KEY_FIELD_ON_SITE),
+                                      );
+                                    },
+                                  ),
+                                  const SpaceWidget(
+                                    height: 20,
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: _onSiteValue,
+                                    builder: (context, ifYes, __) {
+                                      if (ifYes) {
+                                        return Column(
+                                          children: [
+                                            ValueListenableBuilder<String?>(
+                                                valueListenable: _autofluorescenceImpression[index],
+                                                builder: (context, _, __) {
+                                                  return CustomDropdown<String>(
+                                                    widgetKey: KEY_FIELD_AUTOFLOURESCENCE,
+                                                    heading: AUTOFLOURANCE_TITLE,
+                                                    headingKey: Key(KEY_HEADING_AUTOFLOURESCENCE),
+                                                    hintText: TranslationKeys.select.translate(context),
+                                                    onChanged: (val) {
+                                                      _autofluorescenceImpression[index].value = val;
+                                                      staticQuestionnaires
+                                                          .add(StaticQuestionModel("autoflorescence_impression", _autofluorescenceImpression[index].value, null, null, DateTime.now(), null, null));
+                                                    },
+                                                    selectedItem: _autofluorescenceImpression[index].value,
+                                                    items: autofluorescenceValues,
+                                                  );
+                                                }),
+                                            const SpaceWidget(
+                                              height: 20,
+                                            ),
+                                            ValueListenableBuilder<String?>(
+                                                valueListenable: _provisionalDiagnosis[index],
+                                                builder: (context, _, __) {
+                                                  return CustomDropdown<String>(
+                                                    widgetKey: KEY_FIELD_PROVISIONAL_DIAGNOSIS,
+                                                    heading: PROVISIONAL_DIAGNOSIS_TITLE,
+                                                    headingKey: Key(KEY_HEADING_PROVISIONAL_DIAGNOSIS),
+                                                    hintText: TranslationKeys.select.translate(context),
+                                                    onChanged: (val) {
+                                                      _provisionalDiagnosis[index].value = val;
+                                                      staticQuestionnaires.add(StaticQuestionModel("provisional_diagnosis", _provisionalDiagnosis[index].value, null, null, DateTime.now(), null, null));
+                                                    },
+                                                    selectedItem: _provisionalDiagnosis[index].value,
+                                                    items: provisionalDiagnosisValues.values.map((e) => e).toList(),
+                                                  );
+                                                }),
+                                            const SpaceWidget(
+                                              height: 20,
+                                            ),
+                                            ValueListenableBuilder<String?>(
+                                                valueListenable: _provisionalDiagnosis[index],
+                                                builder: (context, provisionalDiagnosis, __) {
+                                                  if (provisionalDiagnosis == "Other") {
+                                                    return CustomTextField(
+                                                      controller: _otherControllers[index],
+                                                      widgetKey: Key(KEY_FIELD_OTHER_IMPRESSION),
+                                                      hintText: TranslationKeys.enterHere.translate(context),
+                                                      heading: OTHER_CLINICAL_TITLE,
+                                                      headingKey: Key(KEY_HEADING_OTHER_IMPRESSION),
+                                                      validator: AppValidators.requiredField,
+                                                      inputFormatters: [
+                                                        AppValues.stringInputFormatter,
+                                                      ],
+                                                    );
+                                                  } else {
+                                                    return const SizedBox();
+                                                  }
+                                                }),
+                                          ],
+                                        );
+                                      } else {
+                                        return const SizedBox();
+                                      }
+                                    },
+                                  ),
+                                  const SpaceWidget(
+                                    height: 50,
+                                  ),
+                                ],
                               );
                             },
-                          ),
-                          const SpaceWidget(
-                            height: 20,
-                          ),
-                          ValueListenableBuilder(
-                            valueListenable: _onSiteValue,
-                            builder: (context, ifYes, __) {
-                              if (ifYes) {
-                                return Column(
-                                  children: [
-                                    ValueListenableBuilder<String?>(
-                                        valueListenable: _autofluorescenceImpression,
-                                        builder: (context, _, __) {
-                                          return CustomDropdown<String>(
-                                            widgetKey: KEY_FIELD_AUTOFLOURESCENCE,
-                                            heading: AUTOFLOURANCE_TITLE,
-                                            headingKey: Key(KEY_HEADING_AUTOFLOURESCENCE),
-                                            hintText: TranslationKeys.select.translate(context),
-                                            onChanged: (val) {
-                                              _autofluorescenceImpression.value = val;
-                                              staticQuestionnaires.add(StaticQuestionModel("autoflorescence_impression", _autofluorescenceImpression.value, null, null, DateTime.now(), null, null));
-                                            },
-                                            selectedItem: _autofluorescenceImpression.value,
-                                            items: autofluorescenceValues,
-                                          );
-                                        }),
-                                    const SpaceWidget(
-                                      height: 20,
-                                    ),
-                                    ValueListenableBuilder<String?>(
-                                        valueListenable: _provisionalDiagnosis,
-                                        builder: (context, _, __) {
-                                          return CustomDropdown<String>(
-                                            widgetKey: KEY_FIELD_PROVISIONAL_DIAGNOSIS,
-                                            heading: PROVISIONAL_DIAGNOSIS_TITLE,
-                                            headingKey: Key(KEY_HEADING_PROVISIONAL_DIAGNOSIS),
-                                            hintText: TranslationKeys.select.translate(context),
-                                            onChanged: (val) {
-                                              _provisionalDiagnosis.value = val;
-                                              staticQuestionnaires.add(StaticQuestionModel("provisional_diagnosis", _provisionalDiagnosis.value, null, null, DateTime.now(), null, null));
-                                            },
-                                            selectedItem: _provisionalDiagnosis.value,
-                                            items: provisionalDiagnosisValues,
-                                          );
-                                        }),
-                                    const SpaceWidget(
-                                      height: 20,
-                                    ),
-                                    ValueListenableBuilder<String?>(
-                                        valueListenable: _provisionalDiagnosis,
-                                        builder: (context, provisionalDiagnosis, __) {
-                                          if (provisionalDiagnosis == "Other") {
-                                            return CustomTextField(
-                                              controller: _otherClinicalController,
-                                              widgetKey: Key(KEY_FIELD_OTHER_IMPRESSION),
-                                              hintText: TranslationKeys.enterHere.translate(context),
-                                              heading: OTHER_CLINICAL_TITLE,
-                                              headingKey: Key(KEY_HEADING_OTHER_IMPRESSION),
-                                              validator: AppValidators.requiredField,
-                                              inputFormatters: [
-                                                AppValues.stringInputFormatter,
-                                              ],
-                                            );
-                                          } else {
-                                            return const SizedBox();
-                                          }
-                                        }),
-                                  ],
-                                );
-                              } else {
-                                return const SizedBox();
-                              }
-                            },
-                          ),
-                          const SpaceWidget(
-                            height: 50,
-                          ),
+                          )
                         ],
                       ),
                     )
@@ -331,8 +375,8 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                       buttonTitle: TranslationKeys.continueText.translate(context),
                       widgetKey: KEY_BUTTON_CONTINUE,
                       isLoading: false,
-                      onPressed: () {
-                        saveMeasurementLesionsData();
+                      onPressed: () async {
+                        await saveMeasurementLesionsData();
                         GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
                       },
                     );
@@ -346,23 +390,30 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     );
   }
 
-  saveMeasurementLesionsData() {
+  saveMeasurementLesionsData() async {
     if (_lesionsController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("number_of_lesion", _lesionsController.text, null, null, DateTime.now(), null, null));
     }
-    if (_lengthController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("length", _lengthController.text, null, null, DateTime.now(), null, null));
+    for (int i = 0; i < _lengthControllers.length; i++) {
+      if (_lengthControllers[i].text.isNotEmpty) {
+        staticQuestionnaires.add(StaticQuestionModel("length_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _lengthControllers[i].text, null, null, DateTime.now(), null, null));
+      }
     }
-    if (_breadthController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("breadth", _breadthController.text, null, null, DateTime.now(), null, null));
+    for (int i = 0; i < _breadthControllers.length; i++) {
+      if (_breadthControllers[i].text.isNotEmpty) {
+        staticQuestionnaires.add(StaticQuestionModel("breadth_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _breadthControllers[i].text, null, null, DateTime.now(), null, null));
+      }
     }
-    if (_productController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("product", _productController.text, null, null, DateTime.now(), null, null));
+    for (int i = 0; i < _productControllers.length; i++) {
+      if (_productControllers[i].text.isNotEmpty) {
+        staticQuestionnaires.add(StaticQuestionModel("product_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _productControllers[i].text, null, null, DateTime.now(), null, null));
+      }
     }
-    if (_otherClinicalController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("product", _productController.text, null, null, DateTime.now(), null, null));
+    for (int i = 0; i < _otherControllers.length; i++) {
+      if (_otherControllers[i].text.isNotEmpty) {
+        staticQuestionnaires.add(StaticQuestionModel("other", _otherControllers[i].text, null, null, DateTime.now(), null, null));
+      }
     }
-    final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    questionnaireViewModel.setNextSectionData("community_risk_assessment_measurement_lesions", context, staticSectionsData: staticQuestionnaires);
+    await questionnaireViewModel.setNextSectionData("community_risk_assessment_measurement_lesions", context, staticSectionsData: staticQuestionnaires);
   }
 }

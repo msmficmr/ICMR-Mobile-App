@@ -239,4 +239,15 @@ class CommonFunctions {
     DateFormat dateFormat = DateFormat('dd/MM/yyyy');
     return dateFormat.parse(dateString);
   }
+
+  static String getGender(String gender) {
+    switch (gender) {
+      case "m" :
+        return "Male";
+      case "f" :
+        return "Female";
+      default:
+        return "Others";
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:mhealth/config/environment/environment.dart';
-import 'package:mhealth/services/authService/auth_service.dart';
 import 'package:mhealth/utils/app_endpoints.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
 import 'package:http_interceptor/http_interceptor.dart';

@@ -98,7 +98,7 @@ class CustomSignatureWidget extends StatelessWidget {
                   ],
                 ),
               ),
-            if (field.hasError) ...[
+            if (signatureData != null && field.hasError) ...[
               const SpaceWidget(),
               Padding(
                 padding: const EdgeInsets.only(left: 12),

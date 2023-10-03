@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mhealth/config/environment/environment.dart';
 import 'package:mhealth/config/router/app_router.dart';
 import 'package:mhealth/config/theme/app_theme.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_localization.dart';
@@ -9,7 +10,6 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
-import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:provider/provider.dart';
 

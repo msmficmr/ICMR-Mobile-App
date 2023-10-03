@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -38,10 +40,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<Uint8List?> _patientConsent;
   late ValueNotifier<bool> _buttonEnabled;
-  List<StaticQuestionModel> staticQuestionnaires = [];
+  late ValueNotifier<bool> _errorText;
   late QuestionnaireViewModel questionnaireViewModel;
 
+  List<StaticQuestionModel> staticQuestionnaires = [];
+
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late TextEditingController _participantController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
@@ -81,11 +87,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
     _institutionCode = ValueNotifier<String?>(null);
     _visitType = ValueNotifier<String?>(null);
     _hasConsent = ValueNotifier<bool>(false);
+    _errorText = ValueNotifier<bool>(false);
     _patientConsent = ValueNotifier<Uint8List?>(null);
     _buttonEnabled = ValueNotifier<bool>(true);
   }
 
   void onConsentChanged(bool? input) {
+    _errorText.value = false;
     _hasConsent.value = input ?? false;
   }
 
@@ -103,149 +111,162 @@ class _VerificationScreenState extends State<VerificationScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.all(AppValues.kAppPadding),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionNameWidget(sectionName: "Verification Form"),
-                    //INSTITUTION CODE
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _institutionCode,
-                      builder: (context, _, __) {
-                        return CustomDropdown<String>(
-                          widgetKey: KEY_FIELD_INSTITUTION_CODE,
-                          heading: INSTITUTUION_TITLE,
-                          headingKey: Key(KEY_HEADING_INSTITUTION_CODE),
-                          hintText: TranslationKeys.select.translate(context),
-                          onChanged: (val) {
-                            _institutionCode.value = val;
-                          },
-                          selectedItem: _institutionCode.value,
-                          items: [],
-                        );
-                      },
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    //PARTICIPANT ID
-                    CustomTextField(
-                      enabled: false,
-                      controller: _participantController,
-                      widgetKey: Key(KEY_FIELD_PARTICIPANT_ID),
-                      hintText: TranslationKeys.enterHere.translate(context),
-                      heading: PARTICIPANT_TITLE,
-                      headingKey: Key(KEY_HEADING_PARTICIPANT_ID),
-                      inputFormatters: [
-                        AppValues.stringInputFormatter,
-                      ],
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    //VISIT TYPE
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _visitType,
-                      builder: (context, _, __) {
-                        return CustomDropdown<String>(
-                          widgetKey: KEY_FIELD_VISIT_TYPE,
-                          heading: VISIT_TYPE_TITLE,
-                          headingKey: Key(KEY_HEADING_VISIT_TYPE),
-                          hintText: TranslationKeys.select.translate(context),
-                          onChanged: (val) {
-                            _visitType.value = val;
-                          },
-                          selectedItem: _visitType.value,
-                          items: [],
-                        );
-                      },
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    //FROM DATE
-                    CustomTextField(
-                      controller: _fromDateController,
-                      widgetKey: Key(KEY_FIELD_FROM_DATE),
-                      hintText: AppConstant.HINT_TEXT_DATE,
-                      heading: FROM_DATE_TITLE,
-                      headingKey: Key(KEY_HEADING_FROM_DATE),
-                      hasPrefix: true,
-                      prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
-                      prefixData: AppAssetsPath.icCalender,
-                      inputFormatters: [
-                        dobInputFormatter,
-                      ],
-                      validator: AppValidators.validateDate,
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SpaceWidget(
-                      height: 20,
-                    ),
-                    ValueListenableBuilder(
-                      valueListenable: _hasConsent,
-                      builder: (context, _, __) {
-                        return QuestionnaireCheckBox(
-                          onChanged: onConsentChanged,
-                          checkboxStatus: _hasConsent.value,
-                          widgetKey: KEY_CHECKBOX_CONSENT,
-                          text: CONSENT_TEXT,
-                        );
-                      },
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    ValueListenableBuilder<Uint8List?>(
-                      valueListenable: _patientConsent,
-                      builder: (context, _, __) {
-                        return CustomSignatureWidget(
-                          onButtonClick: getSignature,
-                          signatureData: _patientConsent.value,
-                          buttonText: ADD_INVESTIGATORS_TITLE,
-                          buttonKey: KEY_BUTTON_CONSENT,
-                          errorText: ERROR_CONSENT,
-                          onRemoveClick: () {
-                            _patientConsent.value = null;
-                          },
-                        );
-                      },
-                    ),
-                    SpaceWidget(
-                      height: 80,
-                    )
-                  ],
+        child: Form(
+          key: _formKey,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SectionNameWidget(sectionName: "Verification Form"),
+                      //INSTITUTION CODE
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _institutionCode,
+                        builder: (context, _, __) {
+                          return CustomDropdown<String>(
+                            widgetKey: KEY_FIELD_INSTITUTION_CODE,
+                            heading: INSTITUTUION_TITLE,
+                            headingKey: Key(KEY_HEADING_INSTITUTION_CODE),
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _institutionCode.value = val;
+                            },
+                            selectedItem: _institutionCode.value,
+                            items: [],
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      //PARTICIPANT ID
+                      CustomTextField(
+                        enabled: false,
+                        controller: _participantController,
+                        widgetKey: Key(KEY_FIELD_PARTICIPANT_ID),
+                        hintText: TranslationKeys.enterHere.translate(context),
+                        heading: PARTICIPANT_TITLE,
+                        headingKey: Key(KEY_HEADING_PARTICIPANT_ID),
+                        inputFormatters: [
+                          AppValues.stringInputFormatter,
+                        ],
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      //VISIT TYPE
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _visitType,
+                        builder: (context, _, __) {
+                          return CustomDropdown<String>(
+                            widgetKey: KEY_FIELD_VISIT_TYPE,
+                            heading: VISIT_TYPE_TITLE,
+                            headingKey: Key(KEY_HEADING_VISIT_TYPE),
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _visitType.value = val;
+                            },
+                            selectedItem: _visitType.value,
+                            items: [],
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      //FROM DATE
+                      CustomTextField(
+                        controller: _fromDateController,
+                        widgetKey: Key(KEY_FIELD_FROM_DATE),
+                        hintText: AppConstant.HINT_TEXT_DATE,
+                        heading: FROM_DATE_TITLE,
+                        headingKey: Key(KEY_HEADING_FROM_DATE),
+                        hasPrefix: true,
+                        prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
+                        prefixData: AppAssetsPath.icCalender,
+                        inputFormatters: [
+                          dobInputFormatter,
+                        ],
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SpaceWidget(
+                        height: 20,
+                      ),
+                      ValueListenableBuilder(
+                        valueListenable: _hasConsent,
+                        builder: (context, _, __) {
+                          return ValueListenableBuilder(
+                            valueListenable: _errorText,
+                            builder: (context, _, __) {
+                              return QuestionnaireCheckBox(
+                                onChanged: onConsentChanged,
+                                checkboxStatus: _hasConsent.value,
+                                widgetKey: KEY_CHECKBOX_CONSENT,
+                                text: CONSENT_TEXT,
+                                errorText: _errorText.value,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      ValueListenableBuilder<Uint8List?>(
+                        valueListenable: _patientConsent,
+                        builder: (context, _, __) {
+                          return CustomSignatureWidget(
+                            onButtonClick: getSignature,
+                            signatureData: _patientConsent.value,
+                            buttonText: ADD_INVESTIGATORS_TITLE,
+                            buttonKey: KEY_BUTTON_CONSENT,
+                            errorText: ERROR_CONSENT,
+                            onRemoveClick: () {
+                              _patientConsent.value = null;
+                            },
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 80,
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SizedBox(
-                width: double.infinity,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _buttonEnabled,
-                  builder: (context, isValid, _) {
-                    return PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: TranslationKeys.submit.translate(context),
-                      widgetKey: KEY_BUTTON_CONTINUE,
-                      isLoading: false,
-                      onPressed: () async {
-                        await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
-                        await questionnaireViewModel.removeAllAttachment();
-                        GoRouter.of(context).push(DashboardScreen.routerPath);
-                      },
-                    );
-                  },
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _buttonEnabled,
+                    builder: (context, isValid, _) {
+                      return PrimaryFilledButton(
+                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                        buttonTitle: TranslationKeys.submit.translate(context),
+                        widgetKey: KEY_BUTTON_CONTINUE,
+                        isLoading: false,
+                        onPressed: () async {
+                          if (_hasConsent.value == false) {
+                            _errorText.value = true;
+                          } else {
+                            saveVerificationData();
+                            await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
+                            await questionnaireViewModel.removeAllAttachment();
+                            GoRouter.of(context).push(DashboardScreen.routerPath);
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -253,19 +274,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   saveVerificationData() {
     if (_institutionCode.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value,  null, null, DateTime.now(), null, null));
     }
     if (_participantController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text,  null, null, DateTime.now(), null, null));
     }
     if (_visitType.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("visit_type", _visitType.value, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", _visitType.value,  null, null, DateTime.now(), null, null));
     }
     if (_fromDateController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text,  null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(), null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(),  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: staticQuestionnaires);

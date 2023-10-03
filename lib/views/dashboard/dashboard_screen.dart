@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    String userId = loginViewModel!.userDetails!.userId ?? "";
+    String userId = loginViewModel?.userDetails?.userId ?? "";
     Provider.of<OfflineDataViewModel>(context, listen: false).fetchOfflineSyncedNumbers(userId: userId);
   }
 
