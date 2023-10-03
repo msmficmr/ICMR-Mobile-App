@@ -23,7 +23,8 @@ class IsarDbService {
       await db.patientRegistrations.put(patientRegistration);
     });
   }
-    Future<List<PatientRegistration>> getPatientsList() async {
+
+  Future<List<PatientRegistration>> getPatientsList() async {
     Isar? db = await isar;
     final registeredPatientList = await db.patientRegistrations.where().findAll();
     return registeredPatientList;
@@ -84,5 +85,19 @@ class IsarDbService {
     Isar? db = await isar;
     final patientData = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
     return patientData;
+  }
+
+  Future<void> deleteByPatientId(String? patientId) async {
+    Isar? db = await isar;
+    await db.writeTxn(() async {
+      await db.patientRegistrations.filter().patientIdEqualTo(patientId!).deleteFirst();
+    });
+  }
+
+  Future<void> deleteByCaseId(String? caseId) async {
+    Isar? db = await isar;
+    await db.writeTxn(() async {
+      await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).deleteFirst();
+    });
   }
 }
