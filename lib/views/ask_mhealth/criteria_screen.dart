@@ -28,7 +28,7 @@ class CriteriaScreen extends StatelessWidget {
   List<String> exclusionCriteriaDescription = ['1. Less than or equal to 18 years of age.', '2. Currently undergoing treatment for malignancy', '3. Pregnancy', '4. Under treatment for tuberculosis or suffering from any acute illness'];
 
   redirectToRegistrationSuccess(BuildContext context) {
-    GoRouter.of(context).go(RegistrationSuccessFullScreen.routerPath);
+    GoRouter.of(context).pop();
   }
 
   @override
