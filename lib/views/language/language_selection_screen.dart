@@ -23,6 +23,7 @@ import 'widget/custom_language_card_widget.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   static const String routerPath = "/languageSelectionScreen";
+
   const LanguageSelectionScreen({super.key});
 
   @override
@@ -43,19 +44,14 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   onContinueClick() async {
     if (_buttonEnabled.value) {
-      try {
-        await LocationService.locationServiceInstance.checkPermission(context);
-        String? locale = languageViewModel.selectedLanguage;
-        languageViewModel.isLoading = true;
-        RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
-        if (rAQuestions != null) {
-          await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
-        } else {
-          CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
-        }
+      String? locale = languageViewModel.selectedLanguage;
+      languageViewModel.isLoading = true;
+      RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
+      if (rAQuestions != null) {
+        await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
         GoRouter.of(context).go(DashboardScreen.routerPath);
-      } catch (e) {
-        CommonFunctions.toastMessage("Please enable location");
+      } else {
+        CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
       }
     }
   }
@@ -144,25 +140,24 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           SizedBox(
             width: double.infinity,
             child: Selector<LanguageViewModel, bool>(
-              selector: (_, provider) => provider.isLoading,
-              builder: (context, isLoading, __) {
-                return ValueListenableBuilder<bool>(
-                    valueListenable: _buttonEnabled,
-                    builder: (context, isValid, _) {
-                      return PrimaryFilledButton(
-                        buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
-                        buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                        widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
-                        isLoading: isLoading,
-                        onPressed: !isValid
-                            ? null
-                            : () {
-                                onContinueClick();
-                              },
-                      );
-                    });
-              }
-            ),
+                selector: (_, provider) => provider.isLoading,
+                builder: (context, isLoading, __) {
+                  return ValueListenableBuilder<bool>(
+                      valueListenable: _buttonEnabled,
+                      builder: (context, isValid, _) {
+                        return PrimaryFilledButton(
+                          buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
+                          buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                          widgetKey: AppConstant.KEY_BUTTON_CONTINUE,
+                          isLoading: isLoading,
+                          onPressed: !isValid
+                              ? null
+                              : () {
+                                  onContinueClick();
+                                },
+                        );
+                      });
+                }),
           ),
           const SpaceWidget(
             height: 10,

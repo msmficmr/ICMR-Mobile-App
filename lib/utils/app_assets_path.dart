@@ -24,6 +24,7 @@ class AppAssetsPath {
   static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
   static const String icCra = "assets/icons/ic_cra.svg";
   static const String icChevronRight = "assets/icons/ic_chevron_right.svg";
+  static const String icConsentAdded = "assets/icons/ic_consent_added.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";
@@ -34,6 +35,7 @@ class AppAssetsPath {
   /// Patient card icons
   static const String icFemale = "assets/icons/ic_female.svg";
   static const String icMale = "assets/icons/ic_male.svg";
+  static const String icTransgender = "assets/icons/ic_transgender.svg";
   static const String icGroup = "assets/icons/ic_group.svg";
   static const String icPhone = "assets/icons/ic_phone.svg";
   static const String icCopy = "assets/icons/ic_copy.svg";

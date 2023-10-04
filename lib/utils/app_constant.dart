@@ -52,6 +52,7 @@ class AppConstant {
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";
 
   // ERRORS
+  static const String SELECT_FILE = "Select File";
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
   static const String AN_UNKNOWN_ERROR = "An Unknown error occurred! Please Try again later!";
   static const String YOU_HAVE_SET_HAS_FOLLOW_UP_AS_TRUE = "You have set hasFollowUp as false, "
@@ -63,6 +64,7 @@ class AppConstant {
   static const String ERROR_FILL_REQUIRED_FIELDS = "Fill Required fields";
   static const String FIELD_REQUIRED = "This field is required";
   static const String NO_RECORD_FOUND = "No Record Found";
+  static const String SELECT_FILE_BEFORE_SUBMITTING = "Please select a file before submitting.";
 
   // LANGUAGE CODE KEYS
   static const String ENGLISH_LANGUAGE_CODE_KEY = "en_US";

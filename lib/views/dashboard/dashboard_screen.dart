@@ -28,7 +28,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  late String count = "0";
   LoginViewModel? loginViewModel;
 
   //Keys

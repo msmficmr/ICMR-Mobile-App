@@ -4,11 +4,13 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
 class CustomPatientCard extends StatelessWidget {
-  final String patientName, patientId, age, phoneNumber;
+
+  final String patientName, patientId, age, phoneNumber, widgetKey;
   final String? gender;
 
   final Key patientNameKey, patientIdKey;
@@ -17,6 +19,7 @@ class CustomPatientCard extends StatelessWidget {
 
   const CustomPatientCard({
     Key? key,
+    required this.widgetKey,
     required this.patientName,
     required this.patientId,
     required this.gender,
@@ -28,10 +31,15 @@ class CustomPatientCard extends StatelessWidget {
     this.textColor = const Color(0xFF616161),
   }) : super(key: key);
 
+  final String KEY_PATIENT_GENDER = "key_patient_gender";
+  final String KEY_PATIENT_AGE = "key_patient_age";
+  final String KEY_PATIENT_PHONE_NUMBER = "key_patient_phone_number";
+
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
     return Padding(
+      key: Key(widgetKey),
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Container(
         width: widthSize,
@@ -60,9 +68,9 @@ class CustomPatientCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  RowTextWidget(image: gender == "Female" ? AppAssetsPath.icFemale : AppAssetsPath.icMale, text: gender!),
-                  RowTextWidget(image: AppAssetsPath.icGroup, text: age),
-                  RowTextWidget(image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
+                  RowTextWidget(widgetKey: KEY_PATIENT_GENDER, image: CommonFunctions.getGenderImage(gender ?? ""), text: gender ?? ""),
+                  RowTextWidget(widgetKey: KEY_PATIENT_AGE, image: AppAssetsPath.icGroup, text: age),
+                  RowTextWidget(widgetKey: KEY_PATIENT_PHONE_NUMBER, image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
                 ],
               ),
             )
@@ -74,10 +82,11 @@ class CustomPatientCard extends StatelessWidget {
 }
 
 class RowTextWidget extends StatelessWidget {
-  final String image, text;
+  final String image, text, widgetKey;
 
   const RowTextWidget({
     Key? key,
+    required this.widgetKey,
     required this.image,
     required this.text,
   }) : super(key: key);

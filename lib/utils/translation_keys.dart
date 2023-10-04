@@ -78,4 +78,15 @@ class TranslationKeys {
   static const String submit = "submit";
   static const String thisFieldIsMandatory = "this_field_is_mandatory";
   static const String enterValidInputText = "enter_valid_input_text";
+  static const String dateOfVisit = "date_of_visit";
+  static const String institutionCodeId = "institution_code_id";
+  static const String studyCode = "study_code";
+  static const String address = "address";
+  static const String permanentAddress = "permanent_address";
+  static const String alternatePhoneNumber = "alternate_phone_number";
+  static const String aadharVoterPan = "aadhar_voter_pan";
+  static const String informedConsentDate = "informed_consent_date";
+  static const String copyOfSignedConsentHanded = "copy_of_signed_consent_handed";
+  static const String ifNoSpecify = "if_no_specify";
+  static const String occupation = "occupation_types";
 }

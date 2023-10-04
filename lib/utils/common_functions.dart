@@ -4,12 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
-import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
-import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class CommonFunctions {
@@ -86,39 +84,6 @@ class CommonFunctions {
     Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
   }
 
-  static int? getAge(String? dob) {
-    try {
-      if (dob == null || dob.isEmpty) {
-        return null;
-      }
-      if (dob.isNotEmpty) {
-        DateTime birthDate = DateFormat(AppValues.dobDateFormat).parse(dob);
-
-        DateTime today = DateTime.now();
-        Duration duration = today.difference(birthDate);
-
-        return (duration.inDays / 365).round();
-      }
-
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static String getDob(String? age) {
-    if (age == null) {
-      return "";
-    }
-    int? intAge = int.tryParse(age);
-    if (intAge == null) {
-      return "";
-    }
-    DateTime currentDate = DateTime.now();
-
-    return DateFormat(AppValues.dobDateFormat).format(DateTime(currentDate.year - intAge, currentDate.month, currentDate.day));
-  }
-
   static void viewImage({required BuildContext context, required List<int> bytes}) {
     showDialog(
       context: context,
@@ -156,79 +121,6 @@ class CommonFunctions {
     return formattedDate;
   }
 
-  static String getText({required String language, required String engText, required String hindiText}) {
-    String text = "";
-    LanguageCodes english = LanguageCodes.en_US;
-    LanguageCodes hindi = LanguageCodes.hi;
-    if (language == english.toString()) {
-      return engText;
-    } else if (language == hindi.toString()) {
-      return hindiText;
-    }
-    return text;
-  }
-
-  static Future<String?> getLanguageKey() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    if (sharedPreferences.containsKey(AppConstant.LANGUAGE_KEY)) {
-      String? languageKey = sharedPreferences.getString(AppConstant.LANGUAGE_KEY);
-      return languageKey;
-    } else {
-      return "en_US";
-    }
-  }
-
-  /// Calculates the age based on passed [dob]
-  static int getAgeFromDob(String dob) {
-    if (dob.isEmpty) {
-      return 1;
-    }
-    DateTime birthDate = DateTime.parse(dob);
-    DateTime today = DateTime.now();
-    int age = today.year - birthDate.year;
-    if (age >= 1) {
-      // their birth month lies after our checking month
-      // so they they haven't completed their last year
-      // fully,
-      if ((today.month - birthDate.month) < 0) {
-        return age - 1;
-      }
-      // if our checking month is equal to our birth month
-      // we check if date greater than birthdate if not,
-      // they haven't completed their last year fully.
-      else if (today.month == birthDate.month) {
-        if (birthDate.day <= today.day) {
-          return age;
-        } else {
-          return age - 1;
-        }
-      }
-      // if checking month is greater than birth month
-      // user has definitely completed his last year fully
-      else {
-        return age;
-      }
-    }
-    return 0;
-  }
-
-  static String toLocale(key, currentLanguage, [patientName]) {
-    Map<String, String> questionsMap = {
-      "mobileNo": "Please enter your mobile number",
-      "email": "Please enter your Email Id",
-      "verify_otp": "We have sent an OTP on your registered mobile number, enter OTP to continue",
-      "resend_otp": "Invalid OTP, please select from the options below",
-      "otp_try_again": "Enter OTP Again",
-      "otp_resend": "Resend OTP",
-      "welcome_back": "Welcome back $patientName, you are already registered with us, please proceed with the assessment."
-    };
-    var conversionMap = {
-      AppConstant.ENGLISH_LANGUAGE_CODE_KEY: questionsMap,
-      AppConstant.HINDI_LANGUAGE_CODE_KEY: questionsMap,
-    };
-    return conversionMap[currentLanguage]?[key] ?? "";
-  }
-
   static String randomNumber(int length) {
     const uuid = Uuid();
     final randomUuid = uuid.v4().toString().substring(0, length);
@@ -249,5 +141,52 @@ class CommonFunctions {
       default:
         return "Others";
     }
+  }
+
+  static String getGenderImage(String gender) {
+    switch (gender) {
+      case "Male" :
+        return AppAssetsPath.icMale;
+      case "Female" :
+        return AppAssetsPath.icFemale;
+      default:
+        return AppAssetsPath.icTransgender;
+    }
+  }
+
+  static List<String> convertStringToList(String input) {
+    List<String> result = [];
+    StringBuffer currentWord = StringBuffer();
+    bool insideParentheses = false;
+
+    for (int i = 0; i < input.length; i++) {
+      final char = input[i];
+
+      if (char == '(') {
+        insideParentheses = true;
+      } else if (char == ')') {
+        insideParentheses = false;
+      }
+
+      if (char == ',' && !insideParentheses) {
+        if (currentWord.isNotEmpty) {
+          result.add(currentWord.toString().trim());
+          currentWord.clear();
+        }
+      } else {
+        currentWord.write(char);
+      }
+    }
+
+    if (currentWord.isNotEmpty) {
+      result.add(currentWord.toString().trim());
+    }
+
+    if (result.isNotEmpty) {
+      result[0] = result[0].replaceAll('[', '');
+      result[result.length - 1] = result[result.length - 1].replaceAll(']', '');
+    }
+
+    return result;
   }
 }

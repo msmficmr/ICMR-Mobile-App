@@ -17,7 +17,6 @@ class PatientListViewModel with ChangeNotifier {
     try {
       _isLoading = true;
       _registeredPatients = await IsarDbService.isarDbService.getPatientsList();
-      notifyListeners();
     } catch (e) {
     } finally {
       _isLoading = false;
