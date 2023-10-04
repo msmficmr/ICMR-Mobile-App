@@ -46,9 +46,10 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   AttachmentModel? _selectedAttachment;
   late QuestionnaireViewModel questionnaireViewModel;
-  TextInputFormatter _dateInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
+  TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+  TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
   AttachmentModel? consent;
 
@@ -141,7 +142,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
     _dateOfVisitController = TextEditingController(text: CommonFunctions.currentDate());
-    _dateInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
+    _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
+    _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
     _consentDateController = TextEditingController(text: CommonFunctions.currentDate());
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
@@ -282,7 +284,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                   prefixData: AppAssetsPath.icCalender,
                   inputFormatters: [
-                    _dateInputFormatter,
+                    _dateOfVisitFormatter,
                   ],
                   validator: AppValidators.validateDate,
                   keyboardType: TextInputType.number,
@@ -548,7 +550,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                   prefixData: AppAssetsPath.icCalender,
                   inputFormatters: [
-                    _dateInputFormatter,
+                    _consentDateFormatter,
                   ],
                   validator: AppValidators.validateDate,
                   keyboardType: TextInputType.number,
