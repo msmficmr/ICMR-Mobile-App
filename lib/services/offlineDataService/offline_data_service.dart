@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:http/http.dart';
 import 'package:mhealth/model/offline_data_model.dart';
 import 'package:mhealth/model/offlne_sync_response_model.dart';
@@ -28,6 +30,10 @@ class OfflineDataService implements IOfflineDataService {
         AppEndpoints.syncData,
         payload: payLoadObj,
       );
+      if (response != null) {
+        OfflineSyncResponseModel result = offlineSyncResponseModelFromJson(response.body);
+        return result;
+      }
     } catch (e) {
     }
   }

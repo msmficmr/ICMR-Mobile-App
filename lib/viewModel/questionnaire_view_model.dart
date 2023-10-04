@@ -170,7 +170,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
         ..locale = languageViewModel.selectedLanguage
         ..patientId = patientId
         ..caseId = caseId
-        ..ehrCategoryMapId = craData[i].ehrCategoryMap
+        ..encounterCategoryMapId = craData[i].ehrCategoryMap
         ..ehrNotes = ehrNotes;
       craSectionModel.add(craModel);
     }
@@ -204,7 +204,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
         ..locale = languageViewModel.selectedLanguage
         ..patientId = patientId
         ..caseId = caseId
-        ..ehrCategoryMapId = staticCraData[i].ehrCategoryMap
+        ..encounterCategoryMapId = staticCraData[i].ehrCategoryMap
         ..ehrNotes = ehrNotes;
       craSectionModel.add(craModel);
     }
