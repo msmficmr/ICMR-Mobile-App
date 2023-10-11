@@ -74,5 +74,26 @@
   "date" : "Date",
   "submit" : "Submit",
   "this_field_is_mandatory" : "This field is mandatory",
-  "enter_valid_input_text" : "Enter Valid Input text"
+  "enter_valid_input_text" : "Enter Valid Input text",
+  "date_of_visit" : "Date Of Visit",
+  "institution_code_id" : "Institution Code ID",
+  "study_code" : "Study Code",
+  "address" : "Address",
+  "permanent_address" : "Permanent Address",
+  "alternate_phone_number" : "Alternate Phone number",
+  "aadhar_voter_pan" : "Aadhar No/ Voter ID/ PAN No.",
+  "informed_consent_date" : "Date on which informed consent obtained",
+  "copy_of_signed_consent_handed" : "Was a copy of the signed consent form handed over to the patient",
+  "if_no_specify" : "If no, specify why:",
+  "occupation_types" : [
+    "Unemployed",
+    "Student",
+    "Self Employed(Shop owner, Vegetable, Fruit Service)",
+    "Service",
+    "Retired",
+    "Manual Labour(Cycle rikshaw, Construction)",
+    "Skilled Labour(Painter, Electrician, Plumber)",
+    "Home maker",
+    "Remove response"
+  ]
 }

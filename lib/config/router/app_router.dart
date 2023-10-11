@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -101,7 +103,9 @@ class AppRouter {
                 String sectionName = state.extra.toString();
                 return RouterTransition(
                   key: state.pageKey,
-                  child: QuestionnaireScreen(sectionName: sectionName,),
+                  child: QuestionnaireScreen(
+                    sectionName: sectionName,
+                  ),
                 );
               },
             ),
@@ -162,9 +166,7 @@ class AppRouter {
           return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
         }
         if (loginViewModel.isLoggedIn) {
-          if (navigationRoute == LoginHome.routerPath) {
-            return LanguageSelectionScreen.routerPath;
-          }
+          return LanguageSelectionScreen.routerPath;
         }
 
         /// if user is logged we are null so that it will navigate from one screen to another without any redirect

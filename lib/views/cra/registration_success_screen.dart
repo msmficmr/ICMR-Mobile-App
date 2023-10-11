@@ -43,7 +43,6 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
     return WillPopScope(
       onWillPop: () async {
         redirectToDashboard();
@@ -63,14 +62,13 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 20),
                   decoration: const BoxDecoration(
                     color: AppColorScheme.kLightBlue,
                     borderRadius: BorderRadius.all(
                       Radius.circular(20),
                     ),
                   ),
-                  height: height * 0.4,
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

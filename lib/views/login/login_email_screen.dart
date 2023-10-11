@@ -29,7 +29,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   late ValueNotifier<bool> _hasConsent;
   late ValueNotifier<bool> _buttonEnabled;
   late LoginViewModel loginViewModel;
-  late LanguageViewModel languageViewModel;
 
   final TextEditingController _emailFieldController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -52,7 +51,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     _hasConsent = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
   }
 
   void onEmailFieldChanged(String? input) {

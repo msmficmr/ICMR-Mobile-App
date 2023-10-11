@@ -33,6 +33,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final String KEY_TEXTFIELD_SEARCH = "key_search_textfield";
   final String KEY_TITLE_SEARCH = "key_title_mobile";
   final String KEY_BUTTON_ADD = "key_button_add";
+  final String KEY_PATIENT_CARD = "key_login_type";
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_PATIENT_ID = "key_patient_id";
 
@@ -104,6 +105,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               final patient = items[index];
                               final fullName = "${patient?.firstName} ${patient?.lastName}";
                               return CustomPatientCard(
+                                widgetKey: KEY_PATIENT_CARD,
                                 patientName: fullName,
                                 patientId: patient!.patientId,
                                 gender: CommonFunctions.getGender(patient.gender.toString()),

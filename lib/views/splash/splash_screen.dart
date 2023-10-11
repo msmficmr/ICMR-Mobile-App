@@ -8,8 +8,6 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
-import 'package:mhealth/utils/common_functions.dart';
-import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,23 +35,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void splashTimer() async {
-    await networkStatusService.initConnectivity();
-    if (networkStatusService.networkStatus == NetworkStatus.online) {
-      const oneSec = Duration(seconds: 1);
-      _timer = Timer.periodic(
-        oneSec,
-        (Timer timer) {
-          if (_start == 0) {
-            cancelTimer();
-            redirectToNextScreen();
-          } else {
-            _start--;
-          }
-        },
-      );
-    } else {
-      CommonFunctions.toastMessage("No internet connection");
-    }
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          cancelTimer();
+          redirectToNextScreen();
+        } else {
+          _start--;
+        }
+      },
+    );
   }
 
   cancelTimer() {
@@ -72,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Map<String, dynamic> jsonData = json.decode(userDetails);
       Map<String, dynamic> userObject = jsonData['user'];
-     await LoginViewModel.loginViewModel.loginUser(jsonEncode(userObject));
+      await LoginViewModel.loginViewModel.loginUser(jsonEncode(userObject));
     }
   }
 

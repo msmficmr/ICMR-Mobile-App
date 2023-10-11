@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +9,6 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
-import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
@@ -42,6 +39,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late ValueNotifier<bool> _buttonEnabled;
   late ValueNotifier<bool> _errorText;
   late QuestionnaireViewModel questionnaireViewModel;
+
+  static const String pageTemplate = "community_risk_assessment_verification_form";
 
   List<StaticQuestionModel> staticQuestionnaires = [];
 
@@ -289,6 +288,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(),  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: staticQuestionnaires);
+    questionnaireViewModel.setNextSectionData(pageTemplate, context, staticSectionsData: staticQuestionnaires);
   }
 }

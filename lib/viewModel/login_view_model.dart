@@ -9,6 +9,7 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewModel extends ChangeNotifier {
   static LoginViewModel loginViewModel = LoginViewModel._();
@@ -29,7 +30,6 @@ class LoginViewModel extends ChangeNotifier {
   String _mobileNoOrEmailText = "";
   bool _isEmailLogin = false;
   bool _isLoading = false;
-  bool _isOTPValidating = false;
 
   bool get isLoggedIn => _isLoggedIn;
   LoginScreenTypes get loginScreenType => _loginScreenType;
@@ -37,7 +37,6 @@ class LoginViewModel extends ChangeNotifier {
   String get mobileNoOrEmailText => _mobileNoOrEmailText;
   bool get isEmailLogin => _isEmailLogin;
   bool get isLoading => _isLoading;
-  bool get isOTPValidating => _isOTPValidating;
 
   final List<String> loginTypes = ["Email", "Mobile number"];
 
@@ -48,11 +47,6 @@ class LoginViewModel extends ChangeNotifier {
 
   set isLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
-  }
-
-  set isOTPValidating(bool value) {
-    _isOTPValidating = value;
     notifyListeners();
   }
 
@@ -103,10 +97,10 @@ class LoginViewModel extends ChangeNotifier {
       otpPayload = {"mobile": mobileNumberOrEmailText};
     }
     try {
-      isLoading = true;
       SendOtpResponseModel? response = await AuthService().sendOtp(otpPayload: otpPayload);
       if (response != null) {
           _mobileNoOrEmailText = mobileNumberOrEmailText;
+          isOtpSentSuccess = true;
           loginScreenType = LoginScreenTypes.OTP_SCREEN;
       }
     } catch (e) {
@@ -120,7 +114,7 @@ class LoginViewModel extends ChangeNotifier {
 
   Future<void> validateOtp({required String otp}) async {
     try {
-      isOTPValidating = true;
+      isLoading = true;
       Map<String, dynamic> payload = {};
       if (loginViewModel.isEmailLogin == true) {
         payload = {"email": loginViewModel.mobileNoOrEmailText, "otp": otp};
@@ -130,13 +124,15 @@ class LoginViewModel extends ChangeNotifier {
       VerifyOtpResponseModel? response = await AuthService().verifyOtp(payload: payload);
       if (response != null) {
           String userDetails = jsonEncode(response.toJson());
+          SharedPreferences sp = await SharedPreferences.getInstance();
+          sp.setString(AppConstant.SHARED_PREFERENCE_USER_DETAILS, userDetails);
             await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
             loginUser(jsonEncode(response.user!.toJson()));
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     } finally {
-      isOTPValidating = false;
+      isLoading = false;
     }
   }
 

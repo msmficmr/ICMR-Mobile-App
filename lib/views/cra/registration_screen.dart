@@ -44,12 +44,12 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  late AttachmentModel? _selectedAttachment;
+  AttachmentModel? _selectedAttachment;
   late QuestionnaireViewModel questionnaireViewModel;
-  TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
-
+  TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+  TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
   AttachmentModel? consent;
 
@@ -109,18 +109,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_HEADING_SIGNED_CONSENT_NO = "key_title_signed_consent_no";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
 
-  //Titles
-  final String DATE_OF_VISIT_TITLE = "Date Of Visit*";
-  final String INSTITUTUION_TITLE = "Institution Code ID";
-  final String TITLE_STUDY_CODE = "Study Code*";
-  final String ADDRESS_TITLE = "Address";
-  final String PERMANENT_ADDRESS_TITLE = "Permanent Address";
-  final String ALTERNATE_PHONE_NUMBER_TITLE = "Alternate Phone number";
-  final String AADHAR_NUMBER_TITLE = "Aadhar No/ Voter ID/ PAN No.";
-  final String CONSENT_OBTAINED_DATE_TITLE = "Date on which informed consent obtained*";
-  final String SIGNED_CONSENT_HANDED_TITLE = "Was a copy of the signed consent form handed over to the patient*";
-  final String SECIFY_TITLE = "If no, specify why:";
-
   final String MOB_FIELD_PREFIX_TEXT = "+91";
 
   final FocusNode _dovFocusNode = FocusNode();
@@ -136,46 +124,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _signedConsentNoReason;
   late ValueNotifier<bool> _buttonEnabled;
   late ValueNotifier<bool> _isConsentButtonActiveNotifier;
+  late ValueNotifier<bool> _consentError;
 
   late RegistrationViewModel registrationViewModel;
-
 
   //TODO: Only for the UI purpose the list has been hardcoded for now
 
   List<String> getOccupationTypes() {
-    LanguageViewModel languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    switch (languageViewModel.locale.toString()) {
-      case "hi":
-        return HI_OCCUPATION_TYPES;
-      case "en_US":
-      default:
-        return EN_OCCUPATION_TYPES;
-    }
+    String types = TranslationKeys.occupation.translate(context);
+    List<String> occupationTypes = CommonFunctions.convertStringToList(types);
+    return occupationTypes;
   }
-
-  static const List<String> EN_OCCUPATION_TYPES = [
-    "Unemployed",
-    "Student",
-    "Self Employed(Shop owner, Vegetable, Fruit Service)",
-    "Service",
-    "Retired",
-    "Manual Labour(Cycle rikshaw, Construction)",
-    "Skilled Labour(Painter, Electrician, Plumber)",
-    "Home maker",
-    "Remove response",
-  ];
-
-  static const List<String> HI_OCCUPATION_TYPES = [
-    "बेरोजगार",
-    "विद्यार्थी",
-    "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)",
-    "सेवा",
-    "सेवानिवृत्त",
-    "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)",
-    "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)",
-    "गृह निर्माता",
-    "प्रतिक्रिया हटाएँ",
-  ];
 
   @override
   void initState() {
@@ -183,6 +142,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
     _dateOfVisitController = TextEditingController(text: CommonFunctions.currentDate());
+    _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
+    _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
     _consentDateController = TextEditingController(text: CommonFunctions.currentDate());
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
@@ -198,40 +159,48 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _signedConsentNoReason = ValueNotifier<String?>(null);
     _signConsent = ValueNotifier<String?>(null);
     _signedConsentCopy = ValueNotifier<bool>(false);
+    _consentError = ValueNotifier<bool>(false);
   }
 
   void onContinueClick() {
-    if (formKey.currentState!.validate()) {
-      AttachmentDb attachment = AttachmentDb()
-        ..fileName = _selectedAttachment!.fileName
-        ..dataBytes = _selectedAttachment!.baseImage;
-      String patientId = CommonFunctions.randomNumber(6);
-      questionnaireViewModel.savePatientId(patientId);
-      IsarDbService.isarDbService.savePatient(PatientRegistration()
-        ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
-        ..institutionCodeID = _institutionCode.value ?? ""
-        ..studyCode = _studyCode.value ?? ""
-        ..firstName = _firstNameController.text
-        ..lastName = _lastNameController.text
-        ..age = _ageController.text
-        ..gender = _gender.value
-        ..address = _tempAddressController.text
-        ..district = _districtController.text
-        ..state = _stateController.text
-        ..pincode = _pincodeController.text
-        ..permanentAddress = _permanentAddressController.text
-        ..occupation = _occupation.value ?? ""
-        ..phoneNumber = _mobileFieldController.text
-        ..alternatePhoneNumber = _alternateNumberFieldController.text
-        ..medicalRecordNumber = _medicalRecordNumberController.text
-        ..aadharId = _aadharIDController.text
-        ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
-        ..signedConsent = _signedConsent.value ?? ""
-        ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
-        ..consent = attachment
-        ..patientId = patientId);
+    final form = formKey.currentState;
+    if (form != null) {
+      if (_selectedAttachment == null) {
+        _consentError.value = true;
+        CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
+      } else if (form.validate()) {
+        _consentError.value = false;
+        AttachmentDb attachment = AttachmentDb()
+          ..fileName = _selectedAttachment!.fileName
+          ..dataBytes = _selectedAttachment!.baseImage;
+        String patientId = CommonFunctions.randomNumber(6);
+        questionnaireViewModel.savePatientId(patientId);
+        IsarDbService.isarDbService.savePatient(PatientRegistration()
+          ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
+          ..institutionCodeID = _institutionCode.value ?? ""
+          ..studyCode = _studyCode.value ?? ""
+          ..firstName = _firstNameController.text
+          ..lastName = _lastNameController.text
+          ..age = _ageController.text
+          ..gender = _gender.value
+          ..address = _tempAddressController.text
+          ..district = _districtController.text
+          ..state = _stateController.text
+          ..pincode = _pincodeController.text
+          ..permanentAddress = _permanentAddressController.text
+          ..occupation = _occupation.value ?? ""
+          ..phoneNumber = _mobileFieldController.text
+          ..alternatePhoneNumber = _alternateNumberFieldController.text
+          ..medicalRecordNumber = _medicalRecordNumberController.text
+          ..aadharId = _aadharIDController.text
+          ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
+          ..signedConsent = _signedConsent.value ?? ""
+          ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
+          ..consent = attachment
+          ..patientId = patientId);
 
-      GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+        GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+      }
     }
   }
 
@@ -277,15 +246,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         },
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
-                          enabledTextColor: isButtonActive ? Color(0xFFF4F5FF) : Color(0xFF2F43EE),
-                          enabledButtonColor: isButtonActive ? AppColorScheme.kGreen : Color(0xFFF4F5FF),
+                          enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
+                          enabledButtonColor: isButtonActive ? AppColorScheme.kGreen : AppColorScheme.kEnabledButtonColor,
                         ),
-                        icon: SvgPicture.asset(AppAssetsPath.icInfo),
+                        icon: SvgPicture.asset(isButtonActive ? AppAssetsPath.icConsentAdded : AppAssetsPath.icInfo),
                         buttonTitle: TranslationKeys.consent.translate(context),
                         widgetKey: KEY_BUTTON_CONSENT,
                       );
                     },
                   ),
+                ),
+                ValueListenableBuilder(
+                  valueListenable: _consentError,
+                  builder: (context, isEmpty, __) {
+                    if (isEmpty) {
+                      return Text(
+                        AppConstant.SELECT_FILE,
+                        style: AppStyles.errorStyle,
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -296,13 +278,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   focusNode: _dovFocusNode,
                   widgetKey: Key(KEY_FIELD_DATE_OF_VISIT),
                   hintText: AppConstant.HINT_TEXT_DATE,
-                  heading: DATE_OF_VISIT_TITLE,
+                  heading: TranslationKeys.dateOfVisit.translate(context),
                   headingKey: Key(KEY_HEADING_DOV),
                   hasPrefix: true,
                   prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                   prefixData: AppAssetsPath.icCalender,
                   inputFormatters: [
-                    dobInputFormatter,
+                    _dateOfVisitFormatter,
                   ],
                   validator: AppValidators.validateDate,
                   keyboardType: TextInputType.number,
@@ -316,7 +298,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
                         widgetKey: KEY_FIELD_INSTITUTION_CODE,
-                        heading: INSTITUTUION_TITLE,
+                        heading: TranslationKeys.institutionCodeId.translate(context),
                         headingKey: Key(KEY_HEADING_INSTITUTION_CODE),
                         hintText: TranslationKeys.select.translate(context),
                         onChanged: (val) {
@@ -335,7 +317,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
                         widgetKey: KEY_FIELD_STUDY_PH,
-                        heading: TITLE_STUDY_CODE,
+                        heading: TranslationKeys.studyCode.translate(context),
                         headingKey: Key(KEY_HEADING_STUDY_PH),
                         hintText: TranslationKeys.select.translate(context),
                         onChanged: (val) {
@@ -418,7 +400,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   controller: _tempAddressController,
                   widgetKey: Key(KEY_FIELD_TEMP_ADDRESS),
                   hintText: TranslationKeys.enterHere.translate(context),
-                  heading: ADDRESS_TITLE,
+                  heading: TranslationKeys.address.translate(context),
                   headingKey: Key(KEY_HEADING_TEMP_ADDRESS),
                   maxLines: 3,
                 ),
@@ -470,7 +452,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   controller: _permanentAddressController,
                   widgetKey: Key(KEY_FIELD_PERMANENT_ADDRESS),
                   hintText: TranslationKeys.enterHere.translate(context),
-                  heading: PERMANENT_ADDRESS_TITLE,
+                  heading: TranslationKeys.permanentAddress.translate(context),
                   headingKey: Key(KEY_HEADING_PERMANENT_ADDRESS),
                   maxLines: 3,
                 ),
@@ -524,7 +506,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   prefixType: TextFieldPrefixSuffixType.TEXT,
                   prefixData: MOB_FIELD_PREFIX_TEXT,
                   hintText: TranslationKeys.enterHere.translate(context),
-                  heading: ALTERNATE_PHONE_NUMBER_TITLE,
+                  heading: TranslationKeys.alternatePhoneNumber.translate(context),
                   headingKey: Key(KEY_HEADING_ALTERNATE_NUMBER),
                   validator: AppValidators.validateAlternateNumber,
                   inputFormatters: [
@@ -552,12 +534,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   controller: _aadharIDController,
                   widgetKey: Key(KEY_FIELD_AADHAR_ID),
                   hintText: TranslationKeys.enterHere.translate(context),
-                  heading: AADHAR_NUMBER_TITLE,
+                  heading: TranslationKeys.aadharVoterPan.translate(context),
                   headingKey: Key(KEY_HEADING_AADHAR_ID),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    MaskTextInputFormatter(mask: '############'),
-                  ],
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -566,13 +544,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 CustomTextField(
                   controller: _consentDateController,
                   widgetKey: Key(KEY_FIELD_DATE_OF_VISIT),
-                  heading: CONSENT_OBTAINED_DATE_TITLE,
+                  heading: TranslationKeys.informedConsentDate.translate(context),
                   headingKey: Key(KEY_HEADING_DOV),
                   hasPrefix: true,
                   prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                   prefixData: AppAssetsPath.icCalender,
                   inputFormatters: [
-                    dobInputFormatter,
+                    _consentDateFormatter,
                   ],
                   validator: AppValidators.validateDate,
                   keyboardType: TextInputType.number,
@@ -597,7 +575,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       },
                       validator: AppValidators.validateBinaryQuestion,
                       selectedItem: _signConsent.value,
-                      heading: SIGNED_CONSENT_HANDED_TITLE,
+                      heading: TranslationKeys.copyOfSignedConsentHanded.translate(context),
                       headingKey: Key(KEY_FIELD_SIGNED_CONSENT),
                     );
                   },
@@ -615,7 +593,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               builder: (context, _, __) {
                                 return CustomDropdown<String>(
                                   widgetKey: KEY_FIELD_SIGNED_CONSENT_NO,
-                                  heading: SECIFY_TITLE,
+                                  heading: TranslationKeys.ifNoSpecify.translate(context),
                                   headingKey: Key(KEY_HEADING_SIGNED_CONSENT_NO),
                                   hintText: TranslationKeys.select.translate(context),
                                   onChanged: (val) {
@@ -643,8 +621,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         onPressed: !isValid
                             ? null
                             : () {
-                          onContinueClick();
-                        },
+                                onContinueClick();
+                              },
                       );
                     },
                   ),
