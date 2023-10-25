@@ -66,7 +66,7 @@ class AppRouter {
               path: RegistrationScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: RegistrationScreen(),
+                child: const RegistrationScreen(),
               ),
             ),
             GoRoute(
@@ -166,7 +166,12 @@ class AppRouter {
           return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
         }
         if (loginViewModel.isLoggedIn) {
-          return LanguageSelectionScreen.routerPath;
+          if (navigationRoute == LoginHome.routerPath) {
+            return LanguageSelectionScreen.routerPath;
+          }
+          if (navigationRoute == SplashScreen.routerPath) {
+            return DashboardScreen.routerPath;
+          }
         }
 
         /// if user is logged we are null so that it will navigate from one screen to another without any redirect

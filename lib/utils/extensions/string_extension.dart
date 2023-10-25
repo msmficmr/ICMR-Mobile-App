@@ -30,4 +30,15 @@ extension StringExtension on String {
     String questionText = replaceAll(" ", "_");
     return questionText.toLowerCase();
   }
+
+  String convertToCamelCase() {
+    List<String> words = split('_');
+    String result = '';
+    for (String word in words) {
+      if (word.isNotEmpty) {
+        result += '${word[0].toUpperCase()}${word.substring(1)} ';
+      }
+    }
+    return result.trim();
+  }
 }

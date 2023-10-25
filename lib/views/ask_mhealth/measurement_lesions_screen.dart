@@ -377,7 +377,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                       isLoading: false,
                       onPressed: () async {
                         await saveMeasurementLesionsData();
-                        GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
+                        GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
                       },
                     );
                   },

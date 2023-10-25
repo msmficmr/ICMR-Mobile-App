@@ -8,33 +8,38 @@ import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/cra/widgets/cardWidget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationSuccessFullScreen extends StatefulWidget {
   static const routerPath = "/registrationSuccessFullScreen";
 
   const RegistrationSuccessFullScreen({Key? key}) : super(key: key);
+
   @override
   State<RegistrationSuccessFullScreen> createState() => _RegistrationSuccessFullScreenState();
 }
 
 class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullScreen> {
-
   //Widget Keys
   final String KEY_TAKE_CRA_CARD = "key_take_cra_card";
   final String KEY_NEW_REGISTRATION_CARD = "key_new_registration_card";
 
-  final String patientName = "Aparna"; 
-  final String REGISTRATION_SUCCESSFUL = "Registration Successful";
-  final String YOUR_NEXT_STEP = 'Your Next Step';
+  String? patientName;
 
   double horizontalSpacing = 10;
 
   @override
   void initState() {
     super.initState();
+    setPatientName();
+  }
+
+  setPatientName() async {
+    patientName = Provider.of<PatientListViewModel>(context, listen: false).currentUser;
   }
 
   redirectToDashboard() {
@@ -107,14 +112,26 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                 const SpaceWidget(
                   height: 30,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CardWidget(key: Key(KEY_TAKE_CRA_CARD), title: TranslationKeys.takeCRA.translate(context), image: AppAssetsPath.icCRA, onTap: () {
-                      GoRouter.of(context).push(CriteriaScreen.routerPath);
-                    },),
-                    CardWidget(key: Key(KEY_NEW_REGISTRATION_CARD), title: TranslationKeys.newRegistration.translate(context), image: AppAssetsPath.icAddCircular),
-                  ],
+                IntrinsicHeight(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CardWidget(
+                        key: Key(KEY_TAKE_CRA_CARD),
+                        title: TranslationKeys.takeCRA.translate(context),
+                        image: AppAssetsPath.icCRA,
+                        onTap: () => GoRouter.of(context).push(CriteriaScreen.routerPath),
+                      ),
+                      CardWidget(
+                        key: Key(KEY_NEW_REGISTRATION_CARD),
+                        title: TranslationKeys.newRegistration.translate(context),
+                        image: AppAssetsPath.icAddCircular,
+                        onTap: () => GoRouter.of(context).push(RegistrationScreen.routerPath),
+                      ),
+                    ],
+                  ),
                 )
               ],
             ),

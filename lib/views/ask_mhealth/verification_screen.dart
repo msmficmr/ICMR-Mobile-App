@@ -104,7 +104,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        onLeadingClick: () {},
+        onLeadingClick: () => GoRouter.of(context).pop(),
         appBarTitleType: CustomAppBarTitleType.TEXT,
         titleText: AppConstant.RISK_ASSESSMENT,
       ),

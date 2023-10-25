@@ -5,7 +5,7 @@ part 'patient_registration_schema.g.dart';
 @collection
 class PatientRegistration {
   Id? id;
-  AttachmentDb? consent;
+  List<AttachmentDb>? consent;
   late DateTime visitDate;
   late String institutionCodeID;
   late String studyCode;
@@ -32,7 +32,7 @@ class PatientRegistration {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'consent': consent?.toJson(),
+      'consent': consent,
       'visitDate': visitDate.toIso8601String(),
       'institutionCodeID': institutionCodeID,
       'studyCode': studyCode,

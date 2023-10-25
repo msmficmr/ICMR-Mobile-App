@@ -9,7 +9,7 @@ class AttachmentDb {
   late String? dataBytes;
 
   // Add a toJson method to convert the object to JSON
-  Map<String, dynamic> toJson() {
+  toJson() {
     return {
       'fileName': fileName,
       'dataBytes': dataBytes,

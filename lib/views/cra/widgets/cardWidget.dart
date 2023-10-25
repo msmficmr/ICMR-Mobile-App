@@ -38,21 +38,22 @@ class CardWidget extends StatelessWidget {
                 Radius.circular(10),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(image, fit: BoxFit.cover),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    title, textAlign: TextAlign.center,
-                    style: AppStyles.bodySmall.copyWith(color: AppColorScheme.kPrimaryColor),
-                  ),
-                ],
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SvgPicture.asset(image, fit: BoxFit.cover),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      title, textAlign: TextAlign.center,
+                      style: AppStyles.bodySmall.copyWith(color: AppColorScheme.kPrimaryColor),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -61,3 +62,4 @@ class CardWidget extends StatelessWidget {
     );
   }
 }
+

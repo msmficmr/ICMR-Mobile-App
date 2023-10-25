@@ -7,6 +7,9 @@ class PatientListViewModel with ChangeNotifier {
   List<PatientRegistration> _filteredItems = [];
   bool _isLoading = false;
 
+  String? _currentUser;
+  String? get currentUser => _currentUser;
+
   List<PatientRegistration?> get registeredPatients => _registeredPatients;
 
   List<PatientRegistration> get filteredItems => _filteredItems;
@@ -26,6 +29,11 @@ class PatientListViewModel with ChangeNotifier {
 
   void searchPatient(String name) {
     _filteredItems = _registeredPatients.where((element) => element.firstName.toLowerCase().contains(name.toLowerCase()) || element.lastName.toLowerCase().contains(name.toLowerCase())).toList();
+    notifyListeners();
+  }
+
+  setCurrentUser(String firstName, String lastName) {
+    _currentUser = "$firstName $lastName";
     notifyListeners();
   }
 }
