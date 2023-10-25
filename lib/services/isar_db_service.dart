@@ -34,7 +34,7 @@ class IsarDbService {
     return registeredPatientList;
   }
 
-  Future<void> updatePatientRegistration(String patientId, AttachmentDb attachment) async {
+  Future<void> updatePatientRegistration({required String patientId, required AttachmentDb attachment}) async {
     Isar? db = await isar;
     final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
     if (patientToBeUpdated != null) {
@@ -53,9 +53,8 @@ class IsarDbService {
     });
   }
 
-  Future<void> updateCRA(String caseId, CRASectionModel craData) async {
+  Future<void> updateCRA({required String caseId, required CRASectionModel craData}) async {
     Isar? db = await isar;
-    log("Line 55 $caseId");
     final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
     if (questionnaire != null) {
       CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
@@ -73,21 +72,6 @@ class IsarDbService {
     }
   }
 
-
-  Future<void> removeDuplicateInQuestionnaire(String caseId,  CRASectionModel craData) async {
-    Isar? db = await isar;
-    final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
-    if (questionnaire != null) {
-      CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
-      if (craData.encounterCategoryMapId == questionnaireToBeUpdated!.craSectionData![0].encounterCategoryMapId) {
-        questionnaireToBeUpdated.craSectionData = [craData, ];
-        db.writeTxn(() async {
-          await db.cRAOfflineDatas.put(questionnaireToBeUpdated);
-        });
-      }
-    }
-  }
-
   Future<bool> checkIfCRADataPresent(String caseId) async {
     Isar? db = await isar;
     final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
@@ -102,7 +86,7 @@ class IsarDbService {
     });
   }
 
-  Future<RiskAssessmentQuestionaire?> getRiskAssessmentQuestionaireById() async {
+  Future<RiskAssessmentQuestionaire?> getRiskAssessmentQuestionnaireById() async {
     Isar? db = await isar;
     final riskAssessmentQuestionnaire = await db.riskAssessmentQuestionaires.where().findFirst();
     return riskAssessmentQuestionnaire;

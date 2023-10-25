@@ -30,8 +30,8 @@ class CustomPatientCard extends StatelessWidget {
     required this.patientNameKey,
     required this.patientIdKey,
     required this.onTap,
-    this.textTitleColor = const Color(0xFF2F43EE),
-    this.textColor = const Color(0xFF616161),
+    this.textTitleColor = AppColorScheme.kEnabledButtonTextColor,
+    this.textColor = AppColorScheme.kTextGreyColor,
   }) : super(key: key);
 
   final String KEY_PATIENT_GENDER = "key_patient_gender";

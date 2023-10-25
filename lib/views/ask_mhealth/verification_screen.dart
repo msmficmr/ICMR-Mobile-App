@@ -254,7 +254,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             _errorText.value = true;
                           } else {
                             saveVerificationData();
-                            await questionnaireViewModel.setNextSectionData("community_risk_assessment_verification_form", context, staticSectionsData: []);
+                            await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form",context: context, staticSectionsData: []);
                             await questionnaireViewModel.removeAllAttachment();
                             GoRouter.of(context).push(DashboardScreen.routerPath);
                           }
@@ -288,6 +288,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("patient_signature", _patientConsent.value.toString(),  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    questionnaireViewModel.setNextSectionData(pageTemplate, context, staticSectionsData: staticQuestionnaires);
+    questionnaireViewModel.setNextSectionData(sectionName: pageTemplate,context: context, staticSectionsData: staticQuestionnaires);
   }
 }

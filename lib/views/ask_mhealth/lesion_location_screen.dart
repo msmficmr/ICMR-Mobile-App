@@ -306,7 +306,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
 
   saveLesionLocationsData() async {
     if (provider.attachmentList.isNotEmpty) saveLesionLocationData();
-    await provider.setNextSectionData("community_risk_assessment_lesion_location", context, staticSectionsData: staticQuestionnaires);
+    await provider.setNextSectionData(sectionName: "community_risk_assessment_lesion_location", context: context, staticSectionsData: staticQuestionnaires);
   }
 
   saveLesionLocationData() {
