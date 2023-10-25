@@ -95,5 +95,32 @@
     "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)",
     "गृह निर्माता",
     "प्रतिक्रिया हटाएँ"
+  ],
+  "criteria_section" : "Criteria",
+  "inclusion_criteria" : "Inclusion Criteria",
+  "exclusion_criteria" : "Exclusion Criteria",
+  "inclusion_criteria_description" : [
+    "1. Clinically suspecious oral lesions (including leukoplakia, erythroplakia,lichen planus,benign lesions –epithelial tumors, ulcers, vesiculobullous lesions like pemphigus vulgaris) which are indicated for biopsy.",
+    "2. More than 18 years of age"
+  ],
+  "exclusion_criteria_description" : [
+    "1. Less than or equal to 18 years of age.",
+    "2. Currently undergoing treatment for malignancy",
+    "3. Pregnancy",
+    "4. Under treatment for tuberculosis or suffering from any acute illness"
+  ],
+  "periodontal_section" : "Periodontal Status",
+  "cpitn_codes" : "CPITN Codes",
+  "healthy" : "Healthy",
+  "bleeding_on_probing" : "Bleeding on probing",
+  "calculus_or_plaque_retention_factor" : "Calculus or plaque retention factor",
+  "shallow_pocket" : "Shallow pocket 4 or 5mm",
+  "deep_pocket" : "Deep pocket 6mm or more",
+  "cpitn_codes_description" : [
+    "0 = Healthy",
+    "1 = Bleeding on probing",
+    "2 = Calculus or plaque retention factor",
+    "3 = Shallow pocket 4 or 5mm",
+    "4 = Deep pocket 6mm or more"
   ]
 }

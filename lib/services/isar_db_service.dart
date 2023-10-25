@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:isar/isar.dart';
+import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
@@ -10,6 +13,7 @@ class IsarDbService {
   IsarDbService._() {
     isar = openIsarDb();
   }
+
   static Future<Isar> openIsarDb() async {
     final dir = await getApplicationSupportDirectory();
     return Isar.open([PatientRegistrationSchema, RiskAssessmentQuestionaireSchema, CRAOfflineDataSchema], directory: dir.path);
@@ -30,11 +34,65 @@ class IsarDbService {
     return registeredPatientList;
   }
 
+  Future<void> updatePatientRegistration(String patientId, AttachmentDb attachment) async {
+    Isar? db = await isar;
+    final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
+    if (patientToBeUpdated != null) {
+      patientToBeUpdated.consent = [attachment, ...?patientToBeUpdated.consent];
+      await db.writeTxn(() async {
+        db.patientRegistrations.put(patientToBeUpdated);
+      });
+    }
+  }
+
   Future<void> saveCRA(CRAOfflineData craData) async {
     Isar? db = await isar;
+
     await db.writeTxn(() async {
       await db.cRAOfflineDatas.put(craData);
     });
+  }
+
+  Future<void> updateCRA(String caseId, CRASectionModel craData) async {
+    Isar? db = await isar;
+    log("Line 55 $caseId");
+    final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
+    if (questionnaire != null) {
+      CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
+      List<CRASectionModel>? previousData = questionnaireToBeUpdated?.craSectionData ?? [];
+      int index = previousData.indexWhere((element) => element.encounterCategoryMapId == craData.encounterCategoryMapId);
+      if (index != -1) {
+        previousData[index] = craData;
+      } else {
+        previousData = [...previousData, craData];
+      }
+      questionnaireToBeUpdated!.craSectionData = [...previousData];
+      await db.writeTxn(() async {
+        await db.cRAOfflineDatas.put(questionnaireToBeUpdated);
+      });
+    }
+  }
+
+
+  Future<void> removeDuplicateInQuestionnaire(String caseId,  CRASectionModel craData) async {
+    Isar? db = await isar;
+    final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
+    if (questionnaire != null) {
+      CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
+      if (craData.encounterCategoryMapId == questionnaireToBeUpdated!.craSectionData![0].encounterCategoryMapId) {
+        questionnaireToBeUpdated.craSectionData = [craData, ];
+        db.writeTxn(() async {
+          await db.cRAOfflineDatas.put(questionnaireToBeUpdated);
+        });
+      }
+    }
+  }
+
+  Future<bool> checkIfCRADataPresent(String caseId) async {
+    Isar? db = await isar;
+    final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
+    if (questionnaire != null) return true;
+    return false;
   }
 
   Future<void> saveRiskAssessmentQuestionnaire(RiskAssessmentQuestionaire riskAssessmentQuestionnaire) async {
@@ -100,4 +158,11 @@ class IsarDbService {
       await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).deleteFirst();
     });
   }
+
+  Future<CRAOfflineData?> getCRAData(String patientId) async {
+    Isar? db = await isar;
+    final craData = await db.cRAOfflineDatas.filter().patientIdEqualTo(patientId).findFirst();
+    return craData;
+  }
+
 }

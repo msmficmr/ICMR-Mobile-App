@@ -1,8 +1,13 @@
+import 'dart:developer';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -32,6 +37,8 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   LoginViewModel? loginViewModel;
 
+  late ValueNotifier<bool> _syncData;
+
   //Keys
   final String KEY_DASHBOARD_APPBAR = "key_dashboard_appbar";
   final String KEY_CARD_COUNT = "key_card_count";
@@ -48,12 +55,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     GoRouter.of(context).push(MyAccountScreen.routerPath);
   }
 
+  checkToSyncData() async {
+    List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+    if (response.isNotEmpty) {
+      _syncData.value = true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _syncData = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     String userId = loginViewModel?.userDetails?.userId ?? "";
     Provider.of<OfflineDataViewModel>(context, listen: false).fetchOfflineSyncedNumbers(userId: userId);
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult connectivityResult) {
+      if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+        checkToSyncData();
+      } else {
+        _syncData.value = false;
+      }
+    });
   }
 
   @override
@@ -130,23 +152,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
               bottom: 0,
               child: Column(
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.5,
-                    child: PrimaryFilledIconButton(
-                        onPressed: () {
-                          redirectToMyAccountsScreen();
-                        },
-                        isLoading: false,
-                        buttonThemeStyle: const FilledButtonThemeStyle(
-                          enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                          enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                        ),
-                        icon: SvgPicture.asset(
-                          AppAssetsPath.icSync,
-                          colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
-                        ),
-                        buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
-                        widgetKey: KEY_BUTTON_SYNC),
+                  ValueListenableBuilder(
+                    valueListenable: _syncData,
+                    builder: (context, syncData, _) {
+                      if (syncData) {
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width / 1.5,
+                          child: PrimaryFilledIconButton(
+                              onPressed: () {
+                                redirectToMyAccountsScreen();
+                              },
+                              isLoading: false,
+                              buttonThemeStyle: const FilledButtonThemeStyle(
+                                enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                                enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                              ),
+                              icon: SvgPicture.asset(
+                                AppAssetsPath.icSync,
+                                colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
+                              ),
+                              buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
+                              widgetKey: KEY_BUTTON_SYNC),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
                   ),
                   const SpaceWidget(height: 15),
                   SizedBox(

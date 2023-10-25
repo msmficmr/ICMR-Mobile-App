@@ -122,177 +122,182 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
         appBarTitleType: CustomAppBarTitleType.TEXT,
         titleText: AppConstant.RISK_ASSESSMENT,
       ),
-      body: Form(
-        key: formKey,
-        child: Padding(
-          padding: EdgeInsets.all(AppValues.kAppPadding),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionNameWidget(sectionName: "Lesion Location (mark the site)"),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _site,
-                      builder: (context, _, __) {
-                        return CustomDropdown<String>(
-                          widgetKey: KEY_FIELD_SITE,
-                          heading: SITE_TITLE,
-                          headingKey: Key(KEY_HEADING_SITE),
-                          validator: AppValidators.requiredField,
-                          hintText: TranslationKeys.select.translate(context),
-                          onChanged: (val) {
-                            _site.value = val;
-                          },
-                          selectedItem: _site.value,
-                          items: siteMaps.values.map((e) => e).toList(),
-                        );
-                      },
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    //LOCATION
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _location,
-                      builder: (context, _, __) {
-                        return CustomDropdown<String>(
-                          widgetKey: KEY_FIELD_LOCATION,
-                          heading: LOCATION_TITLE,
-                          validator: AppValidators.requiredField,
-                          headingKey: Key(KEY_HEADING_LOCATION),
-                          hintText: TranslationKeys.select.translate(context),
-                          onChanged: (val) {
-                            _location.value = val;
-                          },
-                          selectedItem: _location.value,
-                          items: siteLocation,
-                        );
-                      },
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: PrimaryFilledButton(
-                          onPressed: () {
-                            fetchImage(ImageSource.camera);
-                          },
-                          isLoading: false,
-                          buttonThemeStyle: const FilledButtonThemeStyle(
-                            enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                            enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                          ),
-                          buttonTitle: CAPTURE_IMAGE_TITLE,
-                          widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
-                    ),
-                    const SpaceWidget(
-                      height: 15,
-                    ),
-                    if (provider.attachmentList.isNotEmpty)
-                      Text(
-                        ATTACHMENT,
-                        style: AppStyles.appBarStyle.copyWith(color: AppColorScheme.kBlack),
-                      ),
-                    Selector<QuestionnaireViewModel, int>(
-                      selector: (_, provider) => provider.attachmentList.length,
-                      builder: (context, value, child) => Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(
-                          provider.attachmentList.length,
-                          (index) => Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ValueListenableBuilder<AttachmentModel?>(
-                                  valueListenable: _selectedAttachment,
-                                  builder: (context, attachment, _) {
-                                    return AttachmentWidget(
-                                      title: provider.attachmentList[index]!.fileName,
-                                      titleKey: Key(KEY_ATTACHMENT_TITLE),
-                                      viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
-                                      removeButtonKey: Key(KEY_REMOVE_BUTTON),
-                                      onRemoveClick: () {
-                                        provider.removeAttachment(index); // Remove the attachment from the list
-                                        _selectedAttachment.value = null;
-                                      },
-                                      viewPictureClick: () {
-                                        CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
-                                      },
-                                    );
-                                  }),
-                              const SpaceWidget(),
-                            ],
-                          ),
+      body: WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Form(
+          key: formKey,
+          child: Padding(
+            padding: EdgeInsets.all(AppValues.kAppPadding),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionNameWidget(sectionName: "Lesion Location (mark the site)"),
+                        const SpaceWidget(
+                          height: 15,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Column(
-                  children: [
-                    ValueListenableBuilder(
-                      valueListenable: _hasConsent,
-                      builder: (context, _, __) {
-                        return ValueListenableBuilder(
-                          valueListenable: errorText,
+                        ValueListenableBuilder<String?>(
+                          valueListenable: _site,
                           builder: (context, _, __) {
-                            return QuestionnaireCheckBox(
-                              onChanged: onConsentChanged,
-                              checkboxStatus: _hasConsent.value,
-                              widgetKey: KEY_CHECKBOX_CONSENT,
-                              text: CONSENT_TEXT,
-                              errorText: errorText.value,
+                            return CustomDropdown<String>(
+                              widgetKey: KEY_FIELD_SITE,
+                              heading: SITE_TITLE,
+                              headingKey: Key(KEY_HEADING_SITE),
+                              validator: AppValidators.requiredField,
+                              hintText: TranslationKeys.select.translate(context),
+                              onChanged: (val) {
+                                _site.value = val;
+                              },
+                              selectedItem: _site.value,
+                              items: siteMaps.values.map((e) => e).toList(),
                             );
                           },
-                        );
-                      },
+                        ),
+                        const SpaceWidget(
+                          height: 15,
+                        ),
+                        //LOCATION
+                        ValueListenableBuilder<String?>(
+                          valueListenable: _location,
+                          builder: (context, _, __) {
+                            return CustomDropdown<String>(
+                              widgetKey: KEY_FIELD_LOCATION,
+                              heading: LOCATION_TITLE,
+                              validator: AppValidators.requiredField,
+                              headingKey: Key(KEY_HEADING_LOCATION),
+                              hintText: TranslationKeys.select.translate(context),
+                              onChanged: (val) {
+                                _location.value = val;
+                              },
+                              selectedItem: _location.value,
+                              items: siteLocation,
+                            );
+                          },
+                        ),
+                        const SpaceWidget(
+                          height: 15,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: PrimaryFilledButton(
+                              onPressed: () {
+                                fetchImage(ImageSource.camera);
+                              },
+                              isLoading: false,
+                              buttonThemeStyle: const FilledButtonThemeStyle(
+                                enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                                enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                              ),
+                              buttonTitle: CAPTURE_IMAGE_TITLE,
+                              widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
+                        ),
+                        const SpaceWidget(
+                          height: 15,
+                        ),
+                        Selector<QuestionnaireViewModel, int>(
+                          selector: (_, provider) => provider.attachmentList.length,
+                          builder: (context, value, child) => Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: List.generate(
+                              provider.attachmentList.length,
+                              (index) => Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ValueListenableBuilder<AttachmentModel?>(
+                                    valueListenable: _selectedAttachment,
+                                    builder: (context, attachment, _) {
+                                      return AttachmentWidget(
+                                        title: provider.attachmentList[index]!.fileName,
+                                        titleKey: Key(KEY_ATTACHMENT_TITLE),
+                                        viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
+                                        removeButtonKey: Key(KEY_REMOVE_BUTTON),
+                                        onRemoveClick: () {
+                                          provider.removeAttachment(index); // Remove the attachment from the list
+                                          _selectedAttachment.value = null;
+                                        },
+                                        viewPictureClick: () {
+                                          CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  const SpaceWidget(),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SpaceWidget(
+                          height: 80,
+                        ),
+                      ],
                     ),
-                    const SpaceWidget(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: _buttonEnabled,
-                        builder: (context, isValid, _) {
-                          return PrimaryFilledButton(
-                            buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                            buttonTitle: TranslationKeys.continueText.translate(context),
-                            widgetKey: KEY_BUTTON_CONTINUE,
-                            isLoading: false,
-                            onPressed: () async {
-                              if (_selectedAttachment.value != null && _hasConsent.value == false) {
-                                errorText.value = true;
-                              } else {
-                                errorText.value = false;
-                                await saveLesionLocationsData();
-                                if (provider.attachmentList.isNotEmpty) {
-                                  GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
-                                } else {
-                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
-                                }
-                              }
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Column(
+                    children: [
+                      ValueListenableBuilder(
+                        valueListenable: _hasConsent,
+                        builder: (context, _, __) {
+                          return ValueListenableBuilder(
+                            valueListenable: errorText,
+                            builder: (context, _, __) {
+                              return QuestionnaireCheckBox(
+                                onChanged: onConsentChanged,
+                                checkboxStatus: _hasConsent.value,
+                                widgetKey: KEY_CHECKBOX_CONSENT,
+                                text: CONSENT_TEXT,
+                                errorText: errorText.value,
+                              );
                             },
                           );
                         },
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      const SpaceWidget(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _buttonEnabled,
+                          builder: (context, isValid, _) {
+                            return PrimaryFilledButton(
+                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                              buttonTitle: TranslationKeys.continueText.translate(context),
+                              widgetKey: KEY_BUTTON_CONTINUE,
+                              onPressed: () async {
+                                if (_selectedAttachment.value != null && _hasConsent.value == false) {
+                                  errorText.value = true;
+                                } else {
+                                  errorText.value = false;
+                                  await saveLesionLocationsData();
+                                  if (provider.attachmentList.isNotEmpty) {
+                                    GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+                                  } else {
+                                    GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -310,11 +315,4 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
       staticQuestionnaires.add(staticQuestion);
     }
   }
-}
-
-class SiteModel {
-  String id;
-  String site;
-
-  SiteModel(this.id, this.site);
 }

@@ -89,4 +89,17 @@ class TranslationKeys {
   static const String copyOfSignedConsentHanded = "copy_of_signed_consent_handed";
   static const String ifNoSpecify = "if_no_specify";
   static const String occupation = "occupation_types";
+  static const String inclusionCriteria = "inclusion_criteria";
+  static const String exclusionCriteria = "exclusion_criteria";
+  static const String inclusionCriteriaDescription = "inclusion_criteria_description";
+  static const String exclusionCriteriaDescription = "exclusion_criteria_description";
+  static const String cpitnCodes = "cpitn_codes";
+  static const String cpitnCodesDescription = "cpitn_codes_description";
+  static const String healthy = "healthy";
+  static const String bleedingOnProbing = "bleeding_on_probing";
+  static const String calculusOrPlaqueRetentionFactor = "calculus_or_plaque_retention_factor";
+  static const String shallowPocket = "shallow_pocket";
+  static const String deepPocket = "deep_pocket";
+  static const String criteriaSection = "criteria_section";
+  static const String periodontalSection = "periodontal_section";
 }

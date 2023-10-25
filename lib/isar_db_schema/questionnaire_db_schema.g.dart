@@ -48,10 +48,13 @@ const CRAOfflineDataSchema = CollectionSchema(
   links: {},
   embeddedSchemas: {
     r'CRASectionModel': CRASectionModelSchema,
-    r'EHRNotes': EHRNotesSchema,
-    r'CRAQuestionnaire': CRAQuestionnaireSchema,
+    r'EHRDiagnosisReports': EHRDiagnosisReportsSchema,
+    r'Report': ReportSchema,
     r'Inputs': InputsSchema,
-    r'SubInput': SubInputSchema
+    r'SubInput': SubInputSchema,
+    r'AttachmentDb': AttachmentDbSchema,
+    r'EHRNotes': EHRNotesSchema,
+    r'CRAQuestionnaire': CRAQuestionnaireSchema
   },
   getId: _cRAOfflineDataGetId,
   getLinks: _cRAOfflineDataGetLinks,
@@ -1116,7 +1119,8 @@ const CRASectionModelSchema = Schema(
     r'encounterEhrDiagnosisReports': PropertySchema(
       id: 6,
       name: r'encounterEhrDiagnosisReports',
-      type: IsarType.string,
+      type: IsarType.object,
+      target: r'EHRDiagnosisReports',
     ),
     r'locale': PropertySchema(
       id: 7,
@@ -1170,7 +1174,9 @@ int _cRASectionModelEstimateSize(
   {
     final value = object.encounterEhrDiagnosisReports;
     if (value != null) {
-      bytesCount += 3 + value.length * 3;
+      bytesCount += 3 +
+          EHRDiagnosisReportsSchema.estimateSize(
+              value, allOffsets[EHRDiagnosisReports]!, allOffsets);
     }
   }
   {
@@ -1205,7 +1211,12 @@ void _cRASectionModelSerialize(
     object.ehrNotes,
   );
   writer.writeString(offsets[5], object.encounterCategoryMapId);
-  writer.writeString(offsets[6], object.encounterEhrDiagnosisReports);
+  writer.writeObject<EHRDiagnosisReports>(
+    offsets[6],
+    allOffsets,
+    EHRDiagnosisReportsSchema.serialize,
+    object.encounterEhrDiagnosisReports,
+  );
   writer.writeString(offsets[7], object.locale);
   writer.writeString(offsets[8], object.patientId);
 }
@@ -1227,7 +1238,12 @@ CRASectionModel _cRASectionModelDeserialize(
     allOffsets,
   );
   object.encounterCategoryMapId = reader.readStringOrNull(offsets[5]);
-  object.encounterEhrDiagnosisReports = reader.readStringOrNull(offsets[6]);
+  object.encounterEhrDiagnosisReports =
+      reader.readObjectOrNull<EHRDiagnosisReports>(
+    offsets[6],
+    EHRDiagnosisReportsSchema.deserialize,
+    allOffsets,
+  );
   object.locale = reader.readStringOrNull(offsets[7]);
   object.patientId = reader.readStringOrNull(offsets[8]);
   return object;
@@ -1257,7 +1273,11 @@ P _cRASectionModelDeserializeProp<P>(
     case 5:
       return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readObjectOrNull<EHRDiagnosisReports>(
+        offset,
+        EHRDiagnosisReportsSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 7:
       return (reader.readStringOrNull(offset)) as P;
     case 8:
@@ -1962,144 +1982,6 @@ extension CRASectionModelQueryFilter
   }
 
   QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'encounterEhrDiagnosisReports',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsContains(String value,
-          {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'encounterEhrDiagnosisReports',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsMatches(String pattern,
-          {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'encounterEhrDiagnosisReports',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'encounterEhrDiagnosisReports',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
-      encounterEhrDiagnosisReportsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'encounterEhrDiagnosisReports',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
       localeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -2414,6 +2296,13 @@ extension CRASectionModelQueryObject
       ehrNotes(FilterQuery<EHRNotes> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'ehrNotes');
+    });
+  }
+
+  QueryBuilder<CRASectionModel, CRASectionModel, QAfterFilterCondition>
+      encounterEhrDiagnosisReports(FilterQuery<EHRDiagnosisReports> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'encounterEhrDiagnosisReports');
     });
   }
 }
@@ -2790,6 +2679,1195 @@ extension EHRNotesQueryObject
       FilterQuery<CRAQuestionnaire> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'questions');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const EHRDiagnosisReportsSchema = Schema(
+  name: r'EHRDiagnosisReports',
+  id: -7934984599301324683,
+  properties: {
+    r'questions': PropertySchema(
+      id: 0,
+      name: r'questions',
+      type: IsarType.objectList,
+      target: r'Report',
+    )
+  },
+  estimateSize: _eHRDiagnosisReportsEstimateSize,
+  serialize: _eHRDiagnosisReportsSerialize,
+  deserialize: _eHRDiagnosisReportsDeserialize,
+  deserializeProp: _eHRDiagnosisReportsDeserializeProp,
+);
+
+int _eHRDiagnosisReportsEstimateSize(
+  EHRDiagnosisReports object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final list = object.questions;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[Report]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += ReportSchema.estimateSize(value, offsets, allOffsets);
+        }
+      }
+    }
+  }
+  return bytesCount;
+}
+
+void _eHRDiagnosisReportsSerialize(
+  EHRDiagnosisReports object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeObjectList<Report>(
+    offsets[0],
+    allOffsets,
+    ReportSchema.serialize,
+    object.questions,
+  );
+}
+
+EHRDiagnosisReports _eHRDiagnosisReportsDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = EHRDiagnosisReports();
+  object.questions = reader.readObjectList<Report>(
+    offsets[0],
+    ReportSchema.deserialize,
+    allOffsets,
+    Report(),
+  );
+  return object;
+}
+
+P _eHRDiagnosisReportsDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readObjectList<Report>(
+        offset,
+        ReportSchema.deserialize,
+        allOffsets,
+        Report(),
+      )) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension EHRDiagnosisReportsQueryFilter on QueryBuilder<EHRDiagnosisReports,
+    EHRDiagnosisReports, QFilterCondition> {
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'questions',
+      ));
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'questions',
+      ));
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'questions',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+}
+
+extension EHRDiagnosisReportsQueryObject on QueryBuilder<EHRDiagnosisReports,
+    EHRDiagnosisReports, QFilterCondition> {
+  QueryBuilder<EHRDiagnosisReports, EHRDiagnosisReports, QAfterFilterCondition>
+      questionsElement(FilterQuery<Report> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'questions');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const ReportSchema = Schema(
+  name: r'Report',
+  id: 4107730612455750309,
+  properties: {
+    r'file': PropertySchema(
+      id: 0,
+      name: r'file',
+      type: IsarType.object,
+      target: r'AttachmentDb',
+    ),
+    r'inputs': PropertySchema(
+      id: 1,
+      name: r'inputs',
+      type: IsarType.objectList,
+      target: r'Inputs',
+    ),
+    r'loinc': PropertySchema(
+      id: 2,
+      name: r'loinc',
+      type: IsarType.string,
+    ),
+    r'questionId': PropertySchema(
+      id: 3,
+      name: r'questionId',
+      type: IsarType.string,
+    ),
+    r'snomed': PropertySchema(
+      id: 4,
+      name: r'snomed',
+      type: IsarType.string,
+    ),
+    r'timeAsked': PropertySchema(
+      id: 5,
+      name: r'timeAsked',
+      type: IsarType.dateTime,
+    ),
+    r'value': PropertySchema(
+      id: 6,
+      name: r'value',
+      type: IsarType.string,
+    )
+  },
+  estimateSize: _reportEstimateSize,
+  serialize: _reportSerialize,
+  deserialize: _reportDeserialize,
+  deserializeProp: _reportDeserializeProp,
+);
+
+int _reportEstimateSize(
+  Report object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.file;
+    if (value != null) {
+      bytesCount += 3 +
+          AttachmentDbSchema.estimateSize(
+              value, allOffsets[AttachmentDb]!, allOffsets);
+    }
+  }
+  {
+    final list = object.inputs;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[Inputs]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += InputsSchema.estimateSize(value, offsets, allOffsets);
+        }
+      }
+    }
+  }
+  {
+    final value = object.loinc;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.questionId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.snomed;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.value;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _reportSerialize(
+  Report object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeObject<AttachmentDb>(
+    offsets[0],
+    allOffsets,
+    AttachmentDbSchema.serialize,
+    object.file,
+  );
+  writer.writeObjectList<Inputs>(
+    offsets[1],
+    allOffsets,
+    InputsSchema.serialize,
+    object.inputs,
+  );
+  writer.writeString(offsets[2], object.loinc);
+  writer.writeString(offsets[3], object.questionId);
+  writer.writeString(offsets[4], object.snomed);
+  writer.writeDateTime(offsets[5], object.timeAsked);
+  writer.writeString(offsets[6], object.value);
+}
+
+Report _reportDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = Report();
+  object.file = reader.readObjectOrNull<AttachmentDb>(
+    offsets[0],
+    AttachmentDbSchema.deserialize,
+    allOffsets,
+  );
+  object.inputs = reader.readObjectList<Inputs>(
+    offsets[1],
+    InputsSchema.deserialize,
+    allOffsets,
+    Inputs(),
+  );
+  object.loinc = reader.readStringOrNull(offsets[2]);
+  object.questionId = reader.readStringOrNull(offsets[3]);
+  object.snomed = reader.readStringOrNull(offsets[4]);
+  object.timeAsked = reader.readDateTimeOrNull(offsets[5]);
+  object.value = reader.readStringOrNull(offsets[6]);
+  return object;
+}
+
+P _reportDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readObjectOrNull<AttachmentDb>(
+        offset,
+        AttachmentDbSchema.deserialize,
+        allOffsets,
+      )) as P;
+    case 1:
+      return (reader.readObjectList<Inputs>(
+        offset,
+        InputsSchema.deserialize,
+        allOffsets,
+        Inputs(),
+      )) as P;
+    case 2:
+      return (reader.readStringOrNull(offset)) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension ReportQueryFilter on QueryBuilder<Report, Report, QFilterCondition> {
+  QueryBuilder<Report, Report, QAfterFilterCondition> fileIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'file',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> fileIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'file',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'inputs',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'inputs',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'inputs',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'loinc',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'loinc',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'loinc',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'loinc',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'loinc',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'loinc',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> loincIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'loinc',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'questionId',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'questionId',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'questionId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'questionId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'questionId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'questionId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> questionIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'questionId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'snomed',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'snomed',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'snomed',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'snomed',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'snomed',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'snomed',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> snomedIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'snomed',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'timeAsked',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'timeAsked',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeAsked',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'timeAsked',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'timeAsked',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> timeAskedBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'timeAsked',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'value',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'value',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'value',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'value',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'value',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'value',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> valueIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'value',
+        value: '',
+      ));
+    });
+  }
+}
+
+extension ReportQueryObject on QueryBuilder<Report, Report, QFilterCondition> {
+  QueryBuilder<Report, Report, QAfterFilterCondition> file(
+      FilterQuery<AttachmentDb> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'file');
+    });
+  }
+
+  QueryBuilder<Report, Report, QAfterFilterCondition> inputsElement(
+      FilterQuery<Inputs> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'inputs');
     });
   }
 }

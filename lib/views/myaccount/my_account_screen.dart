@@ -56,6 +56,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String PATIENT_ID = "Patient ID";
   OfflineDataViewModel viewModel = OfflineDataViewModel();
 
+  bool _syncing = false;
+
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: patientID));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -74,6 +76,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   Future showDataSyncLoading(BuildContext context) {
     return showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => Center(
         child: WillPopScope(
@@ -104,14 +107,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      if (response.isEmpty) {
+      List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+      if (response.isEmpty && patientListResponse.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
         showDataSyncLoading(context);
+        _syncing = true;
         for (int i = 0; i < response.length; i++) {
           List<dynamic> payLoadObjList = [];
           String? patienId = response[i]?.patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId!);
+          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId ?? "");
           Map<String, dynamic>? patientJson = resp?.toJson();
           Map<String, dynamic> patientData = {"patientData": patientJson};
           Map<String, dynamic> registrationObj = {"registrationObj": patientData};
@@ -126,12 +131,32 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           payLoadObjList.add({response[i]?.patientId: patientDataList});
           Map<String, dynamic> payLoadObj = {
             "payloadObj": payLoadObjList,
+            "appVersion": Environment.runningEnv.releaseVersion,
+          };
+          await viewModel.postOfflineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
+        }
+
+        for (int i = 0; i < patientListResponse.length; i++) {
+          List<dynamic> payLoadObjList = [];
+          String? patientId = patientListResponse[i].patientId;
+          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+          Map<String, dynamic>? patientJson = resp?.toJson();
+          Map<String, dynamic> patientData = {"patientData": patientJson};
+          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+          Map<String, dynamic> cdrPostObj = {
+            "cdrPostObj": []
+          };
+          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+          payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
+          Map<String, dynamic> payLoadObj = {
+            "payloadObj": payLoadObjList,
             "appVersion": "45",
           };
-          await viewModel.postOffllineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
+          await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
         }
         Navigator.of(context, rootNavigator: true).pop();
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
+        GoRouter.of(context).go(DashboardScreen.routerPath);
       }
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
@@ -143,133 +168,141 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
-    return Scaffold(
-      appBar: CustomAppBar(
-        key: Key(KEY_MY_ACCOUNT_APPBAR),
-        centerTitle: false,
-        onLeadingClick: () {
-          GoRouter.of(context).pop();
-        },
-        backgroundColor: AppColorScheme.kGrayColor.shade50,
-        trailingType: CustomAppBarTrailingType.SINGLE,
-        trailingWidget: InkWell(
-          onTap: () {
-            onLogoutClick();
+    return WillPopScope(
+      onWillPop: () async {
+        if (_syncing) {
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          key: Key(KEY_MY_ACCOUNT_APPBAR),
+          centerTitle: false,
+          onLeadingClick: () {
+            GoRouter.of(context).pop();
           },
-          child: SvgPicture.asset(
-            AppAssetsPath.icLogout,
+          backgroundColor: AppColorScheme.kGrayColor.shade50,
+          trailingType: CustomAppBarTrailingType.SINGLE,
+          trailingWidget: InkWell(
+            onTap: () {
+              onLogoutClick();
+            },
+            child: SvgPicture.asset(
+              AppAssetsPath.icLogout,
+            ),
           ),
+          titleText: TranslationKeys.myAccount.translate(context),
         ),
-        titleText: TranslationKeys.myAccount.translate(context),
-      ),
-      body: Column(
-        children: [
-          Container(
-            color: AppColorScheme.kGrayColor.shade50,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      const CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "IM", radius: 30),
-                      SpaceWidget(width: isSmallScreen ? 12 : 16),
-                      Expanded(
-                        child: Column(
+        body: Column(
+          children: [
+            Container(
+              color: AppColorScheme.kGrayColor.shade50,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        const CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "IM", radius: 30),
+                        SpaceWidget(width: isSmallScreen ? 12 : 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColorScheme.kPrimaryColor,
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Text(
+                                  patientRelation,
+                                  style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
+                                ),
+                              ),
+                              Text(
+                                patientName,
+                                key: Key(KEY_PATIENT_NAME),
+                                style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColorScheme.kPrimaryColor,
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              child: Text(
-                                patientRelation,
-                                style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
-                              ),
-                            ),
+                            Text('$PATIENT_ID:', style: AppStyles.bodySmall),
+                            const SpaceWidget(width: 2),
                             Text(
-                              patientName,
-                              key: Key(KEY_PATIENT_NAME),
-                              style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                              patientID,
+                              key: Key(KEY_PATIENT_ID),
+                              style: AppStyles.bodySmall,
+                            ),
+                            const SpaceWidget(width: 5),
+                            InkWell(
+                              onTap: () => _copyToClipboard(context),
+                              child: SvgPicture.asset(AppAssetsPath.icCopy),
                             )
                           ],
                         ),
-                      ),
-                    ],
+                        const SpaceWidget(
+                          height: 10,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('$gender- $age | ', style: AppStyles.bodySmall),
+                            Text(phone, style: AppStyles.bodySmall),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('$PATIENT_ID:', style: AppStyles.bodySmall),
-                          const SpaceWidget(width: 2),
-                          Text(
-                            patientID,
-                            key: Key(KEY_PATIENT_ID),
-                            style: AppStyles.bodySmall,
-                          ),
-                          const SpaceWidget(width: 5),
-                          InkWell(
-                            onTap: () => _copyToClipboard(context),
-                            child: SvgPicture.asset(AppAssetsPath.icCopy),
-                          )
-                        ],
-                      ),
-                      const SpaceWidget(
-                        height: 10,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('$gender- $age | ', style: AppStyles.bodySmall),
-                          Text(phone, style: AppStyles.bodySmall),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SpaceWidget(height: 20),
-              ],
+                  const SpaceWidget(height: 20),
+                ],
+              ),
             ),
-          ),
-          const SpaceWidget(height: 20),
-          AccountCard(
-            key: Key(KEY_LANGUAGE_CARD),
-            cardTitleText: TranslationKeys.language.translate(context),
-            trailingIconPath: AppAssetsPath.icChevronRight,
-            leadingIconPath: AppAssetsPath.icLanguage,
-          ),
-          InkWell(
-            onTap: () {
-              onSyncClick();
-            },
-            child: AccountCard(
-              key: Key(KEY_DATA_SYNC_CARD),
-              cardTitleText: TranslationKeys.dataSync.translate(context),
+            const SpaceWidget(height: 20),
+            AccountCard(
+              key: Key(KEY_LANGUAGE_CARD),
+              cardTitleText: TranslationKeys.language.translate(context),
               trailingIconPath: AppAssetsPath.icChevronRight,
-              leadingIconPath: AppAssetsPath.icSync,
+              leadingIconPath: AppAssetsPath.icLanguage,
             ),
+            InkWell(
+              onTap: () {
+                onSyncClick();
+              },
+              child: AccountCard(
+                key: Key(KEY_DATA_SYNC_CARD),
+                cardTitleText: TranslationKeys.dataSync.translate(context),
+                trailingIconPath: AppAssetsPath.icChevronRight,
+                leadingIconPath: AppAssetsPath.icSync,
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.only(bottom: 25.0),
+          height: MediaQuery.of(context).size.height * 0.1,
+          child: Center(
+            child: Column(children: [
+              SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
+              Text(
+                "${TranslationKeys.version.translate(context)}: $appVersion",
+                style: AppStyles.bodySmall,
+              )
+            ]),
           ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.only(bottom: 25.0),
-        height: MediaQuery.of(context).size.height * 0.1,
-        child: Center(
-          child: Column(children: [
-            SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
-            Text(
-              "${TranslationKeys.version.translate(context)}: $appVersion",
-              style: AppStyles.bodySmall,
-            )
-          ]),
         ),
       ),
     );

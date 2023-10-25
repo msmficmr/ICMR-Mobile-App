@@ -25,11 +25,11 @@ class OfflineDataViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> postOffllineData({required String? caseId, required String? patientId, required Map<String, dynamic> payLoadObj}) async {
+  Future<void> postOfflineData({required String? caseId, required String? patientId, required Map<String, dynamic> payLoadObj}) async {
     try {
       OfflineSyncResponseModel? response = await OfflineDataService().saveOfflineDataSync(payLoadObj: payLoadObj);
       if (response?.status == 201) {
-        await IsarDbService.isarDbService.deleteByCaseId(caseId);
+        if (caseId != null) await IsarDbService.isarDbService.deleteByCaseId(caseId);
         await IsarDbService.isarDbService.deleteByPatientId(patientId);
       }
     } catch (e) {

@@ -17,6 +17,8 @@ class CustomPatientCard extends StatelessWidget {
 
   final Color textTitleColor, textColor;
 
+  final Function()? onTap;
+
   const CustomPatientCard({
     Key? key,
     required this.widgetKey,
@@ -27,6 +29,7 @@ class CustomPatientCard extends StatelessWidget {
     required this.phoneNumber,
     required this.patientNameKey,
     required this.patientIdKey,
+    required this.onTap,
     this.textTitleColor = const Color(0xFF2F43EE),
     this.textColor = const Color(0xFF616161),
   }) : super(key: key);
@@ -38,43 +41,46 @@ class CustomPatientCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
-    return Padding(
-      key: Key(widgetKey),
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Container(
-        width: widthSize,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: AppValues.circularBorderRadius10,
-          color: AppColorScheme.kGrayColor.shade50,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              patientName,
-              key: patientNameKey,
-              style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
-            ),
-            const SpaceWidget(height: 5),
-            Text(
-              "KHID: $patientId",
-              key: patientIdKey,
-              style: AppStyles.titleMedium.copyWith(color: textColor),
-            ),
-            const SpaceWidget(height: 5),
-            SizedBox(
-              width: widthSize * 0.7,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RowTextWidget(widgetKey: KEY_PATIENT_GENDER, image: CommonFunctions.getGenderImage(gender ?? ""), text: gender ?? ""),
-                  RowTextWidget(widgetKey: KEY_PATIENT_AGE, image: AppAssetsPath.icGroup, text: age),
-                  RowTextWidget(widgetKey: KEY_PATIENT_PHONE_NUMBER, image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
-                ],
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        key: Key(widgetKey),
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Container(
+          width: widthSize,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: AppValues.circularBorderRadius10,
+            color: AppColorScheme.kGrayColor.shade50,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                patientName,
+                key: patientNameKey,
+                style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
               ),
-            )
-          ],
+              const SpaceWidget(height: 5),
+              Text(
+                "KHID: $patientId",
+                key: patientIdKey,
+                style: AppStyles.titleMedium.copyWith(color: textColor),
+              ),
+              const SpaceWidget(height: 5),
+              SizedBox(
+                width: widthSize * 0.7,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RowTextWidget(widgetKey: KEY_PATIENT_GENDER, image: CommonFunctions.getGenderImage(gender ?? ""), text: gender ?? ""),
+                    RowTextWidget(widgetKey: KEY_PATIENT_AGE, image: AppAssetsPath.icGroup, text: age),
+                    RowTextWidget(widgetKey: KEY_PATIENT_PHONE_NUMBER, image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

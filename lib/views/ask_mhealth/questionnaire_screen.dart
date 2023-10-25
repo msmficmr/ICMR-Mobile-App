@@ -41,9 +41,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
   }
 
   fetchQuestions() async {
+    final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    String? locale = languageViewModel.selectedLanguage;
+    if (questionnaireViewModel.questionnaireSections.isEmpty) {
+      await questionnaireViewModel.setQuestionnaireSections(locale);
+    }
     if (widget.sectionName == "null") {
-      final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-      String? locale = languageViewModel.selectedLanguage;
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {
       await questionnaireViewModel.setNextSectionData(widget.sectionName, context);
@@ -52,11 +55,13 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   goToPreviousScreen() {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
-      GoRouter.of(context).pop(DashboardScreen.routerPath);
+      GoRouter.of(context).go(DashboardScreen.routerPath);
       questionnaireViewModel.craSectionData = [];
-    } else {
+    } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
-      GoRouter.of(context).pop(QuestionnaireScreen.routerPath);
+      GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);
+    } else {
+      GoRouter.of(context).pop();
     }
   }
 
@@ -77,7 +82,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
         body: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(20.0),
-            child: Selector<QuestionnaireViewModel, List<Questionnaire>> (
+            child: Selector<QuestionnaireViewModel, List<Questionnaire>>(
               selector: (_, provider) => provider.sectionsData[questionnaireViewModel.sectionName] ?? [],
               builder: (context, questionnaireList, child) {
                 if (questionnaireList.isEmpty) {
@@ -115,29 +120,31 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: PrimaryFilledButton(
-                            onPressed: () async {
-                              bool isValid = true;
-                              for (var questionnaire in questionnaireList) {
-                                if (!questionnaire.isValid()) {
-                                  isValid = false;
-                                }
+                          onPressed: () async {
+                            bool isValid = true;
+                            for (var questionnaire in questionnaireList) {
+                              if (!questionnaire.isValid()) {
+                                isValid = false;
                               }
-                              if (isValid) {
-                                if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 2]) {
-                                  questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
-                                  GoRouter.of(context).push(PeriodontalScreen.routerPath);
-                                } else if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
-                                  questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
-                                  GoRouter.of(context).push(VerificationScreen.routerPath);
-                                } else {
-                                  GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
-                                }
+                            }
+                            if (isValid) {
+                              if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 2]) {
+                                questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                GoRouter.of(context).push(PeriodontalScreen.routerPath);
+                              } else if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
+                                questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                GoRouter.of(context).push(VerificationScreen.routerPath);
                               } else {
-                                CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);
-                                setState(() {});
+                                GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
                               }
-                            },
-                            buttonTitle: TranslationKeys.continueText.capitalize(), widgetKey: KEY_BUTTON_CONTINUE),
+                            } else {
+                              CommonFunctions.toastMessage(AppConstant.ERROR_FILL_REQUIRED_FIELDS);
+                              setState(() {});
+                            }
+                          },
+                          buttonTitle: TranslationKeys.continueText.capitalize(),
+                          widgetKey: KEY_BUTTON_CONTINUE,
+                        ),
                       ),
                       const SpaceWidget(
                         height: 20,

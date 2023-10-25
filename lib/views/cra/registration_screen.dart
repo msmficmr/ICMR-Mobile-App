@@ -18,6 +18,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
@@ -162,7 +163,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _consentError = ValueNotifier<bool>(false);
   }
 
-  void onContinueClick() {
+  void onContinueClick() async {
     final form = formKey.currentState;
     if (form != null) {
       if (_selectedAttachment == null) {
@@ -175,7 +176,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..dataBytes = _selectedAttachment!.baseImage;
         String patientId = CommonFunctions.randomNumber(6);
         questionnaireViewModel.savePatientId(patientId);
-        IsarDbService.isarDbService.savePatient(PatientRegistration()
+        await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
           ..institutionCodeID = _institutionCode.value ?? ""
           ..studyCode = _studyCode.value ?? ""
@@ -196,11 +197,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
           ..signedConsent = _signedConsent.value ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
-          ..consent = attachment
           ..patientId = patientId);
-
+        await addConsentImages(patientId);
+        await Provider.of<PatientListViewModel>(context, listen: false).setCurrentUser(_firstNameController.text, _lastNameController.text);
         GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
       }
+    }
+  }
+
+  addConsentImages(String patientId) async {
+    for (int i = 0; i < questionnaireViewModel.consentList.length; i++) {
+      AttachmentDb attachment = AttachmentDb()
+        ..fileName = questionnaireViewModel.consentList[i]!.fileName
+        ..dataBytes = questionnaireViewModel.consentList[i]!.baseImage;
+      await IsarDbService.isarDbService.updatePatientRegistration(patientId, attachment);
     }
   }
 

@@ -86,11 +86,14 @@ class CommonFunctions {
 
   static void viewImage({required BuildContext context, required List<int> bytes}) {
     showDialog(
+      barrierDismissible: true,
       context: context,
       useSafeArea: true,
-      builder: (context) => ImageViewWidget(
-        imageList: bytes,
-      ),
+      builder: (_) {
+        return ImageViewWidget(
+          imageList: bytes,
+        );
+      }
     );
   }
 

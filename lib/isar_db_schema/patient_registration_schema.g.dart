@@ -41,7 +41,7 @@ const PatientRegistrationSchema = CollectionSchema(
     r'consent': PropertySchema(
       id: 4,
       name: r'consent',
-      type: IsarType.object,
+      type: IsarType.objectList,
       target: r'AttachmentDb',
     ),
     r'consentDate': PropertySchema(
@@ -170,11 +170,17 @@ int _patientRegistrationEstimateSize(
     }
   }
   {
-    final value = object.consent;
-    if (value != null) {
-      bytesCount += 3 +
-          AttachmentDbSchema.estimateSize(
-              value, allOffsets[AttachmentDb]!, allOffsets);
+    final list = object.consent;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[AttachmentDb]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount +=
+              AttachmentDbSchema.estimateSize(value, offsets, allOffsets);
+        }
+      }
     }
   }
   {
@@ -235,7 +241,7 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[1], object.address);
   writer.writeString(offsets[2], object.age);
   writer.writeString(offsets[3], object.alternatePhoneNumber);
-  writer.writeObject<AttachmentDb>(
+  writer.writeObjectList<AttachmentDb>(
     offsets[4],
     allOffsets,
     AttachmentDbSchema.serialize,
@@ -271,10 +277,11 @@ PatientRegistration _patientRegistrationDeserialize(
   object.address = reader.readStringOrNull(offsets[1]);
   object.age = reader.readString(offsets[2]);
   object.alternatePhoneNumber = reader.readStringOrNull(offsets[3]);
-  object.consent = reader.readObjectOrNull<AttachmentDb>(
+  object.consent = reader.readObjectList<AttachmentDb>(
     offsets[4],
     AttachmentDbSchema.deserialize,
     allOffsets,
+    AttachmentDb(),
   );
   object.consentDate = reader.readDateTime(offsets[5]);
   object.district = reader.readStringOrNull(offsets[6]);
@@ -313,10 +320,11 @@ P _patientRegistrationDeserializeProp<P>(
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readObjectOrNull<AttachmentDb>(
+      return (reader.readObjectList<AttachmentDb>(
         offset,
         AttachmentDbSchema.deserialize,
         allOffsets,
+        AttachmentDb(),
       )) as P;
     case 5:
       return (reader.readDateTime(offset)) as P;
@@ -1066,6 +1074,95 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'consent',
       ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      consentLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'consent',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -3408,7 +3505,7 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 extension PatientRegistrationQueryObject on QueryBuilder<PatientRegistration,
     PatientRegistration, QFilterCondition> {
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consent(FilterQuery<AttachmentDb> q) {
+      consentElement(FilterQuery<AttachmentDb> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'consent');
     });
@@ -4217,7 +4314,7 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, AttachmentDb?, QQueryOperations>
+  QueryBuilder<PatientRegistration, List<AttachmentDb>?, QQueryOperations>
       consentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'consent');

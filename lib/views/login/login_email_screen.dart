@@ -6,7 +6,6 @@ import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/translation_keys.dart';
-import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
@@ -56,9 +55,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   void onEmailFieldChanged(String? input) {
     String? isEmailValid = AppValidators.validateEmail(input);
     _isValidEmail.value = isEmailValid == null;
-    if (_isValidEmail.value) {
-      FocusManager.instance.primaryFocus?.unfocus();
-    }
     isButtonEnabled();
   }
 
