@@ -414,6 +414,6 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
         staticQuestionnaires.add(StaticQuestionModel("other", _otherControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
-    await questionnaireViewModel.setNextSectionData("community_risk_assessment_measurement_lesions", context, staticSectionsData: staticQuestionnaires);
+    await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_measurement_lesions", context: context, staticSectionsData: staticQuestionnaires);
   }
 }

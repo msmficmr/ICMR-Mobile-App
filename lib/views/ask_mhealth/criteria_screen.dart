@@ -26,7 +26,7 @@ class CriteriaScreen extends StatelessWidget {
     GoRouter.of(context).pop();
   }
 
-  List<String> getDescription(criteria, BuildContext context) {
+  List<String> getDescription({required String criteria, required BuildContext context}) {
     String description;
     if (criteria == TranslationKeys.inclusionCriteria) {
       description = TranslationKeys.inclusionCriteriaDescription.translate(context);
@@ -60,9 +60,9 @@ class CriteriaScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SectionNameWidget(sectionName: TranslationKeys.criteriaSection.translate(context)),
-                    CriteriaWidget(title: TranslationKeys.inclusionCriteria.translate(context), description: getDescription(TranslationKeys.inclusionCriteria, context)),
+                    CriteriaWidget(title: TranslationKeys.inclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.inclusionCriteria,context: context)),
                     const SpaceWidget(height: 20,),
-                    CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(TranslationKeys.exclusionCriteria, context))
+                    CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.exclusionCriteria,context: context))
                   ],
                 ),
               ),

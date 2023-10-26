@@ -171,9 +171,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
       } else if (form.validate()) {
         _consentError.value = false;
-        AttachmentDb attachment = AttachmentDb()
-          ..fileName = _selectedAttachment!.fileName
-          ..dataBytes = _selectedAttachment!.baseImage;
         String patientId = CommonFunctions.randomNumber(6);
         questionnaireViewModel.savePatientId(patientId);
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
@@ -210,8 +207,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       AttachmentDb attachment = AttachmentDb()
         ..fileName = questionnaireViewModel.consentList[i]!.fileName
         ..dataBytes = questionnaireViewModel.consentList[i]!.baseImage;
-      await IsarDbService.isarDbService.updatePatientRegistration(patientId, attachment);
+      await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId,attachment: attachment);
     }
+    questionnaireViewModel.consentList.clear();
   }
 
   void onConsentClicked() async {

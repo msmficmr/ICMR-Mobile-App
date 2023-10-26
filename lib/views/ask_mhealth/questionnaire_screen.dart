@@ -49,7 +49,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (widget.sectionName == "null") {
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {
-      await questionnaireViewModel.setNextSectionData(widget.sectionName, context);
+      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName,context: context);
     }
   }
 
@@ -129,10 +129,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                             }
                             if (isValid) {
                               if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 2]) {
-                                questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!,context: context);
                                 GoRouter.of(context).push(PeriodontalScreen.routerPath);
                               } else if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
-                                questionnaireViewModel.setNextSectionData(questionnaireViewModel.sectionName!, context);
+                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!,context: context);
                                 GoRouter.of(context).push(VerificationScreen.routerPath);
                               } else {
                                 GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);

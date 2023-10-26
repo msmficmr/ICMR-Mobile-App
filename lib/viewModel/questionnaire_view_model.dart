@@ -56,7 +56,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// Getting the next section index from [questionnaireSections] and adding the values for [_sectionName] & [questionnaireList]
   /// If all the sections are completed then submitting the form
 
-  setNextSectionData(String sectionName, BuildContext context, {List<StaticQuestionModel>? staticSectionsData}) async {
+  setNextSectionData({required String sectionName, required BuildContext context, List<StaticQuestionModel>? staticSectionsData}) async {
     _allSectionsCompleted = false;
     if (questionnaireSections.contains(sectionName)) {
       int currentIndex = questionnaireSections.indexOf(sectionName);
@@ -76,6 +76,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
         }
         sectionsData[sectionName] = fetchDBQuestions(isarDB!.sections![index!].questionObj ?? []);
       }
+
+      //Adding the dynamic data to the craSectionData list variable
       craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
       int index = craSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
       craSectionData.removeAt(index);
@@ -87,6 +89,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
     } else {
       int index = staticCraSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
       if (index >= 0) staticCraSectionData.removeAt(index);
+
+      //Adding the static data to the craSectionData list variable
       staticCraSectionData.add(StaticQuestionnaireModel(sectionName, staticSectionsData));
       if (sectionName == "community_risk_assessment_lesion_location") {
         await addLesionLocationImagesToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
@@ -121,7 +125,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// Fetching the Questionnaire based upon the [language] and saving it in the [sectionsData] Map Object
   /// If the [_sectionName] is null|empty then adding the first section data saved in [sectionsData]
   fetchQuestionnaireForRA(String language) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
     if (_sectionName == null) {
       for (int i = 0; i < isarDB!.sections!.length; i++) {
         if (caseId == null || caseId!.isEmpty) createCaseID();
@@ -172,11 +176,9 @@ class QuestionnaireViewModel extends ChangeNotifier {
           ..encounterCategoryMapId = staticCraData.ehrCategoryMap
           ..encounterEhrDiagnosisReports = diagnosisReports;
         craSectionModel.add(craModel);
-        await IsarDbService.isarDbService.updateCRA(caseId!, craSectionModel[i]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseId!,craData: craSectionModel[i]);
       }
-    } catch (e) {
-      log(e.toString());
-    }
+    } catch (e) {}
   }
 
   addToDB({CRAModel? craData, StaticQuestionnaireModel? staticCraData, required BuildContext context}) async {
@@ -239,9 +241,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
           craQuestionnaires.add(craQuestionnaire);
         }
       }
-    }  catch (e) {
-      log(e.toString());
-    }
+    }  catch (e) {}
 
     List<CRAQuestionnaire> craQuestionnaireData = [];
     craQuestionnaireData.addAll(craQuestionnaires);
@@ -258,9 +258,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..encounterCategoryMapId = craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap
       ..ehrNotes = ehrNotes;
     craSectionModel.add(craModel);
-    log("Line 261 ${(craData?.ehrCategoryMap)} ${isarDB!.sections!.map((e) => e.sectionName)}");
       if (craData?.ehrCategoryMap != isarDB!.sections![0].sectionName) {
-        await IsarDbService.isarDbService.updateCRA(_caseId!, craSectionModel[0]);
+        await IsarDbService.isarDbService.updateCRA(caseId: _caseId!,craData: craSectionModel[0]);
       } else {
         bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId!);
         if (!craDataAvailable) {
@@ -269,8 +268,6 @@ class QuestionnaireViewModel extends ChangeNotifier {
             ..caseId = _caseId
             ..languageCode = languageViewModel.selectedLanguage
             ..craSectionData = craSectionModel);
-        } else {
-          await IsarDbService.isarDbService.removeDuplicateInQuestionnaire(_caseId!, craSectionModel[0]);
         }
       }
 

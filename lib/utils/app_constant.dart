@@ -89,9 +89,9 @@ class AppConstant {
 
   //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [
-    CustomChipItem(data: "m", text: "male"),
-    CustomChipItem(data: "f", text: "female"),
-    CustomChipItem(data: "o", text: "others"),
+    CustomChipItem(data: "Male", text: "male"),
+    CustomChipItem(data: "Female", text: "female"),
+    CustomChipItem(data: "Others", text: "others"),
   ];
 
   ///SECURE STORAGE KEYS

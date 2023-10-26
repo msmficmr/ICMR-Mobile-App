@@ -87,6 +87,7 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
     _buttonEnabled = ValueNotifier<bool>(true);
   }
 
+  /// Used to fetch all the CPITN code description from the json
   getCPITNCodes() {
     String codes = TranslationKeys.cpitnCodesDescription.translate(context);
     codesDescription = CommonFunctions.convertStringToList(codes);
@@ -336,6 +337,6 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
 
   savePeriodontalData() async {
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    await questionnaireViewModel.setNextSectionData("community_risk_assessment_periodontal_status", context, staticSectionsData: staticQuestionnaires);
+    await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_periodontal_status", context: context, staticSectionsData: staticQuestionnaires);
   }
 }
