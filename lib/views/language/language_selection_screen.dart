@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
-import 'package:mhealth/services/location_service.dart';
 import 'package:mhealth/services/questinnaire_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -46,6 +44,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     if (_buttonEnabled.value) {
       String? locale = languageViewModel.selectedLanguage;
       languageViewModel.isLoading = true;
+      await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.LANGUAGE_KEY, value: locale);
       RiskAssessmentQuestionaire? rAQuestions = await QuestionnaireService().loadQuestionnaireAsset(locale);
       if (rAQuestions != null) {
         await IsarDbService.isarDbService.updateRiskAssessmentQuestionnaire(locale, rAQuestions);
@@ -61,6 +60,12 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     super.initState();
     _buttonEnabled = ValueNotifier<bool>(false);
     languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    languageViewModel.clearLanguageViewModelData();
+    super.dispose();
   }
 
   @override

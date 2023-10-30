@@ -102,4 +102,8 @@ class TranslationKeys {
   static const String deepPocket = "deep_pocket";
   static const String criteriaSection = "criteria_section";
   static const String periodontalSection = "periodontal_section";
+  static const String riskAssessment = "risk_assessment";
+  static const String institutionCodes = "institution_codes";
+  static const String studyCodes = "study_codes";
+  static const String signedConsentReasonCodes = "signed_consent_reason_codes";
 }

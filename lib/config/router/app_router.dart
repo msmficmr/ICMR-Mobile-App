@@ -100,7 +100,7 @@ class AppRouter {
             GoRoute(
               path: QuestionnaireScreen.routerPath,
               pageBuilder: (context, state) {
-                String sectionName = state.extra.toString();
+                String? sectionName = state.extra as String?;
                 return RouterTransition(
                   key: state.pageKey,
                   child: QuestionnaireScreen(

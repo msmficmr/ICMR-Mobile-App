@@ -124,10 +124,8 @@ class LoginViewModel extends ChangeNotifier {
       VerifyOtpResponseModel? response = await AuthService().verifyOtp(payload: payload);
       if (response != null) {
           String userDetails = jsonEncode(response.toJson());
-          SharedPreferences sp = await SharedPreferences.getInstance();
-          sp.setString(AppConstant.SHARED_PREFERENCE_USER_DETAILS, userDetails);
-            await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-            loginUser(jsonEncode(response.user!.toJson()));
+          await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
+          loginUser(jsonEncode(response.user!.toJson()));
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);

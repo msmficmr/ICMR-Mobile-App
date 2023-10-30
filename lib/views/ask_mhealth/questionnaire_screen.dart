@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -20,9 +18,9 @@ import 'package:provider/provider.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   static const routerPath = "/questionnaireScreen";
-  String sectionName;
+  String? sectionName;
 
-  QuestionnaireScreen({Key? key, required this.sectionName}) : super(key: key);
+  QuestionnaireScreen({Key? key, this.sectionName}) : super(key: key);
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
@@ -46,10 +44,10 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireSections.isEmpty) {
       await questionnaireViewModel.setQuestionnaireSections(locale);
     }
-    if (widget.sectionName == "null") {
+    if (widget.sectionName == null) {
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {
-      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName,context: context);
+      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName ?? "",context: context);
     }
   }
 
@@ -57,6 +55,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
       GoRouter.of(context).go(DashboardScreen.routerPath);
       questionnaireViewModel.craSectionData = [];
+      questionnaireViewModel.resetAll();
     } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
       GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);

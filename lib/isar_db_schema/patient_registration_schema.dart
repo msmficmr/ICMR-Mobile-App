@@ -31,7 +31,6 @@ class PatientRegistration {
   // Add a toJson method to convert the object to JSON
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'consent': consent,
       'visitDate': visitDate.toIso8601String(),
       'institutionCodeID': institutionCodeID,

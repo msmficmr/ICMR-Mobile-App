@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 class LanguageViewModel extends ChangeNotifier {
 
+  static const defaultLanguage = "en_US";
+
   int _selectedIndex = -1;
   String _selectedLanguage = "";
-  Locale _locale = const Locale("en", "IN");
+  Locale _locale = const Locale(defaultLanguage, "IN");
   bool _isLoading = false;
 
   int get selectedIndex => _selectedIndex;
@@ -20,10 +22,21 @@ class LanguageViewModel extends ChangeNotifier {
   }
 
   Future<void> setSelectedLanguage({required String selectedLanguage, required int selectedIndex, required Locale locale}) async {
+
+    if (selectedLanguage == null) {
+      _locale = const Locale(defaultLanguage, "IN");
+      _selectedIndex = -1;
+    }
+
     _locale = locale;
     _selectedIndex = selectedIndex;
     _selectedLanguage = selectedLanguage;
     notifyListeners();
+  }
+
+  clearLanguageViewModelData() {
+    _selectedIndex = -1;
+    _isLoading = false;
   }
 }
 

@@ -43,7 +43,7 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
   }
 
   redirectToDashboard() {
-    GoRouter.of(context).go(DashboardScreen.routerPath);
+    GoRouter.of(context).go(CRAPatientScreen.routerPath);
   }
 
   @override

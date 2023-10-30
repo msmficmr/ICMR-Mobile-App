@@ -34,10 +34,6 @@ import 'package:provider/provider.dart';
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
 
-  // final AttachmentModel? selectedAttachment; // Add this line
-
-  //RegistrationScreen({Key? key, this.selectedAttachment}) : super(key: key); // Add this line
-
   const RegistrationScreen({Key? key}) : super(key: key);
 
   @override
@@ -129,12 +125,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   late RegistrationViewModel registrationViewModel;
 
-  //TODO: Only for the UI purpose the list has been hardcoded for now
-
   List<String> getOccupationTypes() {
     String types = TranslationKeys.occupation.translate(context);
     List<String> occupationTypes = CommonFunctions.convertStringToList(types);
     return occupationTypes;
+  }
+
+  List<String> getInstitutionCodes() {
+    String types = TranslationKeys.institutionCodes.translate(context);
+    List<String> institutionCodes = CommonFunctions.convertStringToList(types);
+    return institutionCodes;
+  }
+
+  List<String> getStudyCodes() {
+    String types = TranslationKeys.studyCodes.translate(context);
+    List<String> studyCodes = CommonFunctions.convertStringToList(types);
+    return studyCodes;
+  }
+
+  List<String> getSignedConsentReasonCodes() {
+    String types = TranslationKeys.signedConsentReasonCodes.translate(context);
+    List<String> reasonCodes = CommonFunctions.convertStringToList(types);
+    return reasonCodes;
   }
 
   @override
@@ -313,7 +325,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _institutionCode.value = val;
                         },
                         selectedItem: _institutionCode.value,
-                        items: [],
+                        items: getInstitutionCodes(),
                       );
                     }),
                 const SpaceWidget(
@@ -332,7 +344,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _studyCode.value = val;
                         },
                         selectedItem: _studyCode.value,
-                        items: [],
+                        items: getStudyCodes(),
                         // validator: AppValidators.requiredField,
                       );
                     }),
@@ -608,7 +620,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     _signedConsentNoReason.value = val;
                                   },
                                   selectedItem: _signedConsentNoReason.value,
-                                  items: [],
+                                  items: getSignedConsentReasonCodes(),
                                 );
                               })
                           : const SizedBox.shrink();

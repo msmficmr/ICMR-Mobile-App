@@ -7,6 +7,7 @@ import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
@@ -100,6 +101,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
     _patientConsent.value = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen()));
   }
 
+  List<String> getInstitutionCodes() {
+    String types = TranslationKeys.institutionCodes.translate(context);
+    List<String> institutionCodes = CommonFunctions.convertStringToList(types);
+    return institutionCodes;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,7 +140,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               _institutionCode.value = val;
                             },
                             selectedItem: _institutionCode.value,
-                            items: [],
+                            items: getInstitutionCodes(),
                           );
                         },
                       ),

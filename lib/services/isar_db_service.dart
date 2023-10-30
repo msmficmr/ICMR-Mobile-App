@@ -55,21 +55,23 @@ class IsarDbService {
 
   Future<void> updateCRA({required String caseId, required CRASectionModel craData}) async {
     Isar? db = await isar;
-    final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
-    if (questionnaire != null) {
-      CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
-      List<CRASectionModel>? previousData = questionnaireToBeUpdated?.craSectionData ?? [];
-      int index = previousData.indexWhere((element) => element.encounterCategoryMapId == craData.encounterCategoryMapId);
-      if (index != -1) {
-        previousData[index] = craData;
-      } else {
-        previousData = [...previousData, craData];
+    try {
+      final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
+      if (questionnaire != null) {
+        CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
+        List<CRASectionModel>? previousData = questionnaireToBeUpdated?.craSectionData ?? [];
+        int index = previousData.indexWhere((element) => element.encounterCategoryMapId == craData.encounterCategoryMapId);
+        if (index != -1) {
+          previousData[index] = craData;
+        } else {
+          previousData = [...previousData, craData];
+        }
+        questionnaireToBeUpdated!.craSectionData = [...previousData];
+        await db.writeTxn(() async {
+          await db.cRAOfflineDatas.put(questionnaireToBeUpdated);
+        });
       }
-      questionnaireToBeUpdated!.craSectionData = [...previousData];
-      await db.writeTxn(() async {
-        await db.cRAOfflineDatas.put(questionnaireToBeUpdated);
-      });
-    }
+    } catch (e) {}
   }
 
   Future<bool> checkIfCRADataPresent(String caseId) async {
