@@ -42,9 +42,9 @@ class AppAssetsPath {
   static const String icLogout = "assets/icons/ic_logout.svg";
 
   /// Questionnaires
-  static const String baselineSignsQuestionnaire = "assets/json/en_baseline_signs_symptoms.json";
-  static const String detailsOfHabitQuestionnaire = "assets/json/en_details_of_habit.json";
-  static const String investigationQuestionnaire = "assets/json/en_investigation.json";
+  static const String baselineSignsQuestionnaire = "baseline_signs_symptoms.json";
+  static const String detailsOfHabitQuestionnaire = "details_of_habit.json";
+  static const String investigationQuestionnaire = "investigation.json";
   static const List<String> questionnairesPath = [detailsOfHabitQuestionnaire, baselineSignsQuestionnaire, investigationQuestionnaire];
   static const String periodontalStatusImage = "assets/images/periodontal_status.png";
 

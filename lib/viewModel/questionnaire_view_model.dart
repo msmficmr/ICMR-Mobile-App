@@ -52,6 +52,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
+  clearData(){
+    questionnaireSections = [];
+  }
+
   /// Updating the value of the [sectionsData] key
   /// Getting the next section index from [questionnaireSections] and adding the values for [_sectionName] & [questionnaireList]
   /// If all the sections are completed then submitting the form
@@ -127,20 +131,21 @@ class QuestionnaireViewModel extends ChangeNotifier {
   fetchQuestionnaireForRA(String language) async {
     isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
     if (_sectionName == null) {
-      for (int i = 0; i < isarDB!.sections!.length; i++) {
-        if (caseId == null || caseId!.isEmpty) createCaseID();
+      for (int i = 0; i < (isarDB?.sections?.length ?? 0); i++) {
+        if ((caseId ?? "").isEmpty) createCaseID();
         setVersionNumber(isarDB!.sections![i].versionNumber.toString());
         questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
         sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
-      _sectionName = questionnaireSections[0];
+      
+      _sectionName = questionnaireSections.isNotEmpty ? questionnaireSections[0] : null;
     }
     notifyListeners();
   }
 
   setQuestionnaireSections(String language) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
-    for (int i = 0; i < isarDB!.sections!.length; i++) {
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
+    for (int i = 0; i < (isarDB?.sections?.length ?? 0); i++) {
       questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
     }
     notifyListeners();
@@ -170,13 +175,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
         EHRDiagnosisReports diagnosisReports = EHRDiagnosisReports()..questions = ehrDiagnosisReports;
         CRASectionModel craModel = CRASectionModel()
           ..createdBy = userId
-          ..locale = languageViewModel.selectedLanguage
+          ..locale = languageViewModel.currentLanguage
           ..patientId = patientId
           ..caseId = caseId
           ..encounterCategoryMapId = staticCraData.ehrCategoryMap
           ..encounterEhrDiagnosisReports = diagnosisReports;
         craSectionModel.add(craModel);
-        await IsarDbService.isarDbService.updateCRA(caseId: caseId!,craData: craSectionModel[i]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseId!, craData: craSectionModel[i]);
       }
     } catch (e) {}
   }
@@ -241,7 +246,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
           craQuestionnaires.add(craQuestionnaire);
         }
       }
-    }  catch (e) {}
+    } catch (e) {}
 
     List<CRAQuestionnaire> craQuestionnaireData = [];
     craQuestionnaireData.addAll(craQuestionnaires);
@@ -252,28 +257,28 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..questions = craQuestionnaireData;
     CRASectionModel craModel = CRASectionModel()
       ..createdBy = userId
-      ..locale = languageViewModel.selectedLanguage
+      ..locale = languageViewModel.currentLanguage
       ..patientId = patientId
       ..caseId = caseId
       ..encounterCategoryMapId = craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap
       ..ehrNotes = ehrNotes;
     craSectionModel.add(craModel);
-      if (craData?.ehrCategoryMap != isarDB!.sections![0].sectionName) {
-        await IsarDbService.isarDbService.updateCRA(caseId: _caseId!,craData: craSectionModel[0]);
-      } else {
-        bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId!);
-        if (!craDataAvailable) {
-          IsarDbService.isarDbService.saveCRA(CRAOfflineData()
-            ..patientId = patientId
-            ..caseId = _caseId
-            ..languageCode = languageViewModel.selectedLanguage
-            ..craSectionData = craSectionModel);
-        }
+    if (craData?.ehrCategoryMap != isarDB!.sections![0].sectionName) {
+      await IsarDbService.isarDbService.updateCRA(caseId: _caseId!, craData: craSectionModel[0]);
+    } else {
+      bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId!);
+      if (!craDataAvailable) {
+        IsarDbService.isarDbService.saveCRA(CRAOfflineData()
+          ..patientId = patientId
+          ..caseId = _caseId
+          ..languageCode = languageViewModel.currentLanguage
+          ..craSectionData = craSectionModel);
       }
+    }
 
-      if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) == "community_risk_assessment_verification_form") {
-        resetAll();
-      }
+    if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) == "community_risk_assessment_verification_form") {
+      resetAll();
+    }
   }
 
   resetAll() {

@@ -7,5 +7,10 @@ class QAEnvironment with Environment {
   factory QAEnvironment() {
     return _qaEnvironment;
   }
+  
+  @override
+  bindServices() {
+    super.bindServices();
+  }
 
 }

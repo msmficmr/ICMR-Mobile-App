@@ -1,4 +1,5 @@
 import 'package:mhealth/config/environment/sit_environment.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 
 mixin Environment {
@@ -8,5 +9,7 @@ mixin Environment {
   String get currentEnv => const String.fromEnvironment(AppConstant.ENV_KEY);
   String get appName => const String.fromEnvironment(AppConstant.APP_NAME_KEY);
   String get baseUrl => const String.fromEnvironment(AppConstant.BASE_URL_KEY);
-
+  bindServices() async {
+    await SharedPreferencesService.init();
+  }
 }

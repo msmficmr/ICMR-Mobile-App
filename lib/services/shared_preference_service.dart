@@ -1,11 +1,11 @@
+import 'dart:developer';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
-  SharedPreferences? _prefs;
-  SharedPreferencesService._() {
-    init();
-  }
-  init() async {
+  static SharedPreferences? _prefs;
+  SharedPreferencesService._();
+  static init() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
@@ -33,7 +33,6 @@ class SharedPreferencesService {
 
   /// [writeString] method is used to write String data to local storage
   Future<void> writeString({required String key, required String value}) async {
-
     await _prefs?.setString(key, value);
   }
 
