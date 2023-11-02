@@ -31,7 +31,7 @@ class QuestionnaireService {
     } on FlutterError catch (e) {
       if (e.message.contains("Unable to load asset")) {
         String? language = AppConstant.languages.firstWhere((element) => element["locale"]==locale)["name"];
-        CommonFunctions.toastMessage("Questionair for ${language} is not available");
+        CommonFunctions.toastMessage("questionnaire for ${language} is not available");
       } else {
         CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
       }
