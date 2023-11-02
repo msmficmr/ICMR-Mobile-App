@@ -125,7 +125,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   /// Fetching the Questionnaire based upon the [language] and saving it in the [sectionsData] Map Object
   /// If the [_sectionName] is null|empty then adding the first section data saved in [sectionsData]
   fetchQuestionnaireForRA(String language) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
     if (_sectionName == null) {
       for (int i = 0; i < (isarDB?.sections?.length ?? 0); i++) {
         if ((caseId ?? "").isEmpty) createCaseID();
@@ -139,7 +139,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   }
 
   setQuestionnaireSections(String language) async {
-    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale("en_US");
+    isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
     for (int i = 0; i < isarDB!.sections!.length; i++) {
       questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
     }

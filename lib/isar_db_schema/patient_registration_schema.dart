@@ -27,6 +27,7 @@ class PatientRegistration {
   late String signedConsent;
   late String signedConsentNoReason;
   late String patientId;
+  late String createdBy;
 
   // Add a toJson method to convert the object to JSON
   Map<String, dynamic> toJson() {
@@ -53,6 +54,7 @@ class PatientRegistration {
       'signedConsent': signedConsent,
       'signedConsentNoReason': signedConsentNoReason,
       'patientId': patientId,
+      'createdBy' : createdBy
     };
   }
 }

@@ -18,6 +18,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
@@ -184,6 +185,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       } else if (form.validate()) {
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
+        String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
         questionnaireViewModel.savePatientId(patientId);
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
@@ -206,7 +208,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
           ..signedConsent = _signedConsent.value ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
-          ..patientId = patientId);
+          ..patientId = patientId
+          ..createdBy = userId);
         await addConsentImages(patientId);
         await Provider.of<PatientListViewModel>(context, listen: false).setCurrentUser(_firstNameController.text, _lastNameController.text);
         GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
