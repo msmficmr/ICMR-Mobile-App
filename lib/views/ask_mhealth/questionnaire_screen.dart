@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 
 class QuestionnaireScreen extends StatefulWidget {
   static const routerPath = "/questionnaireScreen";
-  String sectionName;
+  String? sectionName;
 
   QuestionnaireScreen({Key? key, required this.sectionName}) : super(key: key);
 
@@ -29,7 +29,6 @@ class QuestionnaireScreen extends StatefulWidget {
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
   late QuestionnaireViewModel questionnaireViewModel;
 
@@ -42,14 +41,15 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   fetchQuestions() async {
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    String? locale = languageViewModel.selectedLanguage;
+    String? locale = languageViewModel.currentLanguage;
     if (questionnaireViewModel.questionnaireSections.isEmpty) {
       await questionnaireViewModel.setQuestionnaireSections(locale);
     }
-    if (widget.sectionName == "null") {
+    
+    if (widget.sectionName == null) {
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {
-      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName,context: context);
+      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName ?? "", context: context);
     }
   }
 

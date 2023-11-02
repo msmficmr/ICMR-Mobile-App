@@ -6,8 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/services/network_status_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,16 +58,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    final userDetails = sharedPreferences.getString(AppConstant.SHARED_PREFERENCE_USER_DETAILS);
+    final userDetails = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
     if (userDetails == null) {
       if (context.mounted) {
         GoRouter.of(context).go(LoginEmailScreen.routerPath);
       }
     } else {
-      Map<String, dynamic> jsonData = json.decode(userDetails);
-      Map<String, dynamic> userObject = jsonData['user'];
-      await LoginViewModel.loginViewModel.loginUser(jsonEncode(userObject));
+      String? locale = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.LANGUAGE_KEY);
+      context.read<LanguageViewModel>().setAppLanguage(locale ?? "");
+      context.read<LanguageViewModel>().setSelectedLanguage(selectedLanguage: locale ?? "");
+
+      await LoginViewModel.loginViewModel.loginUser(userDetails);
     }
   }
 

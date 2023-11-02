@@ -3,8 +3,9 @@ import 'package:mhealth/config/environment/environment.dart';
 import 'package:mhealth/config/environment/prod_environment.dart';
 import 'package:mhealth/MHealthApp.dart';
 
-void main(){
+Future<void> main()async{
   WidgetsFlutterBinding.ensureInitialized();
   Environment.runningEnv = ProdEnvironment();
+  await Environment.runningEnv.bindServices();
   runApp(const MHealthApp());
 }

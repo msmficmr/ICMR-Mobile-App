@@ -7,4 +7,9 @@ class ProdEnvironment with Environment {
   factory ProdEnvironment() {
     return _prodEnvironment;
   }
+  
+  @override
+  bindServices() {
+    super.bindServices();
+  }
 }

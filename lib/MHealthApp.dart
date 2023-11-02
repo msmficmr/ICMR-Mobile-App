@@ -30,7 +30,7 @@ class MHealthApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<LanguageViewModel>(
           lazy: false,
-          create: (BuildContext createContext) => LanguageViewModel(),
+          create: (BuildContext createContext) => LanguageViewModel.languageViewModel,
         ),
         ChangeNotifierProvider<RegistrationViewModel>(
           lazy: false,

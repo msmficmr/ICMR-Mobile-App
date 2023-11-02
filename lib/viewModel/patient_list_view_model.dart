@@ -20,7 +20,10 @@ class PatientListViewModel with ChangeNotifier {
     try {
       _isLoading = true;
       _registeredPatients = await IsarDbService.isarDbService.getPatientsList();
+      _filteredItems = _registeredPatients;
     } catch (e) {
+      _registeredPatients = [];
+      _filteredItems = [];
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -28,7 +31,9 @@ class PatientListViewModel with ChangeNotifier {
   }
 
   void searchPatient(String name) {
-    _filteredItems = _registeredPatients.where((element) => element.firstName.toLowerCase().contains(name.toLowerCase()) || element.lastName.toLowerCase().contains(name.toLowerCase())).toList();
+    _filteredItems = _registeredPatients.where((element) {
+      return "${element.firstName} ${element.lastName}".toLowerCase().contains(name.toLowerCase());
+    }).toList();
     notifyListeners();
   }
 

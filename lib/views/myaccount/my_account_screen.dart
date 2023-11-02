@@ -272,11 +272,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ),
             ),
             const SpaceWidget(height: 20),
-            AccountCard(
-              key: Key(KEY_LANGUAGE_CARD),
-              cardTitleText: TranslationKeys.language.translate(context),
-              trailingIconPath: AppAssetsPath.icChevronRight,
-              leadingIconPath: AppAssetsPath.icLanguage,
+            InkWell(
+              onTap: (){
+                GoRouter.of(context).push(LanguageSelectionScreen.routerPath,extra: true);
+              },
+              child: AccountCard(
+                key: Key(KEY_LANGUAGE_CARD),
+                cardTitleText: TranslationKeys.language.translate(context),
+                trailingIconPath: AppAssetsPath.icChevronRight,
+                leadingIconPath: AppAssetsPath.icLanguage,
+              ),
             ),
             InkWell(
               onTap: () {
