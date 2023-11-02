@@ -9,6 +9,7 @@ import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -62,9 +63,11 @@ class _SplashScreenState extends State<SplashScreen> {
         GoRouter.of(context).go(LoginEmailScreen.routerPath);
       }
     } else {
-      Map<String, dynamic> jsonData = json.decode(userDetails);
-      Map<String, dynamic> userObject = jsonData['user'];
-      await LoginViewModel.loginViewModel.loginUser(jsonEncode(userObject));
+      String? locale = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.LANGUAGE_KEY);
+      context.read<LanguageViewModel>().setAppLanguage(locale ?? "");
+      context.read<LanguageViewModel>().setSelectedLanguage(selectedLanguage: locale ?? "");
+
+      await LoginViewModel.loginViewModel.loginUser(userDetails);
     }
   }
 

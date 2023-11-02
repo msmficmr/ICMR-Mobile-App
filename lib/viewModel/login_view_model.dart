@@ -21,8 +21,10 @@ class LoginViewModel extends ChangeNotifier {
   factory LoginViewModel() {
     return loginViewModel;
   }
+  VerifyOtpResponseModel? _authDetails;
   UserModel? _userDetails;
   UserModel? get userDetails => _userDetails;
+  VerifyOtpResponseModel? get authDetails => _authDetails;
 
   bool _isLoggedIn = false;
   LoginScreenTypes _loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
@@ -73,7 +75,8 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   loginUser(String data) {
-    _userDetails = UserModel.fromJson(jsonDecode(data));
+    _authDetails = verifyOtpResponseModelFromJson(data);
+    _userDetails = _authDetails?.user;
     _isLoggedIn = true;
     notifyListeners();
   }
@@ -86,7 +89,7 @@ class LoginViewModel extends ChangeNotifier {
   /// object has property called success if otp sent success this property will be `true`
   /// if we get success property as true then we are redirecting to otp validation screen
   /// otherwise we will display message property of [SendOtpResponseModel]
-  Future<bool> sendOtp({required String mobileNumberOrEmailText,AuthType authType=AuthType.mobile}) async {
+  Future<bool> sendOtp({required String mobileNumberOrEmailText, AuthType authType = AuthType.mobile}) async {
     bool isOtpSentSuccess = false;
     isLoading = true;
     Map<String, dynamic> otpPayload = {};
@@ -99,12 +102,12 @@ class LoginViewModel extends ChangeNotifier {
     try {
       SendOtpResponseModel? response = await AuthService().sendOtp(otpPayload: otpPayload);
       if (response != null) {
-          _mobileNoOrEmailText = mobileNumberOrEmailText;
-          isOtpSentSuccess = true;
-          loginScreenType = LoginScreenTypes.OTP_SCREEN;
+        _mobileNoOrEmailText = mobileNumberOrEmailText;
+        isOtpSentSuccess = true;
+        loginScreenType = LoginScreenTypes.OTP_SCREEN;
       }
     } catch (e) {
-      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG+e.toString());
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG + e.toString());
     } finally {
       isLoading = false;
     }
@@ -123,9 +126,9 @@ class LoginViewModel extends ChangeNotifier {
       }
       VerifyOtpResponseModel? response = await AuthService().verifyOtp(payload: payload);
       if (response != null) {
-          String userDetails = jsonEncode(response.toJson());
-          await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-          loginUser(jsonEncode(response.user!.toJson()));
+        String userDetails = jsonEncode(response.toJson());
+        await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
+        loginUser(jsonEncode(response.toJson()));
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);

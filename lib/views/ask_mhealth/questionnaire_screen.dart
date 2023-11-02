@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -20,14 +22,13 @@ class QuestionnaireScreen extends StatefulWidget {
   static const routerPath = "/questionnaireScreen";
   String? sectionName;
 
-  QuestionnaireScreen({Key? key, this.sectionName}) : super(key: key);
+  QuestionnaireScreen({Key? key, required this.sectionName}) : super(key: key);
 
   @override
   State<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
   late QuestionnaireViewModel questionnaireViewModel;
 
@@ -40,14 +41,15 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   fetchQuestions() async {
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    String? locale = languageViewModel.selectedLanguage;
+    String? locale = languageViewModel.currentLanguage;
     if (questionnaireViewModel.questionnaireSections.isEmpty) {
       await questionnaireViewModel.setQuestionnaireSections(locale);
     }
+
     if (widget.sectionName == null) {
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {
-      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName ?? "",context: context);
+      await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName ?? "", context: context);
     }
   }
 
@@ -55,7 +57,6 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
       GoRouter.of(context).go(DashboardScreen.routerPath);
       questionnaireViewModel.craSectionData = [];
-      questionnaireViewModel.resetAll();
     } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
       GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);

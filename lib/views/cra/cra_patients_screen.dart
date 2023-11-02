@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,8 +41,19 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_PATIENT_ID = "key_patient_id";
 
+  Timer? _debounce;
+
   void onSearchFieldChanged(String input) {
-    patientListViewModel.searchPatient(input);
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 200), () {
+      patientListViewModel.searchPatient(input);
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
@@ -48,12 +61,6 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     super.initState();
     patientListViewModel = Provider.of<PatientListViewModel>(context, listen: false);
     patientListViewModel.loadRegisteredPatients();
-  }
-
-  @override
-  void dispose() {
-    patientListViewModel.debounce?.cancel();
-    super.dispose();
   }
 
   redirectToDashboard() {
@@ -73,11 +80,10 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
           appBarTitleType: CustomAppBarTitleType.TEXT,
           titleText: TranslationKeys.craPatientList.translate(context),
           centerTitle: false,
-          onLeadingClick: () => redirectToDashboard(),
+          onLeadingClick: () => Navigator.pop(context),
         ),
-        floatingActionButton: SizedBox(
-          width: 50,
-          height: 50,
+        floatingActionButton: FloatingActionButton(
+          onPressed: null,
           child: CustomFloatingButton(
             buttonAssetType: CustomFloatingAssetTypes.SVG,
             assetPath: AppAssetsPath.icAdd,
@@ -109,26 +115,27 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                     if (isLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
-                      return Consumer<PatientListViewModel>(
+                      return Selector<PatientListViewModel, int>(
+                        selector: (_, provider) => provider.filteredItems.length,
                         builder: (context, patientName, child) {
-                          final items = _searchFieldController.text.isEmpty ? patientName.registeredPatients : patientName.filteredItems;
+                          final items = patientListViewModel.filteredItems;
                           if (items.isNotEmpty) {
                             return ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context, index) {
                                 final patient = items[index];
-                                final fullName = "${patient?.firstName} ${patient?.lastName}";
+                                final fullName = "${patient.firstName} ${patient.lastName}";
                                 return CustomPatientCard(
                                   widgetKey: KEY_PATIENT_CARD,
                                   patientName: fullName,
-                                  patientId: patient!.patientId,
+                                  patientId: patient.patientId,
                                   gender: CommonFunctions.getGender(patient.gender.toString()),
                                   age: patient.age,
                                   phoneNumber: patient.phoneNumber,
                                   patientNameKey: Key('KEY_PATIENT_NAME_$index'),
                                   patientIdKey: Key('KEY_PATIENT_ID_$index'),
-                                  onTap: () async {
-                                    await redirectToQuestionnaire(patient.patientId);
+                                  onTap: () {
+                                    redirectToQuestionnaire(patient.patientId);
                                   },
                                 );
                               },
@@ -153,23 +160,23 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientID ?? "");
     if (craData != null) {
       await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
-      await Provider.of<QuestionnaireViewModel>(context, listen: false).setCaseId(craData.caseId!);
-      for (int i = 0; i < (craData.craSectionData?.length ?? 0); i++) {
+      await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
+      for (int i = 0; i < craData.craSectionData!.length; i++) {
         switch (craData.craSectionData![i].encounterCategoryMapId) {
           case "community_risk_assessment_details_of_habits":
-            return GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
+            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
           case "community_risk_assessment_baseline_signs_or_symptoms":
-            return GoRouter.of(context).push(PeriodontalScreen.routerPath);
-          case "community_risk_assessment_periodontal_status" :
-            return GoRouter.of(context).push(LesionLocationScreen.routerPath);
+            GoRouter.of(context).push(PeriodontalScreen.routerPath);
+          case "community_risk_assessment_periodontal_status":
+            GoRouter.of(context).push(LesionLocationScreen.routerPath);
           case "community_risk_assessment_lesion_location":
-            return GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+            GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
           case "community_risk_assessment_measurement_lesions":
-            return GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
+            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
           case "community_risk_assessment_investigation":
-            return GoRouter.of(context).push(VerificationScreen.routerPath);
+            GoRouter.of(context).push(VerificationScreen.routerPath);
           default:
-            return CommonFunctions.toastMessage("All sections completed");
+            CommonFunctions.toastMessage("All sections completed");
         }
       }
     } else {

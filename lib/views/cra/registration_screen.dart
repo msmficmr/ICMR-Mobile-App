@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -222,7 +224,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       AttachmentDb attachment = AttachmentDb()
         ..fileName = questionnaireViewModel.consentList[i]!.fileName
         ..dataBytes = questionnaireViewModel.consentList[i]!.baseImage;
-      await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId,attachment: attachment);
+      await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId, attachment: attachment);
     }
     questionnaireViewModel.consentList.clear();
   }
@@ -264,9 +266,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _isConsentButtonActiveNotifier,
                     builder: (context, isButtonActive, child) {
                       return PrimaryFilledIconButton(
-                        onPressed: () {
-                          onConsentClicked();
-                        },
+                        onPressed: onConsentClicked,
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
                           enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,

@@ -1,11 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/router/router_transition.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/verification_screen.dart';
+import 'package:provider/provider.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -50,6 +51,13 @@ class AppRouter {
             ),
             GoRoute(
               path: DashboardScreen.routerPath,
+              redirect: (context, state) async {
+                bool containsLanguage = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.LANGUAGE_KEY);
+                if (!containsLanguage) {
+                  return LanguageSelectionScreen.routerPath;
+                }
+                return null;
+              },
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
                 child: const DashboardScreen(),
@@ -70,12 +78,14 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: LanguageSelectionScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const LanguageSelectionScreen(),
-              ),
-            ),
+                path: LanguageSelectionScreen.routerPath,
+                pageBuilder: (context, state) {
+                  bool showBackButton = state.extra == null ? false : state.extra as bool;
+                  return RouterTransition(
+                    key: state.pageKey,
+                    child: LanguageSelectionScreen(displayBackButton: showBackButton),
+                  );
+                }),
             GoRoute(
               path: ConsentScreeningScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
@@ -101,6 +111,7 @@ class AppRouter {
               path: QuestionnaireScreen.routerPath,
               pageBuilder: (context, state) {
                 String? sectionName = state.extra as String?;
+
                 return RouterTransition(
                   key: state.pageKey,
                   child: QuestionnaireScreen(

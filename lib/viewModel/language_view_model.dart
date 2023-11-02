@@ -1,14 +1,35 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:mhealth/utils/app_constant.dart';
 
 class LanguageViewModel extends ChangeNotifier {
+  static LanguageViewModel languageViewModel = LanguageViewModel._();
+  LanguageViewModel._();
 
-  static const defaultLanguage = "en_US";
+  factory LanguageViewModel() {
+    return languageViewModel;
+  }
+
+  resetProvider() {
+    _isLoading = false;
+    _selectedLanguage = currentLanguage;
+    int index = AppConstant.languages.indexWhere((element) => element["locale"] == selectedLanguage);
+    if (index == -1) {
+      _selectedIndex = -1;
+    } else {
+      _selectedIndex = index;
+    }
+  }
+
+  String currentLanguage = "";
+
+  static const String defaultLanguageCode = "en_US";
 
   int _selectedIndex = -1;
   String _selectedLanguage = "";
-  Locale _locale = const Locale(defaultLanguage, "IN");
+  Locale _locale = const Locale(defaultLanguageCode, "IN");
   bool _isLoading = false;
 
   int get selectedIndex => _selectedIndex;
@@ -21,22 +42,26 @@ class LanguageViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setSelectedLanguage({required String selectedLanguage, required int selectedIndex, required Locale locale}) async {
-
-    if (selectedLanguage == null) {
-      _locale = const Locale(defaultLanguage, "IN");
-      _selectedIndex = -1;
-    }
-
-    _locale = locale;
-    _selectedIndex = selectedIndex;
-    _selectedLanguage = selectedLanguage;
+  Future<void> setAppLanguage(String languageCode) async {
+    currentLanguage = languageCode;
+    _locale = Locale(languageCode);
     notifyListeners();
   }
 
-  clearLanguageViewModelData() {
-    _selectedIndex = -1;
-    _isLoading = false;
+  Future<void> setSelectedLanguage({required String? selectedLanguage}) async {
+    if (selectedLanguage == null) {
+      _selectedIndex = -1;
+    } else {
+      int index = AppConstant.languages.indexWhere((element) => element["locale"] == selectedLanguage);
+      if (index == -1) {
+        _selectedIndex = -1;
+      } else {
+        _selectedIndex = index;
+      }
+    }
+
+    _selectedLanguage = selectedLanguage ?? defaultLanguageCode;
+    notifyListeners();
   }
 }
 
