@@ -80,7 +80,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
           appBarTitleType: CustomAppBarTitleType.TEXT,
           titleText: TranslationKeys.craPatientList.translate(context),
           centerTitle: false,
-          onLeadingClick: () => Navigator.pop(context),
+          onLeadingClick: redirectToDashboard,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: null,
