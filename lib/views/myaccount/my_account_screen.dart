@@ -67,8 +67,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   Future<void> onLogoutClick() async {
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    bool logout = await loginViewModel.logout();
-    if (logout) {
+    try {
+      await loginViewModel.logout();
+    } finally {
       loginViewModel.isLoggedIn = false;
       GoRouter.of(context).go(LoginHome.routerPath);
     }
