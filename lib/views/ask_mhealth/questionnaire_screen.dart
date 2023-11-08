@@ -57,6 +57,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
       GoRouter.of(context).go(DashboardScreen.routerPath);
       questionnaireViewModel.craSectionData = [];
+      questionnaireViewModel.clearData();
     } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
       questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
       GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);

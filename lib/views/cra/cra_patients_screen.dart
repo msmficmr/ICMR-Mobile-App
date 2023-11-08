@@ -161,8 +161,9 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     if (craData != null) {
       await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
       await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
-      for (int i = 0; i < craData.craSectionData!.length; i++) {
-        switch (craData.craSectionData![i].encounterCategoryMapId) {
+      List<String?>? sections = craData.craSectionData?.map((e) => e.encounterCategoryMapId).toList();
+      if (sections != null) {
+        switch (sections[sections.length - 1]) {
           case "community_risk_assessment_details_of_habits":
             GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
           case "community_risk_assessment_baseline_signs_or_symptoms":

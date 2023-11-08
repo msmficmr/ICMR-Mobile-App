@@ -311,7 +311,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
 
   saveLesionLocationData() {
     for (int i = 0; i < provider.attachmentList.length; i++) {
-      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText, provider.attachmentList[i]!.bytes.toString(), null, null, DateTime.now(), null, null);
+      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText, provider.attachmentList[i]!.baseImage.toString(), null, null, DateTime.now(), null, null);
       staticQuestionnaires.add(staticQuestion);
     }
   }
