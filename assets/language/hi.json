@@ -122,5 +122,21 @@
     "2 = Calculus or plaque retention factor",
     "3 = Shallow pocket 4 or 5mm",
     "4 = Deep pocket 6mm or more"
+  ],
+  "risk_assessment" : "Risk Assessment",
+  "institution_codes" : [
+    "MSMF 01",
+    "AIIMS 02",
+    "HBCH 03",
+    "KLE 04"
+  ],
+  "study_codes" : [
+    "Oral cancer_Atlas"
+  ],
+  "signed_consent_reason_codes" : [
+    "Not willing/ not interested for photography",
+    "Not willing to provide my sample",
+    "Not willing to come for long term follow up",
+    "Any other"
   ]
 }

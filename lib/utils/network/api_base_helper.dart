@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:mhealth/config/environment/environment.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/network/http_status_code_interceptor.dart';
 import 'package:mhealth/utils/network/retry_policy_interceptor.dart';
@@ -110,9 +112,10 @@ class ApiBaseHelper {
   }
 
   static Future<Map<String, String>> _authorizationRefreshToken() async {
-    //TODO : set access token
-    String token = "";
-    String refreshToken = "";
+    final sharedPreferenceData = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
+    Map<String, dynamic> jsonData = jsonDecode(sharedPreferenceData as String);
+    String token = jsonData['accessToken'] ?? "";
+    String refreshToken = jsonData['refreshToken'] ?? "";
 
     return {
       "content-type": "application/json; charset=utf-8",

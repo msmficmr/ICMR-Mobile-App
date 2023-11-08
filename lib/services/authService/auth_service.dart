@@ -51,6 +51,13 @@ class AuthService implements IAuthService {
       rethrow;
     }
   }
+
+  static Future<Response> refreshToken() async {
+    Response response = await ApiBaseHelper.httpGetRequestForRefreshToken(
+      AppEndpoints.refreshTokenUrl,
+    );
+    return response;
+  }
   
   @override
   Future<Response> logout() async {

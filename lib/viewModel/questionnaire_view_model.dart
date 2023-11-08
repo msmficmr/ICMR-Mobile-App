@@ -137,7 +137,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
         questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
         sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
-      
+
       _sectionName = questionnaireSections.isNotEmpty ? questionnaireSections[0] : null;
     }
     notifyListeners();
@@ -159,7 +159,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     try {
       for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
         AttachmentDb attachment = AttachmentDb()
-          ..fileName = staticCraData.questionnaireList![i].toJson()['value']
+          ..fileName = staticCraData.questionnaireList![i].toJson()['questionid']
           ..dataBytes = staticCraData.questionnaireList![i].toJson()['value'];
         ehrDiagnosisReport = Report()
           ..questionId = staticCraData.questionnaireList![i].toJson()['questionid']

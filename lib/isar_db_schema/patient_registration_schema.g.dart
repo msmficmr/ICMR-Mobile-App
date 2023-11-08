@@ -49,83 +49,88 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'consentDate',
       type: IsarType.dateTime,
     ),
-    r'district': PropertySchema(
+    r'createdBy': PropertySchema(
       id: 6,
+      name: r'createdBy',
+      type: IsarType.string,
+    ),
+    r'district': PropertySchema(
+      id: 7,
       name: r'district',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'gender': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'gender',
       type: IsarType.string,
     ),
     r'institutionCodeID': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'institutionCodeID',
       type: IsarType.string,
     ),
     r'lastName': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'medicalRecordNumber': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'medicalRecordNumber',
       type: IsarType.string,
     ),
     r'occupation': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'occupation',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'patientId',
       type: IsarType.string,
     ),
     r'permanentAddress': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'permanentAddress',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'signedConsent': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'signedConsent',
       type: IsarType.string,
     ),
     r'signedConsentNoReason': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'signedConsentNoReason',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'state',
       type: IsarType.string,
     ),
     r'studyCode': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'studyCode',
       type: IsarType.string,
     ),
     r'visitDate': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'visitDate',
       type: IsarType.dateTime,
     )
@@ -183,6 +188,7 @@ int _patientRegistrationEstimateSize(
       }
     }
   }
+  bytesCount += 3 + object.createdBy.length * 3;
   {
     final value = object.district;
     if (value != null) {
@@ -248,22 +254,23 @@ void _patientRegistrationSerialize(
     object.consent,
   );
   writer.writeDateTime(offsets[5], object.consentDate);
-  writer.writeString(offsets[6], object.district);
-  writer.writeString(offsets[7], object.firstName);
-  writer.writeString(offsets[8], object.gender);
-  writer.writeString(offsets[9], object.institutionCodeID);
-  writer.writeString(offsets[10], object.lastName);
-  writer.writeString(offsets[11], object.medicalRecordNumber);
-  writer.writeString(offsets[12], object.occupation);
-  writer.writeString(offsets[13], object.patientId);
-  writer.writeString(offsets[14], object.permanentAddress);
-  writer.writeString(offsets[15], object.phoneNumber);
-  writer.writeString(offsets[16], object.pincode);
-  writer.writeString(offsets[17], object.signedConsent);
-  writer.writeString(offsets[18], object.signedConsentNoReason);
-  writer.writeString(offsets[19], object.state);
-  writer.writeString(offsets[20], object.studyCode);
-  writer.writeDateTime(offsets[21], object.visitDate);
+  writer.writeString(offsets[6], object.createdBy);
+  writer.writeString(offsets[7], object.district);
+  writer.writeString(offsets[8], object.firstName);
+  writer.writeString(offsets[9], object.gender);
+  writer.writeString(offsets[10], object.institutionCodeID);
+  writer.writeString(offsets[11], object.lastName);
+  writer.writeString(offsets[12], object.medicalRecordNumber);
+  writer.writeString(offsets[13], object.occupation);
+  writer.writeString(offsets[14], object.patientId);
+  writer.writeString(offsets[15], object.permanentAddress);
+  writer.writeString(offsets[16], object.phoneNumber);
+  writer.writeString(offsets[17], object.pincode);
+  writer.writeString(offsets[18], object.signedConsent);
+  writer.writeString(offsets[19], object.signedConsentNoReason);
+  writer.writeString(offsets[20], object.state);
+  writer.writeString(offsets[21], object.studyCode);
+  writer.writeDateTime(offsets[22], object.visitDate);
 }
 
 PatientRegistration _patientRegistrationDeserialize(
@@ -284,23 +291,24 @@ PatientRegistration _patientRegistrationDeserialize(
     AttachmentDb(),
   );
   object.consentDate = reader.readDateTime(offsets[5]);
-  object.district = reader.readStringOrNull(offsets[6]);
-  object.firstName = reader.readString(offsets[7]);
-  object.gender = reader.readStringOrNull(offsets[8]);
+  object.createdBy = reader.readString(offsets[6]);
+  object.district = reader.readStringOrNull(offsets[7]);
+  object.firstName = reader.readString(offsets[8]);
+  object.gender = reader.readStringOrNull(offsets[9]);
   object.id = id;
-  object.institutionCodeID = reader.readString(offsets[9]);
-  object.lastName = reader.readString(offsets[10]);
-  object.medicalRecordNumber = reader.readStringOrNull(offsets[11]);
-  object.occupation = reader.readString(offsets[12]);
-  object.patientId = reader.readString(offsets[13]);
-  object.permanentAddress = reader.readStringOrNull(offsets[14]);
-  object.phoneNumber = reader.readString(offsets[15]);
-  object.pincode = reader.readStringOrNull(offsets[16]);
-  object.signedConsent = reader.readString(offsets[17]);
-  object.signedConsentNoReason = reader.readString(offsets[18]);
-  object.state = reader.readStringOrNull(offsets[19]);
-  object.studyCode = reader.readString(offsets[20]);
-  object.visitDate = reader.readDateTime(offsets[21]);
+  object.institutionCodeID = reader.readString(offsets[10]);
+  object.lastName = reader.readString(offsets[11]);
+  object.medicalRecordNumber = reader.readStringOrNull(offsets[12]);
+  object.occupation = reader.readString(offsets[13]);
+  object.patientId = reader.readString(offsets[14]);
+  object.permanentAddress = reader.readStringOrNull(offsets[15]);
+  object.phoneNumber = reader.readString(offsets[16]);
+  object.pincode = reader.readStringOrNull(offsets[17]);
+  object.signedConsent = reader.readString(offsets[18]);
+  object.signedConsentNoReason = reader.readString(offsets[19]);
+  object.state = reader.readStringOrNull(offsets[20]);
+  object.studyCode = reader.readString(offsets[21]);
+  object.visitDate = reader.readDateTime(offsets[22]);
   return object;
 }
 
@@ -329,36 +337,38 @@ P _patientRegistrationDeserializeProp<P>(
     case 5:
       return (reader.readDateTime(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readStringOrNull(offset)) as P;
-    case 9:
+    case 8:
       return (reader.readString(offset)) as P;
+    case 9:
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
       return (reader.readString(offset)) as P;
     case 11:
-      return (reader.readStringOrNull(offset)) as P;
-    case 12:
       return (reader.readString(offset)) as P;
+    case 12:
+      return (reader.readStringOrNull(offset)) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 15:
-      return (reader.readString(offset)) as P;
-    case 16:
       return (reader.readStringOrNull(offset)) as P;
-    case 17:
+    case 16:
       return (reader.readString(offset)) as P;
+    case 17:
+      return (reader.readStringOrNull(offset)) as P;
     case 18:
       return (reader.readString(offset)) as P;
     case 19:
-      return (reader.readStringOrNull(offset)) as P;
-    case 20:
       return (reader.readString(offset)) as P;
+    case 20:
+      return (reader.readStringOrNull(offset)) as P;
     case 21:
+      return (reader.readString(offset)) as P;
+    case 22:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1218,6 +1228,142 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createdBy',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'createdBy',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'createdBy',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createdBy',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      createdByIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'createdBy',
+        value: '',
       ));
     });
   }
@@ -3588,6 +3734,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByDistrict() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'district', Sort.asc);
@@ -3885,6 +4045,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCreatedBy() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCreatedByDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdBy', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByDistrict() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'district', Sort.asc);
@@ -4162,6 +4336,13 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByCreatedBy({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdBy', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByDistrict({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'district', caseSensitive: caseSensitive);
@@ -4325,6 +4506,13 @@ extension PatientRegistrationQueryProperty
       consentDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'consentDate');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
+      createdByProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdBy');
     });
   }
 

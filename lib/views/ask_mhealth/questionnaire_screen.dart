@@ -45,7 +45,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     if (questionnaireViewModel.questionnaireSections.isEmpty) {
       await questionnaireViewModel.setQuestionnaireSections(locale);
     }
-    
+
     if (widget.sectionName == null) {
       await questionnaireViewModel.fetchQuestionnaireForRA(locale);
     } else {

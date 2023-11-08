@@ -20,6 +20,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
@@ -127,12 +128,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   late RegistrationViewModel registrationViewModel;
 
-  //TODO: Only for the UI purpose the list has been hardcoded for now
-
   List<String> getOccupationTypes() {
     String types = TranslationKeys.occupation.translate(context);
     List<String> occupationTypes = CommonFunctions.convertStringToList(types);
     return occupationTypes;
+  }
+
+  List<String> getInstitutionCodes() {
+    String types = TranslationKeys.institutionCodes.translate(context);
+    List<String> institutionCodes = CommonFunctions.convertStringToList(types);
+    return institutionCodes;
+  }
+
+  List<String> getStudyCodes() {
+    String types = TranslationKeys.studyCodes.translate(context);
+    List<String> studyCodes = CommonFunctions.convertStringToList(types);
+    return studyCodes;
+  }
+
+  List<String> getSignedConsentReasonCodes() {
+    String types = TranslationKeys.signedConsentReasonCodes.translate(context);
+    List<String> reasonCodes = CommonFunctions.convertStringToList(types);
+    return reasonCodes;
   }
 
   @override
@@ -170,6 +187,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       } else if (form.validate()) {
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
+        String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
         questionnaireViewModel.savePatientId(patientId);
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
@@ -192,7 +210,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
           ..signedConsent = _signedConsent.value ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
-          ..patientId = patientId);
+          ..patientId = patientId
+          ..createdBy = userId);
         await addConsentImages(patientId);
         await Provider.of<PatientListViewModel>(context, listen: false).setCurrentUser(_firstNameController.text, _lastNameController.text);
         GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
@@ -309,7 +328,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _institutionCode.value = val;
                         },
                         selectedItem: _institutionCode.value,
-                        items: [],
+                        items: getInstitutionCodes(),
                       );
                     }),
                 const SpaceWidget(
@@ -328,7 +347,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _studyCode.value = val;
                         },
                         selectedItem: _studyCode.value,
-                        items: [],
+                        items: getStudyCodes(),
                         // validator: AppValidators.requiredField,
                       );
                     }),
@@ -604,7 +623,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     _signedConsentNoReason.value = val;
                                   },
                                   selectedItem: _signedConsentNoReason.value,
-                                  items: [],
+                                  items: getSignedConsentReasonCodes(),
                                 );
                               })
                           : const SizedBox.shrink();

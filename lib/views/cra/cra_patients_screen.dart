@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -64,92 +63,101 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     patientListViewModel.loadRegisteredPatients();
   }
 
+  redirectToDashboard() {
+    GoRouter.of(context).go(DashboardScreen.routerPath);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: CustomAppBar(
-        appBarTitleType: CustomAppBarTitleType.TEXT,
-        titleText: TranslationKeys.craPatientList.translate(context),
-        centerTitle: false,
-        onLeadingClick: () => Navigator.pop(context),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        child: CustomFloatingButton(
-          buttonAssetType: CustomFloatingAssetTypes.SVG,
-          assetPath: AppAssetsPath.icAdd,
-          buttonKey: Key(KEY_BUTTON_ADD),
-          onPressed: () {
-            GoRouter.of(context).push(RegistrationScreen.routerPath);
-          },
+    return WillPopScope(
+      onWillPop: () async {
+        redirectToDashboard();
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: CustomAppBar(
+          appBarTitleType: CustomAppBarTitleType.TEXT,
+          titleText: TranslationKeys.craPatientList.translate(context),
+          centerTitle: false,
+          onLeadingClick: redirectToDashboard,
         ),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            CustomTextField(
-              widgetKey: Key(KEY_TEXTFIELD_SEARCH),
-              controller: _searchFieldController,
-              hintText: TranslationKeys.search.translate(context),
-              headingKey: Key(KEY_TITLE_SEARCH),
-              onChanged: onSearchFieldChanged,
-              keyboardType: TextInputType.text,
-              suffixType: TextFieldPrefixSuffixType.SVG_ASSET,
-              hasSuffix: true,
-              suffixData: AppAssetsPath.icSearch,
-            ),
-            Expanded(
-              child: Selector<PatientListViewModel, bool>(
-                selector: (context, provider) => provider.isLoading,
-                builder: (context, isLoading, child) {
-                  if (isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return Selector<PatientListViewModel, int>(
-                      selector: (_, provider) => provider.filteredItems.length,
-                      builder: (context, patientName, child) {
-                        final items = patientListViewModel.filteredItems;
-                        if (items.isNotEmpty) {
-                          return ListView.builder(
-                            itemCount: items.length,
-                            itemBuilder: (context, index) {
-                              final patient = items[index];
-                              final fullName = "${patient.firstName} ${patient.lastName}";
-                              return CustomPatientCard(
-                                widgetKey: KEY_PATIENT_CARD,
-                                patientName: fullName,
-                                patientId: patient.patientId,
-                                gender: CommonFunctions.getGender(patient.gender.toString()),
-                                age: patient.age,
-                                phoneNumber: patient.phoneNumber,
-                                patientNameKey: Key('KEY_PATIENT_NAME_$index'),
-                                patientIdKey: Key('KEY_PATIENT_ID_$index'),
-                                onTap: () {
-                                  redirectToQuestionnaire(patient.patientId);
-                                },
-                              );
-                            },
-                          );
-                        } else {
-                          return const Center(child: Text(AppConstant.NO_RECORD_FOUND));
-                        }
-                      },
-                    );
-                  }
-                },
+        floatingActionButton: FloatingActionButton(
+          onPressed: null,
+          child: CustomFloatingButton(
+            buttonAssetType: CustomFloatingAssetTypes.SVG,
+            assetPath: AppAssetsPath.icAdd,
+            buttonKey: Key(KEY_BUTTON_ADD),
+            onPressed: () {
+              GoRouter.of(context).push(RegistrationScreen.routerPath);
+            },
+          ),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              CustomTextField(
+                widgetKey: Key(KEY_TEXTFIELD_SEARCH),
+                controller: _searchFieldController,
+                hintText: TranslationKeys.search.translate(context),
+                headingKey: Key(KEY_TITLE_SEARCH),
+                onChanged: onSearchFieldChanged,
+                keyboardType: TextInputType.text,
+                suffixType: TextFieldPrefixSuffixType.SVG_ASSET,
+                hasSuffix: true,
+                suffixData: AppAssetsPath.icSearch,
               ),
-            ),
-          ],
+              Expanded(
+                child: Selector<PatientListViewModel, bool>(
+                  selector: (context, provider) => provider.isLoading,
+                  builder: (context, isLoading, child) {
+                    if (isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return Selector<PatientListViewModel, int>(
+                        selector: (_, provider) => provider.filteredItems.length,
+                        builder: (context, patientName, child) {
+                          final items = patientListViewModel.filteredItems;
+                          if (items.isNotEmpty) {
+                            return ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                final patient = items[index];
+                                final fullName = "${patient.firstName} ${patient.lastName}";
+                                return CustomPatientCard(
+                                  widgetKey: KEY_PATIENT_CARD,
+                                  patientName: fullName,
+                                  patientId: patient.patientId,
+                                  gender: CommonFunctions.getGender(patient.gender.toString()),
+                                  age: patient.age,
+                                  phoneNumber: patient.phoneNumber,
+                                  patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                                  patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                                  onTap: () {
+                                    redirectToQuestionnaire(patient.patientId);
+                                  },
+                                );
+                              },
+                            );
+                          } else {
+                            return const Center(child: Text(AppConstant.NO_RECORD_FOUND));
+                          }
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Future<void> redirectToQuestionnaire(String patientID) async {
-    context.read<QuestionnaireViewModel>().clearData();
-    CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientID);
+  redirectToQuestionnaire(String patientID) async {
+    CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientID ?? "");
     if (craData != null) {
       await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
       await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
@@ -172,7 +180,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
         }
       }
     } else {
-      GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+      return GoRouter.of(context).push(CriteriaScreen.routerPath);
     }
   }
 }

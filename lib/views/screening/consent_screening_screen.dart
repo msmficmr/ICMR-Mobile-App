@@ -76,7 +76,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
           onLeadingClick: () {
             Navigator.of(context).pop();
           },
-          titleText: TranslationKeys.cra.translate(context),
+          titleText: TranslationKeys.riskAssessment.translate(context),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
