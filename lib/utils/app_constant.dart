@@ -135,8 +135,8 @@ class AppConstant {
   ];
 
   static const List<CustomChipItem<String>> BINARY_LIST = [
-    CustomChipItem(text: 'yes', data: 'y'),
-    CustomChipItem(text: 'no', data: 'n'),
+    CustomChipItem(text: 'yes', data: 'yes'),
+    CustomChipItem(text: 'no', data: 'no'),
   ];
 
   // HERO TAGS

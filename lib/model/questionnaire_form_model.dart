@@ -362,7 +362,7 @@ class TextFieldQuestionnaire extends Questionnaire {
   @override
   Map<String, dynamic> toJson() {
     return {
-      "inputid": id,
+      "questionid": id,
       "value": userEnteredInput == null || userEnteredInput.toString().isEmpty ? "" : userEnteredInput,
       "snomed": "",
       "loinc": "",
