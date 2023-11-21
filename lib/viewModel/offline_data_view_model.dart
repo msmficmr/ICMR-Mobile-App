@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/offline_data_model.dart';
 import 'package:mhealth/model/offlne_sync_response_model.dart';
@@ -12,6 +13,26 @@ class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
 
   int? get syncedNumbers => _syncNumber;
+
+  ConnectivityResult _connectivityResult = ConnectivityResult.none;
+  ConnectivityResult get connectivityResult => _connectivityResult;
+
+  bool _syncData = false;
+  bool get syncData => _syncData;
+
+  OfflineDataViewModel() {
+    _initConnectivity();
+  }
+
+  Future<void> _initConnectivity() async {
+    _connectivityResult = await Connectivity().checkConnectivity();
+    notifyListeners();
+
+    Connectivity().onConnectivityChanged.listen((result) {
+      _connectivityResult = result;
+      notifyListeners();
+    });
+  }
 
   Future<void> fetchOfflineSyncedNumbers({required String userId}) async {
     try {

@@ -103,7 +103,7 @@
         "saliva_collected_rna": {
             "questionObject": {
                 "type": "CHIP_OPTIONS",
-                "questionId": "saliva_collected",
+                "questionId": "saliva_collected_rna",
                 "questionText": "Saliva collected",
                 "required": "false",
                 "validationMessage": null,
@@ -167,7 +167,7 @@
         "cytology_collected_rna": {
             "questionObject": {
                 "type": "CHIP_OPTIONS",
-                "questionId": "cytology_collected",
+                "questionId": "cytology_collected_rna",
                 "questionText": "Cytology collected",
                 "required": "false",
                 "validationMessage": null,

@@ -72,8 +72,8 @@ class AppConstant {
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
   static const String ERROR_FILL_REQUIRED_FIELDS = "Fill Required fields";
   static const String FIELD_REQUIRED = "This field is required";
-  static const String NO_RECORD_FOUND = "No Record Found";
-  static const String SELECT_FILE_BEFORE_SUBMITTING = "Please select a file before submitting.";
+  static const String NO_RECORD_FOUND = "No Records Found";
+  static const String SELECT_FILE_BEFORE_SUBMITTING = "Fill required fields";
 
   // LANGUAGE CODE KEYS
   static const String ENGLISH_LANGUAGE_CODE_KEY = "en_US";
@@ -124,14 +124,14 @@ class AppConstant {
   /// Language Supported
   static const List<Map<String, String>> languages = [
     {"locale": "en_US", "name": "English", "englishText": "English"},
-    {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
-    {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
-    {"locale": "te", "name": "తెలుగు", "englishText": "Telugu"},
-    {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
-    {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
-    {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
-    {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
-    {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
+    // {"locale": "hi", "name": "हिन्दी", "englishText": "Hindi"},
+    // {"locale": "mr", "name": "मराठी", "englishText": "Marathi"},
+    // {"locale": "te", "name": "తెలుగు", "englishText": "Telugu"},
+    // {"locale": "ru", "name": "മലയാളം", "englishText": "Malayalam"},
+    // {"locale": "kn", "name": "ಕನ್ನಡ", "englishText": "Kannada"},
+    // {"locale": "bn", "name": "বাংলা", "englishText": "Bengali"},
+    // {"locale": "ta", "name": "தமிழ்", "englishText": "Tamil"},
+    // {"locale": "or", "name": "ଓଡ଼ିଆ", "englishText": "Odia"},
   ];
 
   static const List<CustomChipItem<String>> BINARY_LIST = [

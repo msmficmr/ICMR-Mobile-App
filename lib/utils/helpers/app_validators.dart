@@ -223,4 +223,27 @@ class AppValidators {
     return null;
   }
 
+  static String? validateCalenderDate(value) {
+    const String kDOVFutureValidator = "Date Of Visit can't be a future date.";
+    const String kValidDOVValidator = "Enter Valid Date Of Visit.";
+
+    String pattern = r"^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value)) {
+      return kValidDOVValidator;
+    } else {
+      try {
+        DateTime inputDate = DateFormat(AppValues.dobDateFormat).parse(value);
+        DateTime todayDate = DateTime.now();
+        if (inputDate.compareTo(todayDate) == 1) {
+          return kDOVFutureValidator;
+        }
+      } catch (e) {
+        return kValidDOVValidator;
+      }
+    }
+
+    return null;
+  }
+
 }

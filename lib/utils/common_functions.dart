@@ -137,9 +137,9 @@ class CommonFunctions {
 
   static String getGender(String gender) {
     switch (gender) {
-      case "m" :
+      case "Male" :
         return "Male";
-      case "f" :
+      case "Female" :
         return "Female";
       default:
         return "Others";

@@ -2,6 +2,7 @@ class AppAssetsPath {
   AppAssetsPath._();
 
   static const String appIcon = "assets/icons/app_icon.svg";
+  static const String appLogo = "assets/icons/ic_logo.svg";
   static const String appHorizontalIcon = "assets/icons/ic_launcher_horizontal.svg";
   static const String icCheckboxChecked = "assets/icons/ic_checkbox_checked.svg";
   static const String icCheckboxUnChecked = "assets/icons/ic_checkbox_unchecked.svg";
