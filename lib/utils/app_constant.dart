@@ -61,7 +61,7 @@ class AppConstant {
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";
 
   // ERRORS
-  static const String SELECT_FILE = "Select File";
+  static const String SELECT_FILE = "Upload Consent";
   static const String ERROR_SOMETHING_WENT_WRONG = "Something Went Wrong";
   static const String AN_UNKNOWN_ERROR = "An Unknown error occurred! Please Try again later!";
   static const String YOU_HAVE_SET_HAS_FOLLOW_UP_AS_TRUE = "You have set hasFollowUp as false, "
