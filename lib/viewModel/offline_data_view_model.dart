@@ -14,25 +14,9 @@ class OfflineDataViewModel extends ChangeNotifier {
 
   int? get syncedNumbers => _syncNumber;
 
-  ConnectivityResult _connectivityResult = ConnectivityResult.none;
-  ConnectivityResult get connectivityResult => _connectivityResult;
 
   bool _syncData = false;
   bool get syncData => _syncData;
-
-  OfflineDataViewModel() {
-    _initConnectivity();
-  }
-
-  Future<void> _initConnectivity() async {
-    _connectivityResult = await Connectivity().checkConnectivity();
-    notifyListeners();
-
-    Connectivity().onConnectivityChanged.listen((result) {
-      _connectivityResult = result;
-      notifyListeners();
-    });
-  }
 
   Future<void> fetchOfflineSyncedNumbers({required String userId}) async {
     try {
