@@ -1,11 +1,12 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
@@ -34,6 +35,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   LoginViewModel? loginViewModel;
+  late NetworkStatusService networkStatusService;
 
   late ValueNotifier<bool> _syncData;
 
@@ -54,9 +56,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   checkToSyncData() async {
-    List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-    if (response.isNotEmpty) {
-      _syncData.value = true;
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      List<PatientRegistration?> patientResponse = await IsarDbService.isarDbService.getPatientsList();
+      if (response.isNotEmpty || patientResponse.isNotEmpty) {
+        _syncData.value = true;
+      } else {
+        _syncData.value = false;
+      }
+    } else {
+      _syncData.value = false;
     }
   }
 
@@ -65,19 +74,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _syncData = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     String userId = loginViewModel?.userDetails?.userId ?? "";
     Provider.of<OfflineDataViewModel>(context, listen: false).fetchOfflineSyncedNumbers(userId: userId);
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult connectivityResult) {
-      if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-        checkToSyncData();
-      } else {
-        _syncData.value = false;
-      }
-    });
+    checkToSyncData();
   }
 
   @override
   Widget build(BuildContext context) {
+    checkToSyncData();
     return Scaffold(
       appBar: CustomAppBar(
         key: Key(KEY_DASHBOARD_APPBAR),
@@ -140,7 +145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                       )
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

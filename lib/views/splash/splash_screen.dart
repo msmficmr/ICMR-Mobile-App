@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Align(
             alignment: Alignment.center,
-            child: SvgPicture.asset(AppAssetsPath.appIcon),
+            child: SvgPicture.asset(AppAssetsPath.appLogo),
           ),
           Positioned(
             bottom: 0,

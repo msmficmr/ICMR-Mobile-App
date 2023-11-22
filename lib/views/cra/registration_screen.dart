@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -234,7 +232,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (result != null) {
       _selectedAttachment = result;
       _isConsentButtonActiveNotifier.value = true;
+      _consentError.value = false;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    questionnaireViewModel.removeAllConsents();
   }
 
   @override
@@ -266,7 +271,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _isConsentButtonActiveNotifier,
                     builder: (context, isButtonActive, child) {
                       return PrimaryFilledIconButton(
-                        onPressed: onConsentClicked,
+                        onPressed: isButtonActive ? (){} : onConsentClicked,
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
                           enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
@@ -348,6 +353,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         },
                         selectedItem: _studyCode.value,
                         items: getStudyCodes(),
+                        validator: AppValidators.requiredField,
                         // validator: AppValidators.requiredField,
                       );
                     }),
@@ -590,7 +596,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       chipList: AppConstant.BINARY_LIST,
                       onChanged: (value) {
                         _signConsent.value = value;
-                        if (value == 'n') {
+                        if (value == 'no') {
                           _signedConsentCopy.value = true;
                         } else {
                           _signedConsentCopy.value = false;

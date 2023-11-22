@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/offline_data_model.dart';
 import 'package:mhealth/model/offlne_sync_response_model.dart';
@@ -12,6 +13,10 @@ class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
 
   int? get syncedNumbers => _syncNumber;
+
+
+  bool _syncData = false;
+  bool get syncData => _syncData;
 
   Future<void> fetchOfflineSyncedNumbers({required String userId}) async {
     try {
