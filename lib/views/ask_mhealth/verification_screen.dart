@@ -10,6 +10,7 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
@@ -107,6 +108,29 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return institutionCodes;
   }
 
+  final Map<String, String> visitTypes = {
+    "1": "1st Visit",
+    "2": "2nd Visit",
+    "3": "3rd Visit",
+    "4": "4th Visit",
+    "5": "5th Visit",
+    "6": "6th Visit",
+    "7": "7th Visit",
+    "8": "8th Visit",
+    "9": "9th Visit",
+    "10": "10th Visit",
+    "11": "11th Visit",
+    "12": "12th Visit",
+    "13": "13th Visit",
+    "14": "14th Visit",
+    "15": "15th Visit",
+    "16": "16th Visit",
+    "17": "17th Visit",
+    "18": "18th Visit",
+    "19": "19th Visit",
+    "20": "20th Visit"
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,7 +199,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               _visitType.value = val;
                             },
                             selectedItem: _visitType.value,
-                            items: [],
+                            items: visitTypes.values.map((e) => e).toList(),
                           );
                         },
                       ),
@@ -196,6 +220,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           dobInputFormatter,
                         ],
                         keyboardType: TextInputType.number,
+                        validator: AppValidators.validateCalenderDate,
                       ),
                       const SpaceWidget(
                         height: 20,

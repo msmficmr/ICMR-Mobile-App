@@ -162,6 +162,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                         children: [
                           const SectionNameWidget(sectionName: "Measurement of lesions"),
                           CustomTextField(
+                            enabled: false,
                             controller: _lesionsController,
                             widgetKey: Key(KEY_FIELD_TOTAL_LESIONS),
                             hintText: TranslationKeys.enterHere.translate(context),
@@ -183,7 +184,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                 chipList: AppConstant.BINARY_LIST,
                                 onChanged: (value) {
                                   _onSiteSpecialist.value = value;
-                                  if (value == 'y') {
+                                  if (value == 'yes') {
                                     _onSiteValue.value = true;
                                   } else {
                                     _onSiteValue.value = false;

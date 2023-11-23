@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
+import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 
@@ -52,7 +53,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
                   SizedBox(
                     height: 24,
                     width: 24,
-                    child: widget.value ? SvgPicture.asset(AppAssetsPath.icCheckboxChecked) : SvgPicture.asset(AppAssetsPath.icCheckboxUnChecked),
+                    child: widget.value ? SvgPicture.asset(AppAssetsPath.icCheckboxChecked, color: AppColorScheme.kPrimaryColor,) : SvgPicture.asset(AppAssetsPath.icCheckboxUnChecked),
                   ),
                 ],
               ),

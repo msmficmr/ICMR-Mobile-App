@@ -63,7 +63,7 @@ class CustomPatientCard extends StatelessWidget {
               ),
               const SpaceWidget(height: 5),
               Text(
-                "KHID: $patientId",
+                "ICMRID: $patientId",
                 key: patientIdKey,
                 style: AppStyles.titleMedium.copyWith(color: textColor),
               ),
