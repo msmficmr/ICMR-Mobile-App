@@ -7,7 +7,6 @@ import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
-import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
@@ -62,17 +61,16 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     "2": "Lower lip",
     "3": "Cheek",
     "4": "Tongue lateral",
-    "5": "Tongue lateral",
-    "6": "Dorsal",
-    "7": "Ventral",
-    "8": "Base of the tongue",
-    "9": "Palate",
-    "10": "Upper vestibule",
-    "11": "Lower vestibule",
-    "12": "Retromolar trigone (RMT)",
-    "13": "Gingiva-upper",
-    "14": "Gingiva-lower",
-    "15": "Floor of the mouth"
+    "5": "Dorsal",
+    "6": "Ventral",
+    "7": "Base of the tongue",
+    "8": "Palate",
+    "9": "Upper vestibule",
+    "10": "Lower vestibule",
+    "11": "Retromolar trigone (RMT)",
+    "12": "Gingiva-upper",
+    "13": "Gingiva-lower",
+    "14": "Floor of the mouth"
   };
 
   final List<String> siteLocation = ['Left', 'Right'];
@@ -82,7 +80,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   static const String ATTACHMENT = "Attachment";
   final String SITE_TITLE = "Site";
   final String LOCATION_TITLE = "Location";
-  final String CONSENT_TEXT = 'I have capture all the images of lesions';
+  final String CONSENT_TEXT = 'I have captured all the images of lesions';
   final String CAPTURE_IMAGE_TITLE = "Capture Image";
 
   @override
@@ -133,112 +131,117 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SectionNameWidget(sectionName: "Lesion Location (mark the site)"),
-                        const SpaceWidget(
-                          height: 15,
-                        ),
-                        ValueListenableBuilder<String?>(
-                          valueListenable: _site,
-                          builder: (context, _, __) {
-                            return CustomDropdown<String>(
-                              widgetKey: KEY_FIELD_SITE,
-                              heading: SITE_TITLE,
-                              headingKey: Key(KEY_HEADING_SITE),
-                              validator: AppValidators.requiredField,
-                              hintText: TranslationKeys.select.translate(context),
-                              onChanged: (val) {
-                                _site.value = val;
-                              },
-                              selectedItem: _site.value,
-                              items: siteMaps.values.map((e) => e).toList(),
-                            );
-                          },
-                        ),
-                        const SpaceWidget(
-                          height: 15,
-                        ),
-                        //LOCATION
-                        ValueListenableBuilder<String?>(
-                          valueListenable: _location,
-                          builder: (context, _, __) {
-                            return CustomDropdown<String>(
-                              widgetKey: KEY_FIELD_LOCATION,
-                              heading: LOCATION_TITLE,
-                              validator: AppValidators.requiredField,
-                              headingKey: Key(KEY_HEADING_LOCATION),
-                              hintText: TranslationKeys.select.translate(context),
-                              onChanged: (val) {
-                                _location.value = val;
-                              },
-                              selectedItem: _location.value,
-                              items: siteLocation,
-                            );
-                          },
-                        ),
-                        const SpaceWidget(
-                          height: 15,
-                        ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: PrimaryFilledButton(
-                              onPressed: () {
-                                fetchImage(ImageSource.camera);
-                              },
-                              isLoading: false,
-                              buttonThemeStyle: const FilledButtonThemeStyle(
-                                enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                                enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                              ),
-                              buttonTitle: CAPTURE_IMAGE_TITLE,
-                              widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
-                        ),
-                        const SpaceWidget(
-                          height: 15,
-                        ),
-                        Selector<QuestionnaireViewModel, int>(
-                          selector: (_, provider) => provider.attachmentList.length,
-                          builder: (context, value, child) => Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: List.generate(
-                              provider.attachmentList.length,
-                              (index) => Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ValueListenableBuilder<AttachmentModel?>(
-                                    valueListenable: _selectedAttachment,
-                                    builder: (context, attachment, _) {
-                                      return AttachmentWidget(
-                                        title: provider.attachmentList[index]!.fileName,
-                                        titleKey: Key(KEY_ATTACHMENT_TITLE),
-                                        viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
-                                        removeButtonKey: Key(KEY_REMOVE_BUTTON),
-                                        onRemoveClick: () {
-                                          provider.removeAttachment(index); // Remove the attachment from the list
-                                          _selectedAttachment.value = null;
-                                        },
-                                        viewPictureClick: () {
-                                          CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  const SpaceWidget(),
-                                ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SectionNameWidget(sectionName: "Lesion Location (mark the site)"),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _site,
+                        builder: (context, _, __) {
+                          return CustomDropdown<String>(
+                            widgetKey: KEY_FIELD_SITE,
+                            heading: SITE_TITLE,
+                            headingKey: Key(KEY_HEADING_SITE),
+                            validator: AppValidators.requiredField,
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _site.value = val;
+                            },
+                            selectedItem: _site.value,
+                            items: siteMaps.values.map((e) => e).toList(),
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      //LOCATION
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _location,
+                        builder: (context, _, __) {
+                          return CustomDropdown<String>(
+                            widgetKey: KEY_FIELD_LOCATION,
+                            heading: LOCATION_TITLE,
+                            validator: AppValidators.requiredField,
+                            headingKey: Key(KEY_HEADING_LOCATION),
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _location.value = val;
+                            },
+                            selectedItem: _location.value,
+                            items: siteLocation,
+                          );
+                        },
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: PrimaryFilledButton(
+                            onPressed: () {
+                               if (formKey.currentState!.validate()) {
+                                 fetchImage(ImageSource.camera);
+                               }
+                            },
+                            isLoading: false,
+                            buttonThemeStyle: const FilledButtonThemeStyle(
+                              enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                              enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                            ),
+                            buttonTitle: CAPTURE_IMAGE_TITLE,
+                            widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
+                      ),
+                      const SpaceWidget(
+                        height: 15,
+                      ),
+                      Selector<QuestionnaireViewModel, int>(
+                        selector: (_, provider) => provider.attachmentList.length,
+                        builder: (context, value, child) => SizedBox(
+                          height: MediaQuery.of(context).size.height / 3,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(
+                                provider.attachmentList.length,
+                                (index) => Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ValueListenableBuilder<AttachmentModel?>(
+                                      valueListenable: _selectedAttachment,
+                                      builder: (context, attachment, _) {
+                                        return AttachmentWidget(
+                                          title: provider.attachmentList[index]!.fileName,
+                                          titleKey: Key(KEY_ATTACHMENT_TITLE),
+                                          viewKey: Key(KEY_ATTACHMENT_VIEW_CARD),
+                                          removeButtonKey: Key(KEY_REMOVE_BUTTON),
+                                          onRemoveClick: () {
+                                            provider.removeAttachment(index); // Remove the attachment from the list
+                                            _selectedAttachment.value = null;
+                                          },
+                                          viewPictureClick: () {
+                                            CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    const SpaceWidget(),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        const SpaceWidget(
-                          height: 80,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SpaceWidget(
+                        height: 80,
+                      ),
+                    ],
                   ),
                 ),
                 Positioned(

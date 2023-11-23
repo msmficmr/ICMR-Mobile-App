@@ -41,6 +41,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String gender = "Female";
   final String age = '23';
   final String phone = '+91 9898989898';
+  final String location = 'Location';
+  final String place = 'Varanasi';
   final String patientRelation = 'Myself';
   final String appVersion = Environment.runningEnv.releaseVersion;
 
@@ -237,6 +239,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,6 +268,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                             Text(phone, style: AppStyles.bodySmall),
                           ],
                         ),
+                        const SpaceWidget(
+                          height: 10,
+                        ),
+                        Text('$location- $place | ', style: AppStyles.bodySmall),
                       ],
                     ),
                   ),

@@ -177,7 +177,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
           case "community_risk_assessment_investigation":
             GoRouter.of(context).push(VerificationScreen.routerPath);
           default:
-            CommonFunctions.toastMessage("All sections completed");
+            CommonFunctions.toastMessage("CRA completed");
         }
       }
     } else {
