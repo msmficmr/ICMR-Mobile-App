@@ -60,7 +60,7 @@ class AppRouter {
               },
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const DashboardScreen(),
+                child:  DashboardScreen(),
               ),
             ),
             GoRoute(
@@ -104,7 +104,7 @@ class AppRouter {
               path: MyAccountScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
                 key: state.pageKey,
-                child: const MyAccountScreen(),
+                child:  MyAccountScreen(),
               ),
             ),
             GoRoute(

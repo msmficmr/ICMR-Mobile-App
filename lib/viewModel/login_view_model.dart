@@ -140,15 +140,15 @@ class LoginViewModel extends ChangeNotifier {
   /// Returning a true value if the status code of the logout is [200]
   Future<bool> logout() async {
     try {
-      final Response response = await AuthService().logout();
-      if (response.statusCode == 200) {
-        await SharedPreferencesService.sharedPreferencesService.clearAll();
-        return true;
-      }
-      return false;
+      await SharedPreferencesService.sharedPreferencesService.clearAll();
+      _userDetails = null;
+      _isLoggedIn = false;
+      notifyListeners();
+      await AuthService().logout();
+      return true;
     } catch (e) {
-      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
-      rethrow;
+      return false;
+      //  CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     }
   }
 }

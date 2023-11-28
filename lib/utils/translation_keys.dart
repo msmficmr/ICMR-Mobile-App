@@ -8,6 +8,7 @@ class TranslationKeys {
   static const String enterOTP = "enter_6_digit_otp";
   static const String dashboard = "dashboard";
   static const String totalCRACompleted = "total_cra_completed";
+  static const String totalPatientCreated = "total_patient_created";
   static const String totalCRASync = "total_cra_sync";
   static const String youAreOnlineSyncData = "you_are_online_sync_data";
   static const String takeCRA = "take_cra";

@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 class DashboardScreen extends StatefulWidget {
   static const String routerPath = "/dashboard";
 
-  const DashboardScreen({Key? key}) : super(key: key);
+  DashboardScreen({Key? key}) : super(key: key);
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -36,6 +36,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   LoginViewModel? loginViewModel;
   late NetworkStatusService networkStatusService;
+  late OfflineDataViewModel provider;
 
   late ValueNotifier<bool> _syncData;
 
@@ -75,9 +76,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _syncData = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
-    String userId = loginViewModel?.userDetails?.userId ?? "";
-    Provider.of<OfflineDataViewModel>(context, listen: false).fetchOfflineSyncedNumbers(userId: userId);
+    provider = Provider.of<OfflineDataViewModel>(context, listen: false);
+    provider.fetchCompletedCRA();
+    provider.fetchRegisteredPatient();
     checkToSyncData();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      loadInitialData();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant DashboardScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+      provider.fetchCompletedCRA();
+    provider.fetchRegisteredPatient();
+  }
+
+  Future<void> loadInitialData() async {
+    await Future.wait([provider.fetchCompletedCRA(), provider.fetchRegisteredPatient()]);
   }
 
   @override
@@ -122,28 +138,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      DashboardCardWidget(
-                        assetPath: AppAssetsPath.icCRA,
-                        count: "150",
-                        title: TranslationKeys.totalCRACompleted.translate(context),
-                        countKey: Key(KEY_CARD_COUNT),
-                        titleKey: Key(KEY_CARD_TITLE),
-                      ),
-                      const SpaceWidget(
-                        width: 20,
-                      ),
                       Selector<OfflineDataViewModel, String>(
-                        selector: (context, offlineDataViewModel) => (offlineDataViewModel.syncedNumbers ?? 0).toString(),
+                        selector: (context, povider) => (provider.completedCRAcount ?? 0).toString(),
                         builder: (context, count, child) {
                           return DashboardCardWidget(
-                            assetPath: AppAssetsPath.icSync,
+                            assetPath: AppAssetsPath.icDashboardCra,
                             count: count,
-                            title: TranslationKeys.totalCRASync.translate(context),
+                            title: TranslationKeys.totalCRACompleted.translate(context),
                             countKey: Key(KEY_CARD_COUNT),
                             titleKey: Key(KEY_CARD_TITLE),
                           );
                         },
-                      )
+                      ),
+                      const SpaceWidget(
+                        width: 20,
+                      ),
+                      Selector<OfflineDataViewModel, int?>(
+                        selector: (context, provider) => (provider.patientRegistered),
+                        builder: (context, count, child) {
+                          return DashboardCardWidget(
+                            assetPath: AppAssetsPath.icPatient,
+                            count: (count ?? 0).toString(),
+                            title: TranslationKeys.totalPatientCreated.translate(context),
+                            countKey: Key(KEY_CARD_COUNT),
+                            titleKey: Key(KEY_CARD_TITLE),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ],
