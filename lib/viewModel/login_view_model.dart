@@ -142,9 +142,9 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await SharedPreferencesService.sharedPreferencesService.clearAll();
       _userDetails = null;
+      await AuthService().logout();
       _isLoggedIn = false;
       notifyListeners();
-      await AuthService().logout();
       return true;
     } catch (e) {
       return false;
