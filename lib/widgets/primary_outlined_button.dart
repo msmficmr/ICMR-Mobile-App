@@ -36,10 +36,12 @@ class _PrimaryOutlinedButtonState extends State<PrimaryOutlinedButton> {
               child: CircularProgressIndicator(),
             )
           : OutlinedButton(
+            
               key: Key(widget.widgetKey),
               onPressed: widget.onPressed,
               style: widget.buttonThemeStyle,
               child: Text(widget.buttonTitle),
+              
             ),
     );
   }

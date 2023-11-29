@@ -67,6 +67,19 @@ class OutlinedButtonThemeStyle extends ButtonStyle {
   }
 
   @override
+  MaterialStateProperty<Color?>? get foregroundColor {
+    return MaterialStateProperty.resolveWith<Color>(
+      (Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return disabledTextColor ?? AppColorScheme.kGrayColor.shade400;
+        }
+
+        return enabledTextColor ?? AppColorScheme.kPrimaryColor;
+      },
+    );
+  }
+
+  @override
   MaterialStateProperty<TextStyle?>? get textStyle {
     return customTextStyle == null ? null : MaterialStatePropertyAll<TextStyle?>(customTextStyle);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mhealth/config/theme/outlined_button_theme_style.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
@@ -73,7 +74,7 @@ class CustomAlertDialog extends StatelessWidget {
                         buttonTitle: buttonText,
                         widgetKey: buttonKey,
                         onPressed: onOkPressed ??
-                                () {
+                            () {
                               Navigator.pop(context);
                             },
                       ),
@@ -85,6 +86,7 @@ class CustomAlertDialog extends StatelessWidget {
                       child: SizedBox(
                         width: double.infinity,
                         child: PrimaryOutlinedButton(
+                          buttonThemeStyle: const OutlinedButtonThemeStyle(),
                           buttonTitle: buttonCancelText ?? "",
                           widgetKey: buttonCancelKey ?? "",
                           onPressed: onCancelPress,
