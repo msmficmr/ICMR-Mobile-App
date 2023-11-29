@@ -1,7 +1,8 @@
 import 'dart:developer';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/model/offline_data_model.dart';
 import 'package:mhealth/model/offlne_sync_response_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
@@ -11,9 +12,40 @@ import 'package:mhealth/utils/common_functions.dart';
 
 class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
+  int? _patientRegistered;
+  int? _completedCRAcount;
 
   int? get syncedNumbers => _syncNumber;
+  int? get patientRegistered => _patientRegistered;
+  int? get completedCRAcount => _completedCRAcount;
+  bool _isPatientCountLoading = false;
+  bool get isPatientCountLoading => _isPatientCountLoading;
 
+  bool _isCRAcountLoading = false;
+  bool get isCRAcountLoading => _isCRAcountLoading;
+
+  set isCRAcountLoading(bool value) {
+    _isCRAcountLoading = value;
+    notifyListeners();
+  }
+
+  set isPatientCountLoading(bool value) {
+    _isPatientCountLoading = value;
+    notifyListeners();
+  }
+
+  Future<void> fetchRegisteredPatient() async {
+      List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+      _patientRegistered = patientListResponse.length;
+      notifyListeners();
+
+  }
+
+  Future<void> fetchCompletedCRA() async {
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      _completedCRAcount = response.where((element) => element?.craSectionData?.any((el) => el.encounterCategoryMapId == "community_risk_assessment_verification_form") ?? false).length;
+      notifyListeners();
+  }
 
   bool _syncData = false;
   bool get syncData => _syncData;
@@ -38,7 +70,7 @@ class OfflineDataViewModel extends ChangeNotifier {
         await IsarDbService.isarDbService.deleteByPatientId(patientId);
       }
     } catch (e) {
-       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     }
   }
 }

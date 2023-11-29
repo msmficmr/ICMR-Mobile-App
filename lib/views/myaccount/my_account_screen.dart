@@ -27,54 +27,79 @@ import 'package:provider/provider.dart';
 
 class MyAccountScreen extends StatefulWidget {
   static const String routerPath = "/myAccountScreen";
-  const MyAccountScreen({super.key});
+
+  MyAccountScreen({super.key});
 
   @override
   State<MyAccountScreen> createState() => _MyAccountScreenState();
 }
 
 class _MyAccountScreenState extends State<MyAccountScreen> {
+  LoginViewModel? loginViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   //To be replaced with Dynamic data
-  static const String patientName = "Indira J Mcintyre";
   final String image = "";
-  final String patientID = 'KH00000000';
-  final String gender = "Female";
-  final String age = '23';
-  final String phone = '+91 9898989898';
   final String location = 'Location';
-  final String place = 'Varanasi';
   final String patientRelation = 'Myself';
   final String appVersion = Environment.runningEnv.releaseVersion;
+  final String DIALOG_CLOSE_TITLE = "Confirm";
+  final String DIALOG_CLOSE_SUBTITLE = "Are you sure you want to Logout?";
+  final String DIALOG_TEXT_CANCEL = "Cancel";
+  final String DIALOG_TEXT_LOGOUT = "Logout";
 
   //KEY
   final String KEY_MY_ACCOUNT_APPBAR = "key_my_account_appbar";
   final String KEY_PATIENT_TEXT = "key_patient_text";
-  final String KEY_PATIENT_ID = "key_patient_id";
+  final String KEY_VOLUNTEER_ID = "key_volunteer_id";
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_LANGUAGE_CARD = "key_language_card";
   final String KEY_DATA_SYNC_CARD = "key_data_sync_card";
 
   //Constant text
-  final String PATIENT_ID = "Patient ID";
+  final String VOLUNTEER_ID = "Volunteer ID";
   OfflineDataViewModel viewModel = OfflineDataViewModel();
 
   bool _syncing = false;
 
-  void _copyToClipboard(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: patientID));
+  void _copyToClipboard(String volunteerId) {
+    Clipboard.setData(ClipboardData(text: volunteerId));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Patient ID copied to clipboard')),
+      const SnackBar(content: Text('Volunteer ID copied to clipboard')),
     );
   }
 
-  Future<void> onLogoutClick() async {
+  Future<bool> onLogoutClick() async {
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    try {
+
+    final bool shouldLogout = await confirmLogout();
+    if (shouldLogout) {
       await loginViewModel.logout();
-    } finally {
-      loginViewModel.isLoggedIn = false;
-      GoRouter.of(context).go(LoginHome.routerPath);
     }
+
+    return shouldLogout;
+  }
+
+  Future<bool> confirmLogout() async {
+    bool? result = await CommonFunctions.openDialog<bool?>(
+      context: context,
+      buttonCancelText: DIALOG_TEXT_CANCEL,
+      buttonText: DIALOG_TEXT_LOGOUT,
+      title: DIALOG_CLOSE_TITLE,
+      subtitle: DIALOG_CLOSE_SUBTITLE,
+      action: (context) {
+        Navigator.of(context).pop(true);
+      },
+      onCancelAction: (context) {
+        Navigator.pop(context, false);
+      },
+    );
+
+    return result ?? false;
   }
 
   Future showDataSyncLoading(BuildContext context) {
@@ -88,16 +113,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           },
           child: Dialog(
             child: Column(
-              mainAxisSize : MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const SpaceWidget(height: 10),
                 const CircularProgressIndicator(),
-                 const SpaceWidget(height: 10),
+                const SpaceWidget(height: 10),
                 Text(
                   'Syncing data Please wait',
                   style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryColor),
                 ),
-                 const SpaceWidget(height: 10),
+                const SpaceWidget(height: 10),
               ],
             ),
           ),
@@ -146,9 +171,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           Map<String, dynamic>? patientJson = resp?.toJson();
           Map<String, dynamic> patientData = {"patientData": patientJson};
           Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic> cdrPostObj = {
-            "cdrPostObj": []
-          };
+          Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
           List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
           payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
           Map<String, dynamic> payLoadObj = {
@@ -168,6 +191,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    String firstName = loginViewModel?.userDetails?.firstName ?? "";
+    String lastName = loginViewModel?.userDetails?.lastName ?? "";
+    String gender = loginViewModel?.userDetails?.gender ?? "";
+    String emailId = loginViewModel?.userDetails?.email ?? "";
+    String volunteerId = loginViewModel?.userDetails?.userId ?? "";
+    String age = loginViewModel?.userDetails?.age ?? "";
+    String locatioName = loginViewModel?.userDetails?.locations?[0].locationName ?? "";
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
@@ -208,7 +239,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        const CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "IM", radius: 30),
+                        CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
                         SpaceWidget(width: isSmallScreen ? 12 : 16),
                         Expanded(
                           child: Column(
@@ -225,8 +256,11 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                                   style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
                                 ),
                               ),
+                              const SpaceWidget(
+                                height: 5,
+                              ),
                               Text(
-                                patientName,
+                                "$firstName $lastName",
                                 key: Key(KEY_PATIENT_NAME),
                                 style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
                               )
@@ -244,16 +278,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$PATIENT_ID:', style: AppStyles.bodySmall),
+                            Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
                             const SpaceWidget(width: 2),
                             Text(
-                              patientID,
-                              key: Key(KEY_PATIENT_ID),
+                              volunteerId,
+                              key: Key(KEY_VOLUNTEER_ID),
                               style: AppStyles.bodySmall,
                             ),
                             const SpaceWidget(width: 5),
                             InkWell(
-                              onTap: () => _copyToClipboard(context),
+                              onTap: () => _copyToClipboard(volunteerId),
                               child: SvgPicture.asset(AppAssetsPath.icCopy),
                             )
                           ],
@@ -265,13 +299,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('$gender- $age | ', style: AppStyles.bodySmall),
-                            Text(phone, style: AppStyles.bodySmall),
+                            Text('$emailId', style: AppStyles.bodySmall),
                           ],
                         ),
                         const SpaceWidget(
                           height: 10,
                         ),
-                        Text('$location- $place | ', style: AppStyles.bodySmall),
+                        Text('$location- $locatioName', style: AppStyles.bodySmall),
                       ],
                     ),
                   ),
@@ -281,8 +315,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             ),
             const SpaceWidget(height: 20),
             InkWell(
-              onTap: (){
-                GoRouter.of(context).push(LanguageSelectionScreen.routerPath,extra: true);
+              onTap: () {
+                GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
               },
               child: AccountCard(
                 key: Key(KEY_LANGUAGE_CARD),

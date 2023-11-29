@@ -24,8 +24,10 @@ class AppAssetsPath {
   static const String icLanguage = "assets/icons/ic_language.svg";
   static const String icRegistrationOk = "assets/icons/ic_registration_ok.svg";
   static const String icCra = "assets/icons/ic_cra.svg";
+   static const String icDashboardCra = "assets/icons/ic_dashboard_cra.svg";
   static const String icChevronRight = "assets/icons/ic_chevron_right.svg";
   static const String icConsentAdded = "assets/icons/ic_consent_added.svg";
+   static const String icPatient = "assets/icons/ic_patient.svg";
 
   /// Splash screen images
   static const String icShield = "assets/icons/ic_shield.svg";

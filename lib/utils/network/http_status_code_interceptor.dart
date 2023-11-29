@@ -7,6 +7,7 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_endpoints.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
+import 'package:mhealth/viewModel/login_view_model.dart';
 
 class HttpStatusCodeInterceptor implements InterceptorContract {
   @override
@@ -51,6 +52,7 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
       case HttpStatus.notFound:
         break;
       case HttpStatus.unauthorized:
+        LoginViewModel.loginViewModel.logout();
       case HttpStatus.badRequest:
         throw BadRequestException(response: data, message: "400", statusCode: statusCode);
       case HttpStatus.tooManyRequests:
