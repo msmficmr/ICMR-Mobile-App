@@ -122,10 +122,15 @@ class AppRouter {
             ),
             GoRoute(
               path: PeriodontalScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: PeriodontalScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: PeriodontalScreen(
+                    redirectFromCRA: isRedirected,
+                  ),
+                );
+              },
             ),
             GoRoute(
               path: CriteriaScreen.routerPath,
@@ -135,12 +140,14 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: VerificationScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const VerificationScreen(),
-              ),
-            ),
+                path: VerificationScreen.routerPath,
+                pageBuilder: (context, state) {
+                  bool? isRedirected = state.extra as bool?;
+                  return RouterTransition(
+                    key: state.pageKey,
+                    child: VerificationScreen(redirectFromCRA: isRedirected),
+                  );
+                }),
             GoRoute(
               path: SignatureScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
@@ -150,10 +157,13 @@ class AppRouter {
             ),
             GoRoute(
               path: LesionLocationScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const LesionLocationScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: LesionLocationScreen(redirect: isRedirected),
+                );
+              },
             ),
             GoRoute(
               path: MeasurementLesionsScreen.routerPath,

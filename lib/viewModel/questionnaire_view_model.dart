@@ -23,9 +23,11 @@ class QuestionnaireViewModel extends ChangeNotifier {
   List<StaticQuestionnaireModel> staticCraSectionData = [];
   List<String> questionnaireSections = [];
   List<AttachmentModel?> attachmentList = [];
+  List<String?> selectedAttachmentList = [];
   List<AttachmentModel?> consentList = [];
 
   String? _caseId;
+  String? _selectedCaseId;
   String? _sectionName;
   String? _versionNumber;
   String? _languageCode;
@@ -33,8 +35,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
   String? _selectedPatientId;
   bool _isPreviousScreen = false;
   bool _allSectionsCompleted = false;
+  bool _isRedirected = false;
+  bool _isRedirectedFromCRA = false;
+  bool _continueClick = false;
 
   String? get caseId => _caseId;
+
+  String? get selectedCaseId => _selectedCaseId;
 
   String? get sectionName => _sectionName;
 
@@ -50,10 +57,21 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   bool get allSectionsCompleted => _allSectionsCompleted;
 
+  bool get isRedirected => _isRedirected;
+
+  bool get isRedirectedFromCRA => _isRedirectedFromCRA;
+
+  bool get continueClick => _continueClick;
+
   Map<String, List<Questionnaire>> sectionsData = {};
 
-  clearData(){
-    questionnaireSections = [];
+  clearData() {
+    _patientId = null;
+  }
+
+  setContinueClick(bool value) async {
+    _continueClick = value;
+    notifyListeners();
   }
 
   /// Updating the value of the [sectionsData] key
@@ -62,51 +80,63 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   setNextSectionData({required String sectionName, required BuildContext context, List<StaticQuestionModel>? staticSectionsData}) async {
     _allSectionsCompleted = false;
-    if (questionnaireSections.contains(sectionName)) {
-      int currentIndex = questionnaireSections.indexOf(sectionName);
-      if (sectionsData[sectionName] == null) {
-        _sectionName = sectionName;
-      } else if (currentIndex == questionnaireSections.length - 1) {
-        _sectionName = questionnaireSections[currentIndex];
-      } else {
-        if (!_isPreviousScreen) _sectionName = questionnaireSections[currentIndex + 1];
-      }
-      if (sectionsData[sectionName] == null) {
-        int? index;
-        for (int i = 0; i < isarDB!.sections!.length; i++) {
-          if (isarDB!.sections![i].uiTemplateId == sectionName) {
-            index = i;
-          }
-        }
-        sectionsData[sectionName] = fetchDBQuestions(isarDB!.sections![index!].questionObj ?? []);
-      }
-
-      //Adding the dynamic data to the craSectionData list variable
-      craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
-      int index = craSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
-      craSectionData.removeAt(index);
-      craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
-      if (sectionsData[sectionName] != null && _caseId != null) {
-        addToDB(craData: CRAModel(sectionName, sectionsData[sectionName]), context: context);
-      }
-      _isPreviousScreen = false;
-    } else {
-      int index = staticCraSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
-      if (index >= 0) staticCraSectionData.removeAt(index);
-
-      //Adding the static data to the craSectionData list variable
-      staticCraSectionData.add(StaticQuestionnaireModel(sectionName, staticSectionsData));
-      if (sectionName == "community_risk_assessment_lesion_location") {
-        await addLesionLocationImagesToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
-      } else {
-        await addToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
-      }
+    if (sectionsData.isEmpty) {
+      fetchQuestionnaireForRA(LanguageViewModel.languageViewModel.selectedLanguage);
     }
+    try {
+      if (questionnaireSections.contains(sectionName)) {
+        int currentIndex = questionnaireSections.indexOf(sectionName);
+        if (sectionsData[sectionName] == null) {
+          _sectionName = sectionName;
+        } else if (currentIndex == questionnaireSections.length - 1) {
+          _sectionName = questionnaireSections[currentIndex];
+        } else {
+          if (!_isPreviousScreen) _sectionName = questionnaireSections[currentIndex + 1];
+        }
+        if (sectionsData[sectionName] == null) {
+          int? index;
+          for (int i = 0; i < isarDB!.sections!.length; i++) {
+            if (isarDB!.sections![i].uiTemplateId == sectionName) {
+              index = i;
+            }
+          }
+          sectionsData[sectionName] = fetchDBQuestions(isarDB!.sections![index!].questionObj ?? []);
+        }
+
+        //Adding the dynamic data to the craSectionData list variable
+        craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
+        int index = craSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
+        craSectionData.removeAt(index);
+        craSectionData.add(CRAModel(sectionName, sectionsData[sectionName]));
+        String? caseId = _caseId ?? _selectedCaseId;
+        if (sectionsData[sectionName] != null && caseId != null && _continueClick) {
+          addToDB(craData: CRAModel(sectionName, sectionsData[sectionName]), context: context);
+        }
+        _isPreviousScreen = false;
+      } else {
+        int index = staticCraSectionData.indexWhere((element) => element.ehrCategoryMap == sectionName);
+        if (index >= 0) staticCraSectionData.removeAt(index);
+
+        //Adding the static data to the craSectionData list variable
+        staticCraSectionData.add(StaticQuestionnaireModel(sectionName, staticSectionsData));
+        if (sectionName == "community_risk_assessment_lesion_location") {
+          await addLesionLocationImagesToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
+        } else {
+          await addToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
+        }
+      }
+    } catch (e) {}
   }
 
-  setSelectedPatientId(String selectedId) => _selectedPatientId = selectedId;
+  setSelectedPatientId(String selectedId) {
+    _selectedPatientId = selectedId;
+    notifyListeners();
+  }
 
-  setCaseId(String caseId) => _caseId = caseId;
+  setCaseId(String caseId) {
+    _selectedCaseId = caseId;
+    notifyListeners();
+  }
 
   /// From the [sectionName] received in the parameter, we are finding in which index that particular
   /// index is present in the [questionnaireSections] and saving the previous item as [_sectionName]
@@ -119,8 +149,23 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   setVersionNumber(String version) => _versionNumber = version;
 
+  setRedirect(bool value) {
+    _isRedirected = value;
+    notifyListeners();
+  }
+
+  setRedirectFromCRA(bool value) {
+    _isRedirectedFromCRA = value;
+    notifyListeners();
+  }
+
   createCaseID() {
     _caseId = CommonFunctions.randomNumber(5);
+  }
+
+  setSelectedAttachmentList(String value) {
+    selectedAttachmentList.add(value);
+    notifyListeners();
   }
 
   /// Forces provider to setstate on external command
@@ -132,13 +177,24 @@ class QuestionnaireViewModel extends ChangeNotifier {
     isarDB = await IsarDbService.isarDbService.getRAQuestionnaireByLocale(language);
     if (_sectionName == null) {
       for (int i = 0; i < (isarDB?.sections?.length ?? 0); i++) {
-        if ((caseId ?? "").isEmpty) createCaseID();
+        if (_caseId == null && _selectedCaseId == null) {
+          createCaseID();
+        }
         setVersionNumber(isarDB!.sections![i].versionNumber.toString());
         questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
         sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
       }
 
       _sectionName = questionnaireSections.isNotEmpty ? questionnaireSections[0] : null;
+    } else if (_isRedirected) {
+      for (int i = 0; i < (isarDB?.sections?.length ?? 0); i++) {
+        if (_caseId == null && _selectedCaseId == null) {
+          createCaseID();
+        }
+        setVersionNumber(isarDB!.sections![i].versionNumber.toString());
+        questionnaireSections.add(isarDB!.sections![i].sectionName.toString());
+        sectionsData[isarDB!.sections![i].sectionName.toString()] = fetchDBQuestions(isarDB!.sections![i].questionObj ?? []);
+      }
     }
     notifyListeners();
   }
@@ -156,8 +212,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
     List<Report> ehrDiagnosisReports = [];
     List<CRASectionModel> craSectionModel = [];
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-    try {
-      for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
+    for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
+      try {
         AttachmentDb attachment = AttachmentDb()
           ..fileName = staticCraData.questionnaireList![i].toJson()['questionid']
           ..dataBytes = staticCraData.questionnaireList![i].toJson()['value'];
@@ -173,17 +229,19 @@ class QuestionnaireViewModel extends ChangeNotifier {
         loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
         String userId = loginViewModel?.userDetails?.userId ?? "";
         EHRDiagnosisReports diagnosisReports = EHRDiagnosisReports()..questions = ehrDiagnosisReports;
+        String? caseID = caseId ?? _selectedCaseId;
+        String? patientID = _patientId ?? _selectedPatientId;
         CRASectionModel craModel = CRASectionModel()
           ..createdBy = userId
           ..locale = languageViewModel.currentLanguage
-          ..patientId = patientId
-          ..caseId = caseId
+          ..patientId = patientID
+          ..caseId = caseID
           ..encounterCategoryMapId = staticCraData.ehrCategoryMap
           ..encounterEhrDiagnosisReports = diagnosisReports;
         craSectionModel.add(craModel);
-        await IsarDbService.isarDbService.updateCRA(caseId: caseId!, craData: craSectionModel[i]);
-      }
-    } catch (e) {}
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[i]);
+      } catch (e) {}
+    }
   }
 
   addToDB({CRAModel? craData, StaticQuestionnaireModel? staticCraData, required BuildContext context}) async {
@@ -193,7 +251,6 @@ class QuestionnaireViewModel extends ChangeNotifier {
     List<CRAQuestionnaire> craQuestionnaires = [];
     List<CRASectionModel> craSectionModel = [];
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
-
     if (craData != null) {
       List<Inputs> inputsData = [];
       List subInputsData = [];
@@ -234,47 +291,49 @@ class QuestionnaireViewModel extends ChangeNotifier {
       }
     }
 
-    try {
-      if (staticCraData != null) {
-        for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
-          craQuestionnaire = CRAQuestionnaire()
-            ..questionId = staticCraData.questionnaireList![i].toJson()['questionid']
-            ..value = staticCraData.questionnaireList![i].toJson()['value']
-            ..timeAsked = DateTime.now()
-            ..lonic = staticCraData.questionnaireList![i].toJson()['loinc']
-            ..snomed = staticCraData.questionnaireList![i].toJson()['snomed'];
-          craQuestionnaires.add(craQuestionnaire);
-        }
+    if (staticCraData != null) {
+      for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
+        craQuestionnaire = CRAQuestionnaire()
+          ..questionId = staticCraData.questionnaireList![i].toJson()['questionid']
+          ..value = staticCraData.questionnaireList![i].toJson()['value']
+          ..timeAsked = DateTime.now()
+          ..lonic = staticCraData.questionnaireList![i].toJson()['loinc']
+          ..snomed = staticCraData.questionnaireList![i].toJson()['snomed'];
+        craQuestionnaires.add(craQuestionnaire);
       }
-    } catch (e) {}
+    }
 
     List<CRAQuestionnaire> craQuestionnaireData = [];
     craQuestionnaireData.addAll(craQuestionnaires);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     String userId = loginViewModel?.userDetails?.userId ?? "";
+    String? caseID = caseId ?? _selectedCaseId;
+    String? patientID = _patientId ?? _selectedPatientId;
     EHRNotes ehrNotes = EHRNotes()
-      ..versionNumber = versionNumber
+      ..versionNumber = versionNumber ?? "V1.0"
       ..questions = craQuestionnaireData;
     CRASectionModel craModel = CRASectionModel()
       ..createdBy = userId
       ..locale = languageViewModel.currentLanguage
-      ..patientId = patientId
-      ..caseId = caseId
+      ..patientId = patientID
+      ..caseId = caseID
       ..encounterCategoryMapId = craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap
       ..ehrNotes = ehrNotes;
     craSectionModel.add(craModel);
-    if (craData?.ehrCategoryMap != isarDB!.sections![0].sectionName) {
-      await IsarDbService.isarDbService.updateCRA(caseId: _caseId!, craData: craSectionModel[0]);
-    } else {
-      bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId!);
-      if (!craDataAvailable) {
-        IsarDbService.isarDbService.saveCRA(CRAOfflineData()
-          ..patientId = patientId
-          ..caseId = _caseId
-          ..languageCode = languageViewModel.currentLanguage
-          ..craSectionData = craSectionModel);
+    try {
+      if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) != "community_risk_assessment_details_of_habits") {
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID!, craData: craSectionModel[0]);
+      } else {
+        bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId ?? _selectedCaseId!);
+        if (!craDataAvailable) {
+          IsarDbService.isarDbService.saveCRA(CRAOfflineData()
+            ..patientId = _patientId ?? _selectedPatientId
+            ..caseId = _caseId ?? _selectedCaseId
+            ..languageCode = languageViewModel.currentLanguage
+            ..craSectionData = craSectionModel);
+        }
       }
-    }
+    } catch (e) {}
 
     if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) == "community_risk_assessment_verification_form") {
       resetAll();
@@ -285,9 +344,15 @@ class QuestionnaireViewModel extends ChangeNotifier {
     questionnaireSections = [];
     craSectionData = [];
     staticCraSectionData = [];
+    selectedAttachmentList = [];
+    attachmentList = [];
     _sectionName = null;
     _caseId = null;
     _versionNumber = null;
+    sectionsData.clear();
+    _selectedCaseId = null;
+    _selectedPatientId = null;
+    notifyListeners();
   }
 
   savePatientId(String randomId) => _patientId = randomId;
@@ -331,11 +396,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     String question = element is QuestionObj ? element.questionText.toString() : element.inputText.toString();
     List<QuestionnaireOption> optionsList = [];
     List<Option> options = element.options ?? [];
-    bool isRequired = false;
-    String isRequiredField = element.requiredValue ?? "";
-    if (isRequiredField.isNotEmpty) {
-      isRequired = true;
-    }
+    bool isRequired = element.requiredValue.toString().isNotEmpty ? element.requiredValue.toString().toBoolean() : false;
     List<Followup> followUps = element.followup ?? [];
     if (options != []) {
       for (var option in options) {

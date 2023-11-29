@@ -6,6 +6,7 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -60,11 +61,29 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   bool _syncing = false;
 
+  late NetworkStatusService networkStatusService;
+
+  late ValueNotifier<bool> _syncData;
+
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: patientID));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Patient ID copied to clipboard')),
     );
+  }
+
+  checkToSyncData() async {
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      List<PatientRegistration?> patientResponse = await IsarDbService.isarDbService.getPatientsList();
+      if (response.isNotEmpty || patientResponse.isNotEmpty) {
+        _syncData.value = true;
+      } else {
+        _syncData.value = false;
+      }
+    } else {
+      _syncData.value = false;
+    }
   }
 
   Future<void> onLogoutClick() async {
@@ -109,54 +128,19 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   onSyncClick() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
-      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      List<CRAOfflineData?> craResponse = await IsarDbService.isarDbService.getListCRAOfflineData();
       List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
-      if (response.isEmpty && patientListResponse.isEmpty) {
+      if (craResponse.isEmpty && patientListResponse.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
         showDataSyncLoading(context);
         _syncing = true;
-        for (int i = 0; i < response.length; i++) {
-          List<dynamic> payLoadObjList = [];
-          String? patienId = response[i]?.patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId ?? "");
-          Map<String, dynamic>? patientJson = resp?.toJson();
-          Map<String, dynamic> patientData = {"patientData": patientJson};
-          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
-          List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
-          Map<String, dynamic> cdrPostObj = {
-            "cdrPostObj": [
-              {response[i]?.caseId: craSectionModel}
-            ]
-          };
-          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-          payLoadObjList.add({response[i]?.patientId: patientDataList});
-          Map<String, dynamic> payLoadObj = {
-            "payloadObj": payLoadObjList,
-            "appVersion": Environment.runningEnv.releaseVersion,
-          };
-          await viewModel.postOfflineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
+
+        bool craUpload = await uploadCRAData(craResponse);
+        if (craUpload) {
+          await uploadPatientData(patientListResponse);
         }
 
-        for (int i = 0; i < patientListResponse.length; i++) {
-          List<dynamic> payLoadObjList = [];
-          String? patientId = patientListResponse[i].patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
-          Map<String, dynamic>? patientJson = resp?.toJson();
-          Map<String, dynamic> patientData = {"patientData": patientJson};
-          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic> cdrPostObj = {
-            "cdrPostObj": []
-          };
-          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-          payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
-          Map<String, dynamic> payLoadObj = {
-            "payloadObj": payLoadObjList,
-            "appVersion": "45",
-          };
-          await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
-        }
         Navigator.of(context, rootNavigator: true).pop();
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
         GoRouter.of(context).go(DashboardScreen.routerPath);
@@ -164,6 +148,61 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
     }
+  }
+
+  Future<bool> uploadCRAData(List<CRAOfflineData?> craResponse) async {
+    for (int i = 0; i < craResponse.length; i++) {
+      List<dynamic> payLoadObjList = [];
+      String? patientId = craResponse[i]?.patientId;
+      PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+      Map<String, dynamic>? patientJson = resp?.toJson();
+      Map<String, dynamic> patientData = {"patientData": patientJson};
+      Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+      Map<String, dynamic>? craOfflineDataJson = craResponse[i]?.toJson();
+      List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+      Map<String, dynamic> cdrPostObj = {
+        "cdrPostObj": [
+          {craResponse[i]?.caseId: craSectionModel}
+        ]
+      };
+      List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+      payLoadObjList.add({craResponse[i]?.patientId: patientDataList});
+      Map<String, dynamic> payLoadObj = {
+        "payloadObj": payLoadObjList,
+        "appVersion": Environment.runningEnv.releaseVersion,
+      };
+      await viewModel.postOfflineData(caseId: craResponse[i]?.caseId, patientId: craResponse[i]?.patientId, payLoadObj: payLoadObj);
+    }
+    return true;
+  }
+
+  Future<void> uploadPatientData(List<PatientRegistration> patientListResponse) async {
+    for (int i = 0; i < patientListResponse.length; i++) {
+      List<dynamic> payLoadObjList = [];
+      String? patientId = patientListResponse[i].patientId;
+      PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+      Map<String, dynamic>? patientJson = resp?.toJson();
+      Map<String, dynamic> patientData = {"patientData": patientJson};
+      Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+      Map<String, dynamic> cdrPostObj = {
+        "cdrPostObj": []
+      };
+      List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+      payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
+      Map<String, dynamic> payLoadObj = {
+        "payloadObj": payLoadObjList,
+        "appVersion": "45",
+      };
+      await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _syncData = ValueNotifier<bool>(false);
+    networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
+    checkToSyncData();
   }
 
   @override
@@ -291,16 +330,25 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 leadingIconPath: AppAssetsPath.icLanguage,
               ),
             ),
-            InkWell(
-              onTap: () {
-                onSyncClick();
-              },
-              child: AccountCard(
-                key: Key(KEY_DATA_SYNC_CARD),
-                cardTitleText: TranslationKeys.dataSync.translate(context),
-                trailingIconPath: AppAssetsPath.icChevronRight,
-                leadingIconPath: AppAssetsPath.icSync,
-              ),
+            ValueListenableBuilder(
+              valueListenable: _syncData,
+              builder: (context, syncData, _) {
+                if (syncData) {
+                  return InkWell(
+                    onTap: () {
+                      onSyncClick();
+                    },
+                    child: AccountCard(
+                      key: Key(KEY_DATA_SYNC_CARD),
+                      cardTitleText: TranslationKeys.dataSync.translate(context),
+                      trailingIconPath: AppAssetsPath.icChevronRight,
+                      leadingIconPath: AppAssetsPath.icSync,
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }
             ),
           ],
         ),

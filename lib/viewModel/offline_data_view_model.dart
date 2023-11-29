@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mhealth/model/offline_data_model.dart';
 import 'package:mhealth/model/offlne_sync_response_model.dart';
@@ -34,7 +31,9 @@ class OfflineDataViewModel extends ChangeNotifier {
     try {
       OfflineSyncResponseModel? response = await OfflineDataService().saveOfflineDataSync(payLoadObj: payLoadObj);
       if (response?.status == 201) {
-        if (caseId != null) await IsarDbService.isarDbService.deleteByCaseId(caseId);
+        if (caseId != null) {
+          await IsarDbService.isarDbService.deleteByCaseId(caseId);
+        }
         await IsarDbService.isarDbService.deleteByPatientId(patientId);
       }
     } catch (e) {

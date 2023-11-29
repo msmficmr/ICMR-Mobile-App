@@ -27,8 +27,9 @@ import 'package:provider/provider.dart';
 
 class LesionLocationScreen extends StatefulWidget {
   static const routerPath = "/lesionLocationScreen";
+  bool? redirect;
 
-  const LesionLocationScreen({Key? key}) : super(key: key);
+  LesionLocationScreen({Key? key, required this.redirect}) : super(key: key);
 
   @override
   State<LesionLocationScreen> createState() => _LesionLocationScreenState();
@@ -112,16 +113,25 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     }
   }
 
+  redirectToQuestionnaire() async {
+    if (widget.redirect ?? false) {
+      GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
+    } else {
+      GoRouter.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        onLeadingClick: () => GoRouter.of(context).pop(),
+        onLeadingClick: () => redirectToQuestionnaire(),
         appBarTitleType: CustomAppBarTitleType.TEXT,
         titleText: AppConstant.RISK_ASSESSMENT,
       ),
       body: WillPopScope(
         onWillPop: () async {
+          redirectToQuestionnaire();
           return false;
         },
         child: Form(

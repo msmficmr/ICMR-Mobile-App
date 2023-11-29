@@ -9,6 +9,7 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
+import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/views/cra/widgets/cardWidget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/space_widget.dart';
@@ -128,7 +129,10 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                         key: Key(KEY_NEW_REGISTRATION_CARD),
                         title: TranslationKeys.newRegistration.translate(context),
                         image: AppAssetsPath.icAddCircular,
-                        onTap: () => GoRouter.of(context).push(RegistrationScreen.routerPath),
+                        onTap: () async {
+                          await context.read<QuestionnaireViewModel>().clearData();
+                          GoRouter.of(context).push(RegistrationScreen.routerPath);
+                        },
                       ),
                     ],
                   ),

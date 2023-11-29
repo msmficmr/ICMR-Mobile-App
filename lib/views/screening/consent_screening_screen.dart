@@ -163,21 +163,24 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: _buttonEnabled,
-                  builder: (context, isValid, _) {
-                    return PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: TranslationKeys.uploadFile.translate(context),
-                      widgetKey: KEY_BUTTON_UPLOAD_FILE,
-                      isLoading: false,
-                      onPressed: !isValid
-                          ? null
-                          : () {
-                              Navigator.pop(context, _selectedAttachment.value);
-                            },
-                    );
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _buttonEnabled,
+                    builder: (context, isValid, _) {
+                      return PrimaryFilledButton(
+                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                        buttonTitle: TranslationKeys.uploadFile.translate(context),
+                        widgetKey: KEY_BUTTON_UPLOAD_FILE,
+                        isLoading: false,
+                        onPressed: !isValid
+                            ? null
+                            : () {
+                                Navigator.pop(context, _selectedAttachment.value);
+                              },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:mhealth/utils/app_localization.dart';
 
 extension StringExtension on String {
@@ -40,5 +38,9 @@ extension StringExtension on String {
       }
     }
     return result.trim();
+  }
+
+  bool toBoolean() {
+    return (toLowerCase() == "true") ? true : false;
   }
 }

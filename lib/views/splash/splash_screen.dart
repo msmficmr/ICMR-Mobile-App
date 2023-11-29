@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -80,18 +78,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: SvgPicture.asset(AppAssetsPath.appLogo),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: SvgPicture.asset(AppAssetsPath.icShield),
-          )
-        ],
+      body: Center(
+        child: SvgPicture.asset(AppAssetsPath.appLogo),
       ),
     );
   }

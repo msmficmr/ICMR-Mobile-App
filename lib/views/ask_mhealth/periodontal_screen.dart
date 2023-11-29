@@ -22,7 +22,9 @@ import 'package:provider/provider.dart';
 class PeriodontalScreen extends StatefulWidget {
   static const routerPath = "/periodontalScreen";
 
-  PeriodontalScreen({Key? key}) : super(key: key);
+  bool? redirectFromCRA;
+
+  PeriodontalScreen({Key? key, required this.redirectFromCRA}) : super(key: key);
 
   @override
   State<PeriodontalScreen> createState() => _PeriodontalScreenState();
@@ -93,8 +95,13 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
     codesDescription = CommonFunctions.convertStringToList(codes);
   }
 
-  redirectToQuestionnaire() {
-    GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
+  redirectToQuestionnaire() async {
+    if (widget.redirectFromCRA ?? false) {
+      await context.read<QuestionnaireViewModel>().resetAll();
+      GoRouter.of(context).pop();
+    } else {
+      GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
+    }
   }
 
   @override

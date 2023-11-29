@@ -100,16 +100,16 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     _onSiteValue = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    _lesionsController.text = questionnaireViewModel.attachmentList.length.toString();
-    _fhpOpinions = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
-    _fhpOpinionValue = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<bool>(false));
-    _autofluorescenceImpression = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
-    _provisionalDiagnosis = List.generate(questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    _lesionsController.text = questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length.toString() : questionnaireViewModel.attachmentList.length.toString();
+    _fhpOpinions = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    _fhpOpinionValue = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<bool>(false));
+    _autofluorescenceImpression = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
+    _provisionalDiagnosis = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length, (_) => ValueNotifier<String?>(null));
     getLesionsData();
   }
 
   getLesionsData() {
-    for (var element in questionnaireViewModel.attachmentList) {
+    for (var element in (questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList : questionnaireViewModel.attachmentList)) {
       var lengthController = TextEditingController();
       _lengthControllers.add(lengthController);
       var breadthController = TextEditingController();
@@ -202,7 +202,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                             height: 20,
                           ),
                           ListView.builder(
-                            itemCount: questionnaireViewModel.attachmentList.length,
+                            itemCount: questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
@@ -210,7 +210,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "${index + 1}. ${questionnaireViewModel.attachmentList[index]?.fileName ?? ""}",
+                                    "${index + 1}. ${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[index] : questionnaireViewModel.attachmentList[index]?.fileName ?? ""}",
                                     style: AppStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   const SpaceWidget(
@@ -397,17 +397,17 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     }
     for (int i = 0; i < _lengthControllers.length; i++) {
       if (_lengthControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("length_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _lengthControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("length_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _lengthControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _breadthControllers.length; i++) {
       if (_breadthControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("breadth_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _breadthControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("breadth_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _breadthControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _productControllers.length; i++) {
       if (_productControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("product_${questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _productControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("product_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _productControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _otherControllers.length; i++) {

@@ -158,29 +158,44 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
 
   redirectToQuestionnaire(String patientID) async {
     CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientID ?? "");
+    await context.read<QuestionnaireViewModel>().clearData();
     if (craData != null) {
-      await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
-      await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
+      await context.read<QuestionnaireViewModel>().setRedirect(true);
       List<String?>? sections = craData.craSectionData?.map((e) => e.encounterCategoryMapId).toList();
       if (sections != null) {
+        await context.read<QuestionnaireViewModel>().resetAll();
+        await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
+        await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
         switch (sections[sections.length - 1]) {
           case "community_risk_assessment_details_of_habits":
-            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
+            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms",);
           case "community_risk_assessment_baseline_signs_or_symptoms":
-            GoRouter.of(context).push(PeriodontalScreen.routerPath);
+            GoRouter.of(context).push(PeriodontalScreen.routerPath, extra: true);
           case "community_risk_assessment_periodontal_status":
             GoRouter.of(context).push(LesionLocationScreen.routerPath);
           case "community_risk_assessment_lesion_location":
-            GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+            int index = sections.indexOf("community_risk_assessment_lesion_location");
+            int ehrDiagnosisReports = craData.craSectionData![index].encounterEhrDiagnosisReports!.questions?.length ?? 0;
+            if (ehrDiagnosisReports != 0) {
+              for (int i = 0; i < ehrDiagnosisReports; i++) {
+                await context.read<QuestionnaireViewModel>().setSelectedAttachmentList(craData.craSectionData![index].encounterEhrDiagnosisReports!.questions![i].value ?? "");
+              }
+              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+            } else {
+              GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
+            }
           case "community_risk_assessment_measurement_lesions":
-            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
+            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
           case "community_risk_assessment_investigation":
-            GoRouter.of(context).push(VerificationScreen.routerPath);
+            await context.read<QuestionnaireViewModel>().setRedirectFromCRA(true);
+            GoRouter.of(context).push(VerificationScreen.routerPath, extra: true);
           default:
             CommonFunctions.toastMessage("CRA completed");
         }
       }
     } else {
+      await context.read<QuestionnaireViewModel>().resetAll();
+      await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
       return GoRouter.of(context).push(CriteriaScreen.routerPath);
     }
   }
