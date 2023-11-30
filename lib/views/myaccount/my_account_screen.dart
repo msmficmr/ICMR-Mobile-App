@@ -40,8 +40,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   @override
   void initState() {
-    _syncData = ValueNotifier<bool>(false);
     super.initState();
+    _syncData = ValueNotifier<bool>(false);
+    networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
+    checkToSyncData();
   }
 
   //To be replaced with Dynamic data
