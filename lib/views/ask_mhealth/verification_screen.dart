@@ -75,7 +75,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   final String INSTITUTUION_TITLE = "Institution Code";
   final String PARTICIPANT_TITLE = "Participant ID";
   final String VISIT_TYPE_TITLE = "Visit Type";
-  final String FROM_DATE_TITLE = "From Date";
+  final String FORM_DATE_TITLE = "Form Date";
   final String CONSENT_TEXT = 'I have reviewed all the Case Report Forms for the above participant and agree that they are accurate and complete.';
   final String ADD_INVESTIGATORS_TITLE = "Add Investigator's signature";
   final String ERROR_CONSENT = "Please sign consent";
@@ -229,7 +229,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           controller: _fromDateController,
                           widgetKey: Key(KEY_FIELD_FROM_DATE),
                           hintText: AppConstant.HINT_TEXT_DATE,
-                          heading: FROM_DATE_TITLE,
+                          heading: FORM_DATE_TITLE,
                           headingKey: Key(KEY_HEADING_FROM_DATE),
                           hasPrefix: true,
                           prefixType: TextFieldPrefixSuffixType.SVG_ASSET,

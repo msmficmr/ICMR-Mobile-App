@@ -96,14 +96,19 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   }
 
   Future<bool> onLogoutClick() async {
-    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
 
-    final bool shouldLogout = await confirmLogout();
-    if (shouldLogout) {
-      await loginViewModel.logout();
+      final bool shouldLogout = await confirmLogout();
+      if (shouldLogout) {
+        await loginViewModel.logout();
+      }
+
+      return shouldLogout;
+    } else {
+      CommonFunctions.toastMessage("You are offline. Please connect to the internet and try again.");
+      return false;
     }
-
-    return shouldLogout;
   }
 
   Future<bool> confirmLogout() async {
@@ -320,14 +325,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$gender- $age | ', style: AppStyles.bodySmall),
-                            Text('$emailId', style: AppStyles.bodySmall),
+                            Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
+                            Text(emailId, style: AppStyles.bodySmall),
                           ],
                         ),
                         const SpaceWidget(
                           height: 10,
                         ),
-                        Text('$location- $locationName', style: AppStyles.bodySmall),
+                        Text('$location : $locationName', style: AppStyles.bodySmall),
                       ],
                     ),
                   ),

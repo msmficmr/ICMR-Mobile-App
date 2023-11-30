@@ -432,6 +432,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.address.translate(context),
                   headingKey: Key(KEY_HEADING_TEMP_ADDRESS),
                   maxLines: 3,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -484,6 +485,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.permanentAddress.translate(context),
                   headingKey: Key(KEY_HEADING_PERMANENT_ADDRESS),
                   maxLines: 3,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -600,6 +602,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _signedConsentCopy.value = true;
                         } else {
                           _signedConsentCopy.value = false;
+                          _signedConsentNoReason.value = null;
                         }
                       },
                       validator: AppValidators.validateBinaryQuestion,

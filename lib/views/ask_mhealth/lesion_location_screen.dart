@@ -115,9 +115,9 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
 
   redirectToQuestionnaire() async {
     if (widget.redirect ?? false) {
-      GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_details_of_habits");
-    } else {
       GoRouter.of(context).pop();
+    } else {
+      GoRouter.of(context).push(PeriodontalScreen.routerPath);
     }
   }
 

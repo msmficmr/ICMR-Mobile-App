@@ -180,11 +180,12 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
               for (int i = 0; i < ehrDiagnosisReports; i++) {
                 await context.read<QuestionnaireViewModel>().setSelectedAttachmentList(craData.craSectionData![index].encounterEhrDiagnosisReports!.questions![i].value ?? "");
               }
-              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath, extra: true);
             } else {
               GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
             }
           case "community_risk_assessment_measurement_lesions":
+            await context.read<QuestionnaireViewModel>().setRedirectFromCRA(true);
             GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
           case "community_risk_assessment_investigation":
             await context.read<QuestionnaireViewModel>().setRedirectFromCRA(true);

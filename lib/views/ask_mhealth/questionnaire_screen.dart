@@ -164,7 +164,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                       ),
                       const SpaceWidget(
-                        height: 20,
+                        height: 16,
                       ),
                     ],
                   );

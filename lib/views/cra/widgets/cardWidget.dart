@@ -30,6 +30,7 @@ class CardWidget extends StatelessWidget {
         padding: const EdgeInsets.only(right: 16.0),
         child: InkWell(
           onTap: onTap,
+          highlightColor: AppColorScheme.kWhite,
           child: Container(
             width: MediaQuery.of(context).size.width,
             decoration: const BoxDecoration(

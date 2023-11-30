@@ -6,7 +6,6 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/verification_screen.dart';
-import 'package:provider/provider.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -167,10 +166,13 @@ class AppRouter {
             ),
             GoRoute(
               path: MeasurementLesionsScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const MeasurementLesionsScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: MeasurementLesionsScreen(redirect: isRedirected),
+                );
+              },
             ),
           ],
         )
