@@ -73,7 +73,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
          if (questionnaireViewModel.attachmentList.isNotEmpty || questionnaireViewModel.selectedAttachmentList.isNotEmpty) {
            GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
          } else {
-           GoRouter.of(context).push(LesionLocationScreen.routerPath, extra: true);
+           GoRouter.of(context).push(LesionLocationScreen.routerPath, extra: false);
          }
        }
     } else {

@@ -91,7 +91,9 @@ class QuestionnaireViewModel extends ChangeNotifier {
         } else if (currentIndex == questionnaireSections.length - 1) {
           _sectionName = questionnaireSections[currentIndex];
         } else {
-          if (!_isPreviousScreen) _sectionName = questionnaireSections[currentIndex + 1];
+          if (questionnaireSections[currentIndex + 1] != "community_risk_assessment_details_of_habits") {
+            if (!_isPreviousScreen) _sectionName = questionnaireSections[currentIndex + 1];
+          }
         }
         if (sectionsData[sectionName] == null) {
           int? index;
