@@ -68,6 +68,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        Navigator.of(context).pop();
         return false;
       },
       child: Scaffold(
@@ -138,7 +139,9 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                                       removeButtonKey: Key(KEY_REMOVE_BUTTON),
                                       onRemoveClick: () {
                                         provider.removeConsent(index);
-                                        _selectedAttachment.value = null;
+                                        if (provider.consentList == [] || provider.consentList.isEmpty) {
+                                          _selectedAttachment.value = null;
+                                        }
                                       },
                                       viewPictureClick: () {
                                         CommonFunctions.viewImage(context: context, bytes: provider.consentList[index]!.bytes);

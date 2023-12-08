@@ -302,6 +302,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           onPressed: () async {
                             if (_hasConsent.value == false) {
                               _errorText.value = true;
+                              CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
                             } else {
                               saveVerificationData();
                               await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form",context: context, staticSectionsData: []);

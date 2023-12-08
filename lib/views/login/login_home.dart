@@ -30,35 +30,23 @@ class _LoginHomeState extends State<LoginHome> {
     super.dispose();
   }
 
-  Future<bool> onBackPress() async {
-    // if (loginViewModel.authFlow == LoginScreenTypes.MOBILE_NUMBER) {
-    //   loginViewModel.loginScreenType = LoginScreenTypes.MOBILE_NUMBER;
-    // } else {
-      loginViewModel.loginScreenType = LoginScreenTypes.EMAIL;
-    // }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: onBackPress,
-      child: Material(
-        child: Selector<LoginViewModel, LoginScreenTypes>(
-          selector: (_, provider) => provider.loginScreenType,
-          builder: (context, LoginScreenTypes value, child) {
-            switch (value) {
-              case LoginScreenTypes.OTP_SCREEN:
-                return const LoginOtpScreen();
-              case LoginScreenTypes.EMAIL:
-                default:
-                return const LoginEmailScreen();
-              /*case LoginScreenTypes.MOBILE_NUMBER:
+    return Material(
+      child: Selector<LoginViewModel, LoginScreenTypes>(
+        selector: (_, provider) => provider.loginScreenType,
+        builder: (context, LoginScreenTypes value, child) {
+          switch (value) {
+            case LoginScreenTypes.OTP_SCREEN:
+              return const LoginOtpScreen();
+            case LoginScreenTypes.EMAIL:
               default:
-                return const LoginMobileScreen();*/
-            }
-          },
-        ),
+              return const LoginEmailScreen();
+            /*case LoginScreenTypes.MOBILE_NUMBER:
+            default:
+              return const LoginMobileScreen();*/
+          }
+        },
       ),
     );
   }
