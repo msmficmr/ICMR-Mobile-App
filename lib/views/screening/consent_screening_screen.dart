@@ -66,61 +66,56 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pop();
-        return false;
-      },
-      child: Scaffold(
-        appBar: CustomAppBar(
-          centerTitle: false,
-          onLeadingClick: () {
-            Navigator.of(context).pop();
-          },
-          titleText: TranslationKeys.riskAssessment.translate(context),
-        ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      appBar: CustomAppBar(
+        centerTitle: false,
+        onLeadingClick: () {
+          Navigator.of(context).pop();
+        },
+        titleText: TranslationKeys.riskAssessment.translate(context),
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
+        child: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(bottom: 60),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SpaceWidget(
+                    height: 10,
+                  ),
+                  Row(
                     children: [
+                      SvgPicture.asset(
+                        AppAssetsPath.dottedIcon,
+                      ),
                       const SpaceWidget(
-                        height: 10,
+                        width: 5,
                       ),
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            AppAssetsPath.dottedIcon,
-                          ),
-                          const SpaceWidget(
-                            width: 5,
-                          ),
-                          Text(
-                            TranslationKeys.informedConsent.translate(context),
-                            key: Key(KEY_INFORMED_CONSENT),
-                            style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
-                          ),
-                        ],
+                      Text(
+                        TranslationKeys.informedConsent.translate(context),
+                        key: Key(KEY_INFORMED_CONSENT),
+                        style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
                       ),
-                      ValueListenableBuilder<AttachmentModel?>(
-                          valueListenable: _selectedAttachment,
-                          builder: (context, _, __) {
-                            return UploadFileWidget(
-                              heading: TranslationKeys.uploadConsent.translate(context),
-                              onFileSelected: onFileSelect,
-                            );
-                          }),
-                      const SpaceWidget(
-                        height: 15,
-                      ),
-                      Selector<QuestionnaireViewModel, int>(
-                        selector: (_, provider) => provider.consentList.length,
-                        builder: (context, value, child) => Column(
+                    ],
+                  ),
+                  ValueListenableBuilder<AttachmentModel?>(
+                      valueListenable: _selectedAttachment,
+                      builder: (context, _, __) {
+                        return UploadFileWidget(
+                          heading: TranslationKeys.uploadConsent.translate(context),
+                          onFileSelected: onFileSelect,
+                        );
+                      }),
+                  Selector<QuestionnaireViewModel, int>(
+                    selector: (_, provider) => provider.consentList.length,
+                    builder: (_, value, child) => SizedBox(
+                      height: MediaQuery.of(context).size.height / 3,
+                      child: SingleChildScrollView(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: List.generate(
@@ -131,7 +126,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                               children: [
                                 ValueListenableBuilder<AttachmentModel?>(
                                   valueListenable: _selectedAttachment,
-                                  builder: (context, attachment, _) {
+                                  builder: (_, attachment, __) {
                                     return AttachmentWidget(
                                       title: provider.consentList[index]!.fileName,
                                       titleKey: Key(KEY_ATTACHMENT_TITLE),
@@ -149,45 +144,41 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                                     );
                                   },
                                 ),
-                                const SpaceWidget(),
                               ],
                             ),
                           ),
                         ),
                       ),
-                      const SpaceWidget(
-                        height: 80,
-                      ),
-                    ],
+                    ),
                   ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _buttonEnabled,
+                  builder: (context, isValid, _) {
+                    return PrimaryFilledButton(
+                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                      buttonTitle: TranslationKeys.uploadFile.translate(context),
+                      widgetKey: KEY_BUTTON_UPLOAD_FILE,
+                      isLoading: false,
+                      onPressed: !isValid
+                          ? null
+                          : () {
+                              Navigator.pop(context, _selectedAttachment.value);
+                            },
+                    );
+                  },
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _buttonEnabled,
-                    builder: (context, isValid, _) {
-                      return PrimaryFilledButton(
-                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                        buttonTitle: TranslationKeys.uploadFile.translate(context),
-                        widgetKey: KEY_BUTTON_UPLOAD_FILE,
-                        isLoading: false,
-                        onPressed: !isValid
-                            ? null
-                            : () {
-                                Navigator.pop(context, _selectedAttachment.value);
-                              },
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

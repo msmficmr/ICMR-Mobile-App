@@ -205,13 +205,10 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             buttonTitle: CAPTURE_IMAGE_TITLE,
                             widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
                       ),
-                      const SpaceWidget(
-                        height: 15,
-                      ),
                       Selector<QuestionnaireViewModel, int>(
                         selector: (_, provider) => provider.attachmentList.length,
                         builder: (context, value, child) => SizedBox(
-                          height: MediaQuery.of(context).size.height / 3,
+                          height: MediaQuery.of(context).size.height / 4,
                           child: SingleChildScrollView(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -248,9 +245,6 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                           ),
                         ),
                       ),
-                      const SpaceWidget(
-                        height: 80,
-                      ),
                     ],
                   ),
                 ),
@@ -278,7 +272,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                         },
                       ),
                       const SpaceWidget(
-                        height: 20,
+                        height: 10,
                       ),
                       SizedBox(
                         width: double.infinity,

@@ -122,7 +122,8 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
           padding: EdgeInsets.all(AppValues.kAppPadding),
           child: Stack(
             children: [
-              Positioned.fill(
+              Container(
+                padding: const EdgeInsets.only(bottom: 60),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,9 +296,6 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                             ],
                           ),
                         ],
-                      ),
-                      const SpaceWidget(
-                        height: 80,
                       ),
                     ],
                   ),

@@ -172,7 +172,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
           case "community_risk_assessment_baseline_signs_or_symptoms":
             GoRouter.of(context).push(PeriodontalScreen.routerPath, extra: true);
           case "community_risk_assessment_periodontal_status":
-            GoRouter.of(context).push(LesionLocationScreen.routerPath);
+            GoRouter.of(context).push(LesionLocationScreen.routerPath, extra: true);
           case "community_risk_assessment_lesion_location":
             int index = sections.indexOf("community_risk_assessment_lesion_location");
             int ehrDiagnosisReports = craData.craSectionData![index].encounterEhrDiagnosisReports!.questions?.length ?? 0;
