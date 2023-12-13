@@ -95,6 +95,14 @@ class AppConstant {
     CustomChipItem(data: "Others", text: "others"),
   ];
 
+  //Institution List
+  static const List<Map<String, String>> INSTITUTION_LIST = [
+    {"id": "msmf_01", "name": "MSMF 01"},
+    {"id": "aiims_02", "name": "AIIMS 02"},
+    {"id": "hbch_03", "name": "HBCH 03"},
+    {"id": "kle_04", "name": "KLE 04"},
+  ];
+
   ///SECURE STORAGE KEYS
   static const String SHARED_PREFERENCE_USER_DETAILS = "SHARED_PREFERENCE_USER_DETAILS";
 
