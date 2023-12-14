@@ -92,15 +92,7 @@ class AppConstant {
   static const List<CustomChipItem<String>> GENDER_LIST = [
     CustomChipItem(data: "Male", text: "male"),
     CustomChipItem(data: "Female", text: "female"),
-    CustomChipItem(data: "Others", text: "others"),
-  ];
-
-  //Institution List
-  static const List<Map<String, String>> INSTITUTION_LIST = [
-    {"id": "msmf_01", "name": "MSMF 01"},
-    {"id": "aiims_02", "name": "AIIMS 02"},
-    {"id": "hbch_03", "name": "HBCH 03"},
-    {"id": "kle_04", "name": "KLE 04"},
+    CustomChipItem(data: "Other", text: "other"),
   ];
 
   ///SECURE STORAGE KEYS

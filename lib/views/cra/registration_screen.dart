@@ -49,6 +49,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
+  List<String> occupationIds = [];
+  List<String> occupationNames = [];
+  List<String> institutionIds = [];
+  List<String> institutionNames = [];
+  List<String> studyIds = [];
+  List<String> studyNames = [];
+  List<String> signedConsentIds = [];
+  List<String> signedConsentNames = [];
+
   AttachmentModel? consent;
 
   late TextEditingController _dateOfVisitController = TextEditingController();
@@ -125,26 +134,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   late RegistrationViewModel registrationViewModel;
 
-  List<String> getOccupationTypes() {
-    String types = TranslationKeys.occupation.translate(context);
-    List<String> occupationTypes = CommonFunctions.convertStringToList(types);
-    return occupationTypes;
+  getOccupationTypes() {
+    String occupationTypes = TranslationKeys.occupation.translate(context);
+    occupationIds = CommonFunctions.convertStringToListOfIds(occupationTypes);
+    occupationNames = CommonFunctions.convertStringToListOfNames(occupationTypes);
   }
 
-  List<String> getInstitutionCodes() {
-    return AppConstant.INSTITUTION_LIST.map((institution) => institution["name"] ?? "").toList();
+  getInstitutionCodes() {
+    String institutionData = TranslationKeys.institutionCodes.translate(context);
+    institutionIds = CommonFunctions.convertStringToListOfIds(institutionData);
+    institutionNames = CommonFunctions.convertStringToListOfNames(institutionData);
   }
 
-  List<String> getStudyCodes() {
-    String types = TranslationKeys.studyCodes.translate(context);
-    List<String> studyCodes = CommonFunctions.convertStringToList(types);
-    return studyCodes;
+  getStudyCodes() {
+    String studyData = TranslationKeys.studyCodes.translate(context);
+    studyIds = CommonFunctions.convertStringToListOfIds(studyData);
+    studyNames = CommonFunctions.convertStringToListOfNames(studyData);
   }
 
-  List<String> getSignedConsentReasonCodes() {
-    String types = TranslationKeys.signedConsentReasonCodes.translate(context);
-    List<String> reasonCodes = CommonFunctions.convertStringToList(types);
-    return reasonCodes;
+  getSignedConsentReasonCodes() {
+    String signedConsentData = TranslationKeys.signedConsentReasonCodes.translate(context);
+    signedConsentIds = CommonFunctions.convertStringToListOfIds(signedConsentData);
+    signedConsentNames = CommonFunctions.convertStringToListOfNames(signedConsentData);
   }
 
   @override
@@ -172,6 +183,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _consentError = ValueNotifier<bool>(false);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getOccupationTypes();
+    getInstitutionCodes();
+    getStudyCodes();
+    getSignedConsentReasonCodes();
+  }
+
   void onContinueClick() async {
     final form = formKey.currentState;
     if (form != null) {
@@ -182,12 +202,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
-        String? institutionId = AppConstant.INSTITUTION_LIST.firstWhere((element) => element["name"] == _institutionCode.value, orElse: () => {"id": ""})["id"];
         questionnaireViewModel.savePatientId(patientId);
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
-          ..institutionCodeID = institutionId ?? ""
-          ..studyCode = _studyCode.value ?? ""
+          ..institutionCodeID = _institutionCode.value != null ? institutionIds[institutionNames.indexOf(_institutionCode.value ?? "")] : ""
+          ..studyCode = studyIds[studyNames.indexOf(_studyCode.value ?? "")]
           ..firstName = _firstNameController.text
           ..lastName = _lastNameController.text
           ..age = _ageController.text
@@ -197,14 +216,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..state = _stateController.text
           ..pincode = _pincodeController.text
           ..permanentAddress = _permanentAddressController.text
-          ..occupation = _occupation.value ?? ""
+          ..occupation = occupationIds[occupationNames.indexOf(_occupation.value ?? "")]
           ..phoneNumber = _mobileFieldController.text
           ..alternatePhoneNumber = _alternateNumberFieldController.text
           ..medicalRecordNumber = _medicalRecordNumberController.text
           ..aadharId = _aadharIDController.text
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
           ..signedConsent = _signConsent.value?.toUpperCase() ?? ""
-          ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
+          ..signedConsentNoReason = _signedConsentNoReason.value != null ? signedConsentIds[signedConsentNames.indexOf(_signedConsentNoReason.value ?? "")] : ""
           ..patientId = patientId
           ..createdBy = userId);
         await addConsentImages(patientId);
@@ -330,7 +349,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _institutionCode.value = val;
                         },
                         selectedItem: _institutionCode.value,
-                        items: getInstitutionCodes(),
+                        items: institutionNames,
                       );
                     }),
                 const SpaceWidget(
@@ -349,7 +368,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _studyCode.value = val;
                         },
                         selectedItem: _studyCode.value,
-                        items: getStudyCodes(),
+                        items: studyNames,
                         validator: AppValidators.requiredField,
                         // validator: AppValidators.requiredField,
                       );
@@ -500,7 +519,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _occupation.value = val;
                         },
                         selectedItem: _occupation.value,
-                        items: getOccupationTypes(),
+                        items: occupationNames,
                         validator: AppValidators.requiredField,
                       );
                     }),
@@ -629,7 +648,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     _signedConsentNoReason.value = val;
                                   },
                                   selectedItem: _signedConsentNoReason.value,
-                                  items: getSignedConsentReasonCodes(),
+                                  items: signedConsentNames,
                                 );
                               })
                           : const SizedBox.shrink();

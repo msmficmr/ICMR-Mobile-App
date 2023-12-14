@@ -97,6 +97,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     _hasConsent = ValueNotifier<bool>(false);
     errorText = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
+    if (widget.redirect == true) provider.setIsLesionRedirect(true);
   }
 
   void onConsentChanged(bool? input) {
@@ -114,8 +115,9 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   }
 
   redirectToQuestionnaire() async {
-    if (widget.redirect ?? false) {
-      GoRouter.of(context).pop();
+    if ((widget.redirect == true || provider.isLesionRedirected)) {
+      provider.setIsLesionRedirect(false);
+      GoRouter.of(context).go(CRAPatientScreen.routerPath);
     } else {
       GoRouter.of(context).push(PeriodontalScreen.routerPath);
     }

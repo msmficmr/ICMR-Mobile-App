@@ -23,7 +23,7 @@
   "gender" : "लिंग",
   "male" : "पुरुष",
   "female" : "महिला",
-  "others" : "ट्रांसजेंडर",
+  "other" : "ट्रांसजेंडर",
   "date_of_birth" : "जन्म तिथि",
   "age" : "आयु",
   "aadhar_id" : "आधार आईडी",
@@ -86,15 +86,15 @@
   "copy_of_signed_consent_handed" : "क्या हस्ताक्षरित सहमति प्रपत्र की एक प्रति रोगी को सौंपी गई थी*",
   "if_no_specify" : "यदि नहीं, तो कारण बताएं:",
   "occupation_types" : [
-    "बेरोजगार",
-    "विद्यार्थी",
-    "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)",
-    "सेवा",
-    "सेवानिवृत्त",
-    "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)",
-    "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)",
-    "गृह निर्माता",
-    "प्रतिक्रिया हटाएँ"
+    {"id" : "unemployed", "name" : "बेरोजगार"},
+    {"id" : "student", "name" : "विद्यार्थी"},
+    {"id": "self_employed", "name": "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)"},
+    {"id": "service", "name": "सेवा"},
+    {"id": "retired", "name": "सेवानिवृत्त"},
+    {"id": "manual_labour", "name": "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)"},
+    {"id": "skilled_labour", "name": "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)"},
+    {"id": "home_maker", "name": "गृह निर्माता"},
+    {"id": "remove_response", "name": "प्रतिक्रिया हटाएँ"}
   ],
   "criteria_section" : "Criteria",
   "inclusion_criteria" : "Inclusion Criteria",
@@ -125,18 +125,18 @@
   ],
   "risk_assessment" : "Risk Assessment",
   "institution_codes" : [
-    "MSMF 01",
-    "AIIMS 02",
-    "HBCH 03",
-    "KLE 04"
+    {"id": "msmf_01", "name": "MSMF 01"},
+    {"id": "aiims_02", "name": "AIIMS 02"},
+    {"id": "hbch_03", "name": "HBCH 03"},
+    {"id": "kle_04", "name": "KLE 04"}
   ],
   "study_codes" : [
-    "Oral cancer_Atlas"
+    {"id" : "oral_cancer_atlas", "name" : "Oral cancer_Atlas"}
   ],
   "signed_consent_reason_codes" : [
-    "Not willing/ not interested for photography",
-    "Not willing to provide my sample",
-    "Not willing to come for long term follow up",
-    "Any other"
+    {"id" : "not_willing_not_interested_for_photography", "name" : "Not willing/ not interested for photography"},
+    {"id" : "not_willing_to_provide_my_sample", "name" : "Not willing to provide my sample"},
+    {"id" : "not_willing_to_come_for_long_term_follow_up", "name" : "Not willing to come for long term follow up"},
+    {"id" : "any_other", "name" : "Any other"}
   ]
 }
