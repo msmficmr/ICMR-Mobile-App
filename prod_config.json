@@ -1,0 +1,6 @@
+{
+  "BASE_URL": "https://edge-mhealth.live.karkinos.in",
+  "ENV" : "live",
+  "APP_NAME" : "m-health",
+  "APP_SUFFIX" : ""
+}
