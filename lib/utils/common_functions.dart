@@ -142,7 +142,7 @@ class CommonFunctions {
       case "Female" :
         return "Female";
       default:
-        return "Others";
+        return "Other";
     }
   }
 
@@ -155,6 +155,54 @@ class CommonFunctions {
       default:
         return AppAssetsPath.icTransgender;
     }
+  }
+
+  static List<String> convertStringToListOfNames(String inputString) {
+    String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
+
+
+    List<String> mapRepresentations = cleanedInput.split(',');
+
+    List<String> namesList = [];
+
+    for (String mapRepresentation in mapRepresentations) {
+      List<String> keyValue = mapRepresentation.split(':');
+
+      if (keyValue.length == 2) {
+        String key = keyValue[0].trim();
+        String value = keyValue[1].trim();
+
+        if (key == "name") {
+          String name = value.replaceAll(RegExp(r'^[\"\"]|[\"\"]$'), '').trim();
+          namesList.add(name);
+        }
+      }
+    }
+    return namesList;
+  }
+
+  static List<String> convertStringToListOfIds(String inputString) {
+    String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
+
+
+    List<String> mapRepresentations = cleanedInput.split(',');
+
+    List<String> namesList = [];
+
+    for (String mapRepresentation in mapRepresentations) {
+      List<String> keyValue = mapRepresentation.split(':');
+
+      if (keyValue.length == 2) {
+        String key = keyValue[0].trim();
+        String value = keyValue[1].trim();
+
+        if (key == "id") {
+          String name = value.replaceAll(RegExp(r'^[\"\"]|[\"\"]$'), '').trim();
+          namesList.add(name);
+        }
+      }
+    }
+    return namesList;
   }
 
   static List<String> convertStringToList(String input) {

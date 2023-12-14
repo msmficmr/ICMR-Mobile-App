@@ -49,6 +49,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   static const String pageTemplate = "community_risk_assessment_verification_form";
 
   List<StaticQuestionModel> staticQuestionnaires = [];
+  List<String> institutionCodes = [];
 
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
@@ -86,6 +87,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
     initializeField();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getInstitutionCodes();
+  }
+
   initializeField() {
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     _participantController = TextEditingController(text: questionnaireViewModel.patientId ?? questionnaireViewModel.selectedPatientId);
@@ -106,10 +113,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
     _patientConsent.value = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen()));
   }
 
-  List<String> getInstitutionCodes() {
-    String types = TranslationKeys.institutionCodes.translate(context);
-    List<String> institutionCodes = CommonFunctions.convertStringToList(types);
-    return institutionCodes;
+  getInstitutionCodes() {
+    String institutionData = TranslationKeys.institutionCodes.translate(context);
+    institutionCodes = CommonFunctions.convertStringToListOfNames(institutionData);
   }
 
   final Map<String, String> visitTypes = {
@@ -182,7 +188,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 _institutionCode.value = val;
                               },
                               selectedItem: _institutionCode.value,
-                              items: getInstitutionCodes(),
+                              items: institutionCodes,
                             );
                           },
                         ),

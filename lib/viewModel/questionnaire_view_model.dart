@@ -38,6 +38,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
   bool _isRedirected = false;
   bool _isRedirectedFromCRA = false;
   bool _continueClick = false;
+  bool _isLesionRedirected = false;
 
   String? get caseId => _caseId;
 
@@ -62,6 +63,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
   bool get isRedirectedFromCRA => _isRedirectedFromCRA;
 
   bool get continueClick => _continueClick;
+
+  bool get isLesionRedirected => _isLesionRedirected;
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
@@ -158,6 +161,11 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   setRedirectFromCRA(bool value) {
     _isRedirectedFromCRA = value;
+    notifyListeners();
+  }
+
+  setIsLesionRedirect(bool value) {
+    _isLesionRedirected = value;
     notifyListeners();
   }
 

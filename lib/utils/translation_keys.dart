@@ -27,7 +27,7 @@ class TranslationKeys {
   static const String gender = "gender";
   static const String male = "male";
   static const String female = "female";
-  static const String others = "others";
+  static const String other = "other";
   static const String dateOfBirth = "date_of_birth";
   static const String age = "age";
   static const String aadharId = "aadhar_id";

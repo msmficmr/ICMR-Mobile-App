@@ -59,16 +59,16 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
       questionnaireViewModel.resetAll();
     } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
       if (questionnaireViewModel.isRedirected) {
-        GoRouter.of(context).go(CRAPatientScreen.routerPath);
         questionnaireViewModel.resetAll();
+        GoRouter.of(context).go(CRAPatientScreen.routerPath);
       } else {
         questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
         GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);
       }
     } else if (questionnaireViewModel.questionnaireSections[2] == questionnaireViewModel.sectionName)  {
        if (questionnaireViewModel.isRedirectedFromCRA) {
-         GoRouter.of(context).go(CRAPatientScreen.routerPath);
          questionnaireViewModel.resetAll();
+         GoRouter.of(context).go(CRAPatientScreen.routerPath);
        } else {
          if (questionnaireViewModel.attachmentList.isNotEmpty || questionnaireViewModel.selectedAttachmentList.isNotEmpty) {
            GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
