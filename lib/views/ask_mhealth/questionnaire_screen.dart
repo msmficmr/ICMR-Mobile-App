@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -51,16 +49,33 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
     } else {
       await questionnaireViewModel.setNextSectionData(sectionName: widget.sectionName ?? "", context: context);
     }
+    await questionnaireViewModel.setContinueClick(false);
   }
 
   goToPreviousScreen() {
     if (questionnaireViewModel.questionnaireSections[0] == questionnaireViewModel.sectionName) {
       GoRouter.of(context).go(DashboardScreen.routerPath);
       questionnaireViewModel.craSectionData = [];
-      questionnaireViewModel.clearData();
+      questionnaireViewModel.resetAll();
     } else if (questionnaireViewModel.questionnaireSections[1] == questionnaireViewModel.sectionName) {
-      questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
-      GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);
+      if (questionnaireViewModel.isRedirected) {
+        GoRouter.of(context).go(CRAPatientScreen.routerPath);
+        questionnaireViewModel.resetAll();
+      } else {
+        questionnaireViewModel.setPreviousSectionData(questionnaireViewModel.sectionName!);
+        GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.questionnaireSections[0]);
+      }
+    } else if (questionnaireViewModel.questionnaireSections[2] == questionnaireViewModel.sectionName)  {
+       if (questionnaireViewModel.isRedirectedFromCRA) {
+         GoRouter.of(context).go(CRAPatientScreen.routerPath);
+         questionnaireViewModel.resetAll();
+       } else {
+         if (questionnaireViewModel.attachmentList.isNotEmpty || questionnaireViewModel.selectedAttachmentList.isNotEmpty) {
+           GoRouter.of(context).push(MeasurementLesionsScreen.routerPath);
+         } else {
+           GoRouter.of(context).push(LesionLocationScreen.routerPath, extra: false);
+         }
+       }
     } else {
       GoRouter.of(context).pop();
     }
@@ -129,11 +144,12 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                               }
                             }
                             if (isValid) {
+                              await questionnaireViewModel.setContinueClick(true);
                               if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 2]) {
-                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!,context: context);
+                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!, context: context);
                                 GoRouter.of(context).push(PeriodontalScreen.routerPath);
                               } else if (questionnaireViewModel.sectionName == questionnaireViewModel.questionnaireSections[questionnaireViewModel.questionnaireSections.length - 1]) {
-                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!,context: context);
+                                questionnaireViewModel.setNextSectionData(sectionName: questionnaireViewModel.sectionName!, context: context);
                                 GoRouter.of(context).push(VerificationScreen.routerPath);
                               } else {
                                 GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: questionnaireViewModel.sectionName);
@@ -148,7 +164,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         ),
                       ),
                       const SpaceWidget(
-                        height: 20,
+                        height: 16,
                       ),
                     ],
                   );

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
@@ -66,7 +64,9 @@ class OfflineDataViewModel extends ChangeNotifier {
     try {
       OfflineSyncResponseModel? response = await OfflineDataService().saveOfflineDataSync(payLoadObj: payLoadObj);
       if (response?.status == 201) {
-        if (caseId != null) await IsarDbService.isarDbService.deleteByCaseId(caseId);
+        if (caseId != null) {
+          await IsarDbService.isarDbService.deleteByCaseId(caseId);
+        }
         await IsarDbService.isarDbService.deleteByPatientId(patientId);
       }
     } catch (e) {

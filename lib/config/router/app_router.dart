@@ -6,7 +6,6 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/verification_screen.dart';
-import 'package:provider/provider.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -122,10 +121,15 @@ class AppRouter {
             ),
             GoRoute(
               path: PeriodontalScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: PeriodontalScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: PeriodontalScreen(
+                    redirectFromCRA: isRedirected,
+                  ),
+                );
+              },
             ),
             GoRoute(
               path: CriteriaScreen.routerPath,
@@ -135,12 +139,14 @@ class AppRouter {
               ),
             ),
             GoRoute(
-              path: VerificationScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const VerificationScreen(),
-              ),
-            ),
+                path: VerificationScreen.routerPath,
+                pageBuilder: (context, state) {
+                  bool? isRedirected = state.extra as bool?;
+                  return RouterTransition(
+                    key: state.pageKey,
+                    child: VerificationScreen(redirectFromCRA: isRedirected),
+                  );
+                }),
             GoRoute(
               path: SignatureScreen.routerPath,
               pageBuilder: (context, state) => RouterTransition(
@@ -150,17 +156,23 @@ class AppRouter {
             ),
             GoRoute(
               path: LesionLocationScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const LesionLocationScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: LesionLocationScreen(redirect: isRedirected),
+                );
+              },
             ),
             GoRoute(
               path: MeasurementLesionsScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const MeasurementLesionsScreen(),
-              ),
+              pageBuilder: (context, state) {
+                bool? isRedirected = state.extra as bool?;
+                return RouterTransition(
+                  key: state.pageKey,
+                  child: MeasurementLesionsScreen(redirect: isRedirected),
+                );
+              },
             ),
           ],
         )

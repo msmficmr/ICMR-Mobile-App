@@ -27,8 +27,9 @@ import 'package:provider/provider.dart';
 
 class LesionLocationScreen extends StatefulWidget {
   static const routerPath = "/lesionLocationScreen";
+  bool? redirect;
 
-  const LesionLocationScreen({Key? key}) : super(key: key);
+  LesionLocationScreen({Key? key, required this.redirect}) : super(key: key);
 
   @override
   State<LesionLocationScreen> createState() => _LesionLocationScreenState();
@@ -112,16 +113,25 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     }
   }
 
+  redirectToQuestionnaire() async {
+    if (widget.redirect ?? false) {
+      GoRouter.of(context).pop();
+    } else {
+      GoRouter.of(context).push(PeriodontalScreen.routerPath);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        onLeadingClick: () => GoRouter.of(context).pop(),
+        onLeadingClick: () => redirectToQuestionnaire(),
         appBarTitleType: CustomAppBarTitleType.TEXT,
         titleText: AppConstant.RISK_ASSESSMENT,
       ),
       body: WillPopScope(
         onWillPop: () async {
+          redirectToQuestionnaire();
           return false;
         },
         child: Form(
@@ -195,13 +205,10 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                             buttonTitle: CAPTURE_IMAGE_TITLE,
                             widgetKey: KEY_BUTTON_CAPTURE_IMAGE),
                       ),
-                      const SpaceWidget(
-                        height: 15,
-                      ),
                       Selector<QuestionnaireViewModel, int>(
                         selector: (_, provider) => provider.attachmentList.length,
                         builder: (context, value, child) => SizedBox(
-                          height: MediaQuery.of(context).size.height / 3,
+                          height: MediaQuery.of(context).size.height / 4,
                           child: SingleChildScrollView(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -238,9 +245,6 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                           ),
                         ),
                       ),
-                      const SpaceWidget(
-                        height: 80,
-                      ),
                     ],
                   ),
                 ),
@@ -268,7 +272,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                         },
                       ),
                       const SpaceWidget(
-                        height: 20,
+                        height: 10,
                       ),
                       SizedBox(
                         width: double.infinity,

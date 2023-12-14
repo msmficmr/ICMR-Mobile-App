@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
@@ -9,7 +8,6 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewModel extends ChangeNotifier {
   static LoginViewModel loginViewModel = LoginViewModel._();
@@ -131,7 +129,7 @@ class LoginViewModel extends ChangeNotifier {
         loginUser(jsonEncode(response.toJson()));
       }
     } catch (e) {
-      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      CommonFunctions.toastMessage(AppConstant.INVALID_OTP);
     } finally {
       isLoading = false;
     }
@@ -142,13 +140,13 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await SharedPreferencesService.sharedPreferencesService.clearAll();
       _userDetails = null;
-      await AuthService().logout();
       _isLoggedIn = false;
-      notifyListeners();
+      await AuthService().logout();
       return true;
     } catch (e) {
       return false;
-      //  CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+    } finally {
+      notifyListeners();
     }
   }
 }

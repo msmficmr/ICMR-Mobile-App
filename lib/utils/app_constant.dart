@@ -70,8 +70,9 @@ class AppConstant {
   static const String YOU_HAVE_SET_HAS_OPTIONS_AS_TRUE = "You have set hasOptions as true, but options is empty or You have "
       "set hasOptions as false, but options is not empty.";
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
-  static const String ERROR_FILL_REQUIRED_FIELDS = "Fill Required fields";
+  static const String ERROR_FILL_REQUIRED_FIELDS = "Fill required fields";
   static const String FIELD_REQUIRED = "This field is required";
+  static const String INVALID_OTP = "OTP is invalid";
   static const String NO_RECORD_FOUND = "No Records Found";
   static const String SELECT_FILE_BEFORE_SUBMITTING = "Fill required fields";
 
@@ -92,6 +93,14 @@ class AppConstant {
     CustomChipItem(data: "Male", text: "male"),
     CustomChipItem(data: "Female", text: "female"),
     CustomChipItem(data: "Others", text: "others"),
+  ];
+
+  //Institution List
+  static const List<Map<String, String>> INSTITUTION_LIST = [
+    {"id": "msmf_01", "name": "MSMF 01"},
+    {"id": "aiims_02", "name": "AIIMS 02"},
+    {"id": "hbch_03", "name": "HBCH 03"},
+    {"id": "kle_04", "name": "KLE 04"},
   ];
 
   ///SECURE STORAGE KEYS

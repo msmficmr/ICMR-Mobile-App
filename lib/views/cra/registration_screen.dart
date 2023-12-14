@@ -116,7 +116,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _studyCode;
   late ValueNotifier<String?> _gender;
   late ValueNotifier<String?> _occupation;
-  late ValueNotifier<String?> _signedConsent;
   late ValueNotifier<String?> _signConsent;
   late ValueNotifier<bool> _signedConsentCopy;
   late ValueNotifier<String?> _signedConsentNoReason;
@@ -133,9 +132,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   List<String> getInstitutionCodes() {
-    String types = TranslationKeys.institutionCodes.translate(context);
-    List<String> institutionCodes = CommonFunctions.convertStringToList(types);
-    return institutionCodes;
+    return AppConstant.INSTITUTION_LIST.map((institution) => institution["name"] ?? "").toList();
   }
 
   List<String> getStudyCodes() {
@@ -169,7 +166,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _studyCode = ValueNotifier<String?>(null);
     _gender = ValueNotifier<String?>(null);
     _occupation = ValueNotifier<String?>(null);
-    _signedConsent = ValueNotifier<String?>(null);
     _signedConsentNoReason = ValueNotifier<String?>(null);
     _signConsent = ValueNotifier<String?>(null);
     _signedConsentCopy = ValueNotifier<bool>(false);
@@ -186,15 +182,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
+        String? institutionId = AppConstant.INSTITUTION_LIST.firstWhere((element) => element["name"] == _institutionCode.value, orElse: () => {"id": ""})["id"];
         questionnaireViewModel.savePatientId(patientId);
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
-          ..institutionCodeID = _institutionCode.value ?? ""
+          ..institutionCodeID = institutionId ?? ""
           ..studyCode = _studyCode.value ?? ""
           ..firstName = _firstNameController.text
           ..lastName = _lastNameController.text
           ..age = _ageController.text
-          ..gender = _gender.value
+          ..gender = _gender.value?.toUpperCase()
           ..address = _tempAddressController.text
           ..district = _districtController.text
           ..state = _stateController.text
@@ -206,7 +203,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..medicalRecordNumber = _medicalRecordNumberController.text
           ..aadharId = _aadharIDController.text
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
-          ..signedConsent = _signedConsent.value ?? ""
+          ..signedConsent = _signConsent.value?.toUpperCase() ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value ?? ""
           ..patientId = patientId
           ..createdBy = userId);
@@ -432,6 +429,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.address.translate(context),
                   headingKey: Key(KEY_HEADING_TEMP_ADDRESS),
                   maxLines: 3,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -484,6 +482,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.permanentAddress.translate(context),
                   headingKey: Key(KEY_HEADING_PERMANENT_ADDRESS),
                   maxLines: 3,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -600,6 +599,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _signedConsentCopy.value = true;
                         } else {
                           _signedConsentCopy.value = false;
+                          _signedConsentNoReason.value = null;
                         }
                       },
                       validator: AppValidators.validateBinaryQuestion,

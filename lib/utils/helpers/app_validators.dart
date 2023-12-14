@@ -224,8 +224,8 @@ class AppValidators {
   }
 
   static String? validateCalenderDate(value) {
-    const String kDOVFutureValidator = "Date Of Visit can't be a future date.";
-    const String kValidDOVValidator = "Enter Valid Date Of Visit.";
+    const String kDOVFutureValidator = "Form date can't be future date.";
+    const String kValidDOVValidator = "Enter valid form date.";
 
     String pattern = r"^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$";
     RegExp regExp = RegExp(pattern);

@@ -6,6 +6,7 @@ import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -40,6 +41,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   @override
   void initState() {
     super.initState();
+    _syncData = ValueNotifier<bool>(false);
+    networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
+    checkToSyncData();
   }
 
   //To be replaced with Dynamic data
@@ -66,6 +70,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   bool _syncing = false;
 
+  late NetworkStatusService networkStatusService;
+
+  late ValueNotifier<bool> _syncData;
+
   void _copyToClipboard(String volunteerId) {
     Clipboard.setData(ClipboardData(text: volunteerId));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -73,15 +81,34 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
-  Future<bool> onLogoutClick() async {
-    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-
-    final bool shouldLogout = await confirmLogout();
-    if (shouldLogout) {
-      await loginViewModel.logout();
+  checkToSyncData() async {
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+      List<PatientRegistration?> patientResponse = await IsarDbService.isarDbService.getPatientsList();
+      if (response.isNotEmpty || patientResponse.isNotEmpty) {
+        _syncData.value = true;
+      } else {
+        _syncData.value = false;
+      }
+    } else {
+      _syncData.value = false;
     }
+  }
 
-    return shouldLogout;
+  Future<bool> onLogoutClick() async {
+    if (networkStatusService.networkStatus == NetworkStatus.online) {
+      final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+
+      final bool shouldLogout = await confirmLogout();
+      if (shouldLogout) {
+        await loginViewModel.logout();
+      }
+
+      return shouldLogout;
+    } else {
+      CommonFunctions.toastMessage("You are offline. Please connect to the internet and try again.");
+      return false;
+    }
   }
 
   Future<bool> confirmLogout() async {
@@ -198,7 +225,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     String emailId = loginViewModel?.userDetails?.email ?? "";
     String volunteerId = loginViewModel?.userDetails?.userId ?? "";
     String age = loginViewModel?.userDetails?.age ?? "";
-    String locatioName = loginViewModel?.userDetails?.locations?[0].locationName ?? "";
+    String? locationName = loginViewModel?.userDetails?.locations != null ? loginViewModel!.userDetails!.locations![0].locationName : "";
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
@@ -298,14 +325,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$gender- $age | ', style: AppStyles.bodySmall),
-                            Text('$emailId', style: AppStyles.bodySmall),
+                            Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
+                            Text(emailId, style: AppStyles.bodySmall),
                           ],
                         ),
                         const SpaceWidget(
                           height: 10,
                         ),
-                        Text('$location- $locatioName', style: AppStyles.bodySmall),
+                        Text('$location : $locationName', style: AppStyles.bodySmall),
                       ],
                     ),
                   ),
@@ -325,16 +352,25 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 leadingIconPath: AppAssetsPath.icLanguage,
               ),
             ),
-            InkWell(
-              onTap: () {
-                onSyncClick();
-              },
-              child: AccountCard(
-                key: Key(KEY_DATA_SYNC_CARD),
-                cardTitleText: TranslationKeys.dataSync.translate(context),
-                trailingIconPath: AppAssetsPath.icChevronRight,
-                leadingIconPath: AppAssetsPath.icSync,
-              ),
+            ValueListenableBuilder(
+              valueListenable: _syncData,
+              builder: (context, syncData, _) {
+                if (syncData) {
+                  return InkWell(
+                    onTap: () {
+                      onSyncClick();
+                    },
+                    child: AccountCard(
+                      key: Key(KEY_DATA_SYNC_CARD),
+                      cardTitleText: TranslationKeys.dataSync.translate(context),
+                      trailingIconPath: AppAssetsPath.icChevronRight,
+                      leadingIconPath: AppAssetsPath.icSync,
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }
             ),
           ],
         ),
