@@ -413,7 +413,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     }
     for (int i = 0; i < _otherControllers.length; i++) {
       if (_otherControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("other", _otherControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_other_clinical_impression", _otherControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_measurement_lesions", context: context, staticSectionsData: staticQuestionnaires);
