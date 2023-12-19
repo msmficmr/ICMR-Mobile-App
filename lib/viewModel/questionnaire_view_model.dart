@@ -68,6 +68,13 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
+  bool entered = false;
+
+  toggleEntry(bool value) {
+    entered = value;
+    notifyListeners();
+  }
+
   clearData() {
     _patientId = null;
   }
@@ -126,6 +133,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
         staticCraSectionData.add(StaticQuestionnaireModel(sectionName, staticSectionsData));
         if (sectionName == "community_risk_assessment_lesion_location") {
           await addLesionLocationImagesToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
+        } else if (sectionName == "community_risk_assessment_verification_form") {
+          if (!entered) await addVerificationDataToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
         } else {
           await addToDB(staticCraData: StaticQuestionnaireModel(sectionName, staticSectionsData), context: context);
         }
@@ -217,11 +226,68 @@ class QuestionnaireViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  addVerificationDataToDB({required StaticQuestionnaireModel staticCraData, required BuildContext context}) async {
+    toggleEntry(true);
+    Report? ehrDiagnosisReport;
+    List<Report>? ehrDiagnosisReports = [];
+    List<CRASectionModel> craSectionModel = [];
+    List<CRAQuestionnaire> craQuestionnaires = [];
+    List<CRAQuestionnaire> craQuestionnaireData = [];
+    EHRDiagnosisReports? diagnosisReports;
+    final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    CRAQuestionnaire? craQuestionnaire;
+    String? caseID = caseId ?? _selectedCaseId;
+    String? patientID = _patientId ?? _selectedPatientId;
+    String userId = loginViewModel?.userDetails?.userId ?? "";
+    for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
+      if (staticCraData.questionnaireList![i].questionid == "patient_signature") {
+        AttachmentDb attachment = AttachmentDb()
+          ..fileName = staticCraData.questionnaireList![i].toJson()['questionid']
+          ..dataBytes = staticCraData.questionnaireList![i].toJson()['value'];
+        ehrDiagnosisReport = Report()
+          ..questionId = staticCraData.questionnaireList![i].toJson()['questionid']
+          ..snomed = staticCraData.questionnaireList![i].toJson()['snomed']
+          ..loinc = staticCraData.questionnaireList![i].toJson()['loinc']
+          ..file = attachment
+          ..value = staticCraData.questionnaireList![i].toJson()['questionid'].toString().convertToCamelCase();
+      } else {
+        craQuestionnaire = CRAQuestionnaire()
+          ..questionId = staticCraData.questionnaireList![i].toJson()['questionid']
+          ..value = staticCraData.questionnaireList![i].toJson()['value']
+          ..timeAsked = DateTime.now()
+          ..lonic = staticCraData.questionnaireList![i].toJson()['loinc']
+          ..snomed = staticCraData.questionnaireList![i].toJson()['snomed'];
+        craQuestionnaires.add(craQuestionnaire);
+      }
+    }
+    craQuestionnaireData.addAll(craQuestionnaires);
+    if (ehrDiagnosisReport != null) ehrDiagnosisReports.add(ehrDiagnosisReport);
+    diagnosisReports = EHRDiagnosisReports()..questions = ehrDiagnosisReports;
+    EHRNotes ehrNotes = EHRNotes()
+      ..versionNumber = versionNumber ?? "V1.0"
+      ..questions = craQuestionnaireData;
+    CRASectionModel craModel = CRASectionModel()
+      ..createdBy = userId
+      ..locale = languageViewModel.currentLanguage
+      ..patientId = patientID
+      ..caseId = caseID
+      ..encounterCategoryMapId = staticCraData.ehrCategoryMap
+      ..ehrNotes = ehrNotes
+      ..encounterEhrDiagnosisReports = diagnosisReports;
+    craSectionModel.add(craModel);
+    await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0]);
+  }
+
   addLesionLocationImagesToDB({required StaticQuestionnaireModel staticCraData, required BuildContext context}) async {
     Report? ehrDiagnosisReport;
     List<Report> ehrDiagnosisReports = [];
     List<CRASectionModel> craSectionModel = [];
     final languageViewModel = Provider.of<LanguageViewModel>(context, listen: false);
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    String? caseID = caseId ?? _selectedCaseId;
+    String? patientID = _patientId ?? _selectedPatientId;
+    String userId = loginViewModel?.userDetails?.userId ?? "";
     for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
       try {
         AttachmentDb attachment = AttachmentDb()
@@ -234,13 +300,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
           ..file = attachment
           ..value = staticCraData.questionnaireList![i].toJson()['questionid'].toString().convertToCamelCase();
         ehrDiagnosisReports.add(ehrDiagnosisReport);
-        List<Report> craQuestionnaireData = [];
-        craQuestionnaireData.addAll(ehrDiagnosisReports);
-        loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-        String userId = loginViewModel?.userDetails?.userId ?? "";
         EHRDiagnosisReports diagnosisReports = EHRDiagnosisReports()..questions = ehrDiagnosisReports;
-        String? caseID = caseId ?? _selectedCaseId;
-        String? patientID = _patientId ?? _selectedPatientId;
         CRASectionModel craModel = CRASectionModel()
           ..createdBy = userId
           ..locale = languageViewModel.currentLanguage
@@ -347,6 +407,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
     if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) == "community_risk_assessment_verification_form") {
       resetAll();
+      toggleEntry(false);
     }
   }
 

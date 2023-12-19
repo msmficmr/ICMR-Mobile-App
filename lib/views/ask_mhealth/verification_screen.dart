@@ -343,7 +343,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text,  null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", jsonEncode(_patientConsent.value),  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", base64Encode(_patientConsent.value!),  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     questionnaireViewModel.setNextSectionData(sectionName: pageTemplate,context: context, staticSectionsData: staticQuestionnaires);
