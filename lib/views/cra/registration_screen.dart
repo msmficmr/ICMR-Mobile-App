@@ -214,7 +214,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         IdentityProofDb? identityProof;
         if (_documentTypeController.text.isNotEmpty) {
           identityProof = IdentityProofDb()
-            ..type = _document.value
+            ..identityType = _document.value
             ..value = _documentTypeController.text;
         }
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
@@ -608,7 +608,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         },
                         selectedItem: _document.value,
                         items: documentNames,
-                        validator: AppValidators.requiredField
                       );
                     }),
                 const SpaceWidget(

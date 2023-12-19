@@ -13,9 +13,9 @@ const IdentityProofDbSchema = Schema(
   name: r'IdentityProofDb',
   id: -5917279417453306262,
   properties: {
-    r'type': PropertySchema(
+    r'identityType': PropertySchema(
       id: 0,
-      name: r'type',
+      name: r'identityType',
       type: IsarType.string,
     ),
     r'value': PropertySchema(
@@ -37,7 +37,7 @@ int _identityProofDbEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.type;
+    final value = object.identityType;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -57,7 +57,7 @@ void _identityProofDbSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.type);
+  writer.writeString(offsets[0], object.identityType);
   writer.writeString(offsets[1], object.value);
 }
 
@@ -68,7 +68,7 @@ IdentityProofDb _identityProofDbDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IdentityProofDb();
-  object.type = reader.readStringOrNull(offsets[0]);
+  object.identityType = reader.readStringOrNull(offsets[0]);
   object.value = reader.readStringOrNull(offsets[1]);
   return object;
 }
@@ -92,31 +92,31 @@ P _identityProofDbDeserializeProp<P>(
 extension IdentityProofDbQueryFilter
     on QueryBuilder<IdentityProofDb, IdentityProofDb, QFilterCondition> {
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeIsNull() {
+      identityTypeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'type',
+        property: r'identityType',
       ));
     });
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeIsNotNull() {
+      identityTypeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'type',
+        property: r'identityType',
       ));
     });
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeEqualTo(
+      identityTypeEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -124,7 +124,7 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeGreaterThan(
+      identityTypeGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -132,7 +132,7 @@ extension IdentityProofDbQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -140,7 +140,7 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeLessThan(
+      identityTypeLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -148,7 +148,7 @@ extension IdentityProofDbQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -156,7 +156,7 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeBetween(
+      identityTypeBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -165,7 +165,7 @@ extension IdentityProofDbQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'type',
+        property: r'identityType',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -176,13 +176,13 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeStartsWith(
+      identityTypeStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -190,13 +190,13 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeEndsWith(
+      identityTypeEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -204,10 +204,10 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeContains(String value, {bool caseSensitive = true}) {
+      identityTypeContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'type',
+        property: r'identityType',
         value: value,
         caseSensitive: caseSensitive,
       ));
@@ -215,10 +215,10 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeMatches(String pattern, {bool caseSensitive = true}) {
+      identityTypeMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'type',
+        property: r'identityType',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
@@ -226,20 +226,20 @@ extension IdentityProofDbQueryFilter
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeIsEmpty() {
+      identityTypeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
+        property: r'identityType',
         value: '',
       ));
     });
   }
 
   QueryBuilder<IdentityProofDb, IdentityProofDb, QAfterFilterCondition>
-      typeIsNotEmpty() {
+      identityTypeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'type',
+        property: r'identityType',
         value: '',
       ));
     });
