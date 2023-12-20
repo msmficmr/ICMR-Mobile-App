@@ -176,11 +176,27 @@ class AppValidators {
     const String kEmptyValidator = "Enter Valid Aadhar number.";
     const String kValidValidator = "Aadhar must be of 12 digit.";
     if (value == null || value.isEmpty) {
-      return null;
+      return kEmptyValidator;
     }
     String pattern = r"^\d{12}$";
     RegExp regExp = RegExp(pattern);
-    if (!regExp.hasMatch(value)) {
+    var aadharNumber = value.toString().replaceAll("-", "");
+    if (!regExp.hasMatch(aadharNumber)) {
+      return kValidValidator;
+    }
+
+    return null;
+  }
+
+  static String? validatePAN(value) {
+    const String kEmptyValidator = "Enter Valid PAN number.";
+    const String kValidValidator = "PAN number must be of 10 digit.";
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    String pattern = r"[A-Z]{5}[0-9]{4}[A-Z]{1}";
+    RegExp regExp = RegExp(pattern);
+    if (!regExp.hasMatch(value.toString().toUpperCase())) {
       return kValidValidator;
     }
 

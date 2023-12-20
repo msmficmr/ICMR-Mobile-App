@@ -18,56 +18,57 @@ const PatientRegistrationSchema = CollectionSchema(
   name: r'PatientRegistration',
   id: -9053874229062588828,
   properties: {
-    r'aadharId': PropertySchema(
-      id: 0,
-      name: r'aadharId',
-      type: IsarType.string,
-    ),
     r'address': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'address',
       type: IsarType.string,
     ),
     r'age': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'age',
       type: IsarType.string,
     ),
     r'alternatePhoneNumber': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'alternatePhoneNumber',
       type: IsarType.string,
     ),
     r'consent': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'consent',
       type: IsarType.objectList,
       target: r'AttachmentDb',
     ),
     r'consentDate': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'consentDate',
       type: IsarType.dateTime,
     ),
     r'createdBy': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'createdBy',
       type: IsarType.string,
     ),
     r'district': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'district',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'gender': PropertySchema(
-      id: 9,
+      id: 8,
       name: r'gender',
       type: IsarType.string,
+    ),
+    r'identityProofs': PropertySchema(
+      id: 9,
+      name: r'identityProofs',
+      type: IsarType.object,
+      target: r'IdentityProofDb',
     ),
     r'institutionCodeID': PropertySchema(
       id: 10,
@@ -142,7 +143,10 @@ const PatientRegistrationSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {},
-  embeddedSchemas: {r'AttachmentDb': AttachmentDbSchema},
+  embeddedSchemas: {
+    r'AttachmentDb': AttachmentDbSchema,
+    r'IdentityProofDb': IdentityProofDbSchema
+  },
   getId: _patientRegistrationGetId,
   getLinks: _patientRegistrationGetLinks,
   attach: _patientRegistrationAttach,
@@ -155,12 +159,6 @@ int _patientRegistrationEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.aadharId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   {
     final value = object.address;
     if (value != null) {
@@ -200,6 +198,14 @@ int _patientRegistrationEstimateSize(
     final value = object.gender;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.identityProofs;
+    if (value != null) {
+      bytesCount += 3 +
+          IdentityProofDbSchema.estimateSize(
+              value, allOffsets[IdentityProofDb]!, allOffsets);
     }
   }
   bytesCount += 3 + object.institutionCodeID.length * 3;
@@ -243,21 +249,26 @@ void _patientRegistrationSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.aadharId);
-  writer.writeString(offsets[1], object.address);
-  writer.writeString(offsets[2], object.age);
-  writer.writeString(offsets[3], object.alternatePhoneNumber);
+  writer.writeString(offsets[0], object.address);
+  writer.writeString(offsets[1], object.age);
+  writer.writeString(offsets[2], object.alternatePhoneNumber);
   writer.writeObjectList<AttachmentDb>(
-    offsets[4],
+    offsets[3],
     allOffsets,
     AttachmentDbSchema.serialize,
     object.consent,
   );
-  writer.writeDateTime(offsets[5], object.consentDate);
-  writer.writeString(offsets[6], object.createdBy);
-  writer.writeString(offsets[7], object.district);
-  writer.writeString(offsets[8], object.firstName);
-  writer.writeString(offsets[9], object.gender);
+  writer.writeDateTime(offsets[4], object.consentDate);
+  writer.writeString(offsets[5], object.createdBy);
+  writer.writeString(offsets[6], object.district);
+  writer.writeString(offsets[7], object.firstName);
+  writer.writeString(offsets[8], object.gender);
+  writer.writeObject<IdentityProofDb>(
+    offsets[9],
+    allOffsets,
+    IdentityProofDbSchema.serialize,
+    object.identityProofs,
+  );
   writer.writeString(offsets[10], object.institutionCodeID);
   writer.writeString(offsets[11], object.lastName);
   writer.writeString(offsets[12], object.medicalRecordNumber);
@@ -280,22 +291,26 @@ PatientRegistration _patientRegistrationDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PatientRegistration();
-  object.aadharId = reader.readStringOrNull(offsets[0]);
-  object.address = reader.readStringOrNull(offsets[1]);
-  object.age = reader.readString(offsets[2]);
-  object.alternatePhoneNumber = reader.readStringOrNull(offsets[3]);
+  object.address = reader.readStringOrNull(offsets[0]);
+  object.age = reader.readString(offsets[1]);
+  object.alternatePhoneNumber = reader.readStringOrNull(offsets[2]);
   object.consent = reader.readObjectList<AttachmentDb>(
-    offsets[4],
+    offsets[3],
     AttachmentDbSchema.deserialize,
     allOffsets,
     AttachmentDb(),
   );
-  object.consentDate = reader.readDateTime(offsets[5]);
-  object.createdBy = reader.readString(offsets[6]);
-  object.district = reader.readStringOrNull(offsets[7]);
-  object.firstName = reader.readString(offsets[8]);
-  object.gender = reader.readStringOrNull(offsets[9]);
+  object.consentDate = reader.readDateTime(offsets[4]);
+  object.createdBy = reader.readString(offsets[5]);
+  object.district = reader.readStringOrNull(offsets[6]);
+  object.firstName = reader.readString(offsets[7]);
+  object.gender = reader.readStringOrNull(offsets[8]);
   object.id = id;
+  object.identityProofs = reader.readObjectOrNull<IdentityProofDb>(
+    offsets[9],
+    IdentityProofDbSchema.deserialize,
+    allOffsets,
+  );
   object.institutionCodeID = reader.readString(offsets[10]);
   object.lastName = reader.readString(offsets[11]);
   object.medicalRecordNumber = reader.readStringOrNull(offsets[12]);
@@ -322,28 +337,32 @@ P _patientRegistrationDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
-    case 2:
       return (reader.readString(offset)) as P;
-    case 3:
+    case 2:
       return (reader.readStringOrNull(offset)) as P;
-    case 4:
+    case 3:
       return (reader.readObjectList<AttachmentDb>(
         offset,
         AttachmentDbSchema.deserialize,
         allOffsets,
         AttachmentDb(),
       )) as P;
-    case 5:
+    case 4:
       return (reader.readDateTime(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
-    case 8:
       return (reader.readString(offset)) as P;
-    case 9:
+    case 8:
       return (reader.readStringOrNull(offset)) as P;
+    case 9:
+      return (reader.readObjectOrNull<IdentityProofDb>(
+        offset,
+        IdentityProofDbSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 10:
       return (reader.readString(offset)) as P;
     case 11:
@@ -471,160 +490,6 @@ extension PatientRegistrationQueryWhere
 
 extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
     PatientRegistration, QFilterCondition> {
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'aadharId',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'aadharId',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'aadharId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'aadharId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'aadharId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'aadharId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      aadharIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'aadharId',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       addressIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -1882,6 +1747,24 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      identityProofsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'identityProofs',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      identityProofsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'identityProofs',
       ));
     });
   }
@@ -3656,6 +3539,13 @@ extension PatientRegistrationQueryObject on QueryBuilder<PatientRegistration,
       return query.object(q, r'consent');
     });
   }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      identityProofs(FilterQuery<IdentityProofDb> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'identityProofs');
+    });
+  }
 }
 
 extension PatientRegistrationQueryLinks on QueryBuilder<PatientRegistration,
@@ -3663,20 +3553,6 @@ extension PatientRegistrationQueryLinks on QueryBuilder<PatientRegistration,
 
 extension PatientRegistrationQuerySortBy
     on QueryBuilder<PatientRegistration, PatientRegistration, QSortBy> {
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
-      sortByAadharId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'aadharId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
-      sortByAadharIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'aadharId', Sort.desc);
-    });
-  }
-
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByAddress() {
     return QueryBuilder.apply(this, (query) {
@@ -3974,20 +3850,6 @@ extension PatientRegistrationQuerySortBy
 
 extension PatientRegistrationQuerySortThenBy
     on QueryBuilder<PatientRegistration, PatientRegistration, QSortThenBy> {
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
-      thenByAadharId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'aadharId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
-      thenByAadharIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'aadharId', Sort.desc);
-    });
-  }
-
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByAddress() {
     return QueryBuilder.apply(this, (query) {
@@ -4300,13 +4162,6 @@ extension PatientRegistrationQuerySortThenBy
 extension PatientRegistrationQueryWhereDistinct
     on QueryBuilder<PatientRegistration, PatientRegistration, QDistinct> {
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
-      distinctByAadharId({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'aadharId', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByAddress({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'address', caseSensitive: caseSensitive);
@@ -4469,13 +4324,6 @@ extension PatientRegistrationQueryProperty
   }
 
   QueryBuilder<PatientRegistration, String?, QQueryOperations>
-      aadharIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'aadharId');
-    });
-  }
-
-  QueryBuilder<PatientRegistration, String?, QQueryOperations>
       addressProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'address');
@@ -4534,6 +4382,13 @@ extension PatientRegistrationQueryProperty
       genderProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'gender');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, IdentityProofDb?, QQueryOperations>
+      identityProofsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'identityProofs');
     });
   }
 

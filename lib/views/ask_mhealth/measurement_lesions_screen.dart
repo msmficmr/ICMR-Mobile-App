@@ -265,7 +265,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                             } else {
                                               _fhpOpinionValue[index].value = false;
                                             }
-                                            staticQuestionnaires.add(StaticQuestionModel("fhp_opinion_suspicious", _fhpOpinionValue[index].value.toString(), null, null, DateTime.now(), null, null));
+                                            staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[index]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[index]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_fhp_opinion_suspicious", _fhpOpinionValue[index].value.toString(), null, null, DateTime.now(), null, null));
                                           },
                                           validator: AppValidators.validateBinaryQuestion,
                                           selectedItem: _fhpOpinions[index].value,
@@ -294,7 +294,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                                       onChanged: (val) {
                                                         _autofluorescenceImpression[index].value = val;
                                                         staticQuestionnaires
-                                                            .add(StaticQuestionModel("autoflorescence_impression", _autofluorescenceImpression[index].value, null, null, DateTime.now(), null, null));
+                                                            .add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[index]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[index]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_autoflorescence_impression", _autofluorescenceImpression[index].value, null, null, DateTime.now(), null, null));
                                                       },
                                                       selectedItem: _autofluorescenceImpression[index].value,
                                                       items: autofluorescenceValues,
@@ -313,7 +313,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                                       hintText: TranslationKeys.select.translate(context),
                                                       onChanged: (val) {
                                                         _provisionalDiagnosis[index].value = val;
-                                                        staticQuestionnaires.add(StaticQuestionModel("provisional_diagnosis", _provisionalDiagnosis[index].value, null, null, DateTime.now(), null, null));
+                                                        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[index]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[index]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_provisional_diagnosis", _provisionalDiagnosis[index].value, null, null, DateTime.now(), null, null));
                                                       },
                                                       selectedItem: _provisionalDiagnosis[index].value,
                                                       items: provisionalDiagnosisValues.values.map((e) => e).toList(),
@@ -398,22 +398,22 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     }
     for (int i = 0; i < _lengthControllers.length; i++) {
       if (_lengthControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("length_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _lengthControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_length", _lengthControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _breadthControllers.length; i++) {
       if (_breadthControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("breadth_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _breadthControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_breadth", _breadthControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _productControllers.length; i++) {
       if (_productControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("product_${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i] : questionnaireViewModel.attachmentList[i]!.fileName.questionText}", _productControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_product", _productControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     for (int i = 0; i < _otherControllers.length; i++) {
       if (_otherControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel("other", _otherControllers[i].text, null, null, DateTime.now(), null, null));
+        staticQuestionnaires.add(StaticQuestionModel("${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_other_clinical_impression", _otherControllers[i].text, null, null, DateTime.now(), null, null));
       }
     }
     await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_measurement_lesions", context: context, staticSectionsData: staticQuestionnaires);

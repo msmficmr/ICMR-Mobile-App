@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
+import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -49,6 +50,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
+  List<String> documentNames = ["Aadhar number", "Voter ID", "PAN number"];
   List<String> occupationIds = [];
   List<String> occupationNames = [];
   List<String> institutionIds = [];
@@ -72,7 +74,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _mobileFieldController = TextEditingController();
   final TextEditingController _alternateNumberFieldController = TextEditingController();
   final TextEditingController _medicalRecordNumberController = TextEditingController();
-  final TextEditingController _aadharIDController = TextEditingController();
+  final TextEditingController _documentTypeController = TextEditingController();
   late TextEditingController _consentDateController = TextEditingController();
 
   //Widget Keys
@@ -89,10 +91,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_FIELD_STATE = "key_textfield_state";
   final String KEY_FIELD_PINCODE = "key_textfield_pincode";
   final String KEY_FIELD_OCCUPATION_TYPE = "key_textfield_occupation_type";
+  final String KEY_FIELD_DOCUMENT_TYPE = "key_textfield_document_type";
   final String KEY_FIELD_MOBILE = "key_textfield_mobile";
   final String KEY_FIELD_ALTERNATE_NUMBER = "key_textfield_alternate_number";
   final String KEY_FIELD_MEDICAL_RECORD_NUMBER = "key_textfield_medical_record_number";
-  final String KEY_FIELD_AADHAR_ID = "key_textfield_aadhar_id";
+  final String KEY_FIELD_DOCUMENT_TYPE_ID = "key_textfield_aadhar_id";
   final String KEY_FIELD_SIGNED_CONSENT = "key_textfield_signed_consent";
   final String KEY_FIELD_SIGNED_CONSENT_NO = "key_textfield_signed_consent_no";
   final String KEY_HEADING_FIRST_NAME = "key_heading_firstName";
@@ -108,10 +111,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_HEADING_STATE = "key_title_state";
   final String KEY_HEADING_PINCODE = "key_title_pincode";
   final String KEY_HEADING_OCCUPATION_TYPE = "key_title_occupation_type";
+  final String KEY_HEADING_DOCUMENT_TYPE = "key_title_document_type";
   final String KEY_HEADING_MOBILE = "key_title_mobile";
   final String KEY_HEADING_ALTERNATE_NUMBER = "key_title_alternate_number";
   final String KEY_HEADING_MEDICAL_RECORD_NUMBER = "key_heading_medical_record_number";
-  final String KEY_HEADING_AADHAR_ID = "key_heading_aadhar_id";
+  final String KEY_HEADING_DOCUMENT_ID = "key_heading_aadhar_id";
   final String KEY_HEADING_SIGNED_CONSENT = "key_title_signed_consent";
   final String KEY_HEADING_SIGNED_CONSENT_NO = "key_title_signed_consent_no";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
@@ -125,6 +129,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<String?> _studyCode;
   late ValueNotifier<String?> _gender;
   late ValueNotifier<String?> _occupation;
+  late ValueNotifier<String?> _document;
+  late ValueNotifier<bool?> _documentType;
   late ValueNotifier<String?> _signConsent;
   late ValueNotifier<bool> _signedConsentCopy;
   late ValueNotifier<String?> _signedConsentNoReason;
@@ -177,6 +183,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _studyCode = ValueNotifier<String?>(null);
     _gender = ValueNotifier<String?>(null);
     _occupation = ValueNotifier<String?>(null);
+    _document = ValueNotifier<String?>(null);
+    _documentType = ValueNotifier<bool>(false);
     _signedConsentNoReason = ValueNotifier<String?>(null);
     _signConsent = ValueNotifier<String?>(null);
     _signedConsentCopy = ValueNotifier<bool>(false);
@@ -203,6 +211,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
         questionnaireViewModel.savePatientId(patientId);
+        IdentityProofDb? identityProof;
+        if (_documentTypeController.text.isNotEmpty) {
+          identityProof = IdentityProofDb()
+            ..identityType = _document.value
+            ..value = _documentTypeController.text;
+        }
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
           ..institutionCodeID = _institutionCode.value != null ? institutionIds[institutionNames.indexOf(_institutionCode.value ?? "")] : ""
@@ -220,7 +234,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..phoneNumber = _mobileFieldController.text
           ..alternatePhoneNumber = _alternateNumberFieldController.text
           ..medicalRecordNumber = _medicalRecordNumberController.text
-          ..aadharId = _aadharIDController.text
+          ..identityProofs = identityProof
           ..consentDate = CommonFunctions.textToDateTime(_consentDateController.text)
           ..signedConsent = _signConsent.value?.toUpperCase() ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value != null ? signedConsentIds[signedConsentNames.indexOf(_signedConsentNoReason.value ?? "")] : ""
@@ -576,14 +590,45 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                //AADHAR
-                CustomTextField(
-                  controller: _aadharIDController,
-                  widgetKey: Key(KEY_FIELD_AADHAR_ID),
-                  hintText: TranslationKeys.enterHere.translate(context),
-                  heading: TranslationKeys.aadharVoterPan.translate(context),
-                  headingKey: Key(KEY_HEADING_AADHAR_ID),
+                //DOCUMENT
+                ValueListenableBuilder<String?>(
+                    valueListenable: _document,
+                    builder: (context, _, __) {
+                      return CustomDropdown<String>(
+                        widgetKey: KEY_FIELD_DOCUMENT_TYPE,
+                        heading: TranslationKeys.aadharVoterPan.translate(context),
+                        headingKey: Key(KEY_HEADING_DOCUMENT_TYPE),
+                        hintText: TranslationKeys.select.translate(context),
+                        onChanged: (val) {
+                         setState(() {
+                           _document.value = val;
+                           _documentType.value = true;
+                           _documentTypeController.clear();
+                         });
+                        },
+                        selectedItem: _document.value,
+                        items: documentNames,
+                      );
+                    }),
+                const SpaceWidget(
+                  height: 15,
                 ),
+                ValueListenableBuilder(valueListenable: _documentType, builder: (context, value, __) {
+                  if (value ?? false) {
+                    return  CustomTextField(
+                      controller: _documentTypeController,
+                      widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
+                      hintText: TranslationKeys.enterHere.translate(context),
+                      heading: "${_document.value}",
+                      headingKey: Key(KEY_HEADING_DOCUMENT_ID),
+                      validator: getDocumentWidget(),
+                      keyboardType: getDocumentKeyboardType(),
+                      inputFormatters: getInputFormatter(),
+                    );
+                  } else {
+                    return const SizedBox();
+                  }
+                }),
                 const SpaceWidget(
                   height: 15,
                 ),
@@ -680,6 +725,63 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  getDocumentWidget() {
+    if (_document.value == "Aadhar number") {
+      return AppValidators.validateAadhar;
+    } else if (_document.value == "PAN number") {
+      return AppValidators.validatePAN;
+    } else {
+      return null;
+    }
+  }
+
+  getDocumentKeyboardType() {
+    if (_document.value == "Aadhar number") {
+      return TextInputType.number;
+    } else if (_document.value == "PAN number") {
+      return TextInputType.name;
+    } else {
+      return TextInputType.text;
+    }
+  }
+
+  getInputFormatter() {
+    if (_document.value == "Aadhar number") {
+      return <TextInputFormatter>[
+        _CreditCardNumberFormatter(),
+      ];
+    } else {
+      return <TextInputFormatter>[];
+    }
+  }
+}
+
+class _CreditCardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    // Filter out non-numeric characters
+    String text = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    // Add hyphens at appropriate positions
+    if (text.length >= 4 && text.length <= 8) {
+      text = text.substring(0, 4) + '-' + text.substring(4);
+    } else if (text.length >= 9 && text.length <= 12) {
+      text = text.substring(0, 4) +
+          '-' +
+          text.substring(4, 8) +
+          '-' +
+          text.substring(8);
+    }
+
+    return newValue.copyWith(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
     );
   }
 }

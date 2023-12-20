@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
+import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 part 'patient_registration_schema.g.dart';
 
 @collection
@@ -22,7 +23,7 @@ class PatientRegistration {
   late String phoneNumber;
   late String? alternatePhoneNumber;
   late String? medicalRecordNumber;
-  late String? aadharId;
+  late IdentityProofDb? identityProofs;
   late DateTime consentDate;
   late String signedConsent;
   late String signedConsentNoReason;
@@ -49,7 +50,7 @@ class PatientRegistration {
       'phoneNumber': phoneNumber,
       'alternatePhoneNumber': alternatePhoneNumber,
       'medicalRecordNumber': medicalRecordNumber,
-      'aadharId': aadharId,
+      'identityProofs': identityProofs,
       'consentDate': consentDate.toIso8601String(),
       'signedConsent': signedConsent,
       'signedConsentNoReason': signedConsentNoReason,

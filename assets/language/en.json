@@ -82,7 +82,7 @@
   "address" : "Address",
   "permanent_address" : "Permanent Address",
   "alternate_phone_number" : "Alternate Phone number",
-  "aadhar_voter_pan" : "Aadhar No/ Voter ID/ PAN No.",
+  "aadhar_voter_pan" : "Aadhar number/ Voter ID/ PAN number",
   "informed_consent_date" : "Date on which informed consent obtained",
   "copy_of_signed_consent_handed" : "Was a copy of the signed consent form handed over to the patient?*",
   "if_no_specify" : "If no, specify why:",
@@ -139,5 +139,27 @@
     {"id" : "not_willing_to_provide_my_sample", "name" : "Not willing to provide my sample"},
     {"id" : "not_willing_to_come_for_long_term_follow_up", "name" : "Not willing to come for long term follow up"},
     {"id" : "any_other", "name" : "Any other"}
+  ],
+  "visit_types" : [
+    {"id": "1st_visit", "name": "1st Visit"},
+    {"id": "2nd_visit", "name": "2nd Visit"},
+    {"id": "3rd_visit", "name": "3rd Visit"},
+    {"id": "4th_visit", "name": "4th Visit"},
+    {"id": "5th_visit", "name": "5th Visit"},
+    {"id": "6th_visit", "name": "6th Visit"},
+    {"id": "7th_visit", "name": "7th Visit"},
+    {"id": "8th_visit", "name": "8th Visit"},
+    {"id": "9th_visit", "name": "9th Visit"},
+    {"id": "10th_visit", "name": "10th Visit"},
+    {"id": "11th_visit", "name": "11th Visit"},
+    {"id": "12th_visit", "name": "12th Visit"},
+    {"id": "13th_visit", "name": "13th Visit"},
+    {"id": "14th_visit", "name": "14th Visit"},
+    {"id": "15th_visit", "name": "15th Visit"},
+    {"id": "16th_visit", "name": "16th Visit"},
+    {"id": "17th_visit", "name": "17th Visit"},
+    {"id": "18th_visit", "name": "18th Visit"},
+    {"id": "19th_visit", "name": "19th Visit"},
+    {"id": "20th_visit", "name": "20th Visit"}
   ]
 }
