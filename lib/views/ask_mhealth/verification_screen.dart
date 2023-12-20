@@ -50,6 +50,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   List<StaticQuestionModel> staticQuestionnaires = [];
   List<String> institutionCodes = [];
+  List<String> visitTypeIds = [];
+  List<String> visitTypeNames = [];
 
   TextInputFormatter dobInputFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
@@ -91,6 +93,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     getInstitutionCodes();
+    getVisitTypes();
   }
 
   initializeField() {
@@ -118,28 +121,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
     institutionCodes = CommonFunctions.convertStringToListOfNames(institutionData);
   }
 
-  final Map<String, String> visitTypes = {
-    "1": "1st Visit",
-    "2": "2nd Visit",
-    "3": "3rd Visit",
-    "4": "4th Visit",
-    "5": "5th Visit",
-    "6": "6th Visit",
-    "7": "7th Visit",
-    "8": "8th Visit",
-    "9": "9th Visit",
-    "10": "10th Visit",
-    "11": "11th Visit",
-    "12": "12th Visit",
-    "13": "13th Visit",
-    "14": "14th Visit",
-    "15": "15th Visit",
-    "16": "16th Visit",
-    "17": "17th Visit",
-    "18": "18th Visit",
-    "19": "19th Visit",
-    "20": "20th Visit"
-  };
+  getVisitTypes() {
+    String visitTypeData = TranslationKeys.visitTypes.translate(context);
+    visitTypeIds = CommonFunctions.convertStringToListOfIds(visitTypeData);
+    visitTypeNames = CommonFunctions.convertStringToListOfNames(visitTypeData);
+  }
 
   redirectToQuestionnaire() async {
     if (widget.redirectFromCRA ?? false) {
@@ -223,7 +209,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 _visitType.value = val;
                               },
                               selectedItem: _visitType.value,
-                              items: visitTypes.values.map((e) => e).toList(),
+                              items: visitTypeNames,
                             );
                           },
                         ),
@@ -337,7 +323,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text,  null, null, DateTime.now(), null, null));
     }
     if (_visitType.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("visit_type", _visitType.value,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")],  null, null, DateTime.now(), null, null));
     }
     if (_fromDateController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text,  null, null, DateTime.now(), null, null));
