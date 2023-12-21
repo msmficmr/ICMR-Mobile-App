@@ -176,7 +176,7 @@ class AppValidators {
     const String kEmptyValidator = "Enter Valid Aadhar number.";
     const String kValidValidator = "Aadhar must be of 12 digit.";
     if (value == null || value.isEmpty) {
-      return kEmptyValidator;
+      return null;
     }
     String pattern = r"^\d{12}$";
     RegExp regExp = RegExp(pattern);
@@ -192,11 +192,11 @@ class AppValidators {
     const String kEmptyValidator = "Enter Valid PAN number.";
     const String kValidValidator = "PAN number must be of 10 digit.";
     if (value == null || value.isEmpty) {
-      return kEmptyValidator;
+      return null;
     }
     String pattern = r"[A-Z]{5}[0-9]{4}[A-Z]{1}";
     RegExp regExp = RegExp(pattern);
-    if (!regExp.hasMatch(value.toString().toUpperCase())) {
+    if (!regExp.hasMatch(value.toString().toUpperCase()) || value.length != 10) {
       return kValidValidator;
     }
 
