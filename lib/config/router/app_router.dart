@@ -26,17 +26,6 @@ class AppRouter {
       routerNeglect: true,
       initialLocation: SplashScreen.routerPath,
       routes: [
-        ShellRoute(
-          builder: (context, state, child) {
-            return Navigator(
-              onPopPage: (route, result) {
-                route.didPop(result);
-                return false;
-              },
-              pages: [MaterialPage(child: child)],
-            );
-          },
-          routes: [
             GoRoute(
               path: SplashScreen.routerPath,
               builder: (context, state) => const SplashScreen(),
@@ -175,8 +164,6 @@ class AppRouter {
               },
             ),
           ],
-        )
-      ],
 
       /// this callback will called on every time when we are trying to navigate from one screen to another
       redirect: (BuildContext context, GoRouterState state) async {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
