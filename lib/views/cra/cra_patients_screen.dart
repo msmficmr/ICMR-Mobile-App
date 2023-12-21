@@ -192,6 +192,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
             GoRouter.of(context).push(VerificationScreen.routerPath, extra: true);
           default:
             CommonFunctions.toastMessage("CRA completed");
+            await context.read<QuestionnaireViewModel>().resetAll();
         }
       }
     } else {
