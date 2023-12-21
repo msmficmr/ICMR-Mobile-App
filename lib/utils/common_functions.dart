@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,8 +9,10 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
+import 'package:mhealth/widgets/pdf_preview.dart';
 import 'package:uuid/uuid.dart';
 
 class CommonFunctions {
@@ -84,17 +89,20 @@ class CommonFunctions {
     Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
   }
 
-  static void viewImage({required BuildContext context, required List<int> bytes}) {
-    showDialog(
-      barrierDismissible: true,
-      context: context,
-      useSafeArea: true,
-      builder: (_) {
-        return ImageViewWidget(
-          imageList: bytes,
-        );
-      }
-    );
+  static void viewImage({required BuildContext context, required AttachmentModel model}) {
+    if (model.fileName.contains(".pdf")) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => PdfPreview(fileName: model.fileName, bytes: Uint8List.fromList(model.bytes))));
+    } else {
+      showDialog(
+          barrierDismissible: true,
+          context: context,
+          useSafeArea: true,
+          builder: (_) {
+            return ImageViewWidget(
+              imageList: model.bytes,
+            );
+          });
+    }
   }
 
   static Future<XFile?> getImage({required BuildContext context, required ImageSource imageSource}) async {
@@ -103,6 +111,18 @@ class CommonFunctions {
       XFile? file = await ImagePicker().pickImage(source: imageSource);
       return file;
     }
+  }
+
+  static Future<XFile?> getAttachment({required BuildContext context, List<String> extensions = const ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"]}) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: extensions,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      XFile xFile = XFile(result.files.first.path!);
+      return xFile;
+    }
+    return null;
   }
 
   static void showRetrySnackbar() {
@@ -148,9 +168,9 @@ class CommonFunctions {
 
   static String getGenderImage(String gender) {
     switch (gender) {
-      case "Male" :
+      case "Male":
         return AppAssetsPath.icMale;
-      case "Female" :
+      case "Female":
         return AppAssetsPath.icFemale;
       default:
         return AppAssetsPath.icTransgender;
@@ -159,7 +179,6 @@ class CommonFunctions {
 
   static List<String> convertStringToListOfNames(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
-
 
     List<String> mapRepresentations = cleanedInput.split(',');
 
@@ -183,7 +202,6 @@ class CommonFunctions {
 
   static List<String> convertStringToListOfIds(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
-
 
     List<String> mapRepresentations = cleanedInput.split(',');
 

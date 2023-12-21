@@ -20,6 +20,7 @@ import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
@@ -241,8 +242,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..patientId = patientId
           ..createdBy = userId);
         await addConsentImages(patientId);
-        await Provider.of<PatientListViewModel>(context, listen: false).setCurrentUser(_firstNameController.text, _lastNameController.text);
-        GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+        await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
+        await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
+        if (context.mounted) {
+          GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+        }
       }
     }
   }
@@ -301,7 +305,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _isConsentButtonActiveNotifier,
                     builder: (context, isButtonActive, child) {
                       return PrimaryFilledIconButton(
-                        onPressed: isButtonActive ? (){} : onConsentClicked,
+                        onPressed: isButtonActive ? () {} : onConsentClicked,
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
                           enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
