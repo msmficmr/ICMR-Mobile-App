@@ -161,7 +161,7 @@ class CommonFunctions {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
 
 
-    List<String> mapRepresentations = cleanedInput.split(',');
+    List<String> mapRepresentations = customSplit(cleanedInput);
 
     List<String> namesList = [];
 
@@ -179,6 +179,30 @@ class CommonFunctions {
       }
     }
     return namesList;
+  }
+
+  static List<String> customSplit(String input) {
+    List<String> result = [];
+    int bracketCount = 0;
+    StringBuffer currentChunk = StringBuffer();
+
+    for (int i = 0; i < input.length; i++) {
+      if (input[i] == '(') {
+        bracketCount++;
+      } else if (input[i] == ')') {
+        bracketCount--;
+      }
+
+      if (input[i] == ',' && bracketCount == 0) {
+        result.add(currentChunk.toString().trim());
+        currentChunk.clear();
+      } else {
+        currentChunk.write(input[i]);
+      }
+    }
+    result.add(currentChunk.toString().trim());
+
+    return result;
   }
 
   static List<String> convertStringToListOfIds(String inputString) {
