@@ -61,6 +61,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   void initState() {
     super.initState();
     provider = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    provider.clearConsetList();
     _buttonEnabled = ValueNotifier<bool>(false);
   }
 
@@ -139,7 +140,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                                         }
                                       },
                                       viewPictureClick: () {
-                                        CommonFunctions.viewImage(context: context, bytes: provider.consentList[index]!.bytes);
+                                        CommonFunctions.viewImage(context: context, model:  provider.consentList[index]!);
                                       },
                                     );
                                   },

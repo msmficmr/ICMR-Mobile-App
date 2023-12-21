@@ -234,7 +234,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                                             _selectedAttachment.value = null;
                                           },
                                           viewPictureClick: () {
-                                            CommonFunctions.viewImage(context: context, bytes: provider.attachmentList[index]!.bytes);
+                                            CommonFunctions.viewImage(context: context, model: provider.attachmentList[index]!);
                                           },
                                         );
                                       },

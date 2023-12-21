@@ -45,6 +45,13 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
     }
   }
 
+  fetchAttachment()async{
+    XFile? file = await CommonFunctions.getAttachment(context: context,extensions: ["jpg", "jpeg", "png", "JPG", "pdf", "JPEG", "PNG", "PDF"] );
+    if (file != null) {
+      widget.onFileSelected(file);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -105,7 +112,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
                     child: SquareButtonWidget(
                       cardKey: KEY_BUTTON_BROWSE,
                       onCardClick: () {
-                        fetchImage(ImageSource.gallery);
+                        fetchAttachment();
                       },
                       title: TranslationKeys.browse.translate(context),
                       titleKey: KEY_TITLE_BROWSE,

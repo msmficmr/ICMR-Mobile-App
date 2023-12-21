@@ -68,6 +68,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
+  clearConsetList(){
+    consentList.clear();
+  }
+
   bool entered = false;
 
   toggleEntry(bool value) {
