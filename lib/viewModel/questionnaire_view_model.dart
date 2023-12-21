@@ -277,6 +277,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..encounterEhrDiagnosisReports = diagnosisReports;
     craSectionModel.add(craModel);
     await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0]);
+    resetAll();
+    toggleEntry(false);
   }
 
   addLesionLocationImagesToDB({required StaticQuestionnaireModel staticCraData, required BuildContext context}) async {
@@ -657,6 +659,5 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   removeAllConsents() {
     consentList.clear();
-    notifyListeners();
   }
 }
