@@ -9,7 +9,7 @@ class AppTheme {
 
   AppTheme._();
 
-  static ThemeData light(BuildContext _) => ThemeData.light().copyWith(
+  static ThemeData light(BuildContext _) => ThemeData.light(useMaterial3: false).copyWith(
     pageTransitionsTheme: const PageTransitionsTheme(builders: {
       TargetPlatform.iOS: CustomTransitionBuilder(),
       TargetPlatform.android: CustomTransitionBuilder(),
