@@ -161,9 +161,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   }
 
   onSyncClick() async {
+    NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
     
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+    if (networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
       List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
       
