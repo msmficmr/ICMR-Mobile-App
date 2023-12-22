@@ -195,8 +195,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           await viewModel.postOfflineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
         }
 
+        patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+        
+
         for (int i = 0; i < patientListResponse.length; i++) {
-          log("* ${patientListResponse.length}");
           List<dynamic> payLoadObjList = [];
           String? patientId = patientListResponse[i].patientId;
           PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
