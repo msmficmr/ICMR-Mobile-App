@@ -44,64 +44,67 @@ class AttachmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Row(children: [
-          Expanded(
-            child: Skeletonizer(
-              enabled: isLoading,
-              child: Text(
-                key: titleKey,
-                title,
-                style: textStyle ?? AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w600),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Row(children: [
+            Expanded(
+              child: Skeletonizer(
+                enabled: isLoading,
+                child: Text(
+                  key: titleKey,
+                  title,
+                  style: textStyle ?? AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
             ),
-          ),
-          const SpaceWidget(
-            width: 10,
-          ),
-          InkWell(
-            key: removeButtonKey,
-            onTap: isLoading ? null : onRemoveClick,
-            borderRadius: BorderRadius.circular(40),
-            child: SizedBox(
-                height: 40,
-                width: 40,
-                child: Skeletonizer(
-                  enabled: isLoading,
-                  child: Center(
+            const SpaceWidget(
+              width: 10,
+            ),
+            InkWell(
+              key: removeButtonKey,
+              onTap: isLoading ? null : onRemoveClick,
+              borderRadius: BorderRadius.circular(40),
+              child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Skeletonizer(
+                    enabled: isLoading,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        AppAssetsPath.icClose,
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                  )),
+            ),
+            const SpaceWidget(
+              width: 10,
+            ),
+            InkWell(
+              key: viewKey,
+              onTap: isLoading ? null : viewPictureClick,
+              borderRadius: BorderRadius.circular(40),
+              child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: Skeletonizer(
+                    enabled: isLoading,
                     child: SvgPicture.asset(
-                      AppAssetsPath.icClose,
+                      AppAssetsPath.icFile,
                       height: 24,
                       width: 24,
                     ),
-                  ),
-                )),
-          ),
-          const SpaceWidget(
-            width: 10,
-          ),
-          InkWell(
-            key: viewKey,
-            onTap: isLoading ? null : viewPictureClick,
-            borderRadius: BorderRadius.circular(40),
-            child: SizedBox(
-                height: 24,
-                width: 24,
-                child: Skeletonizer(
-                  enabled: isLoading,
-                  child: SvgPicture.asset(
-                    AppAssetsPath.icFile,
-                    height: 24,
-                    width: 24,
-                  ),
-                )),
-          ),
-        ]),
+                  )),
+            ),
+          ]),
+        ),
       ),
     );
   }

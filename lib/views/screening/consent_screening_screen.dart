@@ -111,10 +111,11 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                           onFileSelected: onFileSelect,
                         );
                       }),
+                  const SpaceWidget(height: 10),
                   Selector<QuestionnaireViewModel, int>(
                     selector: (_, provider) => provider.consentList.length,
                     builder: (_, value, child) => SizedBox(
-                      height: MediaQuery.of(context).size.height / 3,
+                      height: MediaQuery.of(context).size.height * 0.45,
                       child: SingleChildScrollView(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,

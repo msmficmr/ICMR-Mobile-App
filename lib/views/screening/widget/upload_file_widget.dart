@@ -59,7 +59,7 @@ class _UploadFileWidgetState extends State<UploadFileWidget> {
     double spaceBetweenCard = 15;
 
     double cardWidth = width - (outerPadding * 2) - spaceBetweenCard;
-    cardWidth = cardWidth / 2;
+    cardWidth = cardWidth / 3;
 
     cardWidth = cardWidth > 200 ? 200 : cardWidth;
 
