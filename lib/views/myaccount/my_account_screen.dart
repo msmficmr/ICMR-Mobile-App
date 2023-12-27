@@ -162,11 +162,11 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   onSyncClick() async {
     NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
-    
+
     if (networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
       List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
-      
+
       if (response.isEmpty && patientListResponse.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
@@ -196,7 +196,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         }
 
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
-        
 
         for (int i = 0; i < patientListResponse.length; i++) {
           List<dynamic> payLoadObjList = [];
@@ -214,7 +213,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           };
           await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
         }
-        Navigator.of(context, rootNavigator: true).pop();
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
         if (context.mounted) {
           await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
