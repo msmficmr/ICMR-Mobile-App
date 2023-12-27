@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -159,10 +161,12 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   }
 
   onSyncClick() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+    NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
+
+    if (networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
       List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+
       if (response.isEmpty && patientListResponse.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
@@ -191,6 +195,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           await viewModel.postOfflineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
         }
 
+        patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+
         for (int i = 0; i < patientListResponse.length; i++) {
           List<dynamic> payLoadObjList = [];
           String? patientId = patientListResponse[i].patientId;
@@ -203,13 +209,20 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
           Map<String, dynamic> payLoadObj = {
             "payloadObj": payLoadObjList,
-            "appVersion": "45",
+            "appVersion": Environment.runningEnv.releaseVersion,
           };
           await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
         }
-        Navigator.of(context, rootNavigator: true).pop();
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
-        GoRouter.of(context).go(DashboardScreen.routerPath);
+        if (context.mounted) {
+          await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
+          await context.read<OfflineDataViewModel>().fetchCompletedCRA();
+          GoRouter.of(context).go(DashboardScreen.routerPath);
+        }
       }
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
@@ -353,25 +366,24 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ),
             ),
             ValueListenableBuilder(
-              valueListenable: _syncData,
-              builder: (context, syncData, _) {
-                if (syncData) {
-                  return InkWell(
-                    onTap: () {
-                      onSyncClick();
-                    },
-                    child: AccountCard(
-                      key: Key(KEY_DATA_SYNC_CARD),
-                      cardTitleText: TranslationKeys.dataSync.translate(context),
-                      trailingIconPath: AppAssetsPath.icChevronRight,
-                      leadingIconPath: AppAssetsPath.icSync,
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }
-            ),
+                valueListenable: _syncData,
+                builder: (context, syncData, _) {
+                  if (syncData) {
+                    return InkWell(
+                      onTap: () {
+                        onSyncClick();
+                      },
+                      child: AccountCard(
+                        key: Key(KEY_DATA_SYNC_CARD),
+                        cardTitleText: TranslationKeys.dataSync.translate(context),
+                        trailingIconPath: AppAssetsPath.icChevronRight,
+                        leadingIconPath: AppAssetsPath.icSync,
+                      ),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
           ],
         ),
         bottomNavigationBar: Container(
