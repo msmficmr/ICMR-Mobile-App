@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
@@ -43,7 +44,7 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
     return data;
   }
 
-  void checkResponseStatusCode({required Response data}) {
+  void checkResponseStatusCode({required Response data}) {  
     int statusCode = data.statusCode;
     switch (statusCode) {
       /// if response status code is not 200 || 201 then throwing exception

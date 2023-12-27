@@ -35,6 +35,7 @@ class OfflineDataService implements IOfflineDataService {
         return result;
       }
     } catch (e) {
+      rethrow;
     }
   }
 }
