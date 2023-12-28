@@ -208,6 +208,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _consentError.value = true;
         CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
       } else if (form.validate()) {
+        registrationViewModel.isLoading = true;
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
@@ -245,6 +246,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
         await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
         if (context.mounted) {
+          registrationViewModel.isLoading = false;
           GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
         }
       }
@@ -707,20 +709,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _buttonEnabled,
-                    builder: (context, isValid, _) {
-                      return PrimaryFilledButton(
-                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                        buttonTitle: TranslationKeys.continueText.translate(context),
-                        widgetKey: KEY_BUTTON_CONTINUE,
-                        isLoading: false,
-                        onPressed: !isValid
-                            ? null
-                            : () {
+                  child: Selector<RegistrationViewModel, bool>(
+                    selector: (_, provider) => provider.isLoading,
+                    builder: (context, isLoading, __) {
+                      if (isLoading) {
+                        return const SizedBox(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      } else {
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: _buttonEnabled,
+                          builder: (context, isValid, _) {
+                            return PrimaryFilledButton(
+                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                              buttonTitle: TranslationKeys.continueText.translate(context),
+                              widgetKey: KEY_BUTTON_CONTINUE,
+                              isLoading: false,
+                              onPressed: !isValid
+                                  ? null
+                                  : () {
                                 onContinueClick();
                               },
-                      );
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),
@@ -774,13 +787,12 @@ class _CreditCardNumberFormatter extends TextInputFormatter {
 
     // Add hyphens at appropriate positions
     if (text.length >= 4 && text.length <= 8) {
-      text = text.substring(0, 4) + '-' + text.substring(4);
+      if (text.length == 4) {
+        text = text.substring(0, 3);
+      }
+      text = '${text.substring(0, 4)}-${text.substring(4)}';
     } else if (text.length >= 9 && text.length <= 12) {
-      text = text.substring(0, 4) +
-          '-' +
-          text.substring(4, 8) +
-          '-' +
-          text.substring(8);
+      text = '${text.substring(0, 4)}-${text.substring(4, 8)}-${text.substring(8)}';
     }
 
     return newValue.copyWith(

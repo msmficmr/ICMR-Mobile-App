@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +51,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   static const String pageTemplate = "community_risk_assessment_verification_form";
 
   List<StaticQuestionModel> staticQuestionnaires = [];
+  List<String> institutionIds = [];
   List<String> institutionCodes = [];
   List<String> visitTypeIds = [];
   List<String> visitTypeNames = [];
@@ -119,6 +121,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   getInstitutionCodes() {
     String institutionData = TranslationKeys.institutionCodes.translate(context);
+    institutionIds = CommonFunctions.convertStringToListOfIds(institutionData);
     institutionCodes = CommonFunctions.convertStringToListOfNames(institutionData);
   }
 
@@ -322,7 +325,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   saveVerificationData() async{
     if (_institutionCode.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("institution_code", institutionIds[institutionCodes.indexOf(_institutionCode.value ?? "")], null, null, DateTime.now(), null, null));
     }
     if (_participantController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
