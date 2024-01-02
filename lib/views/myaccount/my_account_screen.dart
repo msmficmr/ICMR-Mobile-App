@@ -272,39 +272,43 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           );
         }
 
+        response = await IsarDbService.isarDbService.getListCRAOfflineData();
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
 
         for (int i = 0; i < patientListResponse.length; i++) {
           List<String> fileDeleteList = [];
           List<dynamic> payLoadObjList = [];
           String? patientId = patientListResponse[i].patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
-          Map<String, dynamic>? patientJson = resp?.toJson();
-          Map<String, dynamic> patientData = {"patientData": patientJson};
-          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
 
-          try {
-            List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
-            registrationObj['registrationObj']['patientData']['consent'] = [];
-            List<AttachmentDb> consentList = [];
-            for (dynamic pat in pMap) {
-              AttachmentDb fileName = pat;
-              fileDeleteList.add(fileName.dataBytes!);
-              List<int> content = await readFileInIsolate(fileName.dataBytes!);
-              fileName.dataBytes = base64.encode(content);
-              consentList.add(fileName);
-            }
-            registrationObj['registrationObj']['patientData']['consent'] = consentList;
-          } catch (e) {}
+          if (!(response.map((e) => e?.patientId ?? "").contains(patientId))) {
+            PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+            Map<String, dynamic>? patientJson = resp?.toJson();
+            Map<String, dynamic> patientData = {"patientData": patientJson};
+            Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+            Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
 
-          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-          payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
-          Map<String, dynamic> payLoadObj = {
-            "payloadObj": payLoadObjList,
-            "appVersion": Environment.runningEnv.releaseVersion,
-          };
-          await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+            try {
+              List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
+              registrationObj['registrationObj']['patientData']['consent'] = [];
+              List<AttachmentDb> consentList = [];
+              for (dynamic pat in pMap) {
+                AttachmentDb fileName = pat;
+                fileDeleteList.add(fileName.dataBytes!);
+                List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                fileName.dataBytes = base64.encode(content);
+                consentList.add(fileName);
+              }
+              registrationObj['registrationObj']['patientData']['consent'] = consentList;
+            } catch (e) {}
+
+            List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+            payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
+            Map<String, dynamic> payLoadObj = {
+              "payloadObj": payLoadObjList,
+              "appVersion": Environment.runningEnv.releaseVersion,
+            };
+            await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+          }
         }
         if (context.mounted) {
           Navigator.of(context, rootNavigator: true).pop();
