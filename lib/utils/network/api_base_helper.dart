@@ -47,7 +47,6 @@ class ApiBaseHelper {
       CommonFunctions.showRetrySnackbar();
       rethrow;
     } catch (e) {
-      log("ER${e}");
       rethrow;
     }
   }

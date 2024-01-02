@@ -290,14 +290,11 @@ class CommonFunctions {
     try {
       Directory tempDir = await getApplicationDocumentsDirectory();
       String tempPath = tempDir.path;
-      log("${tempPath}");
       var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
-      log("${directory.path}");
       File newFile = File(path);
       String fileName = path.split("/").last;
       String extension = fileName.split(".").last;
       String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
-      log("fileSaved to ${newPath}");
       newFile.copy(newPath);
       return newPath;
     } catch (e) {}
@@ -306,7 +303,6 @@ class CommonFunctions {
   Future<String?> getApplicationFilePath() async {
     Directory tempDir = await getApplicationDocumentsDirectory();
     String tempPath = tempDir.path;
-    log("${tempPath}");
     var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
     String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
     return newPath;

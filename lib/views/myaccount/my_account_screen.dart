@@ -235,9 +235,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               consentList.add(fileName);
             }
             registrationObj['registrationObj']['patientData']['consent'] = consentList;
-          } catch (e) {
-            log("ERROR $e");
-          }
+          } catch (e) {}
 
           List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
           for (int i = 0; i < craSectionModel.length; i++) {
@@ -250,13 +248,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   List<int> content = await readFileInIsolate(fileName.dataBytes!);
                   fileName.dataBytes = base64.encode(content);
                   craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j] = fileName;
-                } catch (e) {
-                  //log("ERROR $e");
-                }
+                } catch (e) {}
               }
             }
           }
-          log("${fileDeleteList}");
 
           Map<String, dynamic> cdrPostObj = {
             "cdrPostObj": [
@@ -301,9 +296,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               consentList.add(fileName);
             }
             registrationObj['registrationObj']['patientData']['consent'] = consentList;
-          } catch (e) {
-            log("ERROR $e");
-          }
+          } catch (e) {}
 
           List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
           payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
@@ -311,7 +304,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
-          log("${jsonEncode(payLoadObj)}");
           await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
         }
         if (context.mounted) {

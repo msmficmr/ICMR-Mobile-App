@@ -31,18 +31,15 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
       final sharedPreferenceData = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
       Map<String, dynamic> jsonData = jsonDecode(sharedPreferenceData as String);
       String token = jsonData['accessToken'] ?? "";
-      log("${token}");
       data.headers = {
         "content-type": "application/json",
         "accept": "application/json",
-        "Content-Encoding": "gzip",
         'Authorization': 'Bearer $token',
       };
     } else {
       data.headers = {
         "content-type": "application/json",
         "accept": "application/json",
-        "Content-Encoding": "gzip",
       };
     }
 
@@ -51,7 +48,7 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
 
   Future<void> checkResponseStatusCode({required Response data}) async {
     int statusCode = data.statusCode;
-    log("${statusCode} ${data.body}");
+    log("${statusCode}");
     switch (statusCode) {
       /// if response status code is not 200 || 201 then throwing exception
       case HttpStatus.ok:
