@@ -50,7 +50,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   onFileSelect(file) async {
     if (file != null) {
       Uint8List bytes = await file.readAsBytes();
-      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: file.name);
+      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: file.name,filePath: file.path);
       provider.saveConsent(model);
       _selectedAttachment.value = model;
       _buttonEnabled.value = true;

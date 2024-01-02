@@ -15,6 +15,8 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
   Future<RequestData> interceptRequest({required RequestData data}) async {
     String url = data.url;
 
+    log("Request Url: ${url}");
+
     /// if request url is protected then we are modifying header
     /// and adding authorization parameter to it.
     String unauthorizedRequestUrl = AppEndpoints.unauthorizedRequests.firstWhere(
@@ -44,8 +46,9 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
     return data;
   }
 
-  void checkResponseStatusCode({required Response data}) {  
+  Future<void> checkResponseStatusCode({required Response data}) async {
     int statusCode = data.statusCode;
+    log("${statusCode}");
     switch (statusCode) {
       /// if response status code is not 200 || 201 then throwing exception
       case HttpStatus.ok:
@@ -69,7 +72,7 @@ class HttpStatusCodeInterceptor implements InterceptorContract {
 
   @override
   Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    checkResponseStatusCode(data: data.toHttpResponse());
+    await checkResponseStatusCode(data: data.toHttpResponse());
 
     return data;
   }

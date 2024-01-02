@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -35,16 +36,15 @@ class OfflineDataViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchRegisteredPatient() async {
-      List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
-      _patientRegistered = patientListResponse.length;
-      notifyListeners();
-
+    List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+    _patientRegistered = patientListResponse.length;
+    notifyListeners();
   }
 
   Future<void> fetchCompletedCRA() async {
-      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      _completedCRAcount = response.where((element) => element?.craSectionData?.any((el) => el.encounterCategoryMapId == "community_risk_assessment_verification_form") ?? false).length;
-      notifyListeners();
+    List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+    _completedCRAcount = response.where((element) => element?.craSectionData?.any((el) => el.encounterCategoryMapId == "community_risk_assessment_verification_form") ?? false).length;
+    notifyListeners();
   }
 
   bool _syncData = false;
@@ -62,7 +62,7 @@ class OfflineDataViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> postOfflineData({required String? caseId, required String? patientId, required Map<String, dynamic> payLoadObj}) async {
+  Future<void> postOfflineData({required String? caseId, required String? patientId, required Map<String, dynamic> payLoadObj, required List<String> fileDeleteList}) async {
     try {
       OfflineSyncResponseModel? response = await OfflineDataService().saveOfflineDataSync(payLoadObj: payLoadObj);
       if (response?.status == 201) {
@@ -70,6 +70,9 @@ class OfflineDataViewModel extends ChangeNotifier {
           await IsarDbService.isarDbService.deleteByCaseId(caseId);
         }
         await IsarDbService.isarDbService.deleteByPatientId(patientId);
+        for (String path in fileDeleteList) {
+          await CommonFunctions().deleteFile(path);
+        }
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
