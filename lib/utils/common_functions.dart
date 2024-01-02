@@ -1,3 +1,5 @@
+import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
@@ -13,6 +15,7 @@ import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
 import 'package:mhealth/widgets/pdf_preview.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CommonFunctions {
@@ -157,9 +160,9 @@ class CommonFunctions {
 
   static String getGender(String gender) {
     switch (gender) {
-      case "MALE" :
+      case "MALE":
         return "Male";
-      case "FEMALE" :
+      case "FEMALE":
         return "Female";
       default:
         return "Other";
@@ -179,7 +182,6 @@ class CommonFunctions {
 
   static List<String> convertStringToListOfNames(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
-
 
     List<String> mapRepresentations = customSplit(cleanedInput);
 
@@ -227,7 +229,6 @@ class CommonFunctions {
 
   static List<String> convertStringToListOfIds(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
-
 
     List<String> mapRepresentations = cleanedInput.split(',');
 
@@ -283,5 +284,40 @@ class CommonFunctions {
     }
 
     return result;
+  }
+
+  Future<String?> saveFileToLocal(String path) async {
+    try {
+      Directory tempDir = await getApplicationDocumentsDirectory();
+      String tempPath = tempDir.path;
+      log("${tempPath}");
+      var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
+      log("${directory.path}");
+      File newFile = File(path);
+      String fileName = path.split("/").last;
+      String extension = fileName.split(".").last;
+      String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
+      log("fileSaved to ${newPath}");
+      newFile.copy(newPath);
+      return newPath;
+    } catch (e) {}
+  }
+
+  Future<String?> getApplicationFilePath() async {
+    Directory tempDir = await getApplicationDocumentsDirectory();
+    String tempPath = tempDir.path;
+    log("${tempPath}");
+    var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
+    String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
+    return newPath;
+  }
+
+  Future<String?> deleteFile(String file) async {
+    try {
+      File fileToDelete = File(file);
+      await fileToDelete.delete();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

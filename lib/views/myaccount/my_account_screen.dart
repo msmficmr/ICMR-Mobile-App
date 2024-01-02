@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:isolate';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isar/isar.dart';
 import 'package:mhealth/config/router/app_screens.dart';
+import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
@@ -160,6 +167,39 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
+  Future<List<int>> readFileInIsolate(String filePath) async {
+    ReceivePort receivePort = ReceivePort();
+    Completer<List<int>> completer = Completer();
+
+    // Start a new isolate and pass the SendPort and filePath
+    Isolate isolate = await Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
+
+    // Listen for messages from the isolate
+    receivePort.listen((message) {
+      if (message is List<int>) {
+        completer.complete(message);
+      } else {
+        completer.completeError(message);
+      }
+      receivePort.close(); // Close the port when done
+    });
+
+    return completer.future;
+  }
+
+  static void _readFileTask(Map<String, dynamic> message) async {
+    SendPort sendPort = message['sendPort'];
+    String filePath = message['filePath'];
+
+    try {
+      File file = File(filePath);
+      List<int> contents = await file.readAsBytes();
+      sendPort.send(contents); // Send the contents back to the main isolate
+    } catch (e) {
+      sendPort.send(e.toString()); // Send the error message back to the main isolate
+    }
+  }
+
   onSyncClick() async {
     NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
 
@@ -171,8 +211,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
         showDataSyncLoading(context);
-        _syncing = true;
+        //_syncing = true;
+
         for (int i = 0; i < response.length; i++) {
+          List<String> fileDeleteList = [];
           List<dynamic> payLoadObjList = [];
           String? patienId = response[i]?.patientId;
           PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId ?? "");
@@ -180,7 +222,42 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           Map<String, dynamic> patientData = {"patientData": patientJson};
           Map<String, dynamic> registrationObj = {"registrationObj": patientData};
           Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+
+          try {
+            List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
+            registrationObj['registrationObj']['patientData']['consent'] = [];
+            List<AttachmentDb> consentList = [];
+            for (dynamic pat in pMap) {
+              AttachmentDb fileName = pat;
+              fileDeleteList.add(fileName.dataBytes!);
+              List<int> content = await readFileInIsolate(fileName.dataBytes!);
+              fileName.dataBytes = base64.encode(content);
+              consentList.add(fileName);
+            }
+            registrationObj['registrationObj']['patientData']['consent'] = consentList;
+          } catch (e) {
+            log("ERROR $e");
+          }
+
           List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+          for (int i = 0; i < craSectionModel.length; i++) {
+            if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
+              List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
+              for (int j = 0; j < questionList.length; j++) {
+                AttachmentDb fileName = questionList[j]['file'];
+                try {
+                  fileDeleteList.add(fileName.dataBytes!);
+                  List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                  fileName.dataBytes = base64.encode(content);
+                  craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j] = fileName;
+                } catch (e) {
+                  //log("ERROR $e");
+                }
+              }
+            }
+          }
+          log("${fileDeleteList}");
+
           Map<String, dynamic> cdrPostObj = {
             "cdrPostObj": [
               {response[i]?.caseId: craSectionModel}
@@ -192,12 +269,18 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
-          await viewModel.postOfflineData(caseId: response[i]?.caseId, patientId: response[i]?.patientId, payLoadObj: payLoadObj);
+          await viewModel.postOfflineData(
+            caseId: response[i]?.caseId,
+            patientId: response[i]?.patientId,
+            payLoadObj: payLoadObj,
+            fileDeleteList: fileDeleteList,
+          );
         }
 
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
 
         for (int i = 0; i < patientListResponse.length; i++) {
+          List<String> fileDeleteList = [];
           List<dynamic> payLoadObjList = [];
           String? patientId = patientListResponse[i].patientId;
           PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
@@ -205,13 +288,31 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           Map<String, dynamic> patientData = {"patientData": patientJson};
           Map<String, dynamic> registrationObj = {"registrationObj": patientData};
           Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
+
+          try {
+            List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
+            registrationObj['registrationObj']['patientData']['consent'] = [];
+            List<AttachmentDb> consentList = [];
+            for (dynamic pat in pMap) {
+              AttachmentDb fileName = pat;
+              fileDeleteList.add(fileName.dataBytes!);
+              List<int> content = await readFileInIsolate(fileName.dataBytes!);
+              fileName.dataBytes = base64.encode(content);
+              consentList.add(fileName);
+            }
+            registrationObj['registrationObj']['patientData']['consent'] = consentList;
+          } catch (e) {
+            log("ERROR $e");
+          }
+
           List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
           payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
           Map<String, dynamic> payLoadObj = {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
-          await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj);
+          log("${jsonEncode(payLoadObj)}");
+          await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
         }
         if (context.mounted) {
           Navigator.of(context, rootNavigator: true).pop();
