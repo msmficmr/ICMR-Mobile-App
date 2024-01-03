@@ -247,7 +247,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                   fileDeleteList.add(fileName.dataBytes!);
                   List<int> content = await readFileInIsolate(fileName.dataBytes!);
                   fileName.dataBytes = base64.encode(content);
-                  craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j] = fileName;
+                  craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
                 } catch (e) {}
               }
             }
@@ -264,6 +264,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
+
+
+
           await viewModel.postOfflineData(
             caseId: response[i]?.caseId,
             patientId: response[i]?.patientId,
