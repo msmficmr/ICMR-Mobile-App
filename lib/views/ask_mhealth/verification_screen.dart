@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -337,7 +338,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text, null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", base64Encode(_patientConsent.value!),  null, null, DateTime.now(), null, null));
+      
+      String? newFilePath = await CommonFunctions().getApplicationFilePath();
+      File file =File(newFilePath!);
+      await file.writeAsBytes(_patientConsent.value!);
+      log("Verification screennew  file path: ${newFilePath}");
+
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath,  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     await questionnaireViewModel.setNextSectionData(sectionName: pageTemplate, context: context, staticSectionsData: staticQuestionnaires);

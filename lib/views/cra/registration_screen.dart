@@ -263,9 +263,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   addConsentImages(String patientId) async {
     for (int i = 0; i < questionnaireViewModel.consentList.length; i++) {
+      String? filePath = await CommonFunctions().saveFileToLocal(questionnaireViewModel.consentList[i]!.filePath);
       AttachmentDb attachment = AttachmentDb()
         ..fileName = questionnaireViewModel.consentList[i]!.fileName
-        ..dataBytes = questionnaireViewModel.consentList[i]!.baseImage;
+        ..dataBytes = filePath;
       await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId, attachment: attachment);
     }
     questionnaireViewModel.consentList.clear();
@@ -614,11 +615,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         headingKey: Key(KEY_HEADING_DOCUMENT_TYPE),
                         hintText: TranslationKeys.select.translate(context),
                         onChanged: (val) {
-                         setState(() {
-                           _document.value = val;
-                           _documentType.value = true;
-                           _documentTypeController.clear();
-                         });
+                          setState(() {
+                            _document.value = val;
+                            _documentType.value = true;
+                            _documentTypeController.clear();
+                          });
                         },
                         selectedItem: _document.value,
                         items: documentNames,
@@ -627,22 +628,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                ValueListenableBuilder(valueListenable: _documentType, builder: (context, value, __) {
-                  if (value ?? false) {
-                    return  CustomTextField(
-                      controller: _documentTypeController,
-                      widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
-                      hintText: TranslationKeys.enterHere.translate(context),
-                      heading: "${_document.value}",
-                      headingKey: Key(KEY_HEADING_DOCUMENT_ID),
-                      validator: getDocumentWidget(),
-                      keyboardType: getDocumentKeyboardType(),
-                      inputFormatters: getInputFormatter(),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                }),
+                ValueListenableBuilder(
+                    valueListenable: _documentType,
+                    builder: (context, value, __) {
+                      if (value ?? false) {
+                        return CustomTextField(
+                          controller: _documentTypeController,
+                          widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
+                          hintText: TranslationKeys.enterHere.translate(context),
+                          heading: "${_document.value}",
+                          headingKey: Key(KEY_HEADING_DOCUMENT_ID),
+                          validator: getDocumentWidget(),
+                          keyboardType: getDocumentKeyboardType(),
+                          inputFormatters: getInputFormatter(),
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    }),
                 const SpaceWidget(
                   height: 15,
                 ),
@@ -787,9 +790,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 class _CreditCardNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     // Filter out non-numeric characters
     String text = newValue.text.replaceAll(RegExp(r'\D'), '');
 

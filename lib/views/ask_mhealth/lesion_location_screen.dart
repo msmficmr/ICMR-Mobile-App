@@ -108,7 +108,7 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
     XFile? file = await CommonFunctions.getImage(context: context, imageSource: source);
     if (file != null) {
       Uint8List bytes = await file.readAsBytes();
-      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: "${_location.value} ${_site.value}");
+      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: "${_location.value} ${_site.value}", filePath: file.path);
       provider.saveAttachment(model);
       _selectedAttachment.value = model;
     }
@@ -195,9 +195,9 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
                         width: double.infinity,
                         child: PrimaryFilledButton(
                             onPressed: () {
-                               if (formKey.currentState!.validate()) {
-                                 fetchImage(ImageSource.camera);
-                               }
+                              if (formKey.currentState!.validate()) {
+                                fetchImage(ImageSource.camera);
+                              }
                             },
                             isLoading: false,
                             buttonThemeStyle: const FilledButtonThemeStyle(
@@ -314,13 +314,14 @@ class _LesionLocationScreenState extends State<LesionLocationScreen> {
   }
 
   saveLesionLocationsData() async {
-    if (provider.attachmentList.isNotEmpty) saveLesionLocationData();
+    if (provider.attachmentList.isNotEmpty) await saveLesionLocationData();
     await provider.setNextSectionData(sectionName: "community_risk_assessment_lesion_location", context: context, staticSectionsData: staticQuestionnaires);
   }
 
-  saveLesionLocationData() {
+  saveLesionLocationData() async{
     for (int i = 0; i < provider.attachmentList.length; i++) {
-      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText, provider.attachmentList[i]!.baseImage.toString(), null, null, DateTime.now(), null, null);
+      String? filePath = await CommonFunctions().saveFileToLocal(provider.attachmentList[i]!.filePath);
+      final staticQuestion = StaticQuestionModel(provider.attachmentList[i]!.fileName.questionText,filePath, null, null, DateTime.now(), null, null);
       staticQuestionnaires.add(staticQuestion);
     }
   }

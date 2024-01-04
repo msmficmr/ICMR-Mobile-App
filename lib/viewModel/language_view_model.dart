@@ -68,12 +68,11 @@ class LanguageViewModel extends ChangeNotifier {
 class AttachmentModel {
   String fileName;
   List<int> bytes;
-  String? baseImage;
-  AttachmentModel({required this.fileName, required this.bytes}) {
-    this.baseImage = base64.encode(this.bytes);
-  }
+  String filePath;
+  AttachmentModel({required this.fileName, required this.bytes,required this.filePath});
   factory AttachmentModel.fromJson(Map<String, dynamic> json) => AttachmentModel(
         fileName: json["fileName"],
+        filePath: json["filePath"],
         bytes: List<int>.from(json["bytes"].map((e) => e)),
       );
 
@@ -81,11 +80,12 @@ class AttachmentModel {
     return AttachmentModel(
       fileName: source.fileName,
       bytes: source.bytes,
+      filePath: source.filePath
     );
   }
 
-  Map<String, dynamic> toJson() => {
+ /*  Map<String, dynamic> toJson() => {
         "fileName": fileName,
         "bytes": List<dynamic>.from(bytes),
-      };
+      }; */
 }
