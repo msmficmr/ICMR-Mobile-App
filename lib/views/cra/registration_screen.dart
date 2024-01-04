@@ -51,7 +51,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
 
-  List<String> documentNames = ["Aadhar number", "Voter ID", "PAN number"];
+  List<String> documentIds = [];
+  List<String> documentNames = [];
   List<String> occupationIds = [];
   List<String> occupationNames = [];
   List<String> institutionIds = [];
@@ -159,6 +160,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     studyNames = CommonFunctions.convertStringToListOfNames(studyData);
   }
 
+  getDocuments() {
+    String documentsData = TranslationKeys.documents.translate(context);
+    documentIds = CommonFunctions.convertStringToListOfIds(documentsData);
+    documentNames = CommonFunctions.convertStringToListOfNames(documentsData);
+  }
+
   getSignedConsentReasonCodes() {
     String signedConsentData = TranslationKeys.signedConsentReasonCodes.translate(context);
     signedConsentIds = CommonFunctions.convertStringToListOfIds(signedConsentData);
@@ -197,6 +204,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.didChangeDependencies();
     getOccupationTypes();
     getInstitutionCodes();
+    getDocuments();
     getStudyCodes();
     getSignedConsentReasonCodes();
   }
@@ -216,7 +224,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         IdentityProofDb? identityProof;
         if (_documentTypeController.text.isNotEmpty) {
           identityProof = IdentityProofDb()
-            ..identityType = _document.value
+            ..identityType = _document.value != null ? documentIds[documentNames.indexOf(_document.value ?? "")] : ""
             ..value = _documentTypeController.text;
         }
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
