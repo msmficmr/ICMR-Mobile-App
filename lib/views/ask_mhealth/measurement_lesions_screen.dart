@@ -472,8 +472,6 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
           null,
           null));
     }
-    // }
-    log(staticQuestionnaires.toString());
     await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_measurement_lesions", context: context, staticSectionsData: staticQuestionnaires);
   }
 }
