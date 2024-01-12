@@ -10,8 +10,8 @@ class IdentityProofDb {
   // Add a toJson method to convert the object to JSON
   toJson() {
     return {
-      'fileName': identityType,
-      'dataBytes': value,
+      'identityType': identityType,
+      'value': value,
     };
   }
 }
