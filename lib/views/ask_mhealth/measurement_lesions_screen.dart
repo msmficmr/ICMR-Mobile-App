@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
@@ -409,66 +411,66 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
             null,
             null));
       }
-      for (int i = 0; i < _breadthControllers.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_breadth",
-            _breadthControllers[i].text,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
-      for (int i = 0; i < _productControllers.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_product",
-            _productControllers[i].text,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
-      for (int i = 0; i < _otherControllers.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_other_clinical_impression",
-            _otherControllers[i].text,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
-      for (int i = 0; i < _fhpOpinions.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_fhp_opinion_suspicious",
-            _fhpOpinionValue[i].value.toString(),
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
-      for (int i = 0; i < _autofluorescenceImpression.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_autoflorescence_impression",
-            _autofluorescenceImpression[i].value,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
-      for (int i = 0; i < _provisionalDiagnosis.length; i++) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_provisional_diagnosis",
-            _provisionalDiagnosis[i].value,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
+    }
+    for (int i = 0; i < _breadthControllers.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_breadth",
+          _breadthControllers[i].text,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
+    }
+    for (int i = 0; i < _productControllers.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_product",
+          _productControllers[i].text,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
+    }
+    for (int i = 0; i < _otherControllers.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_other_clinical_impression",
+          _otherControllers[i].text,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
+    }
+    for (int i = 0; i < _fhpOpinions.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_fhp_opinion_suspicious",
+          _fhpOpinionValue[i].value.toString(),
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
+    }
+    for (int i = 0; i < _autofluorescenceImpression.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_autoflorescence_impression",
+          _autofluorescenceImpression[i].value,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
+    }
+    for (int i = 0; i < _provisionalDiagnosis.length; i++) {
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_provisional_diagnosis",
+          _provisionalDiagnosis[i].value,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
     }
     await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_measurement_lesions", context: context, staticSectionsData: staticQuestionnaires);
   }
