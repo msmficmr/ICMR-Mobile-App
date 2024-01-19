@@ -50,7 +50,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   onFileSelect(file) async {
     if (file != null) {
       Uint8List bytes = await file.readAsBytes();
-      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: file.name);
+      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: file.name,filePath: file.path);
       provider.saveConsent(model);
       _selectedAttachment.value = model;
       _buttonEnabled.value = true;
@@ -61,6 +61,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   void initState() {
     super.initState();
     provider = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    provider.clearConsetList();
     _buttonEnabled = ValueNotifier<bool>(false);
   }
 
@@ -110,10 +111,11 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                           onFileSelected: onFileSelect,
                         );
                       }),
+                  const SpaceWidget(height: 10),
                   Selector<QuestionnaireViewModel, int>(
                     selector: (_, provider) => provider.consentList.length,
                     builder: (_, value, child) => SizedBox(
-                      height: MediaQuery.of(context).size.height / 3,
+                      height: MediaQuery.of(context).size.height * 0.45,
                       child: SingleChildScrollView(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -139,7 +141,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                                         }
                                       },
                                       viewPictureClick: () {
-                                        CommonFunctions.viewImage(context: context, bytes: provider.consentList[index]!.bytes);
+                                        CommonFunctions.viewImage(context: context, model:  provider.consentList[index]!);
                                       },
                                     );
                                   },

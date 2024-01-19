@@ -1,3 +1,8 @@
+import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,8 +11,11 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
+import 'package:mhealth/widgets/pdf_preview.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CommonFunctions {
@@ -84,17 +92,20 @@ class CommonFunctions {
     Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
   }
 
-  static void viewImage({required BuildContext context, required List<int> bytes}) {
-    showDialog(
-      barrierDismissible: true,
-      context: context,
-      useSafeArea: true,
-      builder: (_) {
-        return ImageViewWidget(
-          imageList: bytes,
-        );
-      }
-    );
+  static void viewImage({required BuildContext context, required AttachmentModel model}) {
+    if (model.fileName.contains(".pdf")) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => PdfPreview(fileName: model.fileName, bytes: Uint8List.fromList(model.bytes))));
+    } else {
+      showDialog(
+          barrierDismissible: true,
+          context: context,
+          useSafeArea: true,
+          builder: (_) {
+            return ImageViewWidget(
+              imageList: model.bytes,
+            );
+          });
+    }
   }
 
   static Future<XFile?> getImage({required BuildContext context, required ImageSource imageSource}) async {
@@ -103,6 +114,18 @@ class CommonFunctions {
       XFile? file = await ImagePicker().pickImage(source: imageSource);
       return file;
     }
+  }
+
+  static Future<XFile?> getAttachment({required BuildContext context, List<String> extensions = const ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"]}) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: extensions,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      XFile xFile = XFile(result.files.first.path!);
+      return xFile;
+    }
+    return null;
   }
 
   static void showRetrySnackbar() {
@@ -137,9 +160,9 @@ class CommonFunctions {
 
   static String getGender(String gender) {
     switch (gender) {
-      case "MALE" :
+      case "MALE":
         return "Male";
-      case "FEMALE" :
+      case "FEMALE":
         return "Female";
       default:
         return "Other";
@@ -148,9 +171,9 @@ class CommonFunctions {
 
   static String getGenderImage(String gender) {
     switch (gender) {
-      case "Male" :
+      case "Male":
         return AppAssetsPath.icMale;
-      case "Female" :
+      case "Female":
         return AppAssetsPath.icFemale;
       default:
         return AppAssetsPath.icTransgender;
@@ -160,8 +183,7 @@ class CommonFunctions {
   static List<String> convertStringToListOfNames(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
 
-
-    List<String> mapRepresentations = cleanedInput.split(',');
+    List<String> mapRepresentations = customSplit(cleanedInput);
 
     List<String> namesList = [];
 
@@ -181,9 +203,32 @@ class CommonFunctions {
     return namesList;
   }
 
+  static List<String> customSplit(String input) {
+    List<String> result = [];
+    int bracketCount = 0;
+    StringBuffer currentChunk = StringBuffer();
+
+    for (int i = 0; i < input.length; i++) {
+      if (input[i] == '(') {
+        bracketCount++;
+      } else if (input[i] == ')') {
+        bracketCount--;
+      }
+
+      if (input[i] == ',' && bracketCount == 0) {
+        result.add(currentChunk.toString().trim());
+        currentChunk.clear();
+      } else {
+        currentChunk.write(input[i]);
+      }
+    }
+    result.add(currentChunk.toString().trim());
+
+    return result;
+  }
+
   static List<String> convertStringToListOfIds(String inputString) {
     String cleanedInput = inputString.replaceAll(RegExp(r'[\[\]\{\}]'), '');
-
 
     List<String> mapRepresentations = cleanedInput.split(',');
 
@@ -239,5 +284,36 @@ class CommonFunctions {
     }
 
     return result;
+  }
+
+  Future<String?> saveFileToLocal(String path) async {
+    try {
+      Directory tempDir = await getApplicationDocumentsDirectory();
+      String tempPath = tempDir.path;
+      var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
+      File newFile = File(path);
+      String fileName = path.split("/").last;
+      String extension = fileName.split(".").last;
+      String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.$extension';
+      newFile.copy(newPath);
+      return newPath;
+    } catch (e) {}
+  }
+
+  Future<String?> getApplicationFilePath() async {
+    Directory tempDir = await getApplicationDocumentsDirectory();
+    String tempPath = tempDir.path;
+    var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
+    String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
+    return newPath;
+  }
+
+  Future<String?> deleteFile(String file) async {
+    try {
+      File fileToDelete = File(file);
+      await fileToDelete.delete();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

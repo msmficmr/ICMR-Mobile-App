@@ -20,6 +20,7 @@ import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
@@ -207,6 +208,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _consentError.value = true;
         CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
       } else if (form.validate()) {
+        registrationViewModel.isLoading = true;
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
@@ -241,17 +243,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..patientId = patientId
           ..createdBy = userId);
         await addConsentImages(patientId);
-        await Provider.of<PatientListViewModel>(context, listen: false).setCurrentUser(_firstNameController.text, _lastNameController.text);
-        GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+        await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
+        await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
+        if (context.mounted) {
+          registrationViewModel.isLoading = false;
+          GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+        }
       }
     }
   }
 
   addConsentImages(String patientId) async {
     for (int i = 0; i < questionnaireViewModel.consentList.length; i++) {
+      String? filePath = await CommonFunctions().saveFileToLocal(questionnaireViewModel.consentList[i]!.filePath);
       AttachmentDb attachment = AttachmentDb()
         ..fileName = questionnaireViewModel.consentList[i]!.fileName
-        ..dataBytes = questionnaireViewModel.consentList[i]!.baseImage;
+        ..dataBytes = filePath;
       await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId, attachment: attachment);
     }
     questionnaireViewModel.consentList.clear();
@@ -301,7 +308,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _isConsentButtonActiveNotifier,
                     builder: (context, isButtonActive, child) {
                       return PrimaryFilledIconButton(
-                        onPressed: isButtonActive ? (){} : onConsentClicked,
+                        onPressed: isButtonActive ? () {} : onConsentClicked,
                         isLoading: false,
                         buttonThemeStyle: FilledButtonThemeStyle(
                           enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
@@ -600,11 +607,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         headingKey: Key(KEY_HEADING_DOCUMENT_TYPE),
                         hintText: TranslationKeys.select.translate(context),
                         onChanged: (val) {
-                         setState(() {
-                           _document.value = val;
-                           _documentType.value = true;
-                           _documentTypeController.clear();
-                         });
+                          setState(() {
+                            _document.value = val;
+                            _documentType.value = true;
+                            _documentTypeController.clear();
+                          });
                         },
                         selectedItem: _document.value,
                         items: documentNames,
@@ -613,22 +620,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                ValueListenableBuilder(valueListenable: _documentType, builder: (context, value, __) {
-                  if (value ?? false) {
-                    return  CustomTextField(
-                      controller: _documentTypeController,
-                      widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
-                      hintText: TranslationKeys.enterHere.translate(context),
-                      heading: "${_document.value}",
-                      headingKey: Key(KEY_HEADING_DOCUMENT_ID),
-                      validator: getDocumentWidget(),
-                      keyboardType: getDocumentKeyboardType(),
-                      inputFormatters: getInputFormatter(),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                }),
+                ValueListenableBuilder(
+                    valueListenable: _documentType,
+                    builder: (context, value, __) {
+                      if (value ?? false) {
+                        return CustomTextField(
+                          controller: _documentTypeController,
+                          widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
+                          hintText: TranslationKeys.enterHere.translate(context),
+                          heading: "${_document.value}",
+                          headingKey: Key(KEY_HEADING_DOCUMENT_ID),
+                          validator: getDocumentWidget(),
+                          keyboardType: getDocumentKeyboardType(),
+                          inputFormatters: getInputFormatter(),
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    }),
                 const SpaceWidget(
                   height: 15,
                 ),
@@ -703,20 +712,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _buttonEnabled,
-                    builder: (context, isValid, _) {
-                      return PrimaryFilledButton(
-                        buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                        buttonTitle: TranslationKeys.continueText.translate(context),
-                        widgetKey: KEY_BUTTON_CONTINUE,
-                        isLoading: false,
-                        onPressed: !isValid
-                            ? null
-                            : () {
+                  child: Selector<RegistrationViewModel, bool>(
+                    selector: (_, provider) => provider.isLoading,
+                    builder: (context, isLoading, __) {
+                      if (isLoading) {
+                        return const SizedBox(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      } else {
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: _buttonEnabled,
+                          builder: (context, isValid, _) {
+                            return PrimaryFilledButton(
+                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                              buttonTitle: TranslationKeys.continueText.translate(context),
+                              widgetKey: KEY_BUTTON_CONTINUE,
+                              isLoading: false,
+                              onPressed: !isValid
+                                  ? null
+                                  : () {
                                 onContinueClick();
                               },
-                      );
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),
@@ -762,21 +782,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 class _CreditCardNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     // Filter out non-numeric characters
     String text = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     // Add hyphens at appropriate positions
     if (text.length >= 4 && text.length <= 8) {
-      text = text.substring(0, 4) + '-' + text.substring(4);
+      if (text.length == 4) {
+        text = text.substring(0, 3);
+      }
+      text = '${text.substring(0, 4)}-${text.substring(4)}';
     } else if (text.length >= 9 && text.length <= 12) {
-      text = text.substring(0, 4) +
-          '-' +
-          text.substring(4, 8) +
-          '-' +
-          text.substring(8);
+      text = '${text.substring(0, 4)}-${text.substring(4, 8)}-${text.substring(8)}';
     }
 
     return newValue.copyWith(

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 import 'package:mhealth/utils/translation_keys.dart';
+import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
 import 'package:mhealth/views/ask_mhealth/widgets/verification_checkbox_widget.dart';
@@ -49,6 +52,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   static const String pageTemplate = "community_risk_assessment_verification_form";
 
   List<StaticQuestionModel> staticQuestionnaires = [];
+  List<String> institutionIds = [];
   List<String> institutionCodes = [];
   List<String> visitTypeIds = [];
   List<String> visitTypeNames = [];
@@ -118,6 +122,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   getInstitutionCodes() {
     String institutionData = TranslationKeys.institutionCodes.translate(context);
+    institutionIds = CommonFunctions.convertStringToListOfIds(institutionData);
     institutionCodes = CommonFunctions.convertStringToListOfNames(institutionData);
   }
 
@@ -296,10 +301,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               _errorText.value = true;
                               CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
                             } else {
-                              saveVerificationData();
-                              await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form",context: context, staticSectionsData: []);
+                              await saveVerificationData();
+                              await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form", context: context, staticSectionsData: []);
                               await questionnaireViewModel.removeAllAttachment();
-                              GoRouter.of(context).push(DashboardScreen.routerPath);
+
+                              if (context.mounted) {
+                                await context.read<OfflineDataViewModel>().fetchCompletedCRA();
+                                GoRouter.of(context).go(DashboardScreen.routerPath);
+                              }
                             }
                           },
                         );
@@ -315,23 +324,29 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
   }
 
-  saveVerificationData() {
+  saveVerificationData() async{
     if (_institutionCode.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("institution_code", _institutionCode.value,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("institution_code", institutionIds[institutionCodes.indexOf(_institutionCode.value ?? "")], null, null, DateTime.now(), null, null));
     }
     if (_participantController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
     }
     if (_visitType.value != null) {
       staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")],  null, null, DateTime.now(), null, null));
     }
     if (_fromDateController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text, null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", base64Encode(_patientConsent.value!),  null, null, DateTime.now(), null, null));
+      
+      String? newFilePath = await CommonFunctions().getApplicationFilePath();
+      File file =File(newFilePath!);
+      await file.writeAsBytes(_patientConsent.value!);
+      log("Verification screennew  file path: ${newFilePath}");
+
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath,  null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    questionnaireViewModel.setNextSectionData(sectionName: pageTemplate,context: context, staticSectionsData: staticQuestionnaires);
+    await questionnaireViewModel.setNextSectionData(sectionName: pageTemplate, context: context, staticSectionsData: staticQuestionnaires);
   }
 }

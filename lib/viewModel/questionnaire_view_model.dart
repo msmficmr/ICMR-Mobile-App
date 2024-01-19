@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/isar_db_schema/risk_assessment_questionaire.dart';
@@ -67,6 +68,10 @@ class QuestionnaireViewModel extends ChangeNotifier {
   bool get isLesionRedirected => _isLesionRedirected;
 
   Map<String, List<Questionnaire>> sectionsData = {};
+
+  clearConsetList(){
+    consentList.clear();
+  }
 
   bool entered = false;
 
@@ -242,6 +247,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     String userId = loginViewModel?.userDetails?.userId ?? "";
     for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
       if (staticCraData.questionnaireList![i].questionid == "patient_signature") {
+        
         AttachmentDb attachment = AttachmentDb()
           ..fileName = staticCraData.questionnaireList![i].toJson()['questionid']
           ..dataBytes = staticCraData.questionnaireList![i].toJson()['value'];
@@ -277,6 +283,8 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..encounterEhrDiagnosisReports = diagnosisReports;
     craSectionModel.add(craModel);
     await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0]);
+    resetAll();
+    toggleEntry(false);
   }
 
   addLesionLocationImagesToDB({required StaticQuestionnaireModel staticCraData, required BuildContext context}) async {
@@ -657,6 +665,5 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   removeAllConsents() {
     consentList.clear();
-    notifyListeners();
   }
 }

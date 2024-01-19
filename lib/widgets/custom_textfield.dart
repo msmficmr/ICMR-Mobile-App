@@ -170,7 +170,7 @@ class CustomTextField extends StatelessWidget {
     } else if (keyboardType == TextInputType.emailAddress) {
       return [AppValues.emailInputFormatter];
     } else if (keyboardType == TextInputType.text) {
-      return [CustomInputFormatter(regx: r"^[(),.-'/+&*:\]*$")];
+      return [CustomInputFormatter(regx: r"^[a-zA-Z0-9(),.\-'/+&#*:\s]*$")];
     } else {
       return [CustomInputFormatter(regx: r'^[a-zA-Z0-9 ]*$')];
     }
