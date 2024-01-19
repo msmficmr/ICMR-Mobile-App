@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isar/isar.dart';
+import 'package:intl/intl.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/network_status_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -470,8 +469,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 builder: (context, syncData, _) {
                   if (syncData) {
                     return InkWell(
-                      onTap: () {
-                        onSyncClick();
+                      onTap: () async {
+                        bool tokenExpired = await checkIfTokenExpired();
+                        if (tokenExpired) {
+                          CommonFunctions.toastMessage("Session expired! Login to Continue");
+                          await loginViewModel?.logout();
+                        } else {
+                          onSyncClick();
+                        }
                       },
                       child: AccountCard(
                         key: Key(KEY_DATA_SYNC_CARD),
@@ -501,5 +506,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         ),
       ),
     );
+  }
+
+  /// Checking if the token has been expired or not
+  Future<bool> checkIfTokenExpired() async {
+    String? tokenExpirationDetails = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_SESSION_TIME);
+    DateTime expirationDate = DateFormat("yyyy-MM-dd HH:mm:ss").parse(tokenExpirationDetails!);
+    DateTime now = DateTime.now();
+    return now.isAfter(expirationDate);
   }
 }
