@@ -1,9 +1,11 @@
+import 'package:mhealth/config/environment/environment.dart';
+
 class AppEndpoints {
   AppEndpoints._();
 
   static List<String> get unauthorizedRequests => [sendOtpUrl, loginOtpUrl];
 
-  static String get sendOtpUrl => "/auth/otp";
+  static String get sendOtpUrl => "/auth/otp?sourceAppName=${Environment.runningEnv.sourceAppName}";
   static String get loginOtpUrl => "/auth/otp/login";
   static String get syncNumber => "/sync/offline-data";
   static String get logoutUrl => "/logout";
