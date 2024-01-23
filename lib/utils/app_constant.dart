@@ -8,6 +8,7 @@ class AppConstant {
   static const String APP_NAME_KEY = "APP_NAME";
   static const String BASE_URL_KEY = "BASE_URL";
   static const String ENV_KEY = "ENV";
+  static const String SOURCE_APP_NAME_KEY = "SOURCE_APP_NAME";
   static const String FONT_FAMILY = "Montserrat";
   static const String M_HEALTH_LABEL = "mHealth";
   static const String AI_BASED_CANCER_RISK_ASSESSMENT = "AI Based Cancer Risk Assessment";
