@@ -60,6 +60,20 @@ class AuthService implements IAuthService {
   }
   
   @override
+  Future<Response> getAppVersion() async {
+    try {
+      Response? response = await ApiBaseHelper.httpGetRequest(AppEndpoints.appVersionUrl);
+      if (response != null) {
+        return response;
+      } else {
+        throw AppException(null, AppConstant.ERROR_SOMETHING_WENT_WRONG, 500);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+  
+  @override
   Future<Response> logout() async {
     try {
       Response? response = await ApiBaseHelper.httpGetRequest(AppEndpoints.logoutUrl);

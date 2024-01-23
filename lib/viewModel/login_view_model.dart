@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
@@ -126,7 +127,6 @@ class LoginViewModel extends ChangeNotifier {
       if (response != null) {
         String userDetails = jsonEncode(response.toJson());
         await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
-        saveExpirationTime(userDetails);
         loginUser(jsonEncode(response.toJson()));
       }
     } catch (e) {
@@ -136,13 +136,13 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  /// Saving the Access Token Expiration to the SharedPreferences
-  saveExpirationTime(String loginDetails) async {
-    Map userLoginDetails = jsonDecode(loginDetails);
-    DateTime now = DateTime.now();
-    String expirationDuration = userLoginDetails['accessTokenExpiresIn'].toString().replaceAll('s', '');
-    DateTime expirationDateTime = now.add(Duration(seconds: int.parse(expirationDuration)));
-    await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_SESSION_TIME, value: expirationDateTime.toString());
+  Future<Response> getAppVersion() async {
+    try {
+      Response response = await AuthService().getAppVersion();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   /// Returning a true value if the status code of the logout is [200]
