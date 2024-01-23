@@ -10,6 +10,7 @@ mixin Environment {
   String get appName => const String.fromEnvironment(AppConstant.APP_NAME_KEY);
   String get baseUrl => const String.fromEnvironment(AppConstant.BASE_URL_KEY);
   String get sourceAppName => const String.fromEnvironment(AppConstant.SOURCE_APP_NAME_KEY);
+
   bindServices() async {
     await SharedPreferencesService.init();
   }
