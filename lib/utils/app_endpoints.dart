@@ -11,4 +11,5 @@ class AppEndpoints {
   static String get logoutUrl => "/logout";
   static String get syncData => "/sync/offline-data";
   static String get refreshTokenUrl => "/refresh-token";
+  static String get appVersionUrl => '/store/app-version/${Environment.runningEnv.sourceAppName}';
 }

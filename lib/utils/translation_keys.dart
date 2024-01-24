@@ -108,4 +108,5 @@ class TranslationKeys {
   static const String studyCodes = "study_codes";
   static const String signedConsentReasonCodes = "signed_consent_reason_codes";
   static const String visitTypes = "visit_types";
+  static const String documents = "documents";
 }
