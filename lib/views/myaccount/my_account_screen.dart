@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isar/isar.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
@@ -470,8 +467,14 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 builder: (context, syncData, _) {
                   if (syncData) {
                     return InkWell(
-                      onTap: () {
-                        onSyncClick();
+                      onTap: () async {
+                        final appVersion = await getAppVersion();
+                        if (appVersion.isEmpty) {
+                          CommonFunctions.toastMessage("Session expired! Login to Continue");
+                          await loginViewModel?.logout();
+                        } else {
+                          onSyncClick();
+                        }
                       },
                       child: AccountCard(
                         key: Key(KEY_DATA_SYNC_CARD),
@@ -501,5 +504,15 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         ),
       ),
     );
+  }
+
+  /// Checking if the token has been expired or not
+  Future<String> getAppVersion() async {
+    final response = await LoginViewModel.loginViewModel.getAppVersion();
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      return '';
+    }
   }
 }

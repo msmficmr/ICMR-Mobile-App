@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
 import 'package:mhealth/model/user_model.dart';
 import 'package:mhealth/model/verify_otp_response_model.dart';
@@ -132,6 +133,15 @@ class LoginViewModel extends ChangeNotifier {
       CommonFunctions.toastMessage(AppConstant.INVALID_OTP);
     } finally {
       isLoading = false;
+    }
+  }
+
+  Future<Response> getAppVersion() async {
+    try {
+      Response response = await AuthService().getAppVersion();
+      return response;
+    } catch (e) {
+      rethrow;
     }
   }
 

@@ -2,5 +2,6 @@
   "BASE_URL": "https://edge-mhealth.qa.karkinos.in",
   "ENV" : "qa",
   "APP_NAME" : "QA m-health",
-  "APP_SUFFIX" : ".qa"
+  "APP_SUFFIX" : ".qa",
+  "SOURCE_APP_NAME" : "mhealth"
 }

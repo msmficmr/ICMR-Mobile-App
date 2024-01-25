@@ -160,5 +160,10 @@
     {"id": "18th_visit", "name": "18th Visit"},
     {"id": "19th_visit", "name": "19th Visit"},
     {"id": "20th_visit", "name": "20th Visit"}
+  ],
+  "documents" : [
+    {"id" :  "aadhar_number", "name" :  "Aadhar number"},
+    {"id" :  "voter_id", "name" :  "Voter ID"},
+    {"id" :  "pan_number", "name" :  "PAN number"}
   ]
 }
