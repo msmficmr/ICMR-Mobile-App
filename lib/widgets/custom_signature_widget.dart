@@ -38,7 +38,9 @@ class CustomSignatureWidget extends StatelessWidget {
       validator: errorText == null
           ? null
           : (value) {
-        if (signatureData == null) {
+        if (value == null) {
+          return null;
+        } else if (signatureData == null) {
           return errorText;
         }
 
