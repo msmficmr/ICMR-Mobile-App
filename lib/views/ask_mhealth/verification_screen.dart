@@ -297,17 +297,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: () async {
-                            if (_hasConsent.value == false) {
-                              _errorText.value = true;
-                              CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
-                            } else {
-                              await saveVerificationData();
-                              await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form", context: context, staticSectionsData: []);
-                              await questionnaireViewModel.removeAllAttachment();
+                            if (_formKey.currentState?.validate() ?? false) {
+                              if (_hasConsent.value == false) {
+                                _errorText.value = true;
+                                CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
+                              } else {
+                                await saveVerificationData();
+                                await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form", context: context, staticSectionsData: []);
+                                await questionnaireViewModel.removeAllAttachment();
 
-                              if (context.mounted) {
-                                await context.read<OfflineDataViewModel>().fetchCompletedCRA();
-                                GoRouter.of(context).go(DashboardScreen.routerPath);
+                                if (context.mounted) {
+                                  await context.read<OfflineDataViewModel>().fetchCompletedCRA();
+                                  GoRouter.of(context).go(DashboardScreen.routerPath);
+                                }
                               }
                             }
                           },
