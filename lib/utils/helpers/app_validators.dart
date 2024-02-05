@@ -125,27 +125,24 @@ class AppValidators {
     return null;
   }
 
-  static String? validateDate(value) {
-    const String kDOVEmptyValidator = "Date Of Visit can't be empty.";
-    const String kDOVFutureValidator = "Date Of Visit can't be a future date.";
-    const String kValidDOVValidator = "Enter Valid Date Of Visit.";
+  static String? validateDate({String? value, required String emptyErrorMessage, required String validErrorMessage, required String futureDateErrorMessage}) {
     if (value == null || value.isEmpty) {
-      return kDOVEmptyValidator;
+      return emptyErrorMessage;
     }
 
     String pattern = r"^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$";
     RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return kValidDOVValidator;
+      return validErrorMessage;
     } else {
       try {
         DateTime inputDate = DateFormat(AppValues.dobDateFormat).parse(value);
         DateTime todayDate = DateTime.now();
         if (inputDate.compareTo(todayDate) == 1) {
-          return kDOVFutureValidator;
+          return futureDateErrorMessage;
         }
       } catch (e) {
-        return kValidDOVValidator;
+        return validErrorMessage;
       }
     }
 

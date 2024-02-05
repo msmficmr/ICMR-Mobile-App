@@ -359,7 +359,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   inputFormatters: [
                     _dateOfVisitFormatter,
                   ],
-                  validator: AppValidators.validateDate,
+                  validator: (value) => AppValidators.validateDate(
+                      value: value,
+                      emptyErrorMessage: "Date of visit can't be empty.",
+                      validErrorMessage: "Enter valid date of visit.",
+                      futureDateErrorMessage: "Date of visit can't be a future date."),
                   keyboardType: TextInputType.number,
                 ),
                 const SpaceWidget(
@@ -661,7 +665,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   inputFormatters: [
                     _consentDateFormatter,
                   ],
-                  validator: AppValidators.validateDate,
+                  validator: (value) => AppValidators.validateDate(
+                      value: value,
+                      emptyErrorMessage: "Date of informed consent obtained can't be empty.",
+                      validErrorMessage: "Enter valid date of informed consent obtained.",
+                      futureDateErrorMessage: "Date of informed consent obtained can't be a future date."),
                   keyboardType: TextInputType.number,
                 ),
                 const SpaceWidget(
