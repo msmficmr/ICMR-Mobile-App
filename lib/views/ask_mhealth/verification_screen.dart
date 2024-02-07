@@ -326,7 +326,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
   }
 
-  saveVerificationData() async{
+  saveVerificationData() async {
     if (_institutionCode.value != null) {
       staticQuestionnaires.add(StaticQuestionModel("institution_code", institutionIds[institutionCodes.indexOf(_institutionCode.value ?? "")], null, null, DateTime.now(), null, null));
     }
@@ -334,19 +334,18 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
     }
     if (_visitType.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")],  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")], null, null, DateTime.now(), null, null));
     }
     if (_fromDateController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("form_data", _fromDateController.text, null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      
       String? newFilePath = await CommonFunctions().getApplicationFilePath();
-      File file =File(newFilePath!);
+      File file = File(newFilePath!);
       await file.writeAsBytes(_patientConsent.value!);
       log("Verification screennew  file path: ${newFilePath}");
 
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath, null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     await questionnaireViewModel.setNextSectionData(sectionName: pageTemplate, context: context, staticSectionsData: staticQuestionnaires);
