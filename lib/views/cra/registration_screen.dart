@@ -359,7 +359,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   inputFormatters: [
                     _dateOfVisitFormatter,
                   ],
-                  validator: AppValidators.validateDate,
+                  validator: (value) => AppValidators.validateDate(
+                      value: value, emptyErrorMessage: "Date can't be empty.", validErrorMessage: "Enter valid date.", futureDateErrorMessage: "Future date is not allowed."),
                   keyboardType: TextInputType.number,
                 ),
                 const SpaceWidget(
@@ -661,7 +662,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   inputFormatters: [
                     _consentDateFormatter,
                   ],
-                  validator: AppValidators.validateDate,
+                  validator: (value) => AppValidators.validateDate(
+                      value: value, emptyErrorMessage: "Date can't be empty.", validErrorMessage: "Enter valid date.", futureDateErrorMessage: "Future date is not allowed."),
                   keyboardType: TextInputType.number,
                 ),
                 const SpaceWidget(
@@ -739,8 +741,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               onPressed: !isValid
                                   ? null
                                   : () {
-                                onContinueClick();
-                              },
+                                      onContinueClick();
+                                    },
                             );
                           },
                         );

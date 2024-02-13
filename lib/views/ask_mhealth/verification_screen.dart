@@ -68,11 +68,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
   final String KEY_FIELD_INSTITUTION_CODE = "key_textfield_institution_code";
   final String KEY_FIELD_PARTICIPANT_ID = "key_textfield_participant_id";
   final String KEY_FIELD_VISIT_TYPE = "key_textfield_visit_type";
-  final String KEY_FIELD_FROM_DATE = "key_textfield_from_date";
+  final String KEY_FIELD_FORM_DATE = "key_textfield_form_date";
   final String KEY_HEADING_INSTITUTION_CODE = "key_title_institutution_code";
   final String KEY_HEADING_PARTICIPANT_ID = "key_title_participant_id";
   final String KEY_HEADING_VISIT_TYPE = "key_title_visit_type";
-  final String KEY_HEADING_FROM_DATE = "key_title_from_date";
+  final String KEY_HEADING_FORM_DATE = "key_title_form_date";
   final String KEY_CHECKBOX_CONSENT = "key_checkbox_consent";
   final String KEY_BUTTON_ADD_INVESTIGATORS = "key_button_add_investigators";
   final String KEY_BUTTON_CONSENT = "key_button_consent";
@@ -224,10 +224,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         //FROM DATE
                         CustomTextField(
                           controller: _fromDateController,
-                          widgetKey: Key(KEY_FIELD_FROM_DATE),
+                          widgetKey: Key(KEY_FIELD_FORM_DATE),
                           hintText: AppConstant.HINT_TEXT_DATE,
                           heading: FORM_DATE_TITLE,
-                          headingKey: Key(KEY_HEADING_FROM_DATE),
+                          headingKey: Key(KEY_HEADING_FORM_DATE),
                           hasPrefix: true,
                           prefixType: TextFieldPrefixSuffixType.SVG_ASSET,
                           prefixData: AppAssetsPath.icCalender,
@@ -297,17 +297,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           widgetKey: KEY_BUTTON_CONTINUE,
                           isLoading: false,
                           onPressed: () async {
-                            if (_hasConsent.value == false) {
-                              _errorText.value = true;
-                              CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
-                            } else {
-                              await saveVerificationData();
-                              await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form", context: context, staticSectionsData: []);
-                              await questionnaireViewModel.removeAllAttachment();
+                            if (_formKey.currentState?.validate() ?? false) {
+                              if (_hasConsent.value == false) {
+                                _errorText.value = true;
+                                CommonFunctions.toastMessage(AppConstant.FIELD_REQUIRED);
+                              } else {
+                                await saveVerificationData();
+                                await questionnaireViewModel.setNextSectionData(sectionName: "community_risk_assessment_verification_form", context: context, staticSectionsData: []);
+                                await questionnaireViewModel.removeAllAttachment();
 
-                              if (context.mounted) {
-                                await context.read<OfflineDataViewModel>().fetchCompletedCRA();
-                                GoRouter.of(context).go(DashboardScreen.routerPath);
+                                if (context.mounted) {
+                                  await context.read<OfflineDataViewModel>().fetchCompletedCRA();
+                                  GoRouter.of(context).go(DashboardScreen.routerPath);
+                                }
                               }
                             }
                           },
@@ -324,7 +326,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
   }
 
-  saveVerificationData() async{
+  saveVerificationData() async {
     if (_institutionCode.value != null) {
       staticQuestionnaires.add(StaticQuestionModel("institution_code", institutionIds[institutionCodes.indexOf(_institutionCode.value ?? "")], null, null, DateTime.now(), null, null));
     }
@@ -332,19 +334,18 @@ class _VerificationScreenState extends State<VerificationScreen> {
       staticQuestionnaires.add(StaticQuestionModel("participant_id", _participantController.text, null, null, DateTime.now(), null, null));
     }
     if (_visitType.value != null) {
-      staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")],  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("visit_type", visitTypeIds[visitTypeNames.indexOf(_visitType.value ?? "")], null, null, DateTime.now(), null, null));
     }
     if (_fromDateController.text.isNotEmpty) {
-      staticQuestionnaires.add(StaticQuestionModel("from_date", _fromDateController.text, null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("form_data", _fromDateController.text, null, null, DateTime.now(), null, null));
     }
     if (_patientConsent.value != null) {
-      
       String? newFilePath = await CommonFunctions().getApplicationFilePath();
-      File file =File(newFilePath!);
+      File file = File(newFilePath!);
       await file.writeAsBytes(_patientConsent.value!);
       log("Verification screennew  file path: ${newFilePath}");
 
-      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath,  null, null, DateTime.now(), null, null));
+      staticQuestionnaires.add(StaticQuestionModel("patient_signature", newFilePath, null, null, DateTime.now(), null, null));
     }
     final questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     await questionnaireViewModel.setNextSectionData(sectionName: pageTemplate, context: context, staticSectionsData: staticQuestionnaires);

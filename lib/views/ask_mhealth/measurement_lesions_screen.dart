@@ -35,7 +35,6 @@ class MeasurementLesionsScreen extends StatefulWidget {
 }
 
 class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
-  late ValueNotifier<bool> _onSiteValue;
   late ValueNotifier<String?> _onSiteSpecialist;
   late ValueNotifier<bool> _buttonEnabled;
   late QuestionnaireViewModel questionnaireViewModel;
@@ -90,7 +89,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
   final _productControllers = <TextEditingController>[];
   final _otherControllers = <TextEditingController>[];
   List<ValueNotifier<String?>> _fhpOpinions = [];
-  List<ValueNotifier<bool>> _fhpOpinionValue = [];
+  List<ValueNotifier<bool?>> _fhpOpinionValue = [];
   List<ValueNotifier<String?>> _autofluorescenceImpression = [];
   List<ValueNotifier<String?>> _provisionalDiagnosis = [];
 
@@ -102,7 +101,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
 
   initializeField() {
     _onSiteSpecialist = ValueNotifier<String?>(null);
-    _onSiteValue = ValueNotifier<bool>(false);
+
     _buttonEnabled = ValueNotifier<bool>(true);
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     _lesionsController.text =
@@ -110,7 +109,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     _fhpOpinions = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length,
         (_) => ValueNotifier<String?>(null));
     _fhpOpinionValue = List.generate(questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length,
-        (_) => ValueNotifier<bool>(false));
+        (_) => ValueNotifier<bool?>(null));
     _autofluorescenceImpression = List.generate(
         questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList.length : questionnaireViewModel.attachmentList.length,
         (_) => ValueNotifier<String?>(null));
@@ -192,12 +191,6 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                   chipList: AppConstant.BINARY_LIST,
                                   onChanged: (value) {
                                     _onSiteSpecialist.value = value;
-                                    if (value == 'yes') {
-                                      _onSiteValue.value = true;
-                                    } else {
-                                      _onSiteValue.value = false;
-                                    }
-                                    staticQuestionnaires.add(StaticQuestionModel("onsite_specialist", _onSiteSpecialist.value, null, null, DateTime.now(), null, null));
                                   },
                                   validator: AppValidators.validateBinaryQuestion,
                                   selectedItem: _onSiteSpecialist.value,
@@ -270,7 +263,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                             _fhpOpinions[index].value = value;
                                             if (value == 'no') {
                                               _fhpOpinionValue[index].value = false;
-                                            } else {
+                                            } else if (value == 'yes') {
                                               _fhpOpinionValue[index].value = true;
                                             }
                                           },
@@ -284,10 +277,10 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
                                     const SpaceWidget(
                                       height: 20,
                                     ),
-                                    ValueListenableBuilder(
-                                      valueListenable: _onSiteValue,
+                                    ValueListenableBuilder<String?>(
+                                      valueListenable: _onSiteSpecialist,
                                       builder: (context, ifYes, __) {
-                                        if (ifYes) {
+                                        if (ifYes != null && ifYes == 'yes') {
                                           return Column(
                                             children: [
                                               ValueListenableBuilder<String?>(
@@ -400,17 +393,27 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     if (_lesionsController.text.isNotEmpty) {
       staticQuestionnaires.add(StaticQuestionModel("number_of_lesion", _lesionsController.text, null, null, DateTime.now(), null, null));
     }
+
+    staticQuestionnaires.add(
+      StaticQuestionModel(
+        "onsite_specialist",
+        _onSiteSpecialist.value,
+        null,
+        null,
+        DateTime.now(),
+        null,
+        null,
+      ),
+    );
     for (int i = 0; i < _lengthControllers.length; i++) {
-      if (_lengthControllers[i].text.isNotEmpty) {
-        staticQuestionnaires.add(StaticQuestionModel(
-            "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_length",
-            _lengthControllers[i].text,
-            null,
-            null,
-            DateTime.now(),
-            null,
-            null));
-      }
+      staticQuestionnaires.add(StaticQuestionModel(
+          "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_length",
+          _lengthControllers[i].text,
+          null,
+          null,
+          DateTime.now(),
+          null,
+          null));
     }
     for (int i = 0; i < _breadthControllers.length; i++) {
       staticQuestionnaires.add(StaticQuestionModel(
@@ -445,7 +448,7 @@ class _MeasurementLesionsScreenState extends State<MeasurementLesionsScreen> {
     for (int i = 0; i < _fhpOpinions.length; i++) {
       staticQuestionnaires.add(StaticQuestionModel(
           "${questionnaireViewModel.selectedAttachmentList.isNotEmpty ? questionnaireViewModel.selectedAttachmentList[i]?.replaceAll(" ", "").replaceAll("_", "").toLowerCase() : questionnaireViewModel.attachmentList[i]!.fileName.questionText.replaceAll(" ", "").replaceAll("_", "").toLowerCase()}_fhp_opinion_suspicious",
-          _fhpOpinionValue[i].value.toString(),
+          _fhpOpinionValue[i].value?.toString(),
           null,
           null,
           DateTime.now(),
