@@ -237,8 +237,8 @@ class AppValidators {
   }
 
   static String? validateCalenderDate(value) {
-    const String kDOVFutureValidator = "Form date can't be future date.";
-    const String kValidDOVValidator = "Enter valid form date.";
+    const String kDOVFutureValidator = "Future date is not allowed.";
+    const String kValidDOVValidator = "Enter valid date.";
     if (value == null || value.isEmpty) {
       return null;
     }
