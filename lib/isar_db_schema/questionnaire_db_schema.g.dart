@@ -28,13 +28,19 @@ const CRAOfflineDataSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'CRASectionModel',
     ),
-    r'languageCode': PropertySchema(
+    r'docDetails': PropertySchema(
       id: 2,
+      name: r'docDetails',
+      type: IsarType.objectList,
+      target: r'DoctorModel',
+    ),
+    r'languageCode': PropertySchema(
+      id: 3,
       name: r'languageCode',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'patientId',
       type: IsarType.string,
     )
@@ -47,6 +53,7 @@ const CRAOfflineDataSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {
+    r'DoctorModel': DoctorModelSchema,
     r'CRASectionModel': CRASectionModelSchema,
     r'EHRDiagnosisReports': EHRDiagnosisReportsSchema,
     r'Report': ReportSchema,
@@ -89,6 +96,20 @@ int _cRAOfflineDataEstimateSize(
     }
   }
   {
+    final list = object.docDetails;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        final offsets = allOffsets[DoctorModel]!;
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount +=
+              DoctorModelSchema.estimateSize(value, offsets, allOffsets);
+        }
+      }
+    }
+  }
+  {
     final value = object.languageCode;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -116,8 +137,14 @@ void _cRAOfflineDataSerialize(
     CRASectionModelSchema.serialize,
     object.craSectionData,
   );
-  writer.writeString(offsets[2], object.languageCode);
-  writer.writeString(offsets[3], object.patientId);
+  writer.writeObjectList<DoctorModel>(
+    offsets[2],
+    allOffsets,
+    DoctorModelSchema.serialize,
+    object.docDetails,
+  );
+  writer.writeString(offsets[3], object.languageCode);
+  writer.writeString(offsets[4], object.patientId);
 }
 
 CRAOfflineData _cRAOfflineDataDeserialize(
@@ -134,9 +161,15 @@ CRAOfflineData _cRAOfflineDataDeserialize(
     allOffsets,
     CRASectionModel(),
   );
+  object.docDetails = reader.readObjectList<DoctorModel>(
+    offsets[2],
+    DoctorModelSchema.deserialize,
+    allOffsets,
+    DoctorModel(),
+  );
   object.id = id;
-  object.languageCode = reader.readStringOrNull(offsets[2]);
-  object.patientId = reader.readStringOrNull(offsets[3]);
+  object.languageCode = reader.readStringOrNull(offsets[3]);
+  object.patientId = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -157,8 +190,15 @@ P _cRAOfflineDataDeserializeProp<P>(
         CRASectionModel(),
       )) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readObjectList<DoctorModel>(
+        offset,
+        DoctorModelSchema.deserialize,
+        allOffsets,
+        DoctorModel(),
+      )) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -514,6 +554,113 @@ extension CRAOfflineDataQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'craSectionData',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'docDetails',
+      ));
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'docDetails',
+      ));
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'docDetails',
         lower,
         includeLower,
         upper,
@@ -912,6 +1059,13 @@ extension CRAOfflineDataQueryObject
       return query.object(q, r'craSectionData');
     });
   }
+
+  QueryBuilder<CRAOfflineData, CRAOfflineData, QAfterFilterCondition>
+      docDetailsElement(FilterQuery<DoctorModel> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'docDetails');
+    });
+  }
 }
 
 extension CRAOfflineDataQueryLinks
@@ -1060,6 +1214,13 @@ extension CRAOfflineDataQueryProperty
     });
   }
 
+  QueryBuilder<CRAOfflineData, List<DoctorModel>?, QQueryOperations>
+      docDetailsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'docDetails');
+    });
+  }
+
   QueryBuilder<CRAOfflineData, String?, QQueryOperations>
       languageCodeProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -1077,6 +1238,389 @@ extension CRAOfflineDataQueryProperty
 // **************************************************************************
 // IsarEmbeddedGenerator
 // **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const DoctorModelSchema = Schema(
+  name: r'DoctorModel',
+  id: -6310600538599313073,
+  properties: {
+    r'id': PropertySchema(
+      id: 0,
+      name: r'id',
+      type: IsarType.string,
+    ),
+    r'name': PropertySchema(
+      id: 1,
+      name: r'name',
+      type: IsarType.string,
+    )
+  },
+  estimateSize: _doctorModelEstimateSize,
+  serialize: _doctorModelSerialize,
+  deserialize: _doctorModelDeserialize,
+  deserializeProp: _doctorModelDeserializeProp,
+);
+
+int _doctorModelEstimateSize(
+  DoctorModel object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.id;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _doctorModelSerialize(
+  DoctorModel object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeString(offsets[0], object.id);
+  writer.writeString(offsets[1], object.name);
+}
+
+DoctorModel _doctorModelDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = DoctorModel();
+  object.id = reader.readStringOrNull(offsets[0]);
+  object.name = reader.readStringOrNull(offsets[1]);
+  return object;
+}
+
+P _doctorModelDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readStringOrNull(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension DoctorModelQueryFilter
+    on QueryBuilder<DoctorModel, DoctorModel, QFilterCondition> {
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'id',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'id',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> idIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'id',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition>
+      nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'name',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'name',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'name',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition> nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DoctorModel, DoctorModel, QAfterFilterCondition>
+      nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'name',
+        value: '',
+      ));
+    });
+  }
+}
+
+extension DoctorModelQueryObject
+    on QueryBuilder<DoctorModel, DoctorModel, QFilterCondition> {}
 
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
