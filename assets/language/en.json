@@ -16,6 +16,7 @@
   "data_sync": "Data Sync",
   "version": "Version",
   "please_take_consent_from_citizen": "Please take consent from citizen*",
+  "informed_consent_obtained": "Informed Consent obtained*",
   "resend_otp_heading": "Didn't receive the OTP?  ",
   "resend_otp_title": "Resend",
   "consent": "Consent",

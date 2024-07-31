@@ -74,6 +74,7 @@ class AppConstant {
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
   static const String ERROR_FILL_REQUIRED_FIELDS = "Fill required fields";
   static const String FIELD_REQUIRED = "This field is required";
+  static const String CONSENT_REQUIRED = "Consent is required to continue";
   static const String INVALID_OTP = "OTP is invalid";
   static const String NO_RECORD_FOUND = "No Records Found";
   static const String SELECT_FILE_BEFORE_SUBMITTING = "Fill required fields";

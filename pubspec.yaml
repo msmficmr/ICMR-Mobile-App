@@ -20,9 +20,9 @@ dependencies:
   fluttertoast: ^8.2.2
   pin_input_text_field: ^4.5.0
   connectivity_plus: ^4.0.1
-  intl: ^0.18.0
+  intl: ^0.18.1
   file_picker: ^6.1.1
-  pdf_render: 1.4.0
+  pdf_render: 1.4.10
 
 
   shared_preferences: ^2.0.8
