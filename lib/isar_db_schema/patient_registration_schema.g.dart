@@ -33,46 +33,45 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'alternatePhoneNumber',
       type: IsarType.string,
     ),
-    r'consent': PropertySchema(
-      id: 3,
-      name: r'consent',
-      type: IsarType.objectList,
-      target: r'AttachmentDb',
-    ),
     r'consentDate': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'consentDate',
       type: IsarType.dateTime,
     ),
     r'createdBy': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'createdBy',
       type: IsarType.string,
     ),
     r'district': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'district',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'gender': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'gender',
       type: IsarType.string,
     ),
     r'identityProofs': PropertySchema(
-      id: 9,
+      id: 8,
       name: r'identityProofs',
       type: IsarType.object,
       target: r'IdentityProofDb',
     ),
     r'institutionCodeID': PropertySchema(
-      id: 10,
+      id: 9,
       name: r'institutionCodeID',
+      type: IsarType.string,
+    ),
+    r'isConsent': PropertySchema(
+      id: 10,
+      name: r'isConsent',
       type: IsarType.string,
     ),
     r'lastName': PropertySchema(
@@ -143,10 +142,7 @@ const PatientRegistrationSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {},
-  embeddedSchemas: {
-    r'AttachmentDb': AttachmentDbSchema,
-    r'IdentityProofDb': IdentityProofDbSchema
-  },
+  embeddedSchemas: {r'IdentityProofDb': IdentityProofDbSchema},
   getId: _patientRegistrationGetId,
   getLinks: _patientRegistrationGetLinks,
   attach: _patientRegistrationAttach,
@@ -172,20 +168,6 @@ int _patientRegistrationEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final list = object.consent;
-    if (list != null) {
-      bytesCount += 3 + list.length * 3;
-      {
-        final offsets = allOffsets[AttachmentDb]!;
-        for (var i = 0; i < list.length; i++) {
-          final value = list[i];
-          bytesCount +=
-              AttachmentDbSchema.estimateSize(value, offsets, allOffsets);
-        }
-      }
-    }
-  }
   bytesCount += 3 + object.createdBy.length * 3;
   {
     final value = object.district;
@@ -209,6 +191,7 @@ int _patientRegistrationEstimateSize(
     }
   }
   bytesCount += 3 + object.institutionCodeID.length * 3;
+  bytesCount += 3 + object.isConsent.length * 3;
   bytesCount += 3 + object.lastName.length * 3;
   {
     final value = object.medicalRecordNumber;
@@ -252,24 +235,19 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[0], object.address);
   writer.writeString(offsets[1], object.age);
   writer.writeString(offsets[2], object.alternatePhoneNumber);
-  writer.writeObjectList<AttachmentDb>(
-    offsets[3],
-    allOffsets,
-    AttachmentDbSchema.serialize,
-    object.consent,
-  );
-  writer.writeDateTime(offsets[4], object.consentDate);
-  writer.writeString(offsets[5], object.createdBy);
-  writer.writeString(offsets[6], object.district);
-  writer.writeString(offsets[7], object.firstName);
-  writer.writeString(offsets[8], object.gender);
+  writer.writeDateTime(offsets[3], object.consentDate);
+  writer.writeString(offsets[4], object.createdBy);
+  writer.writeString(offsets[5], object.district);
+  writer.writeString(offsets[6], object.firstName);
+  writer.writeString(offsets[7], object.gender);
   writer.writeObject<IdentityProofDb>(
-    offsets[9],
+    offsets[8],
     allOffsets,
     IdentityProofDbSchema.serialize,
     object.identityProofs,
   );
-  writer.writeString(offsets[10], object.institutionCodeID);
+  writer.writeString(offsets[9], object.institutionCodeID);
+  writer.writeString(offsets[10], object.isConsent);
   writer.writeString(offsets[11], object.lastName);
   writer.writeString(offsets[12], object.medicalRecordNumber);
   writer.writeString(offsets[13], object.occupation);
@@ -294,24 +272,19 @@ PatientRegistration _patientRegistrationDeserialize(
   object.address = reader.readStringOrNull(offsets[0]);
   object.age = reader.readString(offsets[1]);
   object.alternatePhoneNumber = reader.readStringOrNull(offsets[2]);
-  object.consent = reader.readObjectList<AttachmentDb>(
-    offsets[3],
-    AttachmentDbSchema.deserialize,
-    allOffsets,
-    AttachmentDb(),
-  );
-  object.consentDate = reader.readDateTime(offsets[4]);
-  object.createdBy = reader.readString(offsets[5]);
-  object.district = reader.readStringOrNull(offsets[6]);
-  object.firstName = reader.readString(offsets[7]);
-  object.gender = reader.readStringOrNull(offsets[8]);
+  object.consentDate = reader.readDateTime(offsets[3]);
+  object.createdBy = reader.readString(offsets[4]);
+  object.district = reader.readStringOrNull(offsets[5]);
+  object.firstName = reader.readString(offsets[6]);
+  object.gender = reader.readStringOrNull(offsets[7]);
   object.id = id;
   object.identityProofs = reader.readObjectOrNull<IdentityProofDb>(
-    offsets[9],
+    offsets[8],
     IdentityProofDbSchema.deserialize,
     allOffsets,
   );
-  object.institutionCodeID = reader.readString(offsets[10]);
+  object.institutionCodeID = reader.readString(offsets[9]);
+  object.isConsent = reader.readString(offsets[10]);
   object.lastName = reader.readString(offsets[11]);
   object.medicalRecordNumber = reader.readStringOrNull(offsets[12]);
   object.occupation = reader.readString(offsets[13]);
@@ -341,28 +314,23 @@ P _patientRegistrationDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readObjectList<AttachmentDb>(
-        offset,
-        AttachmentDbSchema.deserialize,
-        allOffsets,
-        AttachmentDb(),
-      )) as P;
-    case 4:
       return (reader.readDateTime(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
-    case 7:
       return (reader.readString(offset)) as P;
-    case 8:
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
-    case 9:
+    case 8:
       return (reader.readObjectOrNull<IdentityProofDb>(
         offset,
         IdentityProofDbSchema.deserialize,
         allOffsets,
       )) as P;
+    case 9:
+      return (reader.readString(offset)) as P;
     case 10:
       return (reader.readString(offset)) as P;
     case 11:
@@ -931,113 +899,6 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
         property: r'alternatePhoneNumber',
         value: '',
       ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'consent',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'consent',
-      ));
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
     });
   }
 
@@ -1900,6 +1761,142 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'institutionCodeID',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'isConsent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'isConsent',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isConsent',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'isConsent',
         value: '',
       ));
     });
@@ -3534,13 +3531,6 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
 extension PatientRegistrationQueryObject on QueryBuilder<PatientRegistration,
     PatientRegistration, QFilterCondition> {
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentElement(FilterQuery<AttachmentDb> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'consent');
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       identityProofs(FilterQuery<IdentityProofDb> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'identityProofs');
@@ -3676,6 +3666,20 @@ extension PatientRegistrationQuerySortBy
       sortByInstitutionCodeIDDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'institutionCodeID', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsConsent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsConsentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.desc);
     });
   }
 
@@ -3991,6 +3995,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsConsent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsConsentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByLastName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastName', Sort.asc);
@@ -4227,6 +4245,13 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByIsConsent({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isConsent', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByLastName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastName', caseSensitive: caseSensitive);
@@ -4343,13 +4368,6 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, List<AttachmentDb>?, QQueryOperations>
-      consentProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'consent');
-    });
-  }
-
   QueryBuilder<PatientRegistration, DateTime, QQueryOperations>
       consentDateProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -4396,6 +4414,13 @@ extension PatientRegistrationQueryProperty
       institutionCodeIDProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'institutionCodeID');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
+      isConsentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isConsent');
     });
   }
 

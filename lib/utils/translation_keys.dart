@@ -19,6 +19,7 @@ class TranslationKeys {
   static const String dataSync = "data_sync";
   static const String version = "version";
   static const String pleaseTakeConsentFromCitizen = "please_take_consent_from_citizen";
+  static const String informedConsentObtained = "informed_consent_obtained";
   static const String resendOTPHeading = "resend_otp_heading";
   static const String resendOTPTitle = "resend_otp_title";
   static const String consent = "consent";
