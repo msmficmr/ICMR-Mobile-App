@@ -15,6 +15,7 @@
   "data_sync" : "डेटा सिंक",
   "version" : "संस्करण",
   "please_take_consent_from_citizen" : "कृपया नागरिक से अनुमति लें*",
+  "informed_consent_obtained" : "सूचित अनुमति प्राप्त की गई*",
   "resend_otp_heading" : "ओटीपी प्राप्त नहीं हुआ? ",
   "resend_otp_title" : "पुन: भेजें",
   "consent" : "अनुमति",
