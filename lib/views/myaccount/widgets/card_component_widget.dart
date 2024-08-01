@@ -74,8 +74,7 @@ class AccountCard extends StatelessWidget {
                 SvgPicture.asset(
                   trailingIconPath!,
                   height: isSmallScreen ? 15 : 25,
-                  width: isSmallScreen ? 15 : 25,
-                  colorFilter: ColorFilter.mode(iconColor ?? AppColorScheme.kGrayColor.shade800, BlendMode.srcIn),
+                  width: isSmallScreen ? 15 : 25
                 )
             ],
           ),

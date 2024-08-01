@@ -162,12 +162,17 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<int> checkLoginTimestamp() async {
-    String temp = authDetails?.refreshTokenExpiresIn ?? "";
-     temp = temp.substring(0, temp.length - 1);
-    int loginTimestamp = int.parse(temp);
-    String? dateStr = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_LOGIN_TIME);
-    DateTime loginDate = dateStr==null? DateTime.now():DateTime.parse(dateStr); //DateTime(2024, 07, 25);
-    DateTime logOutdate =loginDate.add(Duration(seconds: loginTimestamp));
-    return logOutdate.difference(DateTime.now()).inDays;
+    try{
+        String temp = authDetails?.refreshTokenExpiresIn ?? "";
+        temp = temp.substring(0, temp.length - 1);
+        int loginTimestamp = int.parse(temp);
+        String? dateStr = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_LOGIN_TIME);
+        DateTime loginDate = dateStr==null? DateTime.now():DateTime.parse(dateStr); //DateTime(2024, 07, 25);
+        DateTime logOutdate =loginDate.add(Duration(seconds: loginTimestamp));
+        return logOutdate.difference(DateTime.now()).inDays;
+    }catch(e){
+       return 0;
+    }
+    
   }
 }

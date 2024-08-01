@@ -505,10 +505,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 future : loginViewModel!.checkLoginTimestamp(),
                 builder: (context, expireIn)  {
                   return Visibility(
-                    visible:  (int.parse(expireIn.data.toString()) < 16) ? true : false,
+                    visible:  (expireIn.data! < 16) ? true : false,
                     child: AccountCard(
                       key: Key(KEY_LOGIN_EXPIRE),
-                      cardTitleText: (expireIn.data == "0")?  "Login will expire today" : "Login will expire in ${expireIn.data} days",
+                      cardTitleText: (expireIn.data == 0)?  "Login will expire today" : "Login will expire in ${expireIn.data} days",
                       textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
                       trailingIconPath: AppAssetsPath.icChevronRight,
                       leadingIconPath: AppAssetsPath.icWarning,
