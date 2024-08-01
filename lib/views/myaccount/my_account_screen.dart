@@ -69,6 +69,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_LANGUAGE_CARD = "key_language_card";
   final String KEY_DATA_SYNC_CARD = "key_data_sync_card";
+  final String KEY_LOGIN_EXPIRE = "key_login_expire_card";
 
   //Constant text
   final String VOLUNTEER_ID = "Volunteer ID";
@@ -451,6 +452,27 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ),
             ),
             const SpaceWidget(height: 20),
+            InkWell(
+              onTap: () {
+                onLogoutClick();
+              },
+              child: FutureBuilder(
+                future : loginViewModel!.checkLoginTimestamp(),
+                builder: (context, expireIn)  {
+                  return Visibility(
+                    visible:  (int.parse(expireIn.data.toString()) < 16) ? true : false,
+                    child: AccountCard(
+                      key: Key(KEY_LOGIN_EXPIRE),
+                      cardTitleText: (expireIn.data == "0")?  "Login will expire today" : "Login will expire in ${expireIn.data} days",
+                      textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                      trailingIconPath: AppAssetsPath.icChevronRight,
+                      leadingIconPath: AppAssetsPath.icWarning,
+                      iconColor : AppColorScheme.errorTextColor
+                    ),
+                  );
+                }
+              ),
+            ),
             InkWell(
               onTap: () {
                 GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);

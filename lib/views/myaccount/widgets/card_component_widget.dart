@@ -23,6 +23,8 @@ class AccountCard extends StatelessWidget {
   final double? iconSize;
 
   final Key? cardKey;
+  
+  final Color? iconColor;
 
   const AccountCard({
     super.key,
@@ -35,6 +37,7 @@ class AccountCard extends StatelessWidget {
     this.cardKey,
     required this.leadingIconPath,
     required this.cardTitleText,
+    this.iconColor ,
   });
 
   //KEY
@@ -72,6 +75,7 @@ class AccountCard extends StatelessWidget {
                   trailingIconPath!,
                   height: isSmallScreen ? 15 : 25,
                   width: isSmallScreen ? 15 : 25,
+                  colorFilter: ColorFilter.mode(iconColor ?? AppColorScheme.kGrayColor.shade800, BlendMode.srcIn),
                 )
             ],
           ),
