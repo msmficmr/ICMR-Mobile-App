@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
@@ -30,9 +31,11 @@ import 'package:mhealth/widgets/custom_chip_widget.dart';
 import 'package:mhealth/widgets/custom_dropdown.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
-import 'package:mhealth/widgets/primary_filled_icon_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:provider/provider.dart';
+
+import '../../config/theme/outlined_button_theme_style.dart';
+import '../../widgets/primary_outlined_button.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
@@ -80,7 +83,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late TextEditingController _consentDateController = TextEditingController();
 
   //Widget Keys
-  final String KEY_BUTTON_CONSENT = "key_button_consent";
+  final String KEY_BUTTON_YES_CONSENT = "key_button_yes_consent";
+  final String KEY_BUTTON_NO_CONSENT = "key_button_no_consent";
   final String KEY_FIELD_DATE_OF_VISIT = "key_textfield_date_of_visit";
   final String KEY_FIELD_INSTITUTION_CODE = "key_textfield_institution_code";
   final String KEY_FIELD_STUDY_PH = "key_textfield_study_ph";
@@ -137,7 +141,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   late ValueNotifier<bool> _signedConsentCopy;
   late ValueNotifier<String?> _signedConsentNoReason;
   late ValueNotifier<bool> _buttonEnabled;
-  late ValueNotifier<bool> _isConsentButtonActiveNotifier;
+  late ValueNotifier<bool> _isConsentYesButtonActiveNotifier;
+  late ValueNotifier<bool> _isConsentNoButtonActiveNotifier;
+  late ValueNotifier<String> _consentTextNotifier;
   late ValueNotifier<bool> _consentError;
 
   late RegistrationViewModel registrationViewModel;
@@ -175,7 +181,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
-    _isConsentButtonActiveNotifier = ValueNotifier<bool>(false);
+    _isConsentNoButtonActiveNotifier = ValueNotifier<bool>(false);
+    _isConsentYesButtonActiveNotifier = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(true);
     _dateOfVisitController = TextEditingController(text: CommonFunctions.currentDate());
     _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
@@ -187,6 +194,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   initializeField() {
+    _consentTextNotifier = ValueNotifier<String>('');
     _institutionCode = ValueNotifier<String?>(null);
     _studyCode = ValueNotifier<String?>(null);
     _gender = ValueNotifier<String?>(null);
@@ -212,7 +220,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void onContinueClick() async {
     final form = formKey.currentState;
     if (form != null) {
-      if (_selectedAttachment == null) {
+      if (_consentTextNotifier.value.isEmpty || _consentTextNotifier.value == "NO") {
         _consentError.value = true;
         CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
       } else if (form.validate()) {
@@ -228,6 +236,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ..value = _documentTypeController.text;
         }
         await IsarDbService.isarDbService.savePatient(PatientRegistration()
+          ..isConsent = _consentTextNotifier.value.toUpperCase()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
           ..institutionCodeID = _institutionCode.value != null ? institutionIds[institutionNames.indexOf(_institutionCode.value ?? "")] : ""
           ..studyCode = studyIds[studyNames.indexOf(_studyCode.value ?? "")]
@@ -250,7 +259,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..signedConsentNoReason = _signedConsentNoReason.value != null ? signedConsentIds[signedConsentNames.indexOf(_signedConsentNoReason.value ?? "")] : ""
           ..patientId = patientId
           ..createdBy = userId);
-        await addConsentImages(patientId);
+
+        ///[COMMENTING BELOW LINE AS it may used in future]
+        // await addConsentImages(patientId);
         await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
         await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
         if (context.mounted) {
@@ -261,24 +272,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  addConsentImages(String patientId) async {
-    for (int i = 0; i < questionnaireViewModel.consentList.length; i++) {
-      String? filePath = await CommonFunctions().saveFileToLocal(questionnaireViewModel.consentList[i]!.filePath);
-      AttachmentDb attachment = AttachmentDb()
-        ..fileName = questionnaireViewModel.consentList[i]!.fileName
-        ..dataBytes = filePath;
-      await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId, attachment: attachment);
-    }
-    questionnaireViewModel.consentList.clear();
+  ///[COMMENTING code as this may need in future]
+  // addConsentImages(String patientId) async {
+  //   for (int i = 0; i < questionnaireViewModel.consentList.length; i++) {
+  //     String? filePath = await CommonFunctions().saveFileToLocal(questionnaireViewModel.consentList[i]!.filePath);
+  //     AttachmentDb attachment = AttachmentDb()
+  //       ..fileName = questionnaireViewModel.consentList[i]!.fileName
+  //       ..dataBytes = filePath;
+  //     await IsarDbService.isarDbService.updatePatientRegistration(patientId: patientId, attachment: attachment);
+  //   }
+  //   questionnaireViewModel.consentList.clear();
+  // }
+
+  void onConsentYesClicked() async {
+    _isConsentNoButtonActiveNotifier.value = false;
+    _isConsentYesButtonActiveNotifier.value = true;
+    _consentTextNotifier.value = 'YES';
+    _consentError.value = false;
   }
 
-  void onConsentClicked() async {
-    AttachmentModel? result = await GoRouter.of(context).push(ConsentScreeningScreen.routerPath);
-    if (result != null) {
-      _selectedAttachment = result;
-      _isConsentButtonActiveNotifier.value = true;
-      _consentError.value = false;
-    }
+  void onConsentNoClicked() async {
+    _isConsentYesButtonActiveNotifier.value = false;
+    _isConsentNoButtonActiveNotifier.value = true;
+    _consentTextNotifier.value = 'No';
+    _consentError.value = false;
   }
 
   @override
@@ -306,35 +323,50 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  TranslationKeys.pleaseTakeConsentFromCitizen.translate(context),
+                  TranslationKeys.informedConsentObtained.translate(context),
                   style: AppStyles.bodyMedium,
                 ),
                 const SpaceWidget(height: 5),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: _isConsentButtonActiveNotifier,
-                    builder: (context, isButtonActive, child) {
-                      return PrimaryFilledIconButton(
-                        onPressed: isButtonActive ? () {} : onConsentClicked,
-                        isLoading: false,
-                        buttonThemeStyle: FilledButtonThemeStyle(
-                          enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
-                          enabledButtonColor: isButtonActive ? AppColorScheme.kGreen : AppColorScheme.kEnabledButtonColor,
-                        ),
-                        icon: SvgPicture.asset(isButtonActive ? AppAssetsPath.icConsentAdded : AppAssetsPath.icInfo),
-                        buttonTitle: TranslationKeys.consent.translate(context),
-                        widgetKey: KEY_BUTTON_CONSENT,
-                      );
-                    },
-                  ),
+                //CONSENT BUTTON
+                Row(
+                  children: [
+                    ValueListenableBuilder<bool>(
+                        valueListenable: _isConsentYesButtonActiveNotifier,
+                        builder: (context, isButtonActive, child) {
+                          return PrimaryOutlinedButton(
+                            buttonThemeStyle: OutlinedButtonThemeStyle(
+                              buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
+                              enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
+                              enabledButtonColor: isButtonActive ? AppColorScheme.kPrimaryColor : AppColorScheme.kWhite,
+                            ),
+                            buttonTitle: TranslationKeys.yes.translate(context),
+                            widgetKey: KEY_BUTTON_YES_CONSENT,
+                            onPressed: onConsentYesClicked,
+                          );
+                        }),
+                    const SpaceWidget(width: 10.0),
+                    ValueListenableBuilder<bool>(
+                        valueListenable: _isConsentNoButtonActiveNotifier,
+                        builder: (context, isButtonActive, child) {
+                          return PrimaryOutlinedButton(
+                            buttonThemeStyle: OutlinedButtonThemeStyle(
+                              buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
+                              enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
+                              enabledButtonColor: isButtonActive ? AppColorScheme.kPrimaryColor : AppColorScheme.kWhite,
+                            ),
+                            buttonTitle: TranslationKeys.no.translate(context),
+                            widgetKey: KEY_BUTTON_NO_CONSENT,
+                            onPressed: onConsentNoClicked,
+                          );
+                        }),
+                  ],
                 ),
                 ValueListenableBuilder(
                   valueListenable: _consentError,
                   builder: (context, isEmpty, __) {
                     if (isEmpty) {
                       return Text(
-                        AppConstant.SELECT_FILE,
+                        AppConstant.CONSENT_REQUIRED,
                         style: AppStyles.errorStyle,
                       );
                     } else {

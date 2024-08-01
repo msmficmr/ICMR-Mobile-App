@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -13,12 +14,14 @@ import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/network_status_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
+import 'package:mhealth/views/doctor/doctor_name_screen.dart';
 import 'package:mhealth/views/myaccount/widgets/card_component_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:flutter/services.dart';
@@ -44,12 +47,27 @@ class MyAccountScreen extends StatefulWidget {
 class _MyAccountScreenState extends State<MyAccountScreen> {
   LoginViewModel? loginViewModel;
 
+  ValueNotifier<String?> docName = ValueNotifier<String?>(null);
+
   @override
   void initState() {
     super.initState();
     _syncData = ValueNotifier<bool>(false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     checkToSyncData();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      bindDocName();
+    });
+  }
+
+  bindDocName() async {
+    bool containDocName = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.SHREAD_PREF_DOC_KEY);
+    if (containDocName) {
+      String? strDocName = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHREAD_PREF_DOC_KEY);
+      if (strDocName != null) {
+        docName.value = strDocName;
+      }
+    }
   }
 
   //To be replaced with Dynamic data
@@ -68,6 +86,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String KEY_VOLUNTEER_ID = "key_volunteer_id";
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_LANGUAGE_CARD = "key_language_card";
+  final String KEY_DOCTOR_CARD = "key_doctor_card";
   final String KEY_DATA_SYNC_CARD = "key_data_sync_card";
   final String KEY_LOGIN_EXPIRE = "key_login_expire_card";
 
@@ -236,6 +255,11 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           } catch (e) {}
 
           List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+
+          craSectionModel.forEach((element) {
+            element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
+          });
+
           for (int i = 0; i < craSectionModel.length; i++) {
             if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
               List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
@@ -263,8 +287,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "appVersion": Environment.runningEnv.releaseVersion,
           };
 
-
-
           await viewModel.postOfflineData(
             caseId: response[i]?.caseId,
             patientId: response[i]?.patientId,
@@ -272,7 +294,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             fileDeleteList: fileDeleteList,
           );
         }
-
         response = await IsarDbService.isarDbService.getListCRAOfflineData();
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
 
@@ -444,6 +465,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                           height: 10,
                         ),
                         Text('$location : $locationName', style: AppStyles.bodySmall),
+                        const SpaceWidget(
+                          height: 10,
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: docName,
+                          builder: (context, value, child) {
+                            if (value == null) return const SizedBox.shrink();
+                            return Text('Doctor Name : $value', style: AppStyles.bodySmall);
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -452,6 +483,20 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ),
             ),
             const SpaceWidget(height: 20),
+            InkWell(
+              onTap: () async {
+                bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
+                if (result != null && result) {
+                  bindDocName();
+                }
+              },
+              child: AccountCard(
+                key: Key(KEY_DOCTOR_CARD),
+                cardTitleText: TranslationKeys.changeDocName.translate(context),
+                trailingIconPath: AppAssetsPath.icChevronRight,
+                leadingIconPath: AppAssetsPath.icPerson,
+              ),
+            ),
             InkWell(
               onTap: () {
                 onLogoutClick();

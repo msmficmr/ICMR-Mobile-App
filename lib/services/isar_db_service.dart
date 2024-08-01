@@ -34,16 +34,17 @@ class IsarDbService {
     return registeredPatientList;
   }
 
-  Future<void> updatePatientRegistration({required String patientId, required AttachmentDb attachment}) async {
-    Isar? db = await isar;
-    final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
-    if (patientToBeUpdated != null) {
-      patientToBeUpdated.consent = [attachment, ...?patientToBeUpdated.consent];
-      await db.writeTxn(() async {
-        db.patientRegistrations.put(patientToBeUpdated);
-      });
-    }
-  }
+  ///[COMMENTING CODE as this may need in future]
+  // Future<void> updatePatientRegistration({required String patientId, required AttachmentDb attachment}) async {
+  //   Isar? db = await isar;
+  //   final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
+  //   if (patientToBeUpdated != null) {
+  //     patientToBeUpdated.consent = [attachment, ...?patientToBeUpdated.consent];
+  //     await db.writeTxn(() async {
+  //       db.patientRegistrations.put(patientToBeUpdated);
+  //     });
+  //   }
+  // }
 
   Future<void> saveCRA(CRAOfflineData craData) async {
     Isar? db = await isar;
@@ -148,5 +149,4 @@ class IsarDbService {
     final craData = await db.cRAOfflineDatas.filter().patientIdEqualTo(patientId).findFirst();
     return craData;
   }
-
 }

@@ -57,6 +57,7 @@ class AppConstant {
 
   // BUTTON TITLES
   static const String CONTINUE_BUTTON_TITLE = "Continue";
+  static const String UPDATE_BUTTON_TITLE = "Update";
 
   //KEYS
   static const String KEY_BUTTON_CONTINUE = "key_continue_button";
@@ -73,6 +74,7 @@ class AppConstant {
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
   static const String ERROR_FILL_REQUIRED_FIELDS = "Fill required fields";
   static const String FIELD_REQUIRED = "This field is required";
+  static const String CONSENT_REQUIRED = "Consent is required to continue";
   static const String INVALID_OTP = "OTP is invalid";
   static const String NO_RECORD_FOUND = "No Records Found";
   static const String SELECT_FILE_BEFORE_SUBMITTING = "Fill required fields";
@@ -88,6 +90,7 @@ class AppConstant {
   static const String PATIENT_GENDER_KEY = "PatientGender";
   static const String LOCATION_ID_KEY = "locationId";
   static const String TEMPLATE_VERSION = "template_version";
+  static const String SHREAD_PREF_DOC_KEY = "SHREAD_PREF_DOC_KEY";
 
   //Gender List
   static const List<CustomChipItem<String>> GENDER_LIST = [
