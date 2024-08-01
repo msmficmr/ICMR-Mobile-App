@@ -90,10 +90,7 @@ class _DoctorNameScreenState extends State<DoctorNameScreen> {
           child: Column(
             children: [
               const SpaceWidget(
-                height: 15,
-              ),
-              const SpaceWidget(
-                height: 15,
+                height: 30,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,

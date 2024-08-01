@@ -86,8 +86,8 @@
   "informed_consent_date" : "तारीख जिस दिन सूचित अनुमति प्राप्त की गई",
   "copy_of_signed_consent_handed" : "क्या हस्ताक्षरित सहमति प्रपत्र की एक प्रति रोगी को सौंपी गई थी*",
   "if_no_specify" : "यदि नहीं, तो कारण बताएं:",
-  "doctor_name": "Doctor Name",
-  "changeDocName": "Change doctor Name",
+  "doctor_name": "डॉक्टर का नाम",
+  "changeDocName": "डॉक्टर का नाम बदलें",
   "occupation_types" : [
     {"id" : "unemployed", "name" : "बेरोजगार"},
     {"id" : "student", "name" : "विद्यार्थी"},
