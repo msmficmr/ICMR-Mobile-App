@@ -68,6 +68,12 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    patientListViewModel.updateCraStatus();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -125,18 +131,24 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               itemBuilder: (context, index) {
                                 final patient = items[index];
                                 final fullName = "${patient.firstName} ${patient.lastName}";
-                                return CustomPatientCard(
-                                  widgetKey: KEY_PATIENT_CARD,
-                                  patientName: fullName,
-                                  patientId: patient.patientId,
-                                  gender: CommonFunctions.getGender(patient.gender.toString()),
-                                  age: patient.age,
-                                  phoneNumber: patient.phoneNumber,
-                                  patientNameKey: Key('KEY_PATIENT_NAME_$index'),
-                                  patientIdKey: Key('KEY_PATIENT_ID_$index'),
-                                  onTap: () {
-                                    redirectToQuestionnaire(patient.patientId);
-                                  },
+                                return Selector<PatientListViewModel,bool>(
+                                  selector: (p0, p1) => patientListViewModel.filteredItems[index].isCompleted,
+                                  builder: (context,isCraCompleted,__) {
+                                    return CustomPatientCard(
+                                      widgetKey: KEY_PATIENT_CARD,
+                                      isCraCompleted: isCraCompleted,
+                                      patientName: fullName,
+                                      patientId: patient.patientId,
+                                      gender: CommonFunctions.getGender(patient.gender.toString()),
+                                      age: patient.age,
+                                      phoneNumber: patient.phoneNumber,
+                                      patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                                      patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                                      onTap: () {
+                                        redirectToQuestionnaire(patient.patientId);
+                                      },
+                                    );
+                                  }
                                 );
                               },
                             );
@@ -200,5 +212,6 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
       await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
       return GoRouter.of(context).push(CriteriaScreen.routerPath);
     }
+    
   }
 }

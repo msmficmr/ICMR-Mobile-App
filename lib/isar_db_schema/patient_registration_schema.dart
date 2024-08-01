@@ -30,6 +30,7 @@ class PatientRegistration {
   late String signedConsentNoReason;
   late String patientId;
   late String createdBy;
+  bool isCompleted = false;
 
   // Add a toJson method to convert the object to JSON
   Map<String, dynamic> toJson() {

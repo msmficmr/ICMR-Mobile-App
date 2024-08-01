@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppColorScheme {
   AppColorScheme._();
   static Color get kWhite => const Color(0xFFFFFFFF);
-  static Color get errorTextColor => const Color(0xffF16063);
+  static const Color errorTextColor = Color(0xffF16063);
   static Color get kLightGreen => const Color(0xFFE9F6E8);
   static Color get kLightRed => const Color(0xFFFDEAEA);
   static Color get kGreen => const Color(0xFF4DC85B);
@@ -14,6 +14,7 @@ class AppColorScheme {
   static const Color kEnabledButtonTextColor = Color(0xFF2F43EE);
   static const Color kEnabledButtonColor = Color(0xFFF4F5FF);
   static const Color kTextGreyColor = Color(0xFF616161);
+  static const Color kSuccessStatusColor = Color(0xff66CB9F);
 
   static Color get kPrimaryIconColor => Colors.white;
 

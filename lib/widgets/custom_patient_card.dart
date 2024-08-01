@@ -7,9 +7,9 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:mhealth/widgets/status_widget.dart';
 
 class CustomPatientCard extends StatelessWidget {
-
   final String patientName, patientId, age, phoneNumber, widgetKey;
   final String? gender;
 
@@ -18,9 +18,11 @@ class CustomPatientCard extends StatelessWidget {
   final Color textTitleColor, textColor;
 
   final Function()? onTap;
+  final bool isCraCompleted;
 
   const CustomPatientCard({
     Key? key,
+    required this.isCraCompleted,
     required this.widgetKey,
     required this.patientName,
     required this.patientId,
@@ -41,11 +43,11 @@ class CustomPatientCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        key: Key(widgetKey),
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
+    return Padding(
+      key: Key(widgetKey),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: InkWell(
+        onTap: onTap,
         child: Container(
           width: widthSize,
           padding: const EdgeInsets.all(20),
@@ -56,10 +58,18 @@ class CustomPatientCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                patientName,
-                key: patientNameKey,
-                style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      patientName,
+                      key: patientNameKey,
+                      style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
+                    ),
+                  ),
+                  const SpaceWidget(width: 10),
+                  StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                ],
               ),
               const SpaceWidget(height: 5),
               Text(
