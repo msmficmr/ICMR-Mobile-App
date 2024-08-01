@@ -4,6 +4,7 @@ class TranslationKeys {
 
   static const String enterMobileNumber = "enter_your_mobile_number_title";
   static const String enterEmailId = "enter_your_email_id";
+  static const String doctor_name = "doctor_name";
   static const String continueText = "continue";
   static const String enterOTP = "enter_6_digit_otp";
   static const String dashboard = "dashboard";
@@ -16,6 +17,7 @@ class TranslationKeys {
   static const String search = "search";
   static const String myAccount = "my_account";
   static const String language = "language";
+  static const String changeDocName = "changeDocName";
   static const String dataSync = "data_sync";
   static const String version = "version";
   static const String pleaseTakeConsentFromCitizen = "please_take_consent_from_citizen";

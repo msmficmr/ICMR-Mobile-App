@@ -9,15 +9,35 @@ class CRAOfflineData {
   String? patientId;
   String? caseId;
   String? languageCode;
+  List<DoctorModel>? docDetails;
   List<CRASectionModel>? craSectionData;
 
-    Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'patientId': patientId,
       'caseId': caseId,
       'languageCode': languageCode,
-    'craSectionModel': List<dynamic>.from((craSectionData??[]).map((e) => e.toJson(),))
+      'docDetails': docDetails == null
+          ? []
+          : List<dynamic>.from((docDetails ?? []).map(
+              (e) => e.toJson(),
+            )),
+      'craSectionModel': List<dynamic>.from((craSectionData ?? []).map(
+        (e) => e.toJson(),
+      ))
+    };
+  }
+}
+
+@embedded
+class DoctorModel {
+  String? id;
+  String? name;
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
     };
   }
 }
@@ -34,7 +54,7 @@ class CRASectionModel {
   String? locale;
   EHRNotes? ehrNotes;
 
-    Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'createdBy': createdBy,
       'createdTime': createdTime.toIso8601String(),
@@ -54,10 +74,12 @@ class EHRNotes {
   String? versionNumber;
   List<CRAQuestionnaire>? questions;
 
-    Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'versionNumber': versionNumber,
-      'questions':  List<dynamic>.from((questions??[]).map((e) => e.toJson(),))
+      'questions': List<dynamic>.from((questions ?? []).map(
+        (e) => e.toJson(),
+      ))
     };
   }
 }
@@ -68,11 +90,12 @@ class EHRDiagnosisReports {
 
   Map<String, dynamic> toJson() {
     return {
-      'questions':  List<dynamic>.from((questions??[]).map((e) => e.toJson(),))
+      'questions': List<dynamic>.from((questions ?? []).map(
+        (e) => e.toJson(),
+      ))
     };
   }
 }
-
 
 @embedded
 class Report {
@@ -86,13 +109,13 @@ class Report {
 
   toJson() {
     return {
-      "questionId" : questionId,
-      "snomed" : snomed,
-      "lonic" : loinc,
-      "inputs" : [],
-      "file" : file,
-      "value" : value,
-      "timeAsked" : timeAsked?.toIso8601String(),
+      "questionId": questionId,
+      "snomed": snomed,
+      "lonic": loinc,
+      "inputs": [],
+      "file": file,
+      "value": value,
+      "timeAsked": timeAsked?.toIso8601String(),
     };
   }
 }
@@ -108,12 +131,14 @@ class CRAQuestionnaire {
 
   toJson() {
     return {
-      "questionId" : questionId,
-      "value" : value,
-      "inputs" : List<dynamic>.from((inputs??[]).map((e) => e.toJson(),)),
-      "timeAsked" : timeAsked?.toIso8601String(),
-      "snomed" : snomed,
-      "lonic" : lonic
+      "questionId": questionId,
+      "value": value,
+      "inputs": List<dynamic>.from((inputs ?? []).map(
+        (e) => e.toJson(),
+      )),
+      "timeAsked": timeAsked?.toIso8601String(),
+      "snomed": snomed,
+      "lonic": lonic
     };
   }
 }
@@ -128,14 +153,7 @@ class Inputs {
   SubInput? subInput;
 
   toJson() {
-    return {
-      "inputId" : inputId,
-      "value" : value,
-      "timeAsked" : timeAsked?.toIso8601String(),
-      "snomed" : snomed,
-      "loinc" : loinc,
-      "inputs" : subInput
-    };
+    return {"inputId": inputId, "value": value, "timeAsked": timeAsked?.toIso8601String(), "snomed": snomed, "loinc": loinc, "inputs": subInput};
   }
 }
 
@@ -147,11 +165,6 @@ class SubInput {
   String? loinc;
 
   toJson() {
-    return {
-      "inputId" : inputId,
-      "value" : value,
-      "snomed" : snomed,
-      "loinc" : loinc
-    };
+    return {"inputId": inputId, "value": value, "snomed": snomed, "loinc": loinc};
   }
 }
