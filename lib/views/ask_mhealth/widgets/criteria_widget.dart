@@ -3,7 +3,6 @@ import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 
 class CriteriaWidget extends StatelessWidget {
-
   String title;
   List<String> description;
 
@@ -22,16 +21,14 @@ class CriteriaWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: description.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Text(description[index]),
-                );
-              })
+          Text(
+            title,
+            style: AppStyles.titleMedium.copyWith(color: AppColorScheme.kEnabledButtonTextColor),
+          ),
+          ...description.map((e) => Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(e),
+              )),
         ],
       ),
     );
