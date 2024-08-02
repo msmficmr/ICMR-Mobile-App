@@ -228,7 +228,7 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
         ),
         Text(
           textFieldQuestionnaire.label,
-          style: AppStyles.bodyMedium,
+          style: AppStyles.titleMedium,
         ),
         SizedBox(
           height: height * 0.01,
