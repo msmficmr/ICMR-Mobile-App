@@ -98,6 +98,9 @@ class CustomTextField extends StatelessWidget {
   final VoidCallback? onTap;
 
   final FocusNode? focusNode;
+
+  TextCapitalization textCapitalization;
+
   static _getPrefixAssert(bool hasPrefix, TextFieldPrefixSuffixType? prefixType, String? prefixData, VoidCallback? onButtonClick, Key? key) {
     if (hasPrefix) {
       if (prefixType == null) {
@@ -175,6 +178,7 @@ class CustomTextField extends StatelessWidget {
       return [CustomInputFormatter(regx: r'^[a-zA-Z0-9 ]*$')];
     }
   }
+  
 
   CustomTextField({
     super.key,
@@ -201,6 +205,7 @@ class CustomTextField extends StatelessWidget {
     this.hasPrefix = false,
     this.hasSuffix = false,
     this.keyboardType = TextInputType.text,
+    this.textCapitalization = TextCapitalization.none,
     int? minLines,
     int? maxLines,
     List<TextInputFormatter>? inputFormatters,
@@ -227,6 +232,7 @@ class CustomTextField extends StatelessWidget {
           const SpaceWidget(),
         ],
         TextFormField(
+          textCapitalization: textCapitalization,
           focusNode: focusNode,
           key: widgetKey,
           keyboardType: keyboardType,

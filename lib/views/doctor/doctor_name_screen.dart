@@ -117,7 +117,7 @@ class _DoctorNameScreenState extends State<DoctorNameScreen> {
                 hintText: TEXTBOX_HINT_TEXT,
                 heading: TranslationKeys.doctor_name.translate(context),
                 headingKey: Key(TEXTBOX_TITLE_KEY),
-                validator: AppValidators.requiredField,
+                validator: AppValidators.requiredMoreThanTwoCharField,
                 keyboardType: TextInputType.text
               ),
               const Spacer(),

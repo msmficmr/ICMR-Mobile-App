@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'package:mhealth/utils/app_values.dart';
 
 class AppValidators {
-
   static String? validateMobile(value, {bool allowEmpty = false}) {
     const String kEmptyValidator = "Phone number cannot be empty";
     const String kValidValidator = "Phone number is invalid";
@@ -24,14 +23,13 @@ class AppValidators {
     return null;
   }
 
-
   static String? validateAlternateNumber(value) {
     const String kValidValidator = "Phone number is invalid";
 
     String pattern = r"^[6-9]\d{9}$";
     RegExp regExp = RegExp(pattern);
 
-    if(value.toString().isNotEmpty) {
+    if (value.toString().isNotEmpty) {
       if (!regExp.hasMatch(value)) {
         return kValidValidator;
       }
@@ -82,6 +80,20 @@ class AppValidators {
     return null;
   }
 
+  static String? requiredMoreThanTwoCharField(String? value) {
+    const String kEmptyValidator = "This field is required.";
+
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    if (value.trim().length < 2) {
+      return "Length must be greater than two characters";
+    }
+
+    return null;
+  }
+  
+
   static String? validateGender(value) {
     if (value == null || value.isEmpty) {
       return "Select Gender";
@@ -89,7 +101,6 @@ class AppValidators {
 
     return null;
   }
-
 
   static String? validateDOB(value) {
     const String kDOBEmptyValidator = "DOB can't be empty.";
@@ -262,5 +273,4 @@ class AppValidators {
 
     return null;
   }
-
 }

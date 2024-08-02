@@ -1,5 +1,4 @@
 class TranslationKeys {
-
   TranslationKeys._();
 
   static const String enterMobileNumber = "enter_your_mobile_number_title";
@@ -111,5 +110,11 @@ class TranslationKeys {
   static const String studyCodes = "study_codes";
   static const String signedConsentReasonCodes = "signed_consent_reason_codes";
   static const String visitTypes = "visit_types";
+  static const String visitMonthTypeList = "visit_month_list";
   static const String documents = "documents";
+  static const String visitNumber = "visit_number";
+  static const String visitMonth = "visit_month";
+  static const String place = "place";
+  static const String primaryId = "primary_id";
+  static const String secondaryId = "secondary_id";
 }

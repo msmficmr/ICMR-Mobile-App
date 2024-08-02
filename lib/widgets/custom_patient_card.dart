@@ -7,9 +7,9 @@ import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:mhealth/widgets/status_widget.dart';
 
 class CustomPatientCard extends StatelessWidget {
-
   final String patientName, patientId, age, phoneNumber, widgetKey;
   final String? gender;
 
@@ -18,9 +18,13 @@ class CustomPatientCard extends StatelessWidget {
   final Color textTitleColor, textColor;
 
   final Function()? onTap;
+  final bool isCraCompleted;
+  final String primaryId, secondaryId;
+  final Key primaryIdKey, secondaryIdKey;
 
   const CustomPatientCard({
     Key? key,
+    required this.isCraCompleted,
     required this.widgetKey,
     required this.patientName,
     required this.patientId,
@@ -30,6 +34,10 @@ class CustomPatientCard extends StatelessWidget {
     required this.patientNameKey,
     required this.patientIdKey,
     required this.onTap,
+    required this.primaryId,
+    required this.secondaryId,
+    required this.primaryIdKey,
+    required this.secondaryIdKey,
     this.textTitleColor = AppColorScheme.kEnabledButtonTextColor,
     this.textColor = AppColorScheme.kTextGreyColor,
   }) : super(key: key);
@@ -41,14 +49,14 @@ class CustomPatientCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        key: Key(widgetKey),
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
+    return Padding(
+      key: Key(widgetKey),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: InkWell(
+        onTap: onTap,
         child: Container(
           width: widthSize,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
           decoration: BoxDecoration(
             borderRadius: AppValues.circularBorderRadius10,
             color: AppColorScheme.kGrayColor.shade50,
@@ -56,16 +64,58 @@ class CustomPatientCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                patientName,
-                key: patientNameKey,
-                style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      patientName,
+                      key: patientNameKey,
+                      style: AppStyles.titleMedium.copyWith(fontWeight: FontWeight.w700, color: textTitleColor),
+                    ),
+                  ),
+                  const SpaceWidget(width: 10),
+                  StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                ],
               ),
               const SpaceWidget(height: 5),
               Text(
                 "ICMRID: $patientId",
                 key: patientIdKey,
                 style: AppStyles.titleMedium.copyWith(color: textColor),
+              ),
+              const SpaceWidget(height: 5),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Primary ID: $primaryId",
+                      key: primaryIdKey,
+                      style: AppStyles.titleMedium.copyWith(color: textColor),
+                    ),
+                  ),
+                  const SpaceWidget(width: 5),
+                  InkWell(
+                    onTap: () => CommonFunctions.copyToClipboard(primaryId, context),
+                    child: SvgPicture.asset(AppAssetsPath.icCopy),
+                  )
+                ],
+              ),
+              const SpaceWidget(height: 5),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Secondary ID: $secondaryId",
+                      key: secondaryIdKey,
+                      style: AppStyles.titleMedium.copyWith(color: textColor),
+                    ),
+                  ),
+                  const SpaceWidget(width: 5),
+                  InkWell(
+                    onTap: () => CommonFunctions.copyToClipboard(secondaryId, context),
+                    child: SvgPicture.asset(AppAssetsPath.icCopy),
+                  )
+                ],
               ),
               const SpaceWidget(height: 5),
               SizedBox(

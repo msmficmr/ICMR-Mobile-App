@@ -1,20 +1,26 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/model/id_text_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/utils/custom_input_formatter.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
@@ -81,6 +87,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _medicalRecordNumberController = TextEditingController();
   final TextEditingController _documentTypeController = TextEditingController();
   late TextEditingController _consentDateController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
+  final TextEditingController _primaryIdController = TextEditingController();
+  final TextEditingController _secondaryIdController = TextEditingController();
 
   //Widget Keys
   final String KEY_BUTTON_YES_CONSENT = "key_button_yes_consent";
@@ -125,12 +134,29 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final String KEY_HEADING_SIGNED_CONSENT = "key_title_signed_consent";
   final String KEY_HEADING_SIGNED_CONSENT_NO = "key_title_signed_consent_no";
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
+  final String KEY_FIELD_VISIT_NUMBER = "key_textfield_visit_number";
+  final String KEY_HEADING_VISIT_NUMBER = "key_title_visit_number";
+  final String KEY_FIELD_VISIT_MONTH = "key_textfield_visit_month";
+  final String KEY_HEADING_VISIT_MONTH = "key_title_visit_month";
+  final String KEY_TEXTFIELD_PLACE = "key_textfield_place";
+  final String KEY_HEADING_PLACE = "key_heading_place";
+
+  final String KEY_FIELD_PRIMARY_ID = "key_textfield_primary_id";
+  final String KEY_HEADING_PRIMARY_ID = "key_heading_primary_id";
+
+  final String KEY_FIELD_SECONDARY_ID = "key_textfield_secondary_id";
+  final String KEY_HEADING_SECONDARY_ID = "key_heading_secondary_id";
 
   final String MOB_FIELD_PREFIX_TEXT = "+91";
 
   final FocusNode _dovFocusNode = FocusNode();
   final FocusNode _ageFocusNode = FocusNode();
 
+  ValueNotifier<List<IdTextModel>> _visitNumberList = ValueNotifier<List<IdTextModel>>([]);
+  ValueNotifier<List<IdTextModel>> _visitMonthList = ValueNotifier<List<IdTextModel>>([]);
+
+  late ValueNotifier<IdTextModel?> _visitNumber;
+  late ValueNotifier<IdTextModel?> _visitMonth;
   late ValueNotifier<String?> _institutionCode;
   late ValueNotifier<String?> _studyCode;
   late ValueNotifier<String?> _gender;
@@ -191,9 +217,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
     questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     initializeField();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getVisitNumber();
+      getVisitMonthList();
+    });
   }
 
   initializeField() {
+    _visitNumber = ValueNotifier<IdTextModel?>(null);
+    _visitMonth = ValueNotifier<IdTextModel?>(null);
     _consentTextNotifier = ValueNotifier<String>('');
     _institutionCode = ValueNotifier<String?>(null);
     _studyCode = ValueNotifier<String?>(null);
@@ -215,6 +247,60 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     getDocuments();
     getStudyCodes();
     getSignedConsentReasonCodes();
+  }
+
+  getVisitNumber() {
+    String visitTypeData = TranslationKeys.visitTypes.translate(context);
+    List<String> visitTypeIds = CommonFunctions.convertStringToListOfIds(visitTypeData);
+    List<String> visitTypeNames = CommonFunctions.convertStringToListOfNames(visitTypeData);
+
+    List<IdTextModel> map = [];
+    for (int i = 0; i < visitTypeIds.length; i++) {
+      map.add(IdTextModel(id: visitTypeIds[i], name: visitTypeNames[i]));
+    }
+    _visitNumberList.value = map;
+  }
+
+  getVisitMonthList() {
+    String visitMonthData = TranslationKeys.visitMonthTypeList.translate(context);
+    List<dynamic> list = jsonDecode(visitMonthData);
+    _visitMonthList.value = list.map((e) => IdTextModel.fromJson(e)).toList();
+  }
+
+  String _generatePrimaryId() {
+    if (_primaryIdController.text.isNotEmpty) {
+      return _primaryIdController.text.trim();
+    }
+
+    // Format for generating primaryId as below
+    // First two char of firstName
+    // First two char of place
+    // current dateTime in HH:mm:ss:ms,dd,MM,yyyy
+    DateTime now = DateTime.now();
+    String dateTime = DateFormat(AppValues.idDateTimeFormat).format(now);
+    String firstName = _firstNameController.text.trim().substring(0, 2);
+    String placeName = _placeController.text.trim().substring(0, 2);
+    String id = "${firstName.toUpperCase()}-${placeName.toUpperCase()}-$dateTime";
+    return id;
+  }
+
+  String _generateSecondaryId() {
+    if (_secondaryIdController.text.isNotEmpty) {
+      return _secondaryIdController.text.trim();
+    }
+    // Format for generating primaryId as below
+    // First two char of Doctor Name
+    // First two char of place
+    // current dateTime in HH:mm:ss:ms,dd,MM,yyyy
+    DateTime now = DateTime.now();
+    String dateTime = DateFormat(AppValues.idDateTimeFormat).format(now);
+
+    String doctorName = SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHREAD_PREF_DOC_KEY) ?? "";
+    doctorName = doctorName.trim().substring(0, 2);
+
+    String placeName = _placeController.text.trim().substring(0, 2);
+    String id = "${doctorName.toUpperCase()}-${placeName.toUpperCase()}-$dateTime";
+    return id;
   }
 
   void onContinueClick() async {
@@ -240,8 +326,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
           ..institutionCodeID = _institutionCode.value != null ? institutionIds[institutionNames.indexOf(_institutionCode.value ?? "")] : ""
           ..studyCode = studyIds[studyNames.indexOf(_studyCode.value ?? "")]
-          ..firstName = _firstNameController.text
-          ..lastName = _lastNameController.text
+          ..firstName = _firstNameController.text.trim()
+          ..lastName = _lastNameController.text.trim()
           ..age = _ageController.text
           ..gender = _gender.value?.toUpperCase()
           ..address = _tempAddressController.text
@@ -258,7 +344,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..signedConsent = _signConsent.value?.toUpperCase() ?? ""
           ..signedConsentNoReason = _signedConsentNoReason.value != null ? signedConsentIds[signedConsentNames.indexOf(_signedConsentNoReason.value ?? "")] : ""
           ..patientId = patientId
-          ..createdBy = userId);
+          ..createdBy = userId
+          ..place = _placeController.text.trim()
+          ..visitNo = _visitNumber.value?.id
+          ..visitMonth = _visitMonth.value?.id
+          ..primaryId = _generatePrimaryId()
+          ..secondaryId = _generateSecondaryId());
 
         ///[COMMENTING BELOW LINE AS it may used in future]
         // await addConsentImages(patientId);
@@ -398,6 +489,56 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
+                //VISIT NO
+                ValueListenableBuilder<List<IdTextModel>>(
+                    valueListenable: _visitNumberList,
+                    builder: (context, map, _) {
+                      return ValueListenableBuilder<IdTextModel?>(
+                        valueListenable: _visitNumber,
+                        builder: (context, _, __) {
+                          return CustomDropdown<IdTextModel>(
+                            widgetKey: KEY_FIELD_VISIT_NUMBER,
+                            heading: TranslationKeys.visitNumber.translate(context),
+                            headingKey: Key(KEY_HEADING_VISIT_NUMBER),
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _visitNumber.value = val;
+                            },
+                            selectedItem: _visitNumber.value,
+                            compareFn: (p0, p1) => p0.id == p1.id,
+                            items: map,
+                          );
+                        },
+                      );
+                    }),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //VISIT MONTH
+                ValueListenableBuilder<List<IdTextModel>>(
+                    valueListenable: _visitMonthList,
+                    builder: (context, map, _) {
+                      return ValueListenableBuilder<IdTextModel?>(
+                        valueListenable: _visitMonth,
+                        builder: (context, _, __) {
+                          return CustomDropdown<IdTextModel>(
+                            widgetKey: KEY_FIELD_VISIT_MONTH,
+                            heading: TranslationKeys.visitMonth.translate(context),
+                            headingKey: Key(KEY_HEADING_VISIT_MONTH),
+                            hintText: TranslationKeys.select.translate(context),
+                            onChanged: (val) {
+                              _visitMonth.value = val;
+                            },
+                            selectedItem: _visitMonth.value,
+                            compareFn: (p0, p1) => p0.id == p1.id,
+                            items: map,
+                          );
+                        },
+                      );
+                    }),
+                const SpaceWidget(
+                  height: 15,
+                ),
                 //INSTITUTION CODE
                 ValueListenableBuilder<String?>(
                     valueListenable: _institutionCode,
@@ -445,7 +586,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   hintText: TranslationKeys.enterHere.translate(context),
                   heading: "${TranslationKeys.firstName.translate(context)}*",
                   headingKey: Key(KEY_HEADING_FIRST_NAME),
-                  validator: AppValidators.requiredField,
+                  validator: AppValidators.requiredMoreThanTwoCharField,
                   inputFormatters: [
                     AppValues.stringInputFormatter,
                   ],
@@ -498,6 +639,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       headingKey: Key(KEY_HEADING_GENDER),
                     );
                   },
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //PLACE
+                CustomTextField(
+                  controller: _placeController,
+                  widgetKey: Key(KEY_TEXTFIELD_PLACE),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.place.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_PLACE),
+                  validator: AppValidators.requiredMoreThanTwoCharField,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -622,6 +776,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     MaskTextInputFormatter(mask: '##########'),
                   ],
                   keyboardType: TextInputType.number,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //PRIMARY ID
+                CustomTextField(
+                  widgetKey: Key(KEY_FIELD_PRIMARY_ID),
+                  controller: _primaryIdController,
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: TranslationKeys.primaryId.translate(context),
+                  headingKey: Key(KEY_HEADING_PRIMARY_ID),
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [AppValues.idInputFormatter, UpperCaseTextFormatter()],
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //SECONDARY ID
+                CustomTextField(
+                  widgetKey: Key(KEY_FIELD_SECONDARY_ID),
+                  controller: _secondaryIdController,
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: TranslationKeys.secondaryId.translate(context),
+                  headingKey: Key(KEY_HEADING_SECONDARY_ID),
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [AppValues.idInputFormatter, UpperCaseTextFormatter()],
                 ),
                 const SpaceWidget(
                   height: 15,

@@ -100,13 +100,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
   late ValueNotifier<bool> _syncData;
 
-  void _copyToClipboard(String volunteerId) {
-    Clipboard.setData(ClipboardData(text: volunteerId));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Volunteer ID copied to clipboard')),
-    );
-  }
-
   checkToSyncData() async {
     if (networkStatusService.networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
@@ -446,7 +439,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                             ),
                             const SpaceWidget(width: 5),
                             InkWell(
-                              onTap: () => _copyToClipboard(volunteerId),
+                              onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
                               child: SvgPicture.asset(AppAssetsPath.icCopy),
                             )
                           ],
@@ -484,6 +477,25 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             ),
             const SpaceWidget(height: 20),
             InkWell(
+              onTap: () {
+                onLogoutClick();
+              },
+              child: FutureBuilder(
+                  future: loginViewModel!.checkLoginTimestamp(),
+                  builder: (context, expireIn) {
+                    return Visibility(
+                      visible: ((expireIn.data ?? 16) < 16) ? true : false,
+                      child: AccountCard(
+                          key: Key(KEY_LOGIN_EXPIRE),
+                          cardTitleText: (expireIn.data == 0) ? "Login will expire today" : "Login will expire in ${expireIn.data} days",
+                          textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icWarning,
+                          iconColor: AppColorScheme.errorTextColor),
+                    );
+                  }),
+            ),
+            InkWell(
               onTap: () async {
                 bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
                 if (result != null && result) {
@@ -497,27 +509,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 leadingIconPath: AppAssetsPath.icPerson,
               ),
             ),
-            InkWell(
-              onTap: () {
-                onLogoutClick();
-              },
-              child: FutureBuilder(
-                future : loginViewModel!.checkLoginTimestamp(),
-                builder: (context, expireIn)  {
-                  return Visibility(
-                    visible:  (expireIn.data! < 16) ? true : false,
-                    child: AccountCard(
-                      key: Key(KEY_LOGIN_EXPIRE),
-                      cardTitleText: (expireIn.data == 0)?  "Login will expire today" : "Login will expire in ${expireIn.data} days",
-                      textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
-                      trailingIconPath: AppAssetsPath.icChevronRight,
-                      leadingIconPath: AppAssetsPath.icWarning,
-                      iconColor : AppColorScheme.errorTextColor
-                    ),
-                  );
-                }
-              ),
-            ),
+            
             InkWell(
               onTap: () {
                 GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
