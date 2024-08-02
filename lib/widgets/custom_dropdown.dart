@@ -26,6 +26,7 @@ class CustomDropdown<T> extends StatelessWidget {
 
   /// filter function for dropdown search items
   final bool Function(T, String)? filterFn;
+  bool Function(T, T)? compareFn;
 
   /// [showSearchBox] enable or disable search field for dropdown items. default value is `true`
   final bool? showSearchBox;
@@ -55,6 +56,7 @@ class CustomDropdown<T> extends StatelessWidget {
     this.validator,
     this.filterFn,
     this.showSearchBox,
+    this.compareFn,
     required this.widgetKey,
     required this.items,
     required this.onChanged,
@@ -94,6 +96,7 @@ class CustomDropdown<T> extends StatelessWidget {
           autoValidateMode: AutovalidateMode.onUserInteraction,
           validator: validator,
           filterFn: filterFn,
+          compareFn: compareFn,
           popupProps: PopupProps.menu(
             showSearchBox: (items.length >= 10) ? true : false,
             fit: FlexFit.loose,

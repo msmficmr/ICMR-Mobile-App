@@ -144,6 +144,10 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                                       phoneNumber: patient.phoneNumber,
                                       patientNameKey: Key('KEY_PATIENT_NAME_$index'),
                                       patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                                      primaryId: patient.primaryId,
+                                      primaryIdKey: Key('KEY_PRIMARY_ID_$index'),
+                                      secondaryId: patient.secondaryId,
+                                      secondaryIdKey: Key('KEY_SECONDARY_ID_$index'),
                                       onTap: () {
                                         redirectToQuestionnaire(patient.patientId);
                                       },

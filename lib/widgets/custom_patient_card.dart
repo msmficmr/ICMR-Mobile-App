@@ -19,6 +19,8 @@ class CustomPatientCard extends StatelessWidget {
 
   final Function()? onTap;
   final bool isCraCompleted;
+  final String primaryId, secondaryId;
+  final Key primaryIdKey, secondaryIdKey;
 
   const CustomPatientCard({
     Key? key,
@@ -32,6 +34,10 @@ class CustomPatientCard extends StatelessWidget {
     required this.patientNameKey,
     required this.patientIdKey,
     required this.onTap,
+    required this.primaryId,
+    required this.secondaryId,
+    required this.primaryIdKey,
+    required this.secondaryIdKey,
     this.textTitleColor = AppColorScheme.kEnabledButtonTextColor,
     this.textColor = AppColorScheme.kTextGreyColor,
   }) : super(key: key);
@@ -50,7 +56,7 @@ class CustomPatientCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: widthSize,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
           decoration: BoxDecoration(
             borderRadius: AppValues.circularBorderRadius10,
             color: AppColorScheme.kGrayColor.shade50,
@@ -76,6 +82,40 @@ class CustomPatientCard extends StatelessWidget {
                 "ICMRID: $patientId",
                 key: patientIdKey,
                 style: AppStyles.titleMedium.copyWith(color: textColor),
+              ),
+              const SpaceWidget(height: 5),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Primary ID: $primaryId",
+                      key: primaryIdKey,
+                      style: AppStyles.titleMedium.copyWith(color: textColor),
+                    ),
+                  ),
+                  const SpaceWidget(width: 5),
+                  InkWell(
+                    onTap: () => CommonFunctions.copyToClipboard(primaryId, context),
+                    child: SvgPicture.asset(AppAssetsPath.icCopy),
+                  )
+                ],
+              ),
+              const SpaceWidget(height: 5),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Secondary ID: $secondaryId",
+                      key: secondaryIdKey,
+                      style: AppStyles.titleMedium.copyWith(color: textColor),
+                    ),
+                  ),
+                  /* const SpaceWidget(width: 5),
+                  InkWell(
+                    onTap: () => CommonFunctions.copyToClipboard(secondaryId, context),
+                    child: SvgPicture.asset(AppAssetsPath.icCopy),
+                  ) */
+                ],
               ),
               const SpaceWidget(height: 5),
               SizedBox(

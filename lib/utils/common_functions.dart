@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -315,5 +316,12 @@ class CommonFunctions {
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  static void copyToClipboard(String volunteerId, BuildContext context) {
+    Clipboard.setData(ClipboardData(text: volunteerId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Copied to clipboard')),
+    );
   }
 }
