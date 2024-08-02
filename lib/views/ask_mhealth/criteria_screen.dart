@@ -52,37 +52,45 @@ class CriteriaScreen extends StatelessWidget {
           appBarTitleType: CustomAppBarTitleType.TEXT,
           titleText: AppConstant.RISK_ASSESSMENT,
         ),
-        body: Padding(
-          padding: EdgeInsets.all(AppValues.kAppPadding),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Column(
-                  children: [
-                    SectionNameWidget(sectionName: TranslationKeys.criteriaSection.translate(context)),
-                    CriteriaWidget(title: TranslationKeys.inclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.inclusionCriteria,context: context)),
-                    const SpaceWidget(height: 20,),
-                    CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.exclusionCriteria,context: context))
-                  ],
-                ),
-              ),
-              Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: PrimaryFilledButton(
-                      buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                      buttonTitle: TranslationKeys.continueText.translate(context),
-                      widgetKey: KEY_BUTTON_CONTINUE,
-                      isLoading: false,
-                      onPressed: () {
-                        GoRouter.of(context).push(QuestionnaireScreen.routerPath);
-                      },
+        body: SizedBox(
+          height: double.infinity,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SectionNameWidget(sectionName: TranslationKeys.criteriaSection.translate(context)),
+                          CriteriaWidget(title: TranslationKeys.inclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.inclusionCriteria, context: context)),
+                          const SpaceWidget(height: 20),
+                          CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.exclusionCriteria, context: context)), 
+                          const SizedBox(height: 10),
+                          const Spacer(),
+                          SizedBox(
+                            width: double.infinity,
+                            child: PrimaryFilledButton(
+                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                              buttonTitle: TranslationKeys.continueText.translate(context),
+                              widgetKey: KEY_BUTTON_CONTINUE,
+                              isLoading: false,
+                              onPressed: () {
+                                GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
-                  ))
-            ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

@@ -130,14 +130,14 @@
   "inclusion_criteria": "Inclusion Criteria",
   "exclusion_criteria": "Exclusion Criteria",
   "inclusion_criteria_description": [
-    "1. Clinically suspecious oral lesions (including leukoplakia, erythroplakia,lichen planus,benign lesions –epithelial tumors, ulcers, vesiculobullous lesions like pemphigus vulgaris) which are indicated for biopsy.",
-    "2. More than 18 years of age"
+    "1. Individuals aged more than or equal to 18 years",
+    "2. Individuals having a history of risk habits (Smoking/chewing tobacco, betel leaf/nut/, alcohol) or individuals having any oral lesion"
   ],
   "exclusion_criteria_description": [
-    "1. Less than or equal to 18 years of age.",
-    "2. Currently undergoing treatment for malignancy",
+    "1. Individuals who present with acute illness",
+    "2. Individuals diagnosed with oral cancer/currently undergoing treatment for malignancy",
     "3. Pregnancy",
-    "4. Under treatment for tuberculosis or suffering from any acute illness"
+    "4. Under treatment for tuberculosis"
   ],
   "periodontal_section": "Periodontal Status",
   "cpitn_codes": "CPITN Codes",
