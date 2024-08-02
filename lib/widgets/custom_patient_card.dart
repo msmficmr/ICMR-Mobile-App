@@ -110,11 +110,11 @@ class CustomPatientCard extends StatelessWidget {
                       style: AppStyles.titleMedium.copyWith(color: textColor),
                     ),
                   ),
-                  /* const SpaceWidget(width: 5),
+                  const SpaceWidget(width: 5),
                   InkWell(
                     onTap: () => CommonFunctions.copyToClipboard(secondaryId, context),
                     child: SvgPicture.asset(AppAssetsPath.icCopy),
-                  ) */
+                  )
                 ],
               ),
               const SpaceWidget(height: 5),
