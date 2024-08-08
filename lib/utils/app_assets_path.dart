@@ -58,4 +58,6 @@ class AppAssetsPath {
     clinicalQuestionnaire
   ];
   static const String periodontalStatusImage = "assets/images/periodontal_status.png";
+  static const String icSingleImage ="assets/icons/ic_single_image.svg";
+  static const String icMultipleImage ="assets/icons/ic_multiple_image.svg";
 }

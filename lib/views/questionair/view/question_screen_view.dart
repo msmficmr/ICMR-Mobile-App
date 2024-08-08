@@ -156,7 +156,8 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
                                                 onPressed: () {
                                                   goToNextSection();
                                                 },
-                                                buttonTitle: TranslationKeys.continueText.capitalize(),
+                                                buttonTitle:
+                                                    widget.sectionId == QuestionViewModel.sectionList.last.id ? TranslationKeys.submit.capitalize() : TranslationKeys.continueText.capitalize(),
                                                 widgetKey: KEY_BUTTON_CONTINUE,
                                               ),
                                             ),

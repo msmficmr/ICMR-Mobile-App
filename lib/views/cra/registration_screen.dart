@@ -58,6 +58,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+  TextInputFormatter _idInputFormatter = MaskTextInputFormatter(
+    mask: 'AA-AA-#################',
+    filter: {
+      "#": RegExp(r'[0-9]'),
+      "A": RegExp(r'[a-zA-Z]'),
+    },
+    type: MaskAutoCompletionType.eager,
+  );
 
   List<String> documentIds = [];
   List<String> documentNames = [];
@@ -273,7 +281,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     // Format for generating primaryId as below
     // First two char of firstName
     // First two char of place
-    // current dateTime in HH:mm:ss:ms,dd,MM,yyyy
+    // current dateTime in ddMMyyyyHHmmssSSS
     DateTime now = DateTime.now();
     String dateTime = DateFormat(AppValues.idDateTimeFormat).format(now);
     String firstName = _firstNameController.text.trim().substring(0, 2);
@@ -286,10 +294,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_secondaryIdController.text.isNotEmpty) {
       return _secondaryIdController.text.trim();
     }
-    // Format for generating primaryId as below
+    // Format for generating secondaryId as below
     // First two char of Doctor Name
     // First two char of place
-    // current dateTime in HH:mm:ss:ms,dd,MM,yyyy
+    // current dateTime in ddMMyyyyHHmmssSSS
     DateTime now = DateTime.now();
     String dateTime = DateFormat(AppValues.idDateTimeFormat).format(now);
 
@@ -453,9 +461,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   valueListenable: _consentError,
                   builder: (context, isEmpty, __) {
                     if (isEmpty) {
-                      return Text(
-                        AppConstant.CONSENT_REQUIRED,
-                        style: AppStyles.errorStyle,
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            AppConstant.CONSENT_REQUIRED,
+                            style: AppStyles.errorStyle,
+                          ),
+                        ],
                       );
                     } else {
                       return const SizedBox.shrink();
@@ -482,6 +497,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   validator: (value) => AppValidators.validateDate(
                       value: value, emptyErrorMessage: "Date can't be empty.", validErrorMessage: "Enter valid date.", futureDateErrorMessage: "Future date is not allowed."),
                   keyboardType: TextInputType.number,
+                ),
+                const SpaceWidget(
+                  height: 15,
+                ),
+                //PLACE
+                CustomTextField(
+                  controller: _placeController,
+                  widgetKey: Key(KEY_TEXTFIELD_PLACE),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: "${TranslationKeys.place.translate(context)}*",
+                  headingKey: Key(KEY_HEADING_PLACE),
+                  validator: AppValidators.requiredMoreThanTwoCharField,
+                  keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -637,19 +665,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     );
                   },
                 ),
-                const SpaceWidget(
-                  height: 15,
-                ),
-                //PLACE
-                CustomTextField(
-                  controller: _placeController,
-                  widgetKey: Key(KEY_TEXTFIELD_PLACE),
-                  hintText: TranslationKeys.enterHere.translate(context),
-                  heading: "${TranslationKeys.place.translate(context)}*",
-                  headingKey: Key(KEY_HEADING_PLACE),
-                  validator: AppValidators.requiredMoreThanTwoCharField,
-                  keyboardType: TextInputType.text,
-                ),
+
                 const SpaceWidget(
                   height: 15,
                 ),
@@ -785,7 +801,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.primaryId.translate(context),
                   headingKey: Key(KEY_HEADING_PRIMARY_ID),
                   keyboardType: TextInputType.text,
-                  inputFormatters: [AppValues.idInputFormatter, UpperCaseTextFormatter()],
+                  inputFormatters: [_idInputFormatter, UpperCaseTextFormatter()],
+                  validator: (p0) {
+                    if (_primaryIdController.text.trim().isEmpty && _secondaryIdController.text.trim().isNotEmpty) {
+                      return AppConstant.FIELD_REQUIRED;
+                    }
+                    if (_primaryIdController.text.trim().isNotEmpty && _primaryIdController.text.trim().length != 23) {
+                      return AppConstant.ERROR_INVALID_ID;
+                    }
+                    return null;
+                  },
                 ),
                 const SpaceWidget(
                   height: 15,
@@ -798,7 +823,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   heading: TranslationKeys.secondaryId.translate(context),
                   headingKey: Key(KEY_HEADING_SECONDARY_ID),
                   keyboardType: TextInputType.text,
-                  inputFormatters: [AppValues.idInputFormatter, UpperCaseTextFormatter()],
+                  inputFormatters: [_idInputFormatter, UpperCaseTextFormatter()],
+                  validator: (p0) {
+                    if (_secondaryIdController.text.trim().isEmpty && _primaryIdController.text.trim().isNotEmpty) {
+                      return AppConstant.FIELD_REQUIRED;
+                    }
+                    if (_secondaryIdController.text.trim().isNotEmpty && _secondaryIdController.text.trim().length != 23) {
+                      return AppConstant.ERROR_INVALID_ID;
+                    }
+                    return null;
+                  },
                 ),
                 const SpaceWidget(
                   height: 15,

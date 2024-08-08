@@ -146,7 +146,7 @@
   "shallow_pocket": "Shallow pocket 4 or 5mm",
   "deep_pocket": "Deep pocket 6mm or more",
   "doctor_name": "Doctor Name",
-  "changeDocName": "Change doctor Name",
+  "changeDocName": "Change doctor name",
   "cpitn_codes_description": [
     "0 = Healthy",
     "1 = Bleeding on probing",

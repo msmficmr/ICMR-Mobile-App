@@ -146,13 +146,6 @@ class AppRouter {
             );
           },
         ),
-        GoRoute(
-          path: SignatureScreen.routerPath,
-          pageBuilder: (context, state) => RouterTransition(
-            key: state.pageKey,
-            child: const SignatureScreen(),
-          ),
-        ),
       ],
 
       /// this callback will called on every time when we are trying to navigate from one screen to another

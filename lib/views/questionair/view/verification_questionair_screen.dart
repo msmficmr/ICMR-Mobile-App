@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
+import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
@@ -66,7 +67,7 @@ class _VerificationQuestionnaireScreenState extends State<VerificationQuestionna
   }
 
   Future<void> getSignature() async {
-    Uint8List? result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen()));
+    Uint8List? result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const SignatureScreen(appBarTitle: AppConstant.SIGNATURE_SCREEN_APP_BAR_TITLE)));
     if (result != null) {
       _isLoading.value = true;
       try {
@@ -110,36 +111,41 @@ class _VerificationQuestionnaireScreenState extends State<VerificationQuestionna
           headingKey: Key(KEY_HEADING_SAMPLE_COLLECTED_BY),
         ),
         const SpaceWidget(height: 15),
-        FormField<bool?>(
-          key: _captureState,
-          validator: (value) {
-            if (value == null || value == false) {
-              return "This field is required.";
-            }
-            return null;
-          },
-          builder: (formState) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ValueListenableBuilder(
-                  valueListenable: _hasCaptured,
-                  builder: (context, value, child) => CustomCheckBox(
-                    widgetKey: Key(KEY_CHECKBOX),
-                    value: _hasCaptured.value,
-                    onChanged: (p0) {
-                      _hasCaptured.value = p0;
-                      formState.didChange(p0);
-                    },
-                    children: [TextSpan(text: CONSENT_TEXT)],
-                  ),
-                ),
-                if (formState.hasError) ...[Text(formState.errorText ?? "", style: AppStyles.errorStyle)]
-              ],
-            );
-          },
-        ),
+        ValueListenableBuilder(
+            valueListenable: _hasCaptured,
+            builder: (context, _, __) {
+              return FormField<bool?>(
+                key: _captureState,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  if (value == null || value == false) {
+                    return "This field is required.";
+                  }
+                  return null;
+                },
+                builder: (formState) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ValueListenableBuilder(
+                        valueListenable: _hasCaptured,
+                        builder: (context, value, child) => CustomCheckBox(
+                          widgetKey: Key(KEY_CHECKBOX),
+                          value: _hasCaptured.value,
+                          onChanged: (p0) {
+                            _hasCaptured.value = p0;
+                            formState.didChange(p0);
+                          },
+                          children: [TextSpan(text: CONSENT_TEXT)],
+                        ),
+                      ),
+                      if (formState.hasError) ...[Text(formState.errorText ?? "", style: AppStyles.errorStyle)]
+                    ],
+                  );
+                },
+              );
+            }),
         const SpaceWidget(height: 15),
         ValueListenableBuilder(
             valueListenable: _isLoading,

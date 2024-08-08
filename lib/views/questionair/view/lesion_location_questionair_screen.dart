@@ -293,11 +293,10 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                     width: 24,
                                   ),
                                 ),
-                                const SizedBox(width: 2),
+                                const SizedBox(width: 5),
                                 ValueListenableBuilder(
                                   valueListenable: question.attachments,
                                   builder: (context, attachmentList, child) {
-                                    List<AttachmentModel> itemList = attachmentList.sublist(0, attachmentList.length > 3 ? 3 : attachmentList.length);
                                     return InkWell(
                                       onTap: () {
                                         Navigator.push(
@@ -307,49 +306,20 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                               title: getTitle(question.siteId ?? "", question.locationId ?? ""),
                                               attachmentList: [...attachmentList],
                                               onRemoveClick: (fileName) {
-                                                widget.questioner.removeAttachmentImage(question.questionId,fileName);
+                                                widget.questioner.removeAttachmentImage(question.questionId, fileName);
                                               },
                                             ),
                                           ),
                                         );
                                       },
-                                      child: SizedBox(
-                                        width: 70,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: List.generate(itemList.length, (index) {
-                                            if (index == 2) {
-                                              return Align(
-                                                alignment: Alignment.centerLeft,
-                                                widthFactor: 0.5,
-                                                child: CircularAvatar(
-                                                  childType: CircularAvatarFieldChildType.TEXT,
-                                                  childData: "+${attachmentList.length - (itemList.length - 1)}",
-                                                  radius: 15,
-                                                ),
-                                              );
-                                            }
-
-                                            return const Align(
-                                              alignment: Alignment.centerLeft,
-                                              widthFactor: 0.5,
-                                              child: CircularAvatar(
-                                                childType: CircularAvatarFieldChildType.SVG_ASSET,
-                                                childData: AppAssetsPath.icFile,
-                                                radius: 15,
-                                              ),
-                                            );
-                                          }),
-                                        ),
+                                      child: SvgPicture.asset(
+                                        attachmentList.length == 1 ? AppAssetsPath.icSingleImage : AppAssetsPath.icMultipleImage,
+                                        width: 20,
+                                        height: 20,
                                       ),
                                     );
                                   },
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                )
                               ],
                             ),
                             children: [

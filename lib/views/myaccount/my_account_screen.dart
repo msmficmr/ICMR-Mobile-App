@@ -446,20 +446,31 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               onTap: () {
                 onLogoutClick();
               },
-              child: FutureBuilder(
-                  future: loginViewModel!.checkLoginTimestamp(),
-                  builder: (context, expireIn) {
-                    return Visibility(
-                      visible: ((expireIn.data ?? 16) < 16) ? true : false,
-                      child: AccountCard(
-                          key: Key(KEY_LOGIN_EXPIRE),
-                          cardTitleText: (expireIn.data == 0) ? "Login will expire today" : "Login will expire in ${expireIn.data} days",
-                          textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icWarning,
-                          iconColor: AppColorScheme.errorTextColor),
-                    );
-                  }),
+              child: Builder(
+                builder: (context) {
+                  int expireIn = loginViewModel!.checkLoginTimestamp();
+                  String text = "";
+                  if (expireIn == 0) {
+                    text = "Login will expire today";
+                  } else if (expireIn < 0) {
+                    text = "Login is expired";
+                  } else {
+                    text = "Login will expire in ${expireIn} days";
+                  }
+
+                  return Visibility(
+                    visible: (expireIn < 16) ? true : false,
+                    child: AccountCard(
+                      key: Key(KEY_LOGIN_EXPIRE),
+                      cardTitleText: text,
+                      textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                      trailingIconPath: AppAssetsPath.icChevronRight,
+                      leadingIconPath: AppAssetsPath.icWarning,
+                      iconColor: AppColorScheme.errorTextColor,
+                    ),
+                  );
+                },
+              ),
             ),
             InkWell(
               onTap: () async {

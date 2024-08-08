@@ -34,6 +34,7 @@ class AppConstant {
   static const String LOGIN_INTENT = "loginIntent";
   static const String RETURN_TO_HOME = "Return To Home";
   static const double TEXT_HEIGHT = 1.6;
+  static const String SIGNATURE_SCREEN_APP_BAR_TITLE = "Signature";
   static const List<String> WHITE_LISTED_SECTIONS = [
     "Details Of Habits",
     "Baseline Signs Or Symptoms",
@@ -74,6 +75,7 @@ class AppConstant {
   static const String PLEASE_SELECT_PREFERRED_LANGUAGE = "Please select your preferred language";
   static const String ERROR_FILL_REQUIRED_FIELDS = "Fill required fields";
   static const String FIELD_REQUIRED = "This field is required";
+  static const String ERROR_INVALID_ID = "Invalid Id";
   static const String CONSENT_REQUIRED = "Consent is required to continue";
   static const String INVALID_OTP = "OTP is invalid";
   static const String NO_RECORD_FOUND = "No Records Found";

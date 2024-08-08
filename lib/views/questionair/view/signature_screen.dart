@@ -14,9 +14,10 @@ import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
 class SignatureScreen extends StatefulWidget {
+  final String appBarTitle;
   static const routerPath = "/signatureScreen";
 
-  const SignatureScreen({Key? key}) : super(key: key);
+  const SignatureScreen({Key? key,required this.appBarTitle}) : super(key: key);
 
   @override
   State<SignatureScreen> createState() => _SignatureScreenState();
@@ -61,7 +62,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         appBarTitleType: CustomAppBarTitleType.TEXT,
-        titleText: "",
+        titleText: widget.appBarTitle,
         onLeadingClick: () {
           GoRouter.of(context).pop();
         },
