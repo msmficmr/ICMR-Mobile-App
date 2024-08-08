@@ -59,6 +59,12 @@ android {
 
     flavorDimensions "default"
     productFlavors {
+        dev {
+            dimension "default"
+            resValue "string","app_name",envVariables.APP_NAME
+            applicationIdSuffix envVariables.APP_SUFFIX
+            flutter.target "lib/main_dev.dart"
+        }
         sit {
             dimension "default"
             resValue "string","app_name",envVariables.APP_NAME
