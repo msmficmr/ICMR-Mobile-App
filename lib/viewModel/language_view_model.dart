@@ -67,24 +67,18 @@ class LanguageViewModel extends ChangeNotifier {
 
 class AttachmentModel {
   String fileName;
-  List<int> bytes;
   String filePath;
-  AttachmentModel({required this.fileName, required this.bytes,required this.filePath});
+  AttachmentModel({required this.fileName, required this.filePath});
   factory AttachmentModel.fromJson(Map<String, dynamic> json) => AttachmentModel(
         fileName: json["fileName"],
         filePath: json["filePath"],
-        bytes: List<int>.from(json["bytes"].map((e) => e)),
       );
 
   factory AttachmentModel.clone(AttachmentModel source) {
-    return AttachmentModel(
-      fileName: source.fileName,
-      bytes: source.bytes,
-      filePath: source.filePath
-    );
+    return AttachmentModel(fileName: source.fileName, filePath: source.filePath);
   }
 
- /*  Map<String, dynamic> toJson() => {
+  /*  Map<String, dynamic> toJson() => {
         "fileName": fileName,
         "bytes": List<dynamic>.from(bytes),
       }; */

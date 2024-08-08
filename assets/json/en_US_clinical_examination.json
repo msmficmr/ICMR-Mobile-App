@@ -1,0 +1,40 @@
+{
+    "uiTemplateId": "community_risk_assessment_clinical_examination",
+    "templateName": "COMMUNITY_RISK_ASSESSMENT_CLINICAL_EXAMINATION",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "lymph_node_examination",
+    "fields": {
+        "lymph_node_examination": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "lymph_node_examination",
+                "questionText": "Lymph node examination",
+                "required": "false",
+                "validationMessage": null,
+                "regex": "^([a-zA-Z0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "oropharynx": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "oropharynx",
+                "questionText": "Oropharynx",
+                "required": "false",
+                "validationMessage": null,
+                "regex": "^([a-zA-Z0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}

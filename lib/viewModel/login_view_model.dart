@@ -30,7 +30,7 @@ class LoginViewModel extends ChangeNotifier {
   LoginScreenTypes _authFlow = LoginScreenTypes.MOBILE_NUMBER;
   String _mobileNoOrEmailText = "";
   bool _isEmailLogin = false;
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   bool get isLoggedIn => _isLoggedIn;
   LoginScreenTypes get loginScreenType => _loginScreenType;

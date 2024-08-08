@@ -1,4 +1,4 @@
-import 'dart:convert';
+/* import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -283,7 +283,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..ehrNotes = ehrNotes
       ..encounterEhrDiagnosisReports = diagnosisReports;
     craSectionModel.add(craModel);
-    await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0]);
+    await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0],docDetails: []);
     resetAll();
     toggleEntry(false);
   }
@@ -318,7 +318,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
           ..encounterCategoryMapId = staticCraData.ehrCategoryMap
           ..encounterEhrDiagnosisReports = diagnosisReports;
         craSectionModel.add(craModel);
-        await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[i]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[i],docDetails: []);
       } catch (e) {}
     }
   }
@@ -406,7 +406,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
     craSectionModel.add(craModel);
     try {
       if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) != "community_risk_assessment_details_of_habits") {
-        await IsarDbService.isarDbService.updateCRA(caseId: caseID!, craData: craSectionModel[0]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID!, craData: craSectionModel[0],docDetails: []);
       } else {
         bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId ?? _selectedCaseId!);
 
@@ -688,3 +688,4 @@ class QuestionnaireViewModel extends ChangeNotifier {
     consentList.clear();
   }
 }
+ */

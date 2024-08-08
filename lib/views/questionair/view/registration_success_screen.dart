@@ -6,6 +6,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/app_constant.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
@@ -17,8 +18,8 @@ import 'package:provider/provider.dart';
 
 class RegistrationSuccessFullScreen extends StatefulWidget {
   static const routerPath = "/registrationSuccessFullScreen";
-
-  const RegistrationSuccessFullScreen({Key? key}) : super(key: key);
+  final String thePatientId;
+  const RegistrationSuccessFullScreen({Key? key, required this.thePatientId}) : super(key: key);
 
   @override
   State<RegistrationSuccessFullScreen> createState() => _RegistrationSuccessFullScreenState();
@@ -123,15 +124,17 @@ class _RegistrationSuccessFullScreenState extends State<RegistrationSuccessFullS
                         key: Key(KEY_TAKE_CRA_CARD),
                         title: TranslationKeys.takeCRA.translate(context),
                         image: AppAssetsPath.icCRA,
-                        onTap: () => GoRouter.of(context).push(CriteriaScreen.routerPath),
+                        onTap: () {
+                          //replace;
+                          CommonFunctions().onStartCRA(context: context, patientId: widget.thePatientId, isCraCompleted: false, withReplace: true);
+                        },
                       ),
                       CardWidget(
                         key: Key(KEY_NEW_REGISTRATION_CARD),
                         title: TranslationKeys.newRegistration.translate(context),
                         image: AppAssetsPath.icAddCircular,
                         onTap: () async {
-                          await context.read<QuestionnaireViewModel>().clearData();
-                          GoRouter.of(context).push(RegistrationScreen.routerPath);
+                          GoRouter.of(context).replace(RegistrationScreen.routerPath);
                         },
                       ),
                     ],

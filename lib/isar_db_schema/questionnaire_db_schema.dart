@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:isar/isar.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 
@@ -152,6 +154,14 @@ class Inputs {
   DateTime? timeAsked;
   SubInput? subInput;
 
+  fromJson(Map<String, dynamic> json) {
+    inputId = json["questionid"] ?? json["inputid"];
+    value = json["value"];
+    snomed = json["snomed"];
+    loinc = json["loinc"];
+    timeAsked = json["timeAsked"] == null ? null : DateTime.parse(json["timeAsked"]);
+  }
+
   toJson() {
     return {"inputId": inputId, "value": value, "timeAsked": timeAsked?.toIso8601String(), "snomed": snomed, "loinc": loinc, "inputs": subInput};
   }
@@ -163,6 +173,13 @@ class SubInput {
   String? value;
   String? snomed;
   String? loinc;
+
+  fromJson(Map<String, dynamic> json) {
+    inputId = json["questionid"] ?? json["inputid"];
+    value = json["value"];
+    snomed = json["snomed"];
+    loinc = json["loinc"];
+  }
 
   toJson() {
     return {"inputId": inputId, "value": value, "snomed": snomed, "loinc": loinc};

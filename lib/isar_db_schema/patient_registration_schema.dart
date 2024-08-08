@@ -36,6 +36,8 @@ class PatientRegistration {
   late String primaryId;
   late String secondaryId;
   bool isCompleted = false;
+  String? caseId;
+  int totalCompletedSections = 0;
 
   // Add a toJson method to convert the object to JSON
   Map<String, dynamic> toJson() {

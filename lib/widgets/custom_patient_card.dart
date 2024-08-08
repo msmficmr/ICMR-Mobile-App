@@ -21,9 +21,11 @@ class CustomPatientCard extends StatelessWidget {
   final bool isCraCompleted;
   final String primaryId, secondaryId;
   final Key primaryIdKey, secondaryIdKey;
+  final int totalComplted;
 
   const CustomPatientCard({
     Key? key,
+    required this.totalComplted,
     required this.isCraCompleted,
     required this.widgetKey,
     required this.patientName,

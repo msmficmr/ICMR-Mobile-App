@@ -151,7 +151,8 @@
     "1 = Bleeding on probing",
     "2 = Calculus or plaque retention factor",
     "3 = Shallow pocket 4 or 5mm",
-    "4 = Deep pocket 6mm or more"
+    "4 = Deep pocket 6mm or more",
+    "x = No teeth"
   ],
   "risk_assessment": "Risk Assessment",
   "institution_codes": [
@@ -297,5 +298,6 @@
   "place": "जगह",
   "primary_id": "प्राथमिक आईडी (केवल मौजूदा मरीज़ के लिए)",
   "secondary_id": "माध्यमिक आईडी (केवल मौजूदा मरीज़ के लिए)",
-  "visit_month_list":"[{\"id\":\"month_03\",\"name\":\"3\"},{\"id\":\"month_06\",\"name\":\"6\"},{\"id\":\"month_09\",\"name\":\"9\"},{\"id\":\"month_12\",\"name\":\"12\"},{\"id\":\"month_15\",\"name\":\"15\"},{\"id\":\"month_18\",\"name\":\"18\"},{\"id\":\"month_21\",\"name\":\"21\"},{\"id\":\"month_24\",\"name\":\"24\"}]"
+  "visit_month_list":"[{\"id\":\"month_03\",\"name\":\"3\"},{\"id\":\"month_06\",\"name\":\"6\"},{\"id\":\"month_09\",\"name\":\"9\"},{\"id\":\"month_12\",\"name\":\"12\"},{\"id\":\"month_15\",\"name\":\"15\"},{\"id\":\"month_18\",\"name\":\"18\"},{\"id\":\"month_21\",\"name\":\"21\"},{\"id\":\"month_24\",\"name\":\"24\"}]",
+  "cra_success_message":"सी.आर.ए. पूरा हो गया है"
 }

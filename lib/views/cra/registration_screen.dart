@@ -54,7 +54,6 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   AttachmentModel? _selectedAttachment;
-  late QuestionnaireViewModel questionnaireViewModel;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState> consentKey = GlobalKey<FormFieldState>();
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
@@ -215,7 +214,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
     _consentDateController = TextEditingController(text: CommonFunctions.currentDate());
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
-    questionnaireViewModel = Provider.of<QuestionnaireViewModel>(context, listen: false);
     initializeField();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getVisitNumber();
@@ -306,7 +304,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void onContinueClick() async {
     final form = formKey.currentState;
     if (form != null) {
-      if (_consentTextNotifier.value.isEmpty || _consentTextNotifier.value == "NO") {
+      if (_consentTextNotifier.value.isEmpty || _consentTextNotifier.value.toUpperCase() == "NO") {
         _consentError.value = true;
         CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
       } else if (form.validate()) {
@@ -314,7 +312,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _consentError.value = false;
         String patientId = CommonFunctions.randomNumber(6);
         String userId = context.read<LoginViewModel>().userDetails?.userId ?? "";
-        questionnaireViewModel.savePatientId(patientId);
         IdentityProofDb? identityProof;
         if (_documentTypeController.text.isNotEmpty) {
           identityProof = IdentityProofDb()
@@ -355,9 +352,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         // await addConsentImages(patientId);
         await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
         await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
+        context.read<PatientListViewModel>().loadRegisteredPatients();
         if (context.mounted) {
           registrationViewModel.isLoading = false;
-          GoRouter.of(context).push(RegistrationSuccessFullScreen.routerPath);
+          GoRouter.of(context).replace(RegistrationSuccessFullScreen.routerPath, extra: {"patientId": patientId});
         }
       }
     }
@@ -392,7 +390,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void dispose() {
     super.dispose();
-    questionnaireViewModel.removeAllConsents();
   }
 
   @override
@@ -426,10 +423,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         builder: (context, isButtonActive, child) {
                           return PrimaryOutlinedButton(
                             buttonThemeStyle: OutlinedButtonThemeStyle(
-                              buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
-                              enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
-                              enabledButtonColor: isButtonActive ? AppColorScheme.kPrimaryColor : AppColorScheme.kWhite,
-                            ),
+                                buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
+                                enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kGrayColor.shade400,
+                                enabledButtonColor: isButtonActive ? AppColorScheme.kSuccessStatusColor : AppColorScheme.kWhite,
+                                enabledBorderColor: isButtonActive ? AppColorScheme.kSuccessStatusColor : AppColorScheme.kGrayColor.shade400),
                             buttonTitle: TranslationKeys.yes.translate(context),
                             widgetKey: KEY_BUTTON_YES_CONSENT,
                             onPressed: onConsentYesClicked,
@@ -441,10 +438,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         builder: (context, isButtonActive, child) {
                           return PrimaryOutlinedButton(
                             buttonThemeStyle: OutlinedButtonThemeStyle(
-                              buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
-                              enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kEnabledButtonTextColor,
-                              enabledButtonColor: isButtonActive ? AppColorScheme.kPrimaryColor : AppColorScheme.kWhite,
-                            ),
+                                buttonPadding: const EdgeInsets.symmetric(horizontal: 50),
+                                enabledTextColor: isButtonActive ? AppColorScheme.kEnabledButtonColor : AppColorScheme.kGrayColor.shade400,
+                                enabledButtonColor: isButtonActive ? AppColorScheme.errorTextColor : AppColorScheme.kWhite,
+                                enabledBorderColor: isButtonActive ? AppColorScheme.errorTextColor : AppColorScheme.kGrayColor.shade400),
                             buttonTitle: TranslationKeys.no.translate(context),
                             widgetKey: KEY_BUTTON_NO_CONSENT,
                             onPressed: onConsentNoClicked,

@@ -2,13 +2,13 @@
     "uiTemplateId": "community_risk_assessment_investigation",
     "templateName": "COMMUNITY_RISK_ASSESSMENT_INVESTIGATION",
     "versionNumber": "V1.0",
-    "firstQuestionId": "imaging_full_mouth",
+    "firstQuestionId": "imaging",
     "fields": {
-        "imaging_full_mouth": {
+        "imaging": {
             "questionObject": {
-                "type": "CHIP_OPTIONS",
-                "questionId": "imaging_full_mouth",
-                "questionText": "Imaging Full mouth",
+                "type": "CHECKBOX",
+                "questionId": "imaging",
+                "questionText": "Imaging",
                 "required": "false",
                 "validationMessage": null,
                 "regex": null,
@@ -18,44 +18,20 @@
                 "filter": null,
                 "options": [
                     {
-                        "id": "AFI",
+                        "id": "afi",
                         "displayText": "AFI"
                     },
                     {
-                        "id": "WLI",
+                        "id": "wli",
                         "displayText": "WLI"
-                    }
-                ],
-                "placeholder": null,
-                "followup": [],
-                "nextQuestionId": null,
-                "previousQuestionId": null,
-                "lastQuestion": false
-            },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
-            "lastQuestion": false
-        },
-        "probe": {
-            "questionObject": {
-                "type": "CHIP_OPTIONS",
-                "questionId": "probe",
-                "questionText": "Probe",
-                "required": "false",
-                "validationMessage": null,
-                "regex": null,
-                "hintText": null,
-                "minvalidator": null,
-                "maxValidator": null,
-                "filter": null,
-                "options": [
-                    {
-                        "id": "AFI",
-                        "displayText": "AFI"
                     },
                     {
-                        "id": "WLI",
-                        "displayText": "WLI"
+                        "id": "whole_mouth",
+                        "displayText": "Whole mouth"
+                    },
+                    {
+                        "id": "probe",
+                        "displayText": "Probe"
                     }
                 ],
                 "placeholder": null,
@@ -70,7 +46,7 @@
         },
         "saliva_collected": {
             "questionObject": {
-                "type": "CHIP_OPTIONS",
+                "type": "CHECKBOX",
                 "questionId": "saliva_collected",
                 "questionText": "Saliva collected",
                 "required": "false",
@@ -88,37 +64,13 @@
                     {
                         "id": "no",
                         "displayText": "No"
-                    }
-                ],
-                "placeholder": null,
-                "followup": [],
-                "nextQuestionId": null,
-                "previousQuestionId": null,
-                "lastQuestion": false
-            },
-            "nextQuestionId": null,
-            "previousQuestionId": null,
-            "lastQuestion": false
-        },
-        "saliva_collected_rna": {
-            "questionObject": {
-                "type": "CHIP_OPTIONS",
-                "questionId": "saliva_collected_rna",
-                "questionText": "Saliva collected",
-                "required": "false",
-                "validationMessage": null,
-                "regex": null,
-                "hintText": null,
-                "minvalidator": null,
-                "maxValidator": null,
-                "filter": null,
-                "options": [
+                    },
                     {
                         "id": "rna",
                         "displayText": "RNA"
                     },
                     {
-                        "id": "not_rna",
+                        "id": "not_in_rna",
                         "displayText": "Not in RNA"
                     }
                 ],
@@ -132,11 +84,51 @@
             "previousQuestionId": null,
             "lastQuestion": false
         },
-        "cytology _collected": {
+        "cytology_collected": {
             "questionObject": {
-                "type": "CHIP_OPTIONS",
+                "type": "CHECKBOX",
                 "questionId": "cytology_collected",
                 "questionText": "Cytology collected",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    },
+                    {
+                        "id": "rna",
+                        "displayText": "RNA"
+                    },
+                    {
+                        "id": "not_in_rna",
+                        "displayText": "Not in RNA"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "biopsy": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "biopsy",
+                "questionText": "Biopsy",
                 "required": "false",
                 "validationMessage": null,
                 "regex": null,
@@ -164,11 +156,11 @@
             "previousQuestionId": null,
             "lastQuestion": false
         },
-        "cytology_collected_rna": {
+        "tissue_collected_for_repository": {
             "questionObject": {
                 "type": "CHIP_OPTIONS",
-                "questionId": "cytology_collected_rna",
-                "questionText": "Cytology collected",
+                "questionId": "tissue_collected_for_repository",
+                "questionText": "Tissue collected for repository",
                 "required": "false",
                 "validationMessage": null,
                 "regex": null,
@@ -178,12 +170,44 @@
                 "filter": null,
                 "options": [
                     {
-                        "id": "rna",
-                        "displayText": "RNA"
+                        "id": "yes",
+                        "displayText": "Yes"
                     },
                     {
-                        "id": "not_rna",
-                        "displayText": "Not in RNA"
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "blood_collection": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "blood_collection",
+                "questionText": "Blood collection",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
                     }
                 ],
                 "placeholder": null,
@@ -198,4 +222,3 @@
         }
     }
 }
-

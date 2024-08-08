@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 
 class PatientListViewModel with ChangeNotifier {
   List<PatientRegistration> _registeredPatients = [];
@@ -44,24 +45,38 @@ class PatientListViewModel with ChangeNotifier {
       (element) => element.patientId == patientId,
       orElse: () => PatientRegistration(),
     );
+    if (patientDetails.id == null) {
+      return;
+    }
     if (patientDetails.isCompleted) {
       return;
     }
+    String? caseId;
     bool isCompleted = false;
+    int mySectionFilledCount = 0;
     CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientId);
     if (craData != null) {
+      caseId = craData.caseId;
       List<String?>? sections = craData.craSectionData?.map((e) => e.encounterCategoryMapId).toList();
-      if (sections != null && sections.isNotEmpty && sections.last == "community_risk_assessment_verification_form") {
+      mySectionFilledCount = sections?.length ?? 0;
+      if (sections != null && sections.isNotEmpty && sections.contains(QuestionViewModel.sectionList.last.id)) {
         isCompleted = true;
       }
     }
+    int regPatientIndex = _registeredPatients.indexWhere((element) => element.patientId == patientId);
+    int filterPatientIndex = _filteredItems.indexWhere((element) => element.patientId == patientId);
+
+    _filteredItems[filterPatientIndex].caseId = caseId;
+    _registeredPatients[filterPatientIndex].caseId = caseId;
+
+    _filteredItems[filterPatientIndex].totalCompletedSections = mySectionFilledCount;
+    _registeredPatients[filterPatientIndex].totalCompletedSections = mySectionFilledCount;
+
     if (patientDetails.isCompleted != isCompleted) {
-      int regPatientIndex = _registeredPatients.indexWhere((element) => element.patientId == patientId);
-      int filterPatientIndex = _filteredItems.indexWhere((element) => element.patientId == patientId);
       _filteredItems[filterPatientIndex].isCompleted = isCompleted;
       _registeredPatients[regPatientIndex].isCompleted = isCompleted;
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   void searchPatient(String name) {

@@ -7,6 +7,8 @@ class IdTextModel {
     return IdTextModel(id: e["id"], name: e["name"]);
   }
 
+  bool get isEmpty => id.isEmpty;
+
   @override
   String toString() => name;
 }
