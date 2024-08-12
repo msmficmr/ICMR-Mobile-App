@@ -177,39 +177,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
-  Future<List<int>> readFileInIsolate(String filePath) async {
-    ReceivePort receivePort = ReceivePort();
-    Completer<List<int>> completer = Completer();
-
-    // Start a new isolate and pass the SendPort and filePath
-    Isolate isolate = await Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
-
-    // Listen for messages from the isolate
-    receivePort.listen((message) {
-      if (message is List<int>) {
-        completer.complete(message);
-      } else {
-        completer.completeError(message);
-      }
-      receivePort.close(); // Close the port when done
-    });
-
-    return completer.future;
-  }
-
-  static void _readFileTask(Map<String, dynamic> message) async {
-    SendPort sendPort = message['sendPort'];
-    String filePath = message['filePath'];
-
-    try {
-      File file = File(filePath);
-      List<int> contents = await file.readAsBytes();
-      sendPort.send(contents); // Send the contents back to the main isolate
-    } catch (e) {
-      sendPort.send(e.toString()); // Send the error message back to the main isolate
-    }
-  }
-
   onSyncClick() async {
     NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
 
@@ -240,7 +207,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             for (dynamic pat in pMap) {
               AttachmentDb fileName = pat;
               fileDeleteList.add(fileName.dataBytes!);
-              List<int> content = await readFileInIsolate(fileName.dataBytes!);
+              List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
               fileName.dataBytes = base64.encode(content);
               consentList.add(fileName);
             }
@@ -260,7 +227,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 AttachmentDb fileName = questionList[j]['file'];
                 try {
                   fileDeleteList.add(fileName.dataBytes!);
-                  List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                  List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
                   fileName.dataBytes = base64.encode(content);
                   craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
                 } catch (e) {}
@@ -279,7 +246,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
-
           await viewModel.postOfflineData(
             caseId: response[i]?.caseId,
             patientId: response[i]?.patientId,
@@ -309,7 +275,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               for (dynamic pat in pMap) {
                 AttachmentDb fileName = pat;
                 fileDeleteList.add(fileName.dataBytes!);
-                List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
                 fileName.dataBytes = base64.encode(content);
                 consentList.add(fileName);
               }
@@ -480,20 +446,31 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               onTap: () {
                 onLogoutClick();
               },
-              child: FutureBuilder(
-                  future: loginViewModel!.checkLoginTimestamp(),
-                  builder: (context, expireIn) {
-                    return Visibility(
-                      visible: ((expireIn.data ?? 16) < 16) ? true : false,
-                      child: AccountCard(
-                          key: Key(KEY_LOGIN_EXPIRE),
-                          cardTitleText: (expireIn.data == 0) ? "Login will expire today" : "Login will expire in ${expireIn.data} days",
-                          textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icWarning,
-                          iconColor: AppColorScheme.errorTextColor),
-                    );
-                  }),
+              child: Builder(
+                builder: (context) {
+                  int expireIn = loginViewModel!.checkLoginTimestamp();
+                  String text = "";
+                  if (expireIn == 0) {
+                    text = "Login will expire today";
+                  } else if (expireIn < 0) {
+                    text = "Login is expired";
+                  } else {
+                    text = "Login will expire in ${expireIn} days";
+                  }
+
+                  return Visibility(
+                    visible: (expireIn < 16) ? true : false,
+                    child: AccountCard(
+                      key: Key(KEY_LOGIN_EXPIRE),
+                      cardTitleText: text,
+                      textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                      trailingIconPath: AppAssetsPath.icChevronRight,
+                      leadingIconPath: AppAssetsPath.icWarning,
+                      iconColor: AppColorScheme.errorTextColor,
+                    ),
+                  );
+                },
+              ),
             ),
             InkWell(
               onTap: () async {
@@ -509,7 +486,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 leadingIconPath: AppAssetsPath.icPerson,
               ),
             ),
-            
             InkWell(
               onTap: () {
                 GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);

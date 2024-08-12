@@ -31,7 +31,6 @@ class ConsentScreeningScreen extends StatefulWidget {
 }
 
 class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
-  late QuestionnaireViewModel provider;
   late ValueNotifier<bool> _buttonEnabled;
   final ValueNotifier<AttachmentModel?> _selectedAttachment = ValueNotifier<AttachmentModel?>(null);
 
@@ -50,8 +49,8 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   onFileSelect(file) async {
     if (file != null) {
       Uint8List bytes = await file.readAsBytes();
-      AttachmentModel model = AttachmentModel(bytes: bytes, fileName: file.name,filePath: file.path);
-      provider.saveConsent(model);
+      AttachmentModel model = AttachmentModel(fileName: file.name, filePath: file.path);
+      //provider.saveConsent(model);
       _selectedAttachment.value = model;
       _buttonEnabled.value = true;
     }
@@ -60,8 +59,8 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
   @override
   void initState() {
     super.initState();
-    provider = Provider.of<QuestionnaireViewModel>(context, listen: false);
-    provider.clearConsetList();
+    //provider = Provider.of<QuestionnaireViewModel>(context, listen: false);
+    //provider.clearConsetList();
     _buttonEnabled = ValueNotifier<bool>(false);
   }
 
@@ -112,7 +111,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                         );
                       }),
                   const SpaceWidget(height: 10),
-                  Selector<QuestionnaireViewModel, int>(
+                  /* Selector<QuestionnaireViewModel, int>(
                     selector: (_, provider) => provider.consentList.length,
                     builder: (_, value, child) => SizedBox(
                       height: MediaQuery.of(context).size.height * 0.45,
@@ -141,7 +140,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                                         }
                                       },
                                       viewPictureClick: () {
-                                        CommonFunctions.viewImage(context: context, model:  provider.consentList[index]!);
+                                        CommonFunctions.viewImage(context: context, model: provider.consentList[index]!);
                                       },
                                     );
                                   },
@@ -152,7 +151,7 @@ class _ConsentScreeningScreenState extends State<ConsentScreeningScreen> {
                         ),
                       ),
                     ),
-                  ),
+                  ), */
                 ],
               ),
             ),

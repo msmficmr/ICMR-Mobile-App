@@ -89,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void didUpdateWidget(covariant DashboardScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     //provider.fetchCompletedCRA();
     //provider.fetchRegisteredPatient();
   }
@@ -180,9 +180,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Selector<NetworkStatusService, NetworkStatus>(
                       selector: (p0, p1) => p1.networkStatus,
                       builder: (context, status, __) {
-                       
-
-                        return Selector<OfflineDataViewModel,Tuple2<int,int>>(
+                        return Selector<OfflineDataViewModel, Tuple2<int, int>>(
                           selector: (context, provider) => Tuple2(provider.patientRegistered ?? 0, provider.completedCRAcount ?? 0),
                           builder: (context, syncData, _) {
                             if (status == NetworkStatus.online && (syncData.item1 > 0 || syncData.item2 > 0)) {

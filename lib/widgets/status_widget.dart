@@ -23,7 +23,7 @@ class StatusWidget extends StatelessWidget {
         color: Colors.white,
         border: Border.all(color: status.color),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       child: Text(
         status.text,
         style: AppStyles.bodySmall.copyWith(color: status.color, fontWeight: FontWeight.w600),

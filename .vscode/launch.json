@@ -2,6 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch DEV",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_dev.dart",
+      "args": [
+        "--dart-define-from-file",
+        "dev_config.json",
+        "--flavor",
+        "dev",
+        "--target",
+        "lib/main_dev.dart"
+      ]
+    },
+    {
       "name": "WORK PROFILE SIT",
       "request": "launch",
       "type": "dart",

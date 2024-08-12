@@ -33,134 +33,144 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'alternatePhoneNumber',
       type: IsarType.string,
     ),
-    r'consentDate': PropertySchema(
+    r'caseId': PropertySchema(
       id: 3,
+      name: r'caseId',
+      type: IsarType.string,
+    ),
+    r'consentDate': PropertySchema(
+      id: 4,
       name: r'consentDate',
       type: IsarType.dateTime,
     ),
     r'createdBy': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'createdBy',
       type: IsarType.string,
     ),
     r'district': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'district',
       type: IsarType.string,
     ),
     r'firstName': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'firstName',
       type: IsarType.string,
     ),
     r'gender': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'gender',
       type: IsarType.string,
     ),
     r'identityProofs': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'identityProofs',
       type: IsarType.object,
       target: r'IdentityProofDb',
     ),
     r'institutionCodeID': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'institutionCodeID',
       type: IsarType.string,
     ),
     r'isCompleted': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'isCompleted',
       type: IsarType.bool,
     ),
     r'isConsent': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'isConsent',
       type: IsarType.string,
     ),
     r'lastName': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'medicalRecordNumber': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'medicalRecordNumber',
       type: IsarType.string,
     ),
     r'occupation': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'occupation',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'patientId',
       type: IsarType.string,
     ),
     r'permanentAddress': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'permanentAddress',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'place': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'place',
       type: IsarType.string,
     ),
     r'primaryId': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'primaryId',
       type: IsarType.string,
     ),
     r'secondaryId': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'secondaryId',
       type: IsarType.string,
     ),
     r'signedConsent': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'signedConsent',
       type: IsarType.string,
     ),
     r'signedConsentNoReason': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'signedConsentNoReason',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'state',
       type: IsarType.string,
     ),
     r'studyCode': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'studyCode',
       type: IsarType.string,
     ),
+    r'totalCompletedSections': PropertySchema(
+      id: 27,
+      name: r'totalCompletedSections',
+      type: IsarType.long,
+    ),
     r'visitDate': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'visitDate',
       type: IsarType.dateTime,
     ),
     r'visitMonth': PropertySchema(
-      id: 27,
+      id: 29,
       name: r'visitMonth',
       type: IsarType.string,
     ),
     r'visitNo': PropertySchema(
-      id: 28,
+      id: 30,
       name: r'visitNo',
       type: IsarType.string,
     )
@@ -194,6 +204,12 @@ int _patientRegistrationEstimateSize(
   bytesCount += 3 + object.age.length * 3;
   {
     final value = object.alternatePhoneNumber;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.caseId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -280,37 +296,39 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[0], object.address);
   writer.writeString(offsets[1], object.age);
   writer.writeString(offsets[2], object.alternatePhoneNumber);
-  writer.writeDateTime(offsets[3], object.consentDate);
-  writer.writeString(offsets[4], object.createdBy);
-  writer.writeString(offsets[5], object.district);
-  writer.writeString(offsets[6], object.firstName);
-  writer.writeString(offsets[7], object.gender);
+  writer.writeString(offsets[3], object.caseId);
+  writer.writeDateTime(offsets[4], object.consentDate);
+  writer.writeString(offsets[5], object.createdBy);
+  writer.writeString(offsets[6], object.district);
+  writer.writeString(offsets[7], object.firstName);
+  writer.writeString(offsets[8], object.gender);
   writer.writeObject<IdentityProofDb>(
-    offsets[8],
+    offsets[9],
     allOffsets,
     IdentityProofDbSchema.serialize,
     object.identityProofs,
   );
-  writer.writeString(offsets[9], object.institutionCodeID);
-  writer.writeBool(offsets[10], object.isCompleted);
-  writer.writeString(offsets[11], object.isConsent);
-  writer.writeString(offsets[12], object.lastName);
-  writer.writeString(offsets[13], object.medicalRecordNumber);
-  writer.writeString(offsets[14], object.occupation);
-  writer.writeString(offsets[15], object.patientId);
-  writer.writeString(offsets[16], object.permanentAddress);
-  writer.writeString(offsets[17], object.phoneNumber);
-  writer.writeString(offsets[18], object.pincode);
-  writer.writeString(offsets[19], object.place);
-  writer.writeString(offsets[20], object.primaryId);
-  writer.writeString(offsets[21], object.secondaryId);
-  writer.writeString(offsets[22], object.signedConsent);
-  writer.writeString(offsets[23], object.signedConsentNoReason);
-  writer.writeString(offsets[24], object.state);
-  writer.writeString(offsets[25], object.studyCode);
-  writer.writeDateTime(offsets[26], object.visitDate);
-  writer.writeString(offsets[27], object.visitMonth);
-  writer.writeString(offsets[28], object.visitNo);
+  writer.writeString(offsets[10], object.institutionCodeID);
+  writer.writeBool(offsets[11], object.isCompleted);
+  writer.writeString(offsets[12], object.isConsent);
+  writer.writeString(offsets[13], object.lastName);
+  writer.writeString(offsets[14], object.medicalRecordNumber);
+  writer.writeString(offsets[15], object.occupation);
+  writer.writeString(offsets[16], object.patientId);
+  writer.writeString(offsets[17], object.permanentAddress);
+  writer.writeString(offsets[18], object.phoneNumber);
+  writer.writeString(offsets[19], object.pincode);
+  writer.writeString(offsets[20], object.place);
+  writer.writeString(offsets[21], object.primaryId);
+  writer.writeString(offsets[22], object.secondaryId);
+  writer.writeString(offsets[23], object.signedConsent);
+  writer.writeString(offsets[24], object.signedConsentNoReason);
+  writer.writeString(offsets[25], object.state);
+  writer.writeString(offsets[26], object.studyCode);
+  writer.writeLong(offsets[27], object.totalCompletedSections);
+  writer.writeDateTime(offsets[28], object.visitDate);
+  writer.writeString(offsets[29], object.visitMonth);
+  writer.writeString(offsets[30], object.visitNo);
 }
 
 PatientRegistration _patientRegistrationDeserialize(
@@ -323,37 +341,39 @@ PatientRegistration _patientRegistrationDeserialize(
   object.address = reader.readStringOrNull(offsets[0]);
   object.age = reader.readString(offsets[1]);
   object.alternatePhoneNumber = reader.readStringOrNull(offsets[2]);
-  object.consentDate = reader.readDateTime(offsets[3]);
-  object.createdBy = reader.readString(offsets[4]);
-  object.district = reader.readStringOrNull(offsets[5]);
-  object.firstName = reader.readString(offsets[6]);
-  object.gender = reader.readStringOrNull(offsets[7]);
+  object.caseId = reader.readStringOrNull(offsets[3]);
+  object.consentDate = reader.readDateTime(offsets[4]);
+  object.createdBy = reader.readString(offsets[5]);
+  object.district = reader.readStringOrNull(offsets[6]);
+  object.firstName = reader.readString(offsets[7]);
+  object.gender = reader.readStringOrNull(offsets[8]);
   object.id = id;
   object.identityProofs = reader.readObjectOrNull<IdentityProofDb>(
-    offsets[8],
+    offsets[9],
     IdentityProofDbSchema.deserialize,
     allOffsets,
   );
-  object.institutionCodeID = reader.readString(offsets[9]);
-  object.isCompleted = reader.readBool(offsets[10]);
-  object.isConsent = reader.readString(offsets[11]);
-  object.lastName = reader.readString(offsets[12]);
-  object.medicalRecordNumber = reader.readStringOrNull(offsets[13]);
-  object.occupation = reader.readString(offsets[14]);
-  object.patientId = reader.readString(offsets[15]);
-  object.permanentAddress = reader.readStringOrNull(offsets[16]);
-  object.phoneNumber = reader.readString(offsets[17]);
-  object.pincode = reader.readStringOrNull(offsets[18]);
-  object.place = reader.readString(offsets[19]);
-  object.primaryId = reader.readString(offsets[20]);
-  object.secondaryId = reader.readString(offsets[21]);
-  object.signedConsent = reader.readString(offsets[22]);
-  object.signedConsentNoReason = reader.readString(offsets[23]);
-  object.state = reader.readStringOrNull(offsets[24]);
-  object.studyCode = reader.readString(offsets[25]);
-  object.visitDate = reader.readDateTime(offsets[26]);
-  object.visitMonth = reader.readStringOrNull(offsets[27]);
-  object.visitNo = reader.readStringOrNull(offsets[28]);
+  object.institutionCodeID = reader.readString(offsets[10]);
+  object.isCompleted = reader.readBool(offsets[11]);
+  object.isConsent = reader.readString(offsets[12]);
+  object.lastName = reader.readString(offsets[13]);
+  object.medicalRecordNumber = reader.readStringOrNull(offsets[14]);
+  object.occupation = reader.readString(offsets[15]);
+  object.patientId = reader.readString(offsets[16]);
+  object.permanentAddress = reader.readStringOrNull(offsets[17]);
+  object.phoneNumber = reader.readString(offsets[18]);
+  object.pincode = reader.readStringOrNull(offsets[19]);
+  object.place = reader.readString(offsets[20]);
+  object.primaryId = reader.readString(offsets[21]);
+  object.secondaryId = reader.readString(offsets[22]);
+  object.signedConsent = reader.readString(offsets[23]);
+  object.signedConsentNoReason = reader.readString(offsets[24]);
+  object.state = reader.readStringOrNull(offsets[25]);
+  object.studyCode = reader.readString(offsets[26]);
+  object.totalCompletedSections = reader.readLong(offsets[27]);
+  object.visitDate = reader.readDateTime(offsets[28]);
+  object.visitMonth = reader.readStringOrNull(offsets[29]);
+  object.visitNo = reader.readStringOrNull(offsets[30]);
   return object;
 }
 
@@ -371,43 +391,43 @@ P _patientRegistrationDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
-    case 6:
       return (reader.readString(offset)) as P;
-    case 7:
+    case 6:
       return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
     case 8:
+      return (reader.readStringOrNull(offset)) as P;
+    case 9:
       return (reader.readObjectOrNull<IdentityProofDb>(
         offset,
         IdentityProofDbSchema.deserialize,
         allOffsets,
       )) as P;
-    case 9:
-      return (reader.readString(offset)) as P;
     case 10:
-      return (reader.readBool(offset)) as P;
-    case 11:
       return (reader.readString(offset)) as P;
+    case 11:
+      return (reader.readBool(offset)) as P;
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readStringOrNull(offset)) as P;
-    case 14:
       return (reader.readString(offset)) as P;
+    case 14:
+      return (reader.readStringOrNull(offset)) as P;
     case 15:
       return (reader.readString(offset)) as P;
     case 16:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readString(offset)) as P;
-    case 18:
       return (reader.readStringOrNull(offset)) as P;
-    case 19:
+    case 18:
       return (reader.readString(offset)) as P;
+    case 19:
+      return (reader.readStringOrNull(offset)) as P;
     case 20:
       return (reader.readString(offset)) as P;
     case 21:
@@ -417,14 +437,18 @@ P _patientRegistrationDeserializeProp<P>(
     case 23:
       return (reader.readString(offset)) as P;
     case 24:
-      return (reader.readStringOrNull(offset)) as P;
-    case 25:
       return (reader.readString(offset)) as P;
-    case 26:
-      return (reader.readDateTime(offset)) as P;
-    case 27:
+    case 25:
       return (reader.readStringOrNull(offset)) as P;
+    case 26:
+      return (reader.readString(offset)) as P;
+    case 27:
+      return (reader.readLong(offset)) as P;
     case 28:
+      return (reader.readDateTime(offset)) as P;
+    case 29:
+      return (reader.readStringOrNull(offset)) as P;
+    case 30:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -966,6 +990,160 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'alternatePhoneNumber',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'caseId',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'caseId',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'caseId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'caseId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'caseId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'caseId',
         value: '',
       ));
     });
@@ -3959,6 +4137,62 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'totalCompletedSections',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       visitDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -4381,6 +4615,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCaseId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCaseIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByConsentDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'consentDate', Sort.asc);
@@ -4689,6 +4937,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByTotalCompletedSectionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.asc);
@@ -4772,6 +5034,20 @@ extension PatientRegistrationQuerySortThenBy
       thenByAlternatePhoneNumberDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'alternatePhoneNumber', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCaseId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCaseIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.desc);
     });
   }
 
@@ -5098,6 +5374,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByTotalCompletedSectionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.asc);
@@ -5161,6 +5451,13 @@ extension PatientRegistrationQueryWhereDistinct
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'alternatePhoneNumber',
           caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByCaseId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'caseId', caseSensitive: caseSensitive);
     });
   }
 
@@ -5324,6 +5621,13 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'totalCompletedSections');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'visitDate');
@@ -5370,6 +5674,13 @@ extension PatientRegistrationQueryProperty
       alternatePhoneNumberProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'alternatePhoneNumber');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+      caseIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'caseId');
     });
   }
 
@@ -5529,6 +5840,13 @@ extension PatientRegistrationQueryProperty
       studyCodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'studyCode');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, int, QQueryOperations>
+      totalCompletedSectionsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'totalCompletedSections');
     });
   }
 

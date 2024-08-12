@@ -8,16 +8,17 @@ import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/enums.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
-import 'package:mhealth/views/ask_mhealth/widgets/criteria_widget.dart';
-import 'package:mhealth/views/ask_mhealth/widgets/section_name_widget.dart';
+import 'package:mhealth/views/questionair/widgets/criteria_widget.dart';
+import 'package:mhealth/views/questionair/widgets/section_name_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 
 class CriteriaScreen extends StatelessWidget {
   static const routerPath = "/criteriaScreen";
-
-  CriteriaScreen({Key? key}) : super(key: key);
+  final String theCaseId;
+  final String thePatientId;
+  const CriteriaScreen({Key? key, required this.theCaseId, required this.thePatientId}) : super(key: key);
 
   //Widget Keys
   final String KEY_BUTTON_CONTINUE = "key_button_continue";
@@ -68,7 +69,7 @@ class CriteriaScreen extends StatelessWidget {
                           SectionNameWidget(sectionName: TranslationKeys.criteriaSection.translate(context)),
                           CriteriaWidget(title: TranslationKeys.inclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.inclusionCriteria, context: context)),
                           const SpaceWidget(height: 20),
-                          CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.exclusionCriteria, context: context)), 
+                          CriteriaWidget(title: TranslationKeys.exclusionCriteria.translate(context), description: getDescription(criteria: TranslationKeys.exclusionCriteria, context: context)),
                           const SizedBox(height: 10),
                           const Spacer(),
                           SizedBox(
@@ -79,7 +80,13 @@ class CriteriaScreen extends StatelessWidget {
                               widgetKey: KEY_BUTTON_CONTINUE,
                               isLoading: false,
                               onPressed: () {
-                                GoRouter.of(context).push(QuestionnaireScreen.routerPath);
+                                CommonFunctions().onStartCRA(
+                                  context: context,
+                                  patientId: thePatientId,
+                                  isCraCompleted: false,
+                                  caseId: theCaseId,
+                                  withReplace: true
+                                );
                               },
                             ),
                           ),
