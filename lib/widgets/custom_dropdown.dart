@@ -45,6 +45,7 @@ class CustomDropdown<T> extends StatelessWidget {
 
     return true;
   }
+  EdgeInsetsGeometry? contentPadding;
 
   CustomDropdown({
     super.key,
@@ -60,6 +61,7 @@ class CustomDropdown<T> extends StatelessWidget {
     required this.widgetKey,
     required this.items,
     required this.onChanged,
+    this.contentPadding
   }) : assert(_getHeadingAssert(heading, headingKey));
 
   @override
@@ -81,8 +83,8 @@ class CustomDropdown<T> extends StatelessWidget {
           items: items,
           onChanged: onChanged,
           dropdownButtonProps: const DropdownButtonProps(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            icon: Icon(Icons.expand_more),
+            padding: EdgeInsets.symmetric(vertical: 0),
+            icon: Icon(Icons.expand_more,size: 20,),
           ),
           dropdownDecoratorProps: DropDownDecoratorProps(
             baseStyle: AppStyles.bodyMedium,
@@ -90,6 +92,7 @@ class CustomDropdown<T> extends StatelessWidget {
               hintText: hintText,
               hintStyle: AppStyles.hintStyle,
               errorStyle: AppStyles.errorStyle,
+              contentPadding: contentPadding,
             ),
           ),
           selectedItem: selectedItem,

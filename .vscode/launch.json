@@ -22,11 +22,11 @@
       "program": "lib/main_sit.dart",
       "args": [
         "--dart-define-from-file",
-        "sit_config.json",
+        "dev_config.json",
         "--flavor",
-        "sit",
+        "dev",
         "--target",
-        "lib/main_sit.dart",
+        "lib/main_dev.dart",
         "--device-user",
         "13"
       ]
