@@ -80,6 +80,24 @@ class AppValidators {
     return null;
   }
 
+  static String? placeFieldValidator(String? value) {
+    const String kEmptyValidator = "This field is required.";
+
+    if (value == null || value.isEmpty) {
+      return kEmptyValidator;
+    }
+    if (value.trim().length < 2) {
+      return "Length must be greater than two characters";
+    }
+
+    RegExp regExp = RegExp("^[a-zA-Z]{2}.*\$");
+    if (!regExp.hasMatch(value)) {
+      return "Invalid place name";
+    }
+
+    return null;
+  }
+
   static String? requiredMoreThanTwoCharField(String? value) {
     const String kEmptyValidator = "This field is required.";
 
@@ -92,7 +110,6 @@ class AppValidators {
 
     return null;
   }
-  
 
   static String? validateGender(value) {
     if (value == null || value.isEmpty) {
