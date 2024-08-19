@@ -316,7 +316,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     String emailId = loginViewModel?.userDetails?.email ?? "";
     String volunteerId = loginViewModel?.userDetails?.userId ?? "";
     String age = loginViewModel?.userDetails?.age ?? "";
-    String? locationName = loginViewModel?.userDetails?.locations != null ? loginViewModel!.userDetails!.locations![0].locationName : "";
+   String? locationName = (loginViewModel?.userDetails?.locations != null && loginViewModel!.userDetails!.locations!.isNotEmpty)
+    ? loginViewModel!.userDetails!.locations![0].locationName
+    : "";
+
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
