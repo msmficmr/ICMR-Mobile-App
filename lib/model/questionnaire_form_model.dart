@@ -302,7 +302,7 @@ class LesionLocationQuestionnaire extends Questionnaire {
         Report report = Report();
         report.timeAsked = question.timeAsked;
         report.questionId = questionId;
-        report.value = attachmentModel.fileName;
+        report.value = questionId;
         report.file = AttachmentDb()
           ..fileName = attachmentModel.fileName
           ..dataBytes = attachmentModel.filePath;

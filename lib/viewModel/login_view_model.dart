@@ -42,6 +42,10 @@ class LoginViewModel extends ChangeNotifier {
 
   final List<String> loginTypes = ["Email", "Mobile number"];
 
+  resetLoginScreen() {
+    _isLoading = false;
+  }
+
   set isLoggedIn(bool value) {
     _isLoggedIn = value;
     notifyListeners();
