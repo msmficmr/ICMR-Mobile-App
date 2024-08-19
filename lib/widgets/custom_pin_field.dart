@@ -4,8 +4,7 @@ import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/widgets/space_widget.dart';
-import 'package:pin_input_text_field/pin_input_text_field.dart';
-
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class CustomPinField extends StatelessWidget {
   /// Hint Text for custom pin field
@@ -32,71 +31,82 @@ class CustomPinField extends StatelessWidget {
   /// widget key for testing
   final Key widgetKey;
 
-  const CustomPinField({
+  CustomPinField({
     super.key,
     this.inputFormatters,
     this.controller,
     this.validator,
     this.onChanged,
     required this.widgetKey,
-    this.hintText = "000000",
+    this.hintText = "0",
     this.pinLength = 6,
     this.keyboardType = TextInputType.number,
   });
-
   @override
   Widget build(BuildContext context) {
-    return FormField<String?>(
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: validator,
-      builder: (field) => Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 45,
-            child: PinInputTextField(
-              key: widgetKey,
-              controller: controller,
-              keyboardType: keyboardType,
-              inputFormatters: inputFormatters ?? [FilteringTextInputFormatter.digitsOnly],
-              decoration: BoxLooseDecoration(
-                strokeColorBuilder: FixedColorBuilder(AppColorScheme.kGrayColor.shade300),
-                hintTextStyle: AppStyles.hintStyle.copyWith(fontFamily: AppConstant.FONT_FAMILY,fontSize: 16),
-                textStyle: AppStyles.bodyMedium.copyWith(fontFamily: AppConstant.FONT_FAMILY),
-                gapSpace: 5,
-              ),
-              cursor: Cursor(
-                width: 2,
-                color: AppColorScheme.kPrimaryColor,
-                enabled: true,
-                height: 18,
-              ),
-              pinLength: pinLength,
-              textInputAction: TextInputAction.done,
-              onChanged: (value) {
-                field.didChange(value);
-                if (value.length == pinLength) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                }
-                if (onChanged != null) {
-                  onChanged!(value);
-                }
-              },
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        PinCodeTextField(
+          appContext: context,
+          inputFormatters: inputFormatters ?? [FilteringTextInputFormatter.digitsOnly],
+          length: pinLength,
+          obscureText: true,
+          blinkWhenObscuring: true,
+          animationType: AnimationType.fade,
+          validator: validator,
+          hintCharacter: hintText,
+          hintStyle: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor.shade500),
+          pastedTextStyle: AppStyles.titleSmall,
+          textStyle: AppStyles.bodyMedium,
+          pinTheme: PinTheme(
+            shape: PinCodeFieldShape.box,
+            borderRadius: BorderRadius.circular(5),
+            selectedBorderWidth: 1.5,
+            borderWidth: 1.5,
+            activeBorderWidth: 1.5,
+            errorBorderWidth: 1.5,
+            disabledBorderWidth: 1.5,
+            inactiveBorderWidth: 1.5,
+            activeFillColor: Colors.white,
+            selectedFillColor: Colors.white,
+            selectedColor: AppColorScheme.kGrayColor.shade300,
+            inactiveColor: AppColorScheme.kGrayColor.shade300,
+            inactiveFillColor: Colors.white,
+            activeColor: AppColorScheme.kGrayColor.shade300,
           ),
-          if (field.hasError) ...[
-            const SpaceWidget(),
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Text(
-                field.errorText ?? "",
-                style: AppStyles.errorStyle.copyWith(fontFamily: AppConstant.FONT_FAMILY),
-              ),
-            ),
+          cursorColor: AppColorScheme.kPrimaryColor,
+          animationDuration: const Duration(milliseconds: 300),
+          enableActiveFill: true,
+          controller: controller,
+          keyboardType: TextInputType.number,
+          enablePinAutofill: true,
+          errorTextSpace: 25,
+          beforeTextPaste: (text) {
+            var numeric = RegExp('^\\d{$pinLength}\$');
+            bool hasMatch = numeric.hasMatch(text ?? "");
+            return hasMatch;
+          },
+          boxShadows: const [
+            BoxShadow(
+              offset: Offset(0, 1),
+              color: Colors.black12,
+              blurRadius: 10,
+            )
           ],
-        ],
-      ),
+          onCompleted: (value) {
+            if (onChanged != null) {
+              onChanged!(value);
+            }
+          },
+          onChanged: (value) {
+            if (onChanged != null) {
+              onChanged!(value);
+            }
+          },
+        ),
+      ],
     );
   }
 }

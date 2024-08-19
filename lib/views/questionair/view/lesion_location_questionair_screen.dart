@@ -73,19 +73,19 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   final String CAPTURED_IMAGES_TITLE = "I have capture  all the images of lesions";
 
   List<IdTextModel> siteMap = [
-    IdTextModel(id: "upper_lip", name: "Upper lip"),
-    IdTextModel(id: "lower_lip", name: "Lower lip"),
-    IdTextModel(id: "cheek", name: "Cheek"),
+    IdTextModel(id: "upper_labial_mucosa", name: "Upper Labial mucosa"),
+    IdTextModel(id: "lower_labial_mucosa", name: "Lower Labial mucosa"),
+    IdTextModel(id: "buccal_mucosa", name: "Buccal mucosa"),
     IdTextModel(id: "tongue_lateral", name: "Tongue lateral"),
-    IdTextModel(id: "dorsal", name: "Dorsal"),
-    IdTextModel(id: "ventral", name: "ventral"),
+    IdTextModel(id: "tongue_dorsum", name: "Tongue dorsum"),
+    IdTextModel(id: "tongue_ventral", name: "Tongue ventral"),
     IdTextModel(id: "base_of_the_tongue", name: "Base of the tongue"),
     IdTextModel(id: "palate", name: "Palate"),
     IdTextModel(id: "upper_vestibule", name: "Upper vestibule"),
     IdTextModel(id: "lower_vestibule", name: "Lower vestibule"),
-    IdTextModel(id: "retromolar_trigone_RMT", name: "Retromolar trigone (RMT)"),
-    IdTextModel(id: "gingiva_upper", name: "Gingiva-upper"),
-    IdTextModel(id: "gingiva_lower", name: "Gingiva-lower"),
+    IdTextModel(id: "retromolar_trigone", name: "Retromolar trigone"),
+    IdTextModel(id: "upper_gingiva", name: "Upper Gingiva"),
+    IdTextModel(id: "lower_gingiva", name: "Lower Gingiva"),
     IdTextModel(id: "floor_of_the_mouth", name: "Floor of the mouth"),
   ];
 

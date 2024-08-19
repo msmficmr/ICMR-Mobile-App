@@ -50,6 +50,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     _hasConsent = ValueNotifier<bool>(false);
     _buttonEnabled = ValueNotifier<bool>(false);
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    loginViewModel.resetLoginScreen();
   }
 
   void onEmailFieldChanged(String? input) {

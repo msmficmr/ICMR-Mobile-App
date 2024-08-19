@@ -508,7 +508,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   hintText: TranslationKeys.enterHere.translate(context),
                   heading: "${TranslationKeys.place.translate(context)}*",
                   headingKey: Key(KEY_HEADING_PLACE),
-                  validator: AppValidators.requiredMoreThanTwoCharField,
+                  validator: AppValidators.placeFieldValidator,
                   keyboardType: TextInputType.text,
                 ),
                 const SpaceWidget(

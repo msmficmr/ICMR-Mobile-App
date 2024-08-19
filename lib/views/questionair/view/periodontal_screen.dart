@@ -125,11 +125,12 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest1716.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
                 const SpaceWidget(
-                  width: 20,
+                  width: 10,
                 ),
                 Flexible(
                   child: ValueListenableBuilder<String?>(
@@ -145,11 +146,12 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest11.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
                 const SpaceWidget(
-                  width: 20,
+                  width: 10,
                 ),
                 Flexible(
                   child: ValueListenableBuilder<String?>(
@@ -165,13 +167,14 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest2676.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
               ],
             ),
             const SpaceWidget(
-              height: 20,
+              height: 10,
             ),
             Row(
               children: [
@@ -189,11 +192,12 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest4746.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
                 const SpaceWidget(
-                  width: 20,
+                  width: 10,
                 ),
                 Flexible(
                   child: ValueListenableBuilder<String?>(
@@ -209,11 +213,12 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest31.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
                 const SpaceWidget(
-                  width: 20,
+                  width: 10,
                 ),
                 Flexible(
                   child: ValueListenableBuilder<String?>(
@@ -229,6 +234,7 @@ class _PeriodontalScreenState extends State<PeriodontalScreen> {
                           onChanged: (val) {
                             widget.questioner.quest3637.selectedOption.value = val;
                           },
+                          contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         );
                       }),
                 ),
