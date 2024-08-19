@@ -138,10 +138,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       title: DIALOG_CLOSE_TITLE,
       subtitle: DIALOG_CLOSE_SUBTITLE,
       action: (context) {
-        Navigator.of(context).pop(true);
+       GoRouter.of(context).pop(true);
       },
       onCancelAction: (context) {
-        Navigator.pop(context, false);
+       GoRouter.of(context).pop(false);
       },
     );
 

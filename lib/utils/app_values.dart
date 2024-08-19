@@ -14,6 +14,8 @@ class AppValues {
   static TextInputFormatter get emailInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z0-9-._@+]*$');
   static TextInputFormatter get stringInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z ]*$');
   static TextInputFormatter get textInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z0-9 ]*$');
+  static TextInputFormatter get textWithDotInputFormatter =>  CustomInputFormatter(regx: r'^[a-zA-Z][a-zA-Z. ]*$');
+
 
   static int get kOtpTimer => 30;
 
@@ -22,5 +24,5 @@ class AppValues {
 
   static String dobDateFormat = "dd/MM/yyyy";
   static String idDateTimeFormat = "ddMMyyyyHHmmssSSS";
-  static TextInputFormatter get idInputFormatter =>CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
+  static TextInputFormatter get idInputFormatter => CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
 }
