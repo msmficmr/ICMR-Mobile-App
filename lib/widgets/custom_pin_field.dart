@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
-import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
-import 'package:mhealth/widgets/space_widget.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class CustomPinField extends StatelessWidget {
@@ -31,7 +29,7 @@ class CustomPinField extends StatelessWidget {
   /// widget key for testing
   final Key widgetKey;
 
-  CustomPinField({
+  const CustomPinField({
     super.key,
     this.inputFormatters,
     this.controller,
@@ -52,11 +50,11 @@ class CustomPinField extends StatelessWidget {
           appContext: context,
           inputFormatters: inputFormatters ?? [FilteringTextInputFormatter.digitsOnly],
           length: pinLength,
-          obscureText: true,
+          obscureText: false,
           blinkWhenObscuring: true,
           animationType: AnimationType.fade,
           validator: validator,
-          hintCharacter: hintText,
+          // hintCharacter: hintText,
           hintStyle: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor.shade500),
           pastedTextStyle: AppStyles.titleSmall,
           textStyle: AppStyles.bodyMedium,

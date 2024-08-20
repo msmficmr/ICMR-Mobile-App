@@ -118,7 +118,10 @@ class _DoctorNameScreenState extends State<DoctorNameScreen> {
                 heading: TranslationKeys.doctor_name.translate(context),
                 headingKey: Key(TEXTBOX_TITLE_KEY),
                 validator: AppValidators.requiredMoreThanTwoCharField,
-                keyboardType: TextInputType.text
+                keyboardType: TextInputType.text,
+                inputFormatters: [
+                  AppValues.textWithDotInputFormatter,
+                ],
               ),
               const Spacer(),
               SizedBox(
