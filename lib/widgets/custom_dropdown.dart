@@ -45,24 +45,27 @@ class CustomDropdown<T> extends StatelessWidget {
 
     return true;
   }
-  EdgeInsetsGeometry? contentPadding;
 
-  CustomDropdown({
-    super.key,
-    this.hintText,
-    this.heading,
-    this.headingKey,
-    this.searchFieldHintText,
-    this.selectedItem,
-    this.validator,
-    this.filterFn,
-    this.showSearchBox,
-    this.compareFn,
-    required this.widgetKey,
-    required this.items,
-    required this.onChanged,
-    this.contentPadding
-  }) : assert(_getHeadingAssert(heading, headingKey));
+  EdgeInsetsGeometry? contentPadding;
+  FocusNode? focusNode;
+
+  CustomDropdown(
+      {super.key,
+      this.hintText,
+      this.heading,
+      this.headingKey,
+      this.searchFieldHintText,
+      this.selectedItem,
+      this.validator,
+      this.filterFn,
+      this.showSearchBox,
+      this.compareFn,
+      required this.widgetKey,
+      required this.items,
+      required this.onChanged,
+      this.contentPadding,
+      this.focusNode})
+      : assert(_getHeadingAssert(heading, headingKey));
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +84,17 @@ class CustomDropdown<T> extends StatelessWidget {
         DropdownSearch<T>(
           key: Key(widgetKey),
           items: items,
-          onChanged: onChanged,
-          dropdownButtonProps: const DropdownButtonProps(
-            padding: EdgeInsets.symmetric(vertical: 0),
-            icon: Icon(Icons.expand_more,size: 20,),
+          onChanged: (value) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            onChanged?.call(value);
+          },
+          dropdownButtonProps: DropdownButtonProps(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            focusNode: focusNode,
+            icon: const Icon(
+              Icons.expand_more,
+              size: 20,
+            ),
           ),
           dropdownDecoratorProps: DropDownDecoratorProps(
             baseStyle: AppStyles.bodyMedium,

@@ -138,10 +138,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       title: DIALOG_CLOSE_TITLE,
       subtitle: DIALOG_CLOSE_SUBTITLE,
       action: (context) {
-       GoRouter.of(context).pop(true);
+        GoRouter.of(context).pop(true);
       },
       onCancelAction: (context) {
-       GoRouter.of(context).pop(false);
+        GoRouter.of(context).pop(false);
       },
     );
 
@@ -316,9 +316,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     String emailId = loginViewModel?.userDetails?.email ?? "";
     String volunteerId = loginViewModel?.userDetails?.userId ?? "";
     String age = loginViewModel?.userDetails?.age ?? "";
-   String? locationName = (loginViewModel?.userDetails?.locations != null && loginViewModel!.userDetails!.locations!.isNotEmpty)
-    ? loginViewModel!.userDetails!.locations![0].locationName
-    : "";
+    String? locationName = (loginViewModel?.userDetails?.locations != null && loginViewModel!.userDetails!.locations!.isNotEmpty) ? loginViewModel!.userDetails!.locations![0].locationName : "";
 
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
@@ -349,196 +347,208 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           ),
           titleText: TranslationKeys.myAccount.translate(context),
         ),
-        body: Column(
-          children: [
-            Container(
-              color: AppColorScheme.kGrayColor.shade50,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
-                        SpaceWidget(width: isSmallScreen ? 12 : 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColorScheme.kPrimaryColor,
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: Text(
-                                  patientRelation,
-                                  style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
-                                ),
-                              ),
-                              const SpaceWidget(
-                                height: 5,
-                              ),
-                              Text(
-                                "$firstName $lastName",
-                                key: Key(KEY_PATIENT_NAME),
-                                style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+        body: SizedBox(
+          height: double.infinity,
+          child: LayoutBuilder(builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Container(
+                        color: AppColorScheme.kGrayColor.shade50,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
-                            const SpaceWidget(width: 2),
-                            Text(
-                              volunteerId,
-                              key: Key(KEY_VOLUNTEER_ID),
-                              style: AppStyles.bodySmall,
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
+                                  SpaceWidget(width: isSmallScreen ? 12 : 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: AppColorScheme.kPrimaryColor,
+                                            borderRadius: BorderRadius.circular(24),
+                                          ),
+                                          child: Text(
+                                            patientRelation,
+                                            style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
+                                          ),
+                                        ),
+                                        const SpaceWidget(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "$firstName $lastName",
+                                          key: Key(KEY_PATIENT_NAME),
+                                          style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SpaceWidget(width: 5),
-                            InkWell(
-                              onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
-                              child: SvgPicture.asset(AppAssetsPath.icCopy),
-                            )
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
+                                      const SpaceWidget(width: 2),
+                                      Text(
+                                        volunteerId,
+                                        key: Key(KEY_VOLUNTEER_ID),
+                                        style: AppStyles.bodySmall,
+                                      ),
+                                      const SpaceWidget(width: 5),
+                                      InkWell(
+                                        onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
+                                        child: SvgPicture.asset(AppAssetsPath.icCopy),
+                                      )
+                                    ],
+                                  ),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
+                                      Text(emailId, style: AppStyles.bodySmall),
+                                    ],
+                                  ),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  Text('$location : $locationName', style: AppStyles.bodySmall),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: docName,
+                                    builder: (context, value, child) {
+                                      if (value == null) return const SizedBox.shrink();
+                                      return Text('Doctor Name : $value', style: AppStyles.bodySmall);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SpaceWidget(height: 20),
                           ],
                         ),
-                        const SpaceWidget(
-                          height: 10,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
-                            Text(emailId, style: AppStyles.bodySmall),
-                          ],
-                        ),
-                        const SpaceWidget(
-                          height: 10,
-                        ),
-                        Text('$location : $locationName', style: AppStyles.bodySmall),
-                        const SpaceWidget(
-                          height: 10,
-                        ),
-                        ValueListenableBuilder(
-                          valueListenable: docName,
-                          builder: (context, value, child) {
-                            if (value == null) return const SizedBox.shrink();
-                            return Text('Doctor Name : $value', style: AppStyles.bodySmall);
+                      ),
+                      const SpaceWidget(height: 20),
+                      InkWell(
+                        onTap: () {
+                          onLogoutClick();
+                        },
+                        child: Builder(
+                          builder: (context) {
+                            int expireIn = loginViewModel!.checkLoginTimestamp();
+                            String text = "";
+                            if (expireIn == 0) {
+                              text = "Login will expire today";
+                            } else if (expireIn < 0) {
+                              text = "Login is expired";
+                            } else {
+                              text = "Login will expire in ${expireIn} days";
+                            }
+
+                            return Visibility(
+                              visible: (expireIn < 16) ? true : false,
+                              child: AccountCard(
+                                key: Key(KEY_LOGIN_EXPIRE),
+                                cardTitleText: text,
+                                textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                                trailingIconPath: AppAssetsPath.icChevronRight,
+                                leadingIconPath: AppAssetsPath.icWarning,
+                                iconColor: AppColorScheme.errorTextColor,
+                              ),
+                            );
                           },
                         ),
-                      ],
-                    ),
-                  ),
-                  const SpaceWidget(height: 20),
-                ],
-              ),
-            ),
-            const SpaceWidget(height: 20),
-            InkWell(
-              onTap: () {
-                onLogoutClick();
-              },
-              child: Builder(
-                builder: (context) {
-                  int expireIn = loginViewModel!.checkLoginTimestamp();
-                  String text = "";
-                  if (expireIn == 0) {
-                    text = "Login will expire today";
-                  } else if (expireIn < 0) {
-                    text = "Login is expired";
-                  } else {
-                    text = "Login will expire in ${expireIn} days";
-                  }
-
-                  return Visibility(
-                    visible: (expireIn < 16) ? true : false,
-                    child: AccountCard(
-                      key: Key(KEY_LOGIN_EXPIRE),
-                      cardTitleText: text,
-                      textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
-                      trailingIconPath: AppAssetsPath.icChevronRight,
-                      leadingIconPath: AppAssetsPath.icWarning,
-                      iconColor: AppColorScheme.errorTextColor,
-                    ),
-                  );
-                },
-              ),
-            ),
-            InkWell(
-              onTap: () async {
-                bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
-                if (result != null && result) {
-                  bindDocName();
-                }
-              },
-              child: AccountCard(
-                key: Key(KEY_DOCTOR_CARD),
-                cardTitleText: TranslationKeys.changeDocName.translate(context),
-                trailingIconPath: AppAssetsPath.icChevronRight,
-                leadingIconPath: AppAssetsPath.icPerson,
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
-              },
-              child: AccountCard(
-                key: Key(KEY_LANGUAGE_CARD),
-                cardTitleText: TranslationKeys.language.translate(context),
-                trailingIconPath: AppAssetsPath.icChevronRight,
-                leadingIconPath: AppAssetsPath.icLanguage,
-              ),
-            ),
-            ValueListenableBuilder(
-                valueListenable: _syncData,
-                builder: (context, syncData, _) {
-                  if (syncData) {
-                    return InkWell(
-                      onTap: () async {
-                        final appVersion = await getAppVersion();
-                        if (appVersion.isEmpty) {
-                          CommonFunctions.toastMessage("Session expired! Login to Continue");
-                          await loginViewModel?.logout();
-                        } else {
-                          onSyncClick();
-                        }
-                      },
-                      child: AccountCard(
-                        key: Key(KEY_DATA_SYNC_CARD),
-                        cardTitleText: TranslationKeys.dataSync.translate(context),
-                        trailingIconPath: AppAssetsPath.icChevronRight,
-                        leadingIconPath: AppAssetsPath.icSync,
                       ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-          ],
-        ),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.only(bottom: 25.0),
-          height: MediaQuery.of(context).size.height * 0.1,
-          child: Center(
-            child: Column(children: [
-              SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
-              Text(
-                "${TranslationKeys.version.translate(context)}: $appVersion",
-                style: AppStyles.bodySmall,
-              )
-            ]),
-          ),
+                      InkWell(
+                        onTap: () async {
+                          bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
+                          if (result != null && result) {
+                            bindDocName();
+                          }
+                        },
+                        child: AccountCard(
+                          key: Key(KEY_DOCTOR_CARD),
+                          cardTitleText: TranslationKeys.changeDocName.translate(context),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icPerson,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
+                        },
+                        child: AccountCard(
+                          key: Key(KEY_LANGUAGE_CARD),
+                          cardTitleText: TranslationKeys.language.translate(context),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icLanguage,
+                        ),
+                      ),
+                      ValueListenableBuilder(
+                          valueListenable: _syncData,
+                          builder: (context, syncData, _) {
+                            if (syncData) {
+                              return InkWell(
+                                onTap: () async {
+                                  final appVersion = await getAppVersion();
+                                  if (appVersion.isEmpty) {
+                                    CommonFunctions.toastMessage("Session expired! Login to Continue");
+                                    await loginViewModel?.logout();
+                                  } else {
+                                    onSyncClick();
+                                  }
+                                },
+                                child: AccountCard(
+                                  key: Key(KEY_DATA_SYNC_CARD),
+                                  cardTitleText: TranslationKeys.dataSync.translate(context),
+                                  trailingIconPath: AppAssetsPath.icChevronRight,
+                                  leadingIconPath: AppAssetsPath.icSync,
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: Center(
+                          child: Column(children: [
+                            SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
+                            Text(
+                              "${TranslationKeys.version.translate(context)}: $appVersion",
+                              style: AppStyles.bodySmall,
+                            )
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );
