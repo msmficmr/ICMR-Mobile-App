@@ -23,6 +23,6 @@ class AppValues {
   static BorderRadius get circularBorderRadius30 => BorderRadius.circular(30);
 
   static String dobDateFormat = "dd/MM/yyyy";
-  static String idDateTimeFormat = "ddMMyyyyHHmmssSSS";
+  static String idDateTimeFormat = "ddMMyyyyHHmm";
   static TextInputFormatter get idInputFormatter => CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
 }
