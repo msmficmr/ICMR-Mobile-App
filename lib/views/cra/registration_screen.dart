@@ -806,7 +806,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (_primaryIdController.text.trim().isEmpty && _secondaryIdController.text.trim().isNotEmpty) {
                       return AppConstant.FIELD_REQUIRED;
                     }
-                    if (_primaryIdController.text.trim().isNotEmpty && _primaryIdController.text.trim().length != 23) {
+                    if (_primaryIdController.text.trim().isNotEmpty && _primaryIdController.text.trim().length != 18) {
                       return AppConstant.ERROR_INVALID_ID;
                     }
                     return null;
@@ -828,7 +828,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (_secondaryIdController.text.trim().isEmpty && _primaryIdController.text.trim().isNotEmpty) {
                       return AppConstant.FIELD_REQUIRED;
                     }
-                    if (_secondaryIdController.text.trim().isNotEmpty && _secondaryIdController.text.trim().length != 23) {
+                    if (_secondaryIdController.text.trim().isNotEmpty && _secondaryIdController.text.trim().length != 18) {
                       return AppConstant.ERROR_INVALID_ID;
                     }
                     return null;
