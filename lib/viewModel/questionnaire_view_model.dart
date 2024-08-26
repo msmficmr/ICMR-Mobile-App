@@ -1,4 +1,4 @@
-import 'dart:convert';
+/* import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -9,12 +9,14 @@ import 'package:mhealth/model/cra_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/model/static_questionnaire_model.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class QuestionnaireViewModel extends ChangeNotifier {
   RiskAssessmentQuestionaire? isarDB;
@@ -69,7 +71,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
 
   Map<String, List<Questionnaire>> sectionsData = {};
 
-  clearConsetList(){
+  clearConsetList() {
     consentList.clear();
   }
 
@@ -247,7 +249,6 @@ class QuestionnaireViewModel extends ChangeNotifier {
     String userId = loginViewModel?.userDetails?.userId ?? "";
     for (int i = 0; i < staticCraData.questionnaireList!.length; i++) {
       if (staticCraData.questionnaireList![i].questionid == "patient_signature") {
-        
         AttachmentDb attachment = AttachmentDb()
           ..fileName = staticCraData.questionnaireList![i].toJson()['questionid']
           ..dataBytes = staticCraData.questionnaireList![i].toJson()['value'];
@@ -282,7 +283,7 @@ class QuestionnaireViewModel extends ChangeNotifier {
       ..ehrNotes = ehrNotes
       ..encounterEhrDiagnosisReports = diagnosisReports;
     craSectionModel.add(craModel);
-    await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0]);
+    await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[0],docDetails: []);
     resetAll();
     toggleEntry(false);
   }
@@ -317,9 +318,14 @@ class QuestionnaireViewModel extends ChangeNotifier {
           ..encounterCategoryMapId = staticCraData.ehrCategoryMap
           ..encounterEhrDiagnosisReports = diagnosisReports;
         craSectionModel.add(craModel);
-        await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[i]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID ?? "", craData: craSectionModel[i],docDetails: []);
       } catch (e) {}
     }
+  }
+
+  String stringToId(String input) {
+    var uuid = Uuid();
+    return uuid.v5(Uuid.NAMESPACE_URL, input);
   }
 
   addToDB({CRAModel? craData, StaticQuestionnaireModel? staticCraData, required BuildContext context}) async {
@@ -400,14 +406,29 @@ class QuestionnaireViewModel extends ChangeNotifier {
     craSectionModel.add(craModel);
     try {
       if ((craData?.ehrCategoryMap ?? staticCraData?.ehrCategoryMap) != "community_risk_assessment_details_of_habits") {
-        await IsarDbService.isarDbService.updateCRA(caseId: caseID!, craData: craSectionModel[0]);
+        await IsarDbService.isarDbService.updateCRA(caseId: caseID!, craData: craSectionModel[0],docDetails: []);
       } else {
         bool craDataAvailable = await IsarDbService.isarDbService.checkIfCRADataPresent(_caseId ?? _selectedCaseId!);
+
+        DoctorModel doctorModel = DoctorModel();
+        String? docName;
+        try {
+          bool hasDoctor = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.SHREAD_PREF_DOC_KEY);
+          if (hasDoctor) {
+            docName = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHREAD_PREF_DOC_KEY);
+            if (docName != null) {
+              doctorModel.id = stringToId(docName);
+              doctorModel.name = docName;
+            }
+          }
+        } catch (e) {}
+
         if (!craDataAvailable) {
           IsarDbService.isarDbService.saveCRA(CRAOfflineData()
             ..patientId = _patientId ?? _selectedPatientId
             ..caseId = _caseId ?? _selectedCaseId
             ..languageCode = languageViewModel.currentLanguage
+            ..docDetails = docName == null ? null : [doctorModel]
             ..craSectionData = craSectionModel);
         }
       }
@@ -667,3 +688,4 @@ class QuestionnaireViewModel extends ChangeNotifier {
     consentList.clear();
   }
 }
+ */

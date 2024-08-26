@@ -12,7 +12,7 @@ class SharedPreferencesService {
   static SharedPreferencesService sharedPreferencesService = SharedPreferencesService._();
 
   // [readData] method is used to read a particular key from local storage
-  Future<String?> readData({required String key}) async {
+  String? readData({required String key}) {
     return _prefs?.getString(key);
   }
 

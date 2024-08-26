@@ -6,7 +6,8 @@ part 'patient_registration_schema.g.dart';
 @collection
 class PatientRegistration {
   Id? id;
-  List<AttachmentDb>? consent;
+  // List<AttachmentDb>? consent;
+  late String isConsent;
   late DateTime visitDate;
   late String institutionCodeID;
   late String studyCode;
@@ -29,34 +30,46 @@ class PatientRegistration {
   late String signedConsentNoReason;
   late String patientId;
   late String createdBy;
+  late String place;
+  String? visitNo;
+  String? visitMonth;
+  late String primaryId;
+  late String secondaryId;
+  bool isCompleted = false;
+  String? caseId;
+  int totalCompletedSections = 0;
 
   // Add a toJson method to convert the object to JSON
   Map<String, dynamic> toJson() {
     return {
-      'consent': consent,
+      'consent': isConsent,
       'visitDate': visitDate.toIso8601String(),
       'institutionCodeID': institutionCodeID,
       'studyCode': studyCode,
-      'firstName': firstName,
-      'lastName': lastName,
+      'firstName': "", //firstName,
+      'lastName': "", //lastName,
       'age': age,
       'gender': gender,
-      'address': address,
-      'district': district,
-      'state': state,
-      'pincode': pincode,
-      'permanentAddress': permanentAddress,
+      'address': "", //address,
+      'district': "", //district,
+      'state': "", //state,
+      'pincode': "", //pincode,
+      'permanentAddress': "", //permanentAddress,
       'occupation': occupation,
-      'phoneNumber': phoneNumber,
-      'alternatePhoneNumber': alternatePhoneNumber,
-      'medicalRecordNumber': medicalRecordNumber,
-      'identityProofs': identityProofs,
+      'phoneNumber': "", //phoneNumber,
+      'alternatePhoneNumber': "", //alternatePhoneNumber,
+      'medicalRecordNumber': "", //medicalRecordNumber,
+      'identityProofs': null, //identityProofs,
       'consentDate': consentDate.toIso8601String(),
       'signedConsent': signedConsent,
       'signedConsentNoReason': signedConsentNoReason,
       'patientId': patientId,
-      'createdBy' : createdBy
+      'createdBy': createdBy,
+      "place": place,
+      "visitNo": visitNo,
+      "visitMonth": visitMonth,
+      "primaryId": primaryId,
+      "secondaryId": secondaryId
     };
   }
 }
-

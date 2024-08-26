@@ -4,7 +4,6 @@ import 'package:mhealth/utils/custom_input_formatter.dart';
 import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
 
 class AppValues {
-
   AppValues._();
 
   static double get kAppPadding => 16.0;
@@ -14,6 +13,9 @@ class AppValues {
   static TextInputFormatter get mobileInputFormatter => MaskTextInputFormatter(mask: '##########');
   static TextInputFormatter get emailInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z0-9-._@+]*$');
   static TextInputFormatter get stringInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z ]*$');
+  static TextInputFormatter get textInputFormatter => CustomInputFormatter(regx: r'^[a-zA-Z0-9 ]*$');
+  static TextInputFormatter get textWithDotInputFormatter =>  CustomInputFormatter(regx: r'^[a-zA-Z][a-zA-Z. ]*$');
+
 
   static int get kOtpTimer => 30;
 
@@ -21,4 +23,6 @@ class AppValues {
   static BorderRadius get circularBorderRadius30 => BorderRadius.circular(30);
 
   static String dobDateFormat = "dd/MM/yyyy";
+  static String idDateTimeFormat = "ddMMyyyyHHmm";
+  static TextInputFormatter get idInputFormatter => CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
 }

@@ -26,6 +26,7 @@ class CustomDropdown<T> extends StatelessWidget {
 
   /// filter function for dropdown search items
   final bool Function(T, String)? filterFn;
+  bool Function(T, T)? compareFn;
 
   /// [showSearchBox] enable or disable search field for dropdown items. default value is `true`
   final bool? showSearchBox;
@@ -45,20 +46,26 @@ class CustomDropdown<T> extends StatelessWidget {
     return true;
   }
 
-  CustomDropdown({
-    super.key,
-    this.hintText,
-    this.heading,
-    this.headingKey,
-    this.searchFieldHintText,
-    this.selectedItem,
-    this.validator,
-    this.filterFn,
-    this.showSearchBox,
-    required this.widgetKey,
-    required this.items,
-    required this.onChanged,
-  }) : assert(_getHeadingAssert(heading, headingKey));
+  EdgeInsetsGeometry? contentPadding;
+  FocusNode? focusNode;
+
+  CustomDropdown(
+      {super.key,
+      this.hintText,
+      this.heading,
+      this.headingKey,
+      this.searchFieldHintText,
+      this.selectedItem,
+      this.validator,
+      this.filterFn,
+      this.showSearchBox,
+      this.compareFn,
+      required this.widgetKey,
+      required this.items,
+      required this.onChanged,
+      this.contentPadding,
+      this.focusNode})
+      : assert(_getHeadingAssert(heading, headingKey));
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +84,17 @@ class CustomDropdown<T> extends StatelessWidget {
         DropdownSearch<T>(
           key: Key(widgetKey),
           items: items,
-          onChanged: onChanged,
-          dropdownButtonProps: const DropdownButtonProps(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            icon: Icon(Icons.expand_more),
+          onChanged: (value) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            onChanged?.call(value);
+          },
+          dropdownButtonProps: DropdownButtonProps(
+            padding: const EdgeInsets.symmetric(vertical: 0),
+            focusNode: focusNode,
+            icon: const Icon(
+              Icons.expand_more,
+              size: 20,
+            ),
           ),
           dropdownDecoratorProps: DropDownDecoratorProps(
             baseStyle: AppStyles.bodyMedium,
@@ -88,12 +102,14 @@ class CustomDropdown<T> extends StatelessWidget {
               hintText: hintText,
               hintStyle: AppStyles.hintStyle,
               errorStyle: AppStyles.errorStyle,
+              contentPadding: contentPadding,
             ),
           ),
           selectedItem: selectedItem,
           autoValidateMode: AutovalidateMode.onUserInteraction,
           validator: validator,
           filterFn: filterFn,
+          compareFn: compareFn,
           popupProps: PopupProps.menu(
             showSearchBox: (items.length >= 10) ? true : false,
             fit: FlexFit.loose,

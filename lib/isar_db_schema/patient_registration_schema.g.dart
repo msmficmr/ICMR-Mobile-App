@@ -33,11 +33,10 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'alternatePhoneNumber',
       type: IsarType.string,
     ),
-    r'consent': PropertySchema(
+    r'caseId': PropertySchema(
       id: 3,
-      name: r'consent',
-      type: IsarType.objectList,
-      target: r'AttachmentDb',
+      name: r'caseId',
+      type: IsarType.string,
     ),
     r'consentDate': PropertySchema(
       id: 4,
@@ -75,65 +74,105 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'institutionCodeID',
       type: IsarType.string,
     ),
-    r'lastName': PropertySchema(
+    r'isCompleted': PropertySchema(
       id: 11,
+      name: r'isCompleted',
+      type: IsarType.bool,
+    ),
+    r'isConsent': PropertySchema(
+      id: 12,
+      name: r'isConsent',
+      type: IsarType.string,
+    ),
+    r'lastName': PropertySchema(
+      id: 13,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'medicalRecordNumber': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'medicalRecordNumber',
       type: IsarType.string,
     ),
     r'occupation': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'occupation',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'patientId',
       type: IsarType.string,
     ),
     r'permanentAddress': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'permanentAddress',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'pincode',
       type: IsarType.string,
     ),
+    r'place': PropertySchema(
+      id: 20,
+      name: r'place',
+      type: IsarType.string,
+    ),
+    r'primaryId': PropertySchema(
+      id: 21,
+      name: r'primaryId',
+      type: IsarType.string,
+    ),
+    r'secondaryId': PropertySchema(
+      id: 22,
+      name: r'secondaryId',
+      type: IsarType.string,
+    ),
     r'signedConsent': PropertySchema(
-      id: 18,
+      id: 23,
       name: r'signedConsent',
       type: IsarType.string,
     ),
     r'signedConsentNoReason': PropertySchema(
-      id: 19,
+      id: 24,
       name: r'signedConsentNoReason',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 20,
+      id: 25,
       name: r'state',
       type: IsarType.string,
     ),
     r'studyCode': PropertySchema(
-      id: 21,
+      id: 26,
       name: r'studyCode',
       type: IsarType.string,
     ),
+    r'totalCompletedSections': PropertySchema(
+      id: 27,
+      name: r'totalCompletedSections',
+      type: IsarType.long,
+    ),
     r'visitDate': PropertySchema(
-      id: 22,
+      id: 28,
       name: r'visitDate',
       type: IsarType.dateTime,
+    ),
+    r'visitMonth': PropertySchema(
+      id: 29,
+      name: r'visitMonth',
+      type: IsarType.string,
+    ),
+    r'visitNo': PropertySchema(
+      id: 30,
+      name: r'visitNo',
+      type: IsarType.string,
     )
   },
   estimateSize: _patientRegistrationEstimateSize,
@@ -143,10 +182,7 @@ const PatientRegistrationSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {},
-  embeddedSchemas: {
-    r'AttachmentDb': AttachmentDbSchema,
-    r'IdentityProofDb': IdentityProofDbSchema
-  },
+  embeddedSchemas: {r'IdentityProofDb': IdentityProofDbSchema},
   getId: _patientRegistrationGetId,
   getLinks: _patientRegistrationGetLinks,
   attach: _patientRegistrationAttach,
@@ -173,17 +209,9 @@ int _patientRegistrationEstimateSize(
     }
   }
   {
-    final list = object.consent;
-    if (list != null) {
-      bytesCount += 3 + list.length * 3;
-      {
-        final offsets = allOffsets[AttachmentDb]!;
-        for (var i = 0; i < list.length; i++) {
-          final value = list[i];
-          bytesCount +=
-              AttachmentDbSchema.estimateSize(value, offsets, allOffsets);
-        }
-      }
+    final value = object.caseId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
   bytesCount += 3 + object.createdBy.length * 3;
@@ -209,6 +237,7 @@ int _patientRegistrationEstimateSize(
     }
   }
   bytesCount += 3 + object.institutionCodeID.length * 3;
+  bytesCount += 3 + object.isConsent.length * 3;
   bytesCount += 3 + object.lastName.length * 3;
   {
     final value = object.medicalRecordNumber;
@@ -231,6 +260,9 @@ int _patientRegistrationEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.place.length * 3;
+  bytesCount += 3 + object.primaryId.length * 3;
+  bytesCount += 3 + object.secondaryId.length * 3;
   bytesCount += 3 + object.signedConsent.length * 3;
   bytesCount += 3 + object.signedConsentNoReason.length * 3;
   {
@@ -240,6 +272,18 @@ int _patientRegistrationEstimateSize(
     }
   }
   bytesCount += 3 + object.studyCode.length * 3;
+  {
+    final value = object.visitMonth;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.visitNo;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -252,12 +296,7 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[0], object.address);
   writer.writeString(offsets[1], object.age);
   writer.writeString(offsets[2], object.alternatePhoneNumber);
-  writer.writeObjectList<AttachmentDb>(
-    offsets[3],
-    allOffsets,
-    AttachmentDbSchema.serialize,
-    object.consent,
-  );
+  writer.writeString(offsets[3], object.caseId);
   writer.writeDateTime(offsets[4], object.consentDate);
   writer.writeString(offsets[5], object.createdBy);
   writer.writeString(offsets[6], object.district);
@@ -270,18 +309,26 @@ void _patientRegistrationSerialize(
     object.identityProofs,
   );
   writer.writeString(offsets[10], object.institutionCodeID);
-  writer.writeString(offsets[11], object.lastName);
-  writer.writeString(offsets[12], object.medicalRecordNumber);
-  writer.writeString(offsets[13], object.occupation);
-  writer.writeString(offsets[14], object.patientId);
-  writer.writeString(offsets[15], object.permanentAddress);
-  writer.writeString(offsets[16], object.phoneNumber);
-  writer.writeString(offsets[17], object.pincode);
-  writer.writeString(offsets[18], object.signedConsent);
-  writer.writeString(offsets[19], object.signedConsentNoReason);
-  writer.writeString(offsets[20], object.state);
-  writer.writeString(offsets[21], object.studyCode);
-  writer.writeDateTime(offsets[22], object.visitDate);
+  writer.writeBool(offsets[11], object.isCompleted);
+  writer.writeString(offsets[12], object.isConsent);
+  writer.writeString(offsets[13], object.lastName);
+  writer.writeString(offsets[14], object.medicalRecordNumber);
+  writer.writeString(offsets[15], object.occupation);
+  writer.writeString(offsets[16], object.patientId);
+  writer.writeString(offsets[17], object.permanentAddress);
+  writer.writeString(offsets[18], object.phoneNumber);
+  writer.writeString(offsets[19], object.pincode);
+  writer.writeString(offsets[20], object.place);
+  writer.writeString(offsets[21], object.primaryId);
+  writer.writeString(offsets[22], object.secondaryId);
+  writer.writeString(offsets[23], object.signedConsent);
+  writer.writeString(offsets[24], object.signedConsentNoReason);
+  writer.writeString(offsets[25], object.state);
+  writer.writeString(offsets[26], object.studyCode);
+  writer.writeLong(offsets[27], object.totalCompletedSections);
+  writer.writeDateTime(offsets[28], object.visitDate);
+  writer.writeString(offsets[29], object.visitMonth);
+  writer.writeString(offsets[30], object.visitNo);
 }
 
 PatientRegistration _patientRegistrationDeserialize(
@@ -294,12 +341,7 @@ PatientRegistration _patientRegistrationDeserialize(
   object.address = reader.readStringOrNull(offsets[0]);
   object.age = reader.readString(offsets[1]);
   object.alternatePhoneNumber = reader.readStringOrNull(offsets[2]);
-  object.consent = reader.readObjectList<AttachmentDb>(
-    offsets[3],
-    AttachmentDbSchema.deserialize,
-    allOffsets,
-    AttachmentDb(),
-  );
+  object.caseId = reader.readStringOrNull(offsets[3]);
   object.consentDate = reader.readDateTime(offsets[4]);
   object.createdBy = reader.readString(offsets[5]);
   object.district = reader.readStringOrNull(offsets[6]);
@@ -312,18 +354,26 @@ PatientRegistration _patientRegistrationDeserialize(
     allOffsets,
   );
   object.institutionCodeID = reader.readString(offsets[10]);
-  object.lastName = reader.readString(offsets[11]);
-  object.medicalRecordNumber = reader.readStringOrNull(offsets[12]);
-  object.occupation = reader.readString(offsets[13]);
-  object.patientId = reader.readString(offsets[14]);
-  object.permanentAddress = reader.readStringOrNull(offsets[15]);
-  object.phoneNumber = reader.readString(offsets[16]);
-  object.pincode = reader.readStringOrNull(offsets[17]);
-  object.signedConsent = reader.readString(offsets[18]);
-  object.signedConsentNoReason = reader.readString(offsets[19]);
-  object.state = reader.readStringOrNull(offsets[20]);
-  object.studyCode = reader.readString(offsets[21]);
-  object.visitDate = reader.readDateTime(offsets[22]);
+  object.isCompleted = reader.readBool(offsets[11]);
+  object.isConsent = reader.readString(offsets[12]);
+  object.lastName = reader.readString(offsets[13]);
+  object.medicalRecordNumber = reader.readStringOrNull(offsets[14]);
+  object.occupation = reader.readString(offsets[15]);
+  object.patientId = reader.readString(offsets[16]);
+  object.permanentAddress = reader.readStringOrNull(offsets[17]);
+  object.phoneNumber = reader.readString(offsets[18]);
+  object.pincode = reader.readStringOrNull(offsets[19]);
+  object.place = reader.readString(offsets[20]);
+  object.primaryId = reader.readString(offsets[21]);
+  object.secondaryId = reader.readString(offsets[22]);
+  object.signedConsent = reader.readString(offsets[23]);
+  object.signedConsentNoReason = reader.readString(offsets[24]);
+  object.state = reader.readStringOrNull(offsets[25]);
+  object.studyCode = reader.readString(offsets[26]);
+  object.totalCompletedSections = reader.readLong(offsets[27]);
+  object.visitDate = reader.readDateTime(offsets[28]);
+  object.visitMonth = reader.readStringOrNull(offsets[29]);
+  object.visitNo = reader.readStringOrNull(offsets[30]);
   return object;
 }
 
@@ -341,12 +391,7 @@ P _patientRegistrationDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readObjectList<AttachmentDb>(
-        offset,
-        AttachmentDbSchema.deserialize,
-        allOffsets,
-        AttachmentDb(),
-      )) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
       return (reader.readDateTime(offset)) as P;
     case 5:
@@ -366,15 +411,15 @@ P _patientRegistrationDeserializeProp<P>(
     case 10:
       return (reader.readString(offset)) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 12:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
-      return (reader.readString(offset)) as P;
-    case 15:
       return (reader.readStringOrNull(offset)) as P;
+    case 15:
+      return (reader.readString(offset)) as P;
     case 16:
       return (reader.readString(offset)) as P;
     case 17:
@@ -382,13 +427,29 @@ P _patientRegistrationDeserializeProp<P>(
     case 18:
       return (reader.readString(offset)) as P;
     case 19:
-      return (reader.readString(offset)) as P;
-    case 20:
       return (reader.readStringOrNull(offset)) as P;
+    case 20:
+      return (reader.readString(offset)) as P;
     case 21:
       return (reader.readString(offset)) as P;
     case 22:
+      return (reader.readString(offset)) as P;
+    case 23:
+      return (reader.readString(offset)) as P;
+    case 24:
+      return (reader.readString(offset)) as P;
+    case 25:
+      return (reader.readStringOrNull(offset)) as P;
+    case 26:
+      return (reader.readString(offset)) as P;
+    case 27:
+      return (reader.readLong(offset)) as P;
+    case 28:
       return (reader.readDateTime(offset)) as P;
+    case 29:
+      return (reader.readStringOrNull(offset)) as P;
+    case 30:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -935,109 +996,156 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNull() {
+      caseIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'consent',
+        property: r'caseId',
       ));
     });
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNotNull() {
+      caseIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'consent',
+        property: r'caseId',
       ));
     });
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthLessThan(
-    int length, {
-    bool include = false,
+      caseIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthGreaterThan(
-    int length, {
+      caseIdGreaterThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentLengthBetween(
-    int lower,
-    int upper, {
+      caseIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'consent',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'caseId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'caseId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'caseId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'caseId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      caseIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'caseId',
+        value: '',
+      ));
     });
   }
 
@@ -1900,6 +2008,152 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'institutionCodeID',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isCompletedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isCompleted',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'isConsent',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'isConsent',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'isConsent',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isConsent',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isConsentIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'isConsent',
         value: '',
       ));
     });
@@ -2912,6 +3166,414 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'place',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'place',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'place',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'place',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      placeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'place',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'primaryId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'primaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'primaryId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'primaryId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      primaryIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'primaryId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'secondaryId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'secondaryId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'secondaryId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'secondaryId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      secondaryIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'secondaryId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       signedConsentEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -3475,6 +4137,62 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'totalCompletedSections',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      totalCompletedSectionsBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'totalCompletedSections',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       visitDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -3529,17 +4247,318 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
       ));
     });
   }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'visitMonth',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'visitMonth',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'visitMonth',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'visitMonth',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'visitMonth',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'visitMonth',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitMonthIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'visitMonth',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'visitNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'visitNo',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'visitNo',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'visitNo',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'visitNo',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'visitNo',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      visitNoIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'visitNo',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension PatientRegistrationQueryObject on QueryBuilder<PatientRegistration,
     PatientRegistration, QFilterCondition> {
-  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
-      consentElement(FilterQuery<AttachmentDb> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'consent');
-    });
-  }
-
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
       identityProofs(FilterQuery<IdentityProofDb> q) {
     return QueryBuilder.apply(this, (query) {
@@ -3592,6 +4611,20 @@ extension PatientRegistrationQuerySortBy
       sortByAlternatePhoneNumberDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'alternatePhoneNumber', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCaseId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByCaseIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.desc);
     });
   }
 
@@ -3676,6 +4709,34 @@ extension PatientRegistrationQuerySortBy
       sortByInstitutionCodeIDDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'institutionCodeID', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isCompleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsCompletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isCompleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsConsent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsConsentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.desc);
     });
   }
 
@@ -3778,6 +4839,48 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPlace() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'place', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPlaceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'place', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPrimaryId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'primaryId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByPrimaryIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'primaryId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortBySecondaryId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'secondaryId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortBySecondaryIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'secondaryId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortBySignedConsent() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'signedConsent', Sort.asc);
@@ -3834,6 +4937,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByTotalCompletedSectionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.asc);
@@ -3844,6 +4961,34 @@ extension PatientRegistrationQuerySortBy
       sortByVisitDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByVisitMonth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitMonth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByVisitMonthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitMonth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByVisitNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByVisitNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitNo', Sort.desc);
     });
   }
 }
@@ -3889,6 +5034,20 @@ extension PatientRegistrationQuerySortThenBy
       thenByAlternatePhoneNumberDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'alternatePhoneNumber', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCaseId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByCaseIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'caseId', Sort.desc);
     });
   }
 
@@ -3991,6 +5150,34 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isCompleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsCompletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isCompleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsConsent() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsConsentDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isConsent', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByLastName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastName', Sort.asc);
@@ -4089,6 +5276,48 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPlace() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'place', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPlaceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'place', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPrimaryId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'primaryId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByPrimaryIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'primaryId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenBySecondaryId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'secondaryId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenBySecondaryIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'secondaryId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenBySignedConsent() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'signedConsent', Sort.asc);
@@ -4145,6 +5374,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByTotalCompletedSectionsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'totalCompletedSections', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.asc);
@@ -4155,6 +5398,34 @@ extension PatientRegistrationQuerySortThenBy
       thenByVisitDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'visitDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByVisitMonth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitMonth', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByVisitMonthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitMonth', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByVisitNo() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitNo', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByVisitNoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'visitNo', Sort.desc);
     });
   }
 }
@@ -4180,6 +5451,13 @@ extension PatientRegistrationQueryWhereDistinct
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'alternatePhoneNumber',
           caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByCaseId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'caseId', caseSensitive: caseSensitive);
     });
   }
 
@@ -4223,6 +5501,20 @@ extension PatientRegistrationQueryWhereDistinct
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'institutionCodeID',
           caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByIsCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isCompleted');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByIsConsent({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isConsent', caseSensitive: caseSensitive);
     });
   }
 
@@ -4278,6 +5570,27 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByPlace({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'place', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByPrimaryId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'primaryId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctBySecondaryId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'secondaryId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctBySignedConsent({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'signedConsent',
@@ -4308,9 +5621,30 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByTotalCompletedSections() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'totalCompletedSections');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByVisitDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'visitDate');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByVisitMonth({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'visitMonth', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByVisitNo({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'visitNo', caseSensitive: caseSensitive);
     });
   }
 }
@@ -4343,10 +5677,10 @@ extension PatientRegistrationQueryProperty
     });
   }
 
-  QueryBuilder<PatientRegistration, List<AttachmentDb>?, QQueryOperations>
-      consentProperty() {
+  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+      caseIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'consent');
+      return query.addPropertyName(r'caseId');
     });
   }
 
@@ -4399,6 +5733,20 @@ extension PatientRegistrationQueryProperty
     });
   }
 
+  QueryBuilder<PatientRegistration, bool, QQueryOperations>
+      isCompletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isCompleted');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
+      isConsentProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isConsent');
+    });
+  }
+
   QueryBuilder<PatientRegistration, String, QQueryOperations>
       lastNameProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -4448,6 +5796,26 @@ extension PatientRegistrationQueryProperty
     });
   }
 
+  QueryBuilder<PatientRegistration, String, QQueryOperations> placeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'place');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
+      primaryIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'primaryId');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String, QQueryOperations>
+      secondaryIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'secondaryId');
+    });
+  }
+
   QueryBuilder<PatientRegistration, String, QQueryOperations>
       signedConsentProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -4475,10 +5843,31 @@ extension PatientRegistrationQueryProperty
     });
   }
 
+  QueryBuilder<PatientRegistration, int, QQueryOperations>
+      totalCompletedSectionsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'totalCompletedSections');
+    });
+  }
+
   QueryBuilder<PatientRegistration, DateTime, QQueryOperations>
       visitDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'visitDate');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+      visitMonthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'visitMonth');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, String?, QQueryOperations>
+      visitNoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'visitNo');
     });
   }
 }

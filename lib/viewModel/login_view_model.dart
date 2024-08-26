@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mhealth/model/send_otp_response_model.dart';
@@ -40,6 +41,10 @@ class LoginViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   final List<String> loginTypes = ["Email", "Mobile number"];
+
+  resetLoginScreen() {
+    _isLoading = false;
+  }
 
   set isLoggedIn(bool value) {
     _isLoggedIn = value;
@@ -127,6 +132,7 @@ class LoginViewModel extends ChangeNotifier {
       if (response != null) {
         String userDetails = jsonEncode(response.toJson());
         await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
+        await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_LOGIN_TIME, value: DateTime.now().toIso8601String());
         loginUser(jsonEncode(response.toJson()));
       }
     } catch (e) {
@@ -157,6 +163,20 @@ class LoginViewModel extends ChangeNotifier {
       return false;
     } finally {
       notifyListeners();
+    }
+  }
+
+  int checkLoginTimestamp() {
+    try {
+      String temp = authDetails?.refreshTokenExpiresIn ?? "";
+      temp = temp.substring(0, temp.length - 1);
+      int loginTimestamp = int.parse(temp);
+      String? dateStr = SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_LOGIN_TIME);
+      DateTime loginDate = dateStr == null ? DateTime.now() : DateTime.parse(dateStr); //DateTime(2024, 07, 25);
+      DateTime logOutdate = loginDate.add(Duration(seconds: loginTimestamp));
+      return logOutdate.difference(DateTime.now()).inDays;
+    } catch (e) {
+      return 0;
     }
   }
 }

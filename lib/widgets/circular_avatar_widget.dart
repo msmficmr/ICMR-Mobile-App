@@ -49,7 +49,14 @@ class CircularAvatar extends StatelessWidget {
                   case CircularAvatarFieldChildType.TEXT:
                     return Text(childData, style: AppStyles.bodyMedium.copyWith(color: textColor));
                   case CircularAvatarFieldChildType.SVG_ASSET:
-                    return SvgPicture.asset(childData, colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn));
+                    return SvgPicture.asset(
+                      childData,
+                      
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                    );
                   case CircularAvatarFieldChildType.IMAGE_ASSET:
                     return Image.asset(childData);
                   default:

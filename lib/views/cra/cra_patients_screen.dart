@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,11 +15,14 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/viewModel/questionnaire_view_model.dart';
+import 'package:mhealth/views/questionair/view/question_screen_view.dart';
+import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
 import 'package:mhealth/widgets/custom_floating_button.dart';
 import 'package:mhealth/widgets/custom_patient_card.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class CRAPatientScreen extends StatefulWidget {
   static const String routerPath = "/cra-patients";
@@ -65,6 +69,12 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
 
   redirectToDashboard() {
     GoRouter.of(context).go(DashboardScreen.routerPath);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    patientListViewModel.updateCraStatus();
   }
 
   @override
@@ -125,19 +135,29 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               itemBuilder: (context, index) {
                                 final patient = items[index];
                                 final fullName = "${patient.firstName} ${patient.lastName}";
-                                return CustomPatientCard(
-                                  widgetKey: KEY_PATIENT_CARD,
-                                  patientName: fullName,
-                                  patientId: patient.patientId,
-                                  gender: CommonFunctions.getGender(patient.gender.toString()),
-                                  age: patient.age,
-                                  phoneNumber: patient.phoneNumber,
-                                  patientNameKey: Key('KEY_PATIENT_NAME_$index'),
-                                  patientIdKey: Key('KEY_PATIENT_ID_$index'),
-                                  onTap: () {
-                                    redirectToQuestionnaire(patient.patientId);
-                                  },
-                                );
+                                return Selector<PatientListViewModel, Tuple2<bool,int>>(
+                                    selector: (p0, p1) => Tuple2(patientListViewModel.filteredItems[index].isCompleted, patientListViewModel.filteredItems[index].totalCompletedSections),
+                                    builder: (context, statusData, __) {
+                                      return CustomPatientCard(
+                                        widgetKey: KEY_PATIENT_CARD,
+                                        isCraCompleted: statusData.item1,
+                                        totalComplted: statusData.item2,
+                                        patientName: fullName,
+                                        patientId: patient.patientId,
+                                        gender: CommonFunctions.getGender(patient.gender.toString()),
+                                        age: patient.age,
+                                        phoneNumber: patient.phoneNumber,
+                                        patientNameKey: Key('KEY_PATIENT_NAME_$index'),
+                                        patientIdKey: Key('KEY_PATIENT_ID_$index'),
+                                        primaryId: patient.primaryId,
+                                        primaryIdKey: Key('KEY_PRIMARY_ID_$index'),
+                                        secondaryId: patient.secondaryId,
+                                        secondaryIdKey: Key('KEY_SECONDARY_ID_$index'),
+                                        onTap: () {
+                                          CommonFunctions().onStartCRA(context: context, patientId: patient.patientId, isCraCompleted: statusData.item1, caseId: patient.caseId);
+                                        },
+                                      );
+                                    });
                               },
                             );
                           } else {
@@ -154,51 +174,5 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
         ),
       ),
     );
-  }
-
-  redirectToQuestionnaire(String patientID) async {
-    CRAOfflineData? craData = await IsarDbService.isarDbService.getCRAData(patientID ?? "");
-    await context.read<QuestionnaireViewModel>().clearData();
-    if (craData != null) {
-      await context.read<QuestionnaireViewModel>().setRedirect(true);
-      List<String?>? sections = craData.craSectionData?.map((e) => e.encounterCategoryMapId).toList();
-      if (sections != null) {
-        await context.read<QuestionnaireViewModel>().resetAll();
-        await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
-        await context.read<QuestionnaireViewModel>().setCaseId(craData.caseId!);
-        switch (sections[sections.length - 1]) {
-          case "community_risk_assessment_details_of_habits":
-            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms",);
-          case "community_risk_assessment_baseline_signs_or_symptoms":
-            GoRouter.of(context).push(PeriodontalScreen.routerPath, extra: true);
-          case "community_risk_assessment_periodontal_status":
-            GoRouter.of(context).push(LesionLocationScreen.routerPath, extra: true);
-          case "community_risk_assessment_lesion_location":
-            int index = sections.indexOf("community_risk_assessment_lesion_location");
-            int ehrDiagnosisReports = craData.craSectionData![index].encounterEhrDiagnosisReports!.questions?.length ?? 0;
-            if (ehrDiagnosisReports != 0) {
-              for (int i = 0; i < ehrDiagnosisReports; i++) {
-                await context.read<QuestionnaireViewModel>().setSelectedAttachmentList(craData.craSectionData![index].encounterEhrDiagnosisReports!.questions![i].value ?? "");
-              }
-              GoRouter.of(context).push(MeasurementLesionsScreen.routerPath, extra: true);
-            } else {
-              GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_baseline_signs_or_symptoms");
-            }
-          case "community_risk_assessment_measurement_lesions":
-            await context.read<QuestionnaireViewModel>().setRedirectFromCRA(true);
-            GoRouter.of(context).push(QuestionnaireScreen.routerPath, extra: "community_risk_assessment_investigation");
-          case "community_risk_assessment_investigation":
-            await context.read<QuestionnaireViewModel>().setRedirectFromCRA(true);
-            GoRouter.of(context).push(VerificationScreen.routerPath, extra: true);
-          default:
-            CommonFunctions.toastMessage("CRA completed");
-            await context.read<QuestionnaireViewModel>().resetAll();
-        }
-      }
-    } else {
-      await context.read<QuestionnaireViewModel>().resetAll();
-      await context.read<QuestionnaireViewModel>().setSelectedPatientId(patientID);
-      return GoRouter.of(context).push(CriteriaScreen.routerPath);
-    }
   }
 }

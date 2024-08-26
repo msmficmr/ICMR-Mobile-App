@@ -1,0 +1,7 @@
+{
+    "BASE_URL" : "https://edge-mhealth.dev-int.karkinos.in",
+    "ENV" : "dev",
+    "APP_NAME" : "DEV m-health",
+    "APP_SUFFIX" : ".dev",
+    "SOURCE_APP_NAME" : "mhealth"
+  }

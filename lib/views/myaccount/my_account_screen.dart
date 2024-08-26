@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -13,12 +14,14 @@ import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/network_status_service.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
+import 'package:mhealth/views/doctor/doctor_name_screen.dart';
 import 'package:mhealth/views/myaccount/widgets/card_component_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:flutter/services.dart';
@@ -44,12 +47,27 @@ class MyAccountScreen extends StatefulWidget {
 class _MyAccountScreenState extends State<MyAccountScreen> {
   LoginViewModel? loginViewModel;
 
+  ValueNotifier<String?> docName = ValueNotifier<String?>(null);
+
   @override
   void initState() {
     super.initState();
     _syncData = ValueNotifier<bool>(false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     checkToSyncData();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      bindDocName();
+    });
+  }
+
+  bindDocName() async {
+    bool containDocName = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.SHREAD_PREF_DOC_KEY);
+    if (containDocName) {
+      String? strDocName = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHREAD_PREF_DOC_KEY);
+      if (strDocName != null) {
+        docName.value = strDocName;
+      }
+    }
   }
 
   //To be replaced with Dynamic data
@@ -68,7 +86,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   final String KEY_VOLUNTEER_ID = "key_volunteer_id";
   final String KEY_PATIENT_NAME = "key_patient_name";
   final String KEY_LANGUAGE_CARD = "key_language_card";
+  final String KEY_DOCTOR_CARD = "key_doctor_card";
   final String KEY_DATA_SYNC_CARD = "key_data_sync_card";
+  final String KEY_LOGIN_EXPIRE = "key_login_expire_card";
 
   //Constant text
   final String VOLUNTEER_ID = "Volunteer ID";
@@ -79,13 +99,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   late NetworkStatusService networkStatusService;
 
   late ValueNotifier<bool> _syncData;
-
-  void _copyToClipboard(String volunteerId) {
-    Clipboard.setData(ClipboardData(text: volunteerId));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Volunteer ID copied to clipboard')),
-    );
-  }
 
   checkToSyncData() async {
     if (networkStatusService.networkStatus == NetworkStatus.online) {
@@ -125,10 +138,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       title: DIALOG_CLOSE_TITLE,
       subtitle: DIALOG_CLOSE_SUBTITLE,
       action: (context) {
-        Navigator.of(context).pop(true);
+        GoRouter.of(context).pop(true);
       },
       onCancelAction: (context) {
-        Navigator.pop(context, false);
+        GoRouter.of(context).pop(false);
       },
     );
 
@@ -164,39 +177,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
-  Future<List<int>> readFileInIsolate(String filePath) async {
-    ReceivePort receivePort = ReceivePort();
-    Completer<List<int>> completer = Completer();
-
-    // Start a new isolate and pass the SendPort and filePath
-    Isolate isolate = await Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
-
-    // Listen for messages from the isolate
-    receivePort.listen((message) {
-      if (message is List<int>) {
-        completer.complete(message);
-      } else {
-        completer.completeError(message);
-      }
-      receivePort.close(); // Close the port when done
-    });
-
-    return completer.future;
-  }
-
-  static void _readFileTask(Map<String, dynamic> message) async {
-    SendPort sendPort = message['sendPort'];
-    String filePath = message['filePath'];
-
-    try {
-      File file = File(filePath);
-      List<int> contents = await file.readAsBytes();
-      sendPort.send(contents); // Send the contents back to the main isolate
-    } catch (e) {
-      sendPort.send(e.toString()); // Send the error message back to the main isolate
-    }
-  }
-
   onSyncClick() async {
     NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
 
@@ -227,7 +207,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             for (dynamic pat in pMap) {
               AttachmentDb fileName = pat;
               fileDeleteList.add(fileName.dataBytes!);
-              List<int> content = await readFileInIsolate(fileName.dataBytes!);
+              List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
               fileName.dataBytes = base64.encode(content);
               consentList.add(fileName);
             }
@@ -235,6 +215,11 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           } catch (e) {}
 
           List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+
+          craSectionModel.forEach((element) {
+            element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
+          });
+
           for (int i = 0; i < craSectionModel.length; i++) {
             if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
               List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
@@ -242,7 +227,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 AttachmentDb fileName = questionList[j]['file'];
                 try {
                   fileDeleteList.add(fileName.dataBytes!);
-                  List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                  List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
                   fileName.dataBytes = base64.encode(content);
                   craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
                 } catch (e) {}
@@ -261,9 +246,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             "payloadObj": payLoadObjList,
             "appVersion": Environment.runningEnv.releaseVersion,
           };
-
-
-
           await viewModel.postOfflineData(
             caseId: response[i]?.caseId,
             patientId: response[i]?.patientId,
@@ -271,7 +253,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             fileDeleteList: fileDeleteList,
           );
         }
-
         response = await IsarDbService.isarDbService.getListCRAOfflineData();
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
 
@@ -294,7 +275,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               for (dynamic pat in pMap) {
                 AttachmentDb fileName = pat;
                 fileDeleteList.add(fileName.dataBytes!);
-                List<int> content = await readFileInIsolate(fileName.dataBytes!);
+                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
                 fileName.dataBytes = base64.encode(content);
                 consentList.add(fileName);
               }
@@ -335,7 +316,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     String emailId = loginViewModel?.userDetails?.email ?? "";
     String volunteerId = loginViewModel?.userDetails?.userId ?? "";
     String age = loginViewModel?.userDetails?.age ?? "";
-    String? locationName = loginViewModel?.userDetails?.locations != null ? loginViewModel!.userDetails!.locations![0].locationName : "";
+    String? locationName = (loginViewModel?.userDetails?.locations != null && loginViewModel!.userDetails!.locations!.isNotEmpty) ? loginViewModel!.userDetails!.locations![0].locationName : "";
+
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
@@ -365,142 +347,208 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           ),
           titleText: TranslationKeys.myAccount.translate(context),
         ),
-        body: Column(
-          children: [
-            Container(
-              color: AppColorScheme.kGrayColor.shade50,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
-                        SpaceWidget(width: isSmallScreen ? 12 : 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColorScheme.kPrimaryColor,
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: Text(
-                                  patientRelation,
-                                  style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
-                                ),
-                              ),
-                              const SpaceWidget(
-                                height: 5,
-                              ),
-                              Text(
-                                "$firstName $lastName",
-                                key: Key(KEY_PATIENT_NAME),
-                                style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+        body: SizedBox(
+          height: double.infinity,
+          child: LayoutBuilder(builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Container(
+                        color: AppColorScheme.kGrayColor.shade50,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
-                            const SpaceWidget(width: 2),
-                            Text(
-                              volunteerId,
-                              key: Key(KEY_VOLUNTEER_ID),
-                              style: AppStyles.bodySmall,
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
+                                  SpaceWidget(width: isSmallScreen ? 12 : 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: AppColorScheme.kPrimaryColor,
+                                            borderRadius: BorderRadius.circular(24),
+                                          ),
+                                          child: Text(
+                                            patientRelation,
+                                            style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
+                                          ),
+                                        ),
+                                        const SpaceWidget(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "$firstName $lastName",
+                                          key: Key(KEY_PATIENT_NAME),
+                                          style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SpaceWidget(width: 5),
-                            InkWell(
-                              onTap: () => _copyToClipboard(volunteerId),
-                              child: SvgPicture.asset(AppAssetsPath.icCopy),
-                            )
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
+                                      const SpaceWidget(width: 2),
+                                      Text(
+                                        volunteerId,
+                                        key: Key(KEY_VOLUNTEER_ID),
+                                        style: AppStyles.bodySmall,
+                                      ),
+                                      const SpaceWidget(width: 5),
+                                      InkWell(
+                                        onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
+                                        child: SvgPicture.asset(AppAssetsPath.icCopy),
+                                      )
+                                    ],
+                                  ),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
+                                      Text(emailId, style: AppStyles.bodySmall),
+                                    ],
+                                  ),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  Text('$location : $locationName', style: AppStyles.bodySmall),
+                                  const SpaceWidget(
+                                    height: 10,
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: docName,
+                                    builder: (context, value, child) {
+                                      if (value == null) return const SizedBox.shrink();
+                                      return Text('Doctor Name : $value', style: AppStyles.bodySmall);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SpaceWidget(height: 20),
                           ],
                         ),
-                        const SpaceWidget(
-                          height: 10,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
-                            Text(emailId, style: AppStyles.bodySmall),
-                          ],
-                        ),
-                        const SpaceWidget(
-                          height: 10,
-                        ),
-                        Text('$location : $locationName', style: AppStyles.bodySmall),
-                      ],
-                    ),
-                  ),
-                  const SpaceWidget(height: 20),
-                ],
-              ),
-            ),
-            const SpaceWidget(height: 20),
-            InkWell(
-              onTap: () {
-                GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
-              },
-              child: AccountCard(
-                key: Key(KEY_LANGUAGE_CARD),
-                cardTitleText: TranslationKeys.language.translate(context),
-                trailingIconPath: AppAssetsPath.icChevronRight,
-                leadingIconPath: AppAssetsPath.icLanguage,
-              ),
-            ),
-            ValueListenableBuilder(
-                valueListenable: _syncData,
-                builder: (context, syncData, _) {
-                  if (syncData) {
-                    return InkWell(
-                      onTap: () async {
-                        final appVersion = await getAppVersion();
-                        if (appVersion.isEmpty) {
-                          CommonFunctions.toastMessage("Session expired! Login to Continue");
-                          await loginViewModel?.logout();
-                        } else {
-                          onSyncClick();
-                        }
-                      },
-                      child: AccountCard(
-                        key: Key(KEY_DATA_SYNC_CARD),
-                        cardTitleText: TranslationKeys.dataSync.translate(context),
-                        trailingIconPath: AppAssetsPath.icChevronRight,
-                        leadingIconPath: AppAssetsPath.icSync,
                       ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-          ],
-        ),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.only(bottom: 25.0),
-          height: MediaQuery.of(context).size.height * 0.1,
-          child: Center(
-            child: Column(children: [
-              SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
-              Text(
-                "${TranslationKeys.version.translate(context)}: $appVersion",
-                style: AppStyles.bodySmall,
-              )
-            ]),
-          ),
+                      const SpaceWidget(height: 20),
+                      InkWell(
+                        onTap: () {
+                          onLogoutClick();
+                        },
+                        child: Builder(
+                          builder: (context) {
+                            int expireIn = loginViewModel!.checkLoginTimestamp();
+                            String text = "";
+                            if (expireIn == 0) {
+                              text = "Login will expire today";
+                            } else if (expireIn < 0) {
+                              text = "Login is expired";
+                            } else {
+                              text = "Login will expire in ${expireIn} days";
+                            }
+
+                            return Visibility(
+                              visible: (expireIn < 16) ? true : false,
+                              child: AccountCard(
+                                key: Key(KEY_LOGIN_EXPIRE),
+                                cardTitleText: text,
+                                textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
+                                trailingIconPath: AppAssetsPath.icChevronRight,
+                                leadingIconPath: AppAssetsPath.icWarning,
+                                iconColor: AppColorScheme.errorTextColor,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
+                          if (result != null && result) {
+                            bindDocName();
+                          }
+                        },
+                        child: AccountCard(
+                          key: Key(KEY_DOCTOR_CARD),
+                          cardTitleText: TranslationKeys.changeDocName.translate(context),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icPerson,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
+                        },
+                        child: AccountCard(
+                          key: Key(KEY_LANGUAGE_CARD),
+                          cardTitleText: TranslationKeys.language.translate(context),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icLanguage,
+                        ),
+                      ),
+                      ValueListenableBuilder(
+                          valueListenable: _syncData,
+                          builder: (context, syncData, _) {
+                            if (syncData) {
+                              return InkWell(
+                                onTap: () async {
+                                  final appVersion = await getAppVersion();
+                                  if (appVersion.isEmpty) {
+                                    CommonFunctions.toastMessage("Session expired! Login to Continue");
+                                    await loginViewModel?.logout();
+                                  } else {
+                                    onSyncClick();
+                                  }
+                                },
+                                child: AccountCard(
+                                  key: Key(KEY_DATA_SYNC_CARD),
+                                  cardTitleText: TranslationKeys.dataSync.translate(context),
+                                  trailingIconPath: AppAssetsPath.icChevronRight,
+                                  leadingIconPath: AppAssetsPath.icSync,
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: Center(
+                          child: Column(children: [
+                            SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
+                            Text(
+                              "${TranslationKeys.version.translate(context)}: $appVersion",
+                              style: AppStyles.bodySmall,
+                            )
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );

@@ -5,7 +5,8 @@ import 'package:mhealth/config/router/router_transition.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
-import 'package:mhealth/views/ask_mhealth/verification_screen.dart';
+import 'package:mhealth/views/doctor/doctor_name_screen.dart';
+import 'package:mhealth/views/questionair/view/question_screen_view.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -26,144 +27,126 @@ class AppRouter {
       routerNeglect: true,
       initialLocation: SplashScreen.routerPath,
       routes: [
-            GoRoute(
-              path: SplashScreen.routerPath,
-              builder: (context, state) => const SplashScreen(),
-            ),
-            GoRoute(
-              path: LoginHome.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const LoginHome(),
+        GoRoute(
+          path: SplashScreen.routerPath,
+          builder: (context, state) => const SplashScreen(),
+        ),
+        GoRoute(
+          path: LoginHome.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const LoginHome(),
+          ),
+        ),
+        GoRoute(
+          path: DashboardScreen.routerPath,
+          redirect: (context, state) async {
+            bool containsLanguage = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.LANGUAGE_KEY);
+            if (!containsLanguage) {
+              return LanguageSelectionScreen.routerPath;
+            }
+            bool containsDoctorName = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.SHREAD_PREF_DOC_KEY);
+            if (!containsDoctorName) {
+              return DoctorNameScreen.routerPath;
+            }
+            return null;
+          },
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: DashboardScreen(),
+          ),
+        ),
+        GoRoute(
+          path: CRAPatientScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const CRAPatientScreen(),
+          ),
+        ),
+        GoRoute(
+          path: DoctorNameScreen.routerPath,
+          pageBuilder: (context, state) {
+            bool showBackButton = state.extra == null ? false : state.extra as bool;
+            return RouterTransition(
+              key: state.pageKey,
+              child: DoctorNameScreen(
+                shouldShowBackButton: showBackButton,
               ),
-            ),
-            GoRoute(
-              path: DashboardScreen.routerPath,
-              redirect: (context, state) async {
-                bool containsLanguage = await SharedPreferencesService.sharedPreferencesService.hasKey(AppConstant.LANGUAGE_KEY);
-                if (!containsLanguage) {
-                  return LanguageSelectionScreen.routerPath;
-                }
-                return null;
-              },
-              pageBuilder: (context, state) => RouterTransition(
+            );
+          },
+        ),
+        GoRoute(
+          path: RegistrationScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const RegistrationScreen(),
+          ),
+        ),
+        GoRoute(
+            path: LanguageSelectionScreen.routerPath,
+            pageBuilder: (context, state) {
+              bool showBackButton = state.extra == null ? false : state.extra as bool;
+              return RouterTransition(
                 key: state.pageKey,
-                child:  DashboardScreen(),
+                child: LanguageSelectionScreen(displayBackButton: showBackButton),
+              );
+            }),
+        GoRoute(
+          path: ConsentScreeningScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const ConsentScreeningScreen(),
+          ),
+        ),
+        GoRoute(
+          path: RegistrationSuccessFullScreen.routerPath,
+          pageBuilder: (context, state) {
+            Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+            return RouterTransition(
+              key: state.pageKey,
+              child: RegistrationSuccessFullScreen(
+                thePatientId: extra["patientId"],
               ),
-            ),
-            GoRoute(
-              path: CRAPatientScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const CRAPatientScreen(),
-              ),
-            ),
-            GoRoute(
-              path: RegistrationScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const RegistrationScreen(),
-              ),
-            ),
-            GoRoute(
-                path: LanguageSelectionScreen.routerPath,
-                pageBuilder: (context, state) {
-                  bool showBackButton = state.extra == null ? false : state.extra as bool;
-                  return RouterTransition(
-                    key: state.pageKey,
-                    child: LanguageSelectionScreen(displayBackButton: showBackButton),
-                  );
-                }),
-            GoRoute(
-              path: ConsentScreeningScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const ConsentScreeningScreen(),
-              ),
-            ),
-            GoRoute(
-              path: RegistrationSuccessFullScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const RegistrationSuccessFullScreen(),
-              ),
-            ),
-            GoRoute(
-              path: MyAccountScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child:  MyAccountScreen(),
-              ),
-            ),
-            GoRoute(
-              path: QuestionnaireScreen.routerPath,
-              pageBuilder: (context, state) {
-                String? sectionName = state.extra as String?;
+            );
+          },
+        ),
+        GoRoute(
+          path: MyAccountScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: MyAccountScreen(),
+          ),
+        ),
+        GoRoute(
+          path: QuestionScreenView.routerPath,
+          pageBuilder: (context, state) {
+            Map<String, dynamic> jsonData = state.extra as Map<String, dynamic>;
 
-                return RouterTransition(
-                  key: state.pageKey,
-                  child: QuestionnaireScreen(
-                    sectionName: sectionName,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              path: PeriodontalScreen.routerPath,
-              pageBuilder: (context, state) {
-                bool? isRedirected = state.extra as bool?;
-                return RouterTransition(
-                  key: state.pageKey,
-                  child: PeriodontalScreen(
-                    redirectFromCRA: isRedirected,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              path: CriteriaScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: CriteriaScreen(),
+            return RouterTransition(
+              key: state.pageKey,
+              child: QuestionScreenView(
+                caseId: jsonData["caseId"],
+                patientId: jsonData["patientId"],
+                sectionId: jsonData["sectionId"],
               ),
-            ),
-            GoRoute(
-                path: VerificationScreen.routerPath,
-                pageBuilder: (context, state) {
-                  bool? isRedirected = state.extra as bool?;
-                  return RouterTransition(
-                    key: state.pageKey,
-                    child: VerificationScreen(redirectFromCRA: isRedirected),
-                  );
-                }),
-            GoRoute(
-              path: SignatureScreen.routerPath,
-              pageBuilder: (context, state) => RouterTransition(
-                key: state.pageKey,
-                child: const SignatureScreen(),
+            );
+          },
+        ),
+        GoRoute(
+          path: CriteriaScreen.routerPath,
+          pageBuilder: (context, state) {
+            Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+
+            return RouterTransition(
+              key: state.pageKey,
+              child: CriteriaScreen(
+                theCaseId: extra["caseId"],
+                thePatientId: extra["patientId"],
               ),
-            ),
-            GoRoute(
-              path: LesionLocationScreen.routerPath,
-              pageBuilder: (context, state) {
-                bool? isRedirected = state.extra as bool?;
-                return RouterTransition(
-                  key: state.pageKey,
-                  child: LesionLocationScreen(redirect: isRedirected),
-                );
-              },
-            ),
-            GoRoute(
-              path: MeasurementLesionsScreen.routerPath,
-              pageBuilder: (context, state) {
-                bool? isRedirected = state.extra as bool?;
-                return RouterTransition(
-                  key: state.pageKey,
-                  child: MeasurementLesionsScreen(redirect: isRedirected),
-                );
-              },
-            ),
-          ],
+            );
+          },
+        ),
+      ],
 
       /// this callback will called on every time when we are trying to navigate from one screen to another
       redirect: (BuildContext context, GoRouterState state) async {

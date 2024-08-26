@@ -36,10 +36,6 @@ class MHealthApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext createContext) => RegistrationViewModel(),
         ),
-        ChangeNotifierProvider<QuestionnaireViewModel>(
-          lazy: false,
-          create: (BuildContext createContext) => QuestionnaireViewModel(),
-        ),
         ChangeNotifierProvider<PatientListViewModel>(
           lazy: false,
           create: (BuildContext createContext) => PatientListViewModel(),

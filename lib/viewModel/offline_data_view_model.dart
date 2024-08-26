@@ -10,6 +10,7 @@ import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/offlineDataService/offline_data_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/common_functions.dart';
+import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 
 class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
@@ -43,7 +44,13 @@ class OfflineDataViewModel extends ChangeNotifier {
 
   Future<void> fetchCompletedCRA() async {
     List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-    _completedCRAcount = response.where((element) => element?.craSectionData?.any((el) => el.encounterCategoryMapId == "community_risk_assessment_verification_form") ?? false).length;
+    _completedCRAcount = response
+        .where((element) =>
+            element?.craSectionData?.any(
+              (el) => el.encounterCategoryMapId == QuestionViewModel.sectionList.last.id,
+            ) ??
+            false)
+        .length;
     notifyListeners();
   }
 

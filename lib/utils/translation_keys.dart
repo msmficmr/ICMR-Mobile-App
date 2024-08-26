@@ -1,9 +1,9 @@
 class TranslationKeys {
-
   TranslationKeys._();
 
   static const String enterMobileNumber = "enter_your_mobile_number_title";
   static const String enterEmailId = "enter_your_email_id";
+  static const String doctor_name = "doctor_name";
   static const String continueText = "continue";
   static const String enterOTP = "enter_6_digit_otp";
   static const String dashboard = "dashboard";
@@ -16,9 +16,11 @@ class TranslationKeys {
   static const String search = "search";
   static const String myAccount = "my_account";
   static const String language = "language";
+  static const String changeDocName = "changeDocName";
   static const String dataSync = "data_sync";
   static const String version = "version";
   static const String pleaseTakeConsentFromCitizen = "please_take_consent_from_citizen";
+  static const String informedConsentObtained = "informed_consent_obtained";
   static const String resendOTPHeading = "resend_otp_heading";
   static const String resendOTPTitle = "resend_otp_title";
   static const String consent = "consent";
@@ -108,5 +110,12 @@ class TranslationKeys {
   static const String studyCodes = "study_codes";
   static const String signedConsentReasonCodes = "signed_consent_reason_codes";
   static const String visitTypes = "visit_types";
+  static const String visitMonthTypeList = "visit_month_list";
   static const String documents = "documents";
+  static const String visitNumber = "visit_number";
+  static const String visitMonth = "visit_month";
+  static const String place = "place";
+  static const String primaryId = "primary_id";
+  static const String secondaryId = "secondary_id";
+  static const String craSuccessMessage = "cra_success_message";
 }

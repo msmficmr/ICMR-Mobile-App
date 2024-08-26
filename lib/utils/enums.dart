@@ -19,10 +19,24 @@ enum CircularAvatarFieldChildType { TEXT, SVG_ASSET, IMAGE_ASSET }
 
 enum ScreenNames { REGISTRATION_SCREEN, TAKE_CRA_SCREEN }
 
-enum AuthType {mobile,email}
+enum AuthType { mobile, email }
 
 enum QuestionType { SINGLE_SELECT_CHIP }
 
-enum LanguageCodes  { en_US, hi }
+enum LanguageCodes { en_US, hi }
 
-enum QuestionnaireTemplateIds {community_risk_assessment_baseline_signs_or_symptoms, community_risk_assessment_details_of_habits, community_risk_assessment_investigation, community_risk_assessment_lesion_location, community_risk_assessment_measurement_lesions, community_risk_assessment_periodontal_status, community_risk_assessment_verification_form}
+enum QuestionnaireTemplateIds {
+  community_risk_assessment_baseline_signs_or_symptoms,
+  community_risk_assessment_details_of_habits,
+  community_risk_assessment_investigation,
+  community_risk_assessment_lesion_location,
+  community_risk_assessment_measurement_lesions,
+  community_risk_assessment_periodontal_status,
+  community_risk_assessment_verification_form
+}
+
+enum ApiStatus {
+  loading,
+  success,
+  error;
+}

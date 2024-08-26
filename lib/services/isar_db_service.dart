@@ -34,16 +34,17 @@ class IsarDbService {
     return registeredPatientList;
   }
 
-  Future<void> updatePatientRegistration({required String patientId, required AttachmentDb attachment}) async {
-    Isar? db = await isar;
-    final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
-    if (patientToBeUpdated != null) {
-      patientToBeUpdated.consent = [attachment, ...?patientToBeUpdated.consent];
-      await db.writeTxn(() async {
-        db.patientRegistrations.put(patientToBeUpdated);
-      });
-    }
-  }
+  ///[COMMENTING CODE as this may need in future]
+  // Future<void> updatePatientRegistration({required String patientId, required AttachmentDb attachment}) async {
+  //   Isar? db = await isar;
+  //   final patientToBeUpdated = await db.patientRegistrations.filter().patientIdEqualTo(patientId).findFirst();
+  //   if (patientToBeUpdated != null) {
+  //     patientToBeUpdated.consent = [attachment, ...?patientToBeUpdated.consent];
+  //     await db.writeTxn(() async {
+  //       db.patientRegistrations.put(patientToBeUpdated);
+  //     });
+  //   }
+  // }
 
   Future<void> saveCRA(CRAOfflineData craData) async {
     Isar? db = await isar;
@@ -53,11 +54,14 @@ class IsarDbService {
     });
   }
 
-  Future<void> updateCRA({required String caseId, required CRASectionModel craData}) async {
+  Future<void> updateCRA({required String caseId, required CRASectionModel craData, required List<DoctorModel> docDetails}) async {
     Isar? db = await isar;
     final questionnaire = await db.cRAOfflineDatas.filter().caseIdEqualTo(caseId).findFirst();
     if (questionnaire != null) {
       CRAOfflineData? questionnaireToBeUpdated = await db.cRAOfflineDatas.get(questionnaire.id ?? 0);
+
+      questionnaireToBeUpdated?.docDetails = docDetails;
+
       List<CRASectionModel>? previousData = questionnaireToBeUpdated?.craSectionData ?? [];
       int index = previousData.indexWhere((element) => element.encounterCategoryMapId == craData.encounterCategoryMapId);
       if (index != -1) {
@@ -149,4 +153,15 @@ class IsarDbService {
     return craData;
   }
 
+  Future<RiskAssessmentQuestionaire?> getTemplate({required String local}) async {
+    Isar? db = await isar;
+    final filteredQuestionnaires = await db.riskAssessmentQuestionaires.filter().localeEqualTo(local).findFirst();
+    return filteredQuestionnaires;
+  }
+
+  Future<CRAOfflineData?> getCRAByPatientAndCase(String patientId, String caseId) async {
+    Isar? db = await isar;
+    final craData = await db.cRAOfflineDatas.filter().patientIdEqualTo(patientId).caseIdEqualTo(caseId).findFirst();
+    return craData;
+  }
 }

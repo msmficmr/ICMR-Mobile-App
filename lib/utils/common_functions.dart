@@ -1,17 +1,26 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
+import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/views/questionair/view/criteria_screen.dart';
+import 'package:mhealth/views/questionair/view/question_screen_view.dart';
+import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 import 'package:mhealth/widgets/custom_alert_dialog.dart';
 import 'package:mhealth/widgets/image_view_widget.dart';
 import 'package:mhealth/widgets/pdf_preview.dart';
@@ -89,22 +98,35 @@ class CommonFunctions {
 
   /// displays toast message on screen
   static void toastMessage(String message) {
-    Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
+    if (Platform.isAndroid) {
+      Fluttertoast.showToast(msg: message, gravity: ToastGravity.BOTTOM, toastLength: Toast.LENGTH_LONG, fontSize: 16.0);
+    } else {
+      AppValues.scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   static void viewImage({required BuildContext context, required AttachmentModel model}) {
     if (model.fileName.contains(".pdf")) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => PdfPreview(fileName: model.fileName, bytes: Uint8List.fromList(model.bytes))));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PdfPreview(
+            fileName: model.fileName,
+            bytes: Uint8List.fromList([]),
+          ),
+        ),
+      );
     } else {
       showDialog(
-          barrierDismissible: true,
-          context: context,
-          useSafeArea: true,
-          builder: (_) {
-            return ImageViewWidget(
-              imageList: model.bytes,
-            );
-          });
+        barrierDismissible: true,
+        context: context,
+        useSafeArea: true,
+        builder: (_) {
+          return ImageViewWidget(
+            imageList: [],
+          );
+        },
+      );
     }
   }
 
@@ -300,11 +322,27 @@ class CommonFunctions {
     } catch (e) {}
   }
 
-  Future<String?> getApplicationFilePath() async {
+  /* Future<String?> createFileToLocal(List<int> bytes, String extension) async {
+    try {
+      Directory tempDir = await getApplicationDocumentsDirectory();
+      String tempPath = tempDir.path;
+      var directory = await Directory('$tempPath/imagesFile').create(recursive: true);
+      String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}$extension';
+      File newFile = File(newPath);
+      await newFile.writeAsBytes(bytes);
+
+      return newPath;
+    } catch (e) {}
+  } */
+
+  Future<String?> getApplicationFilePath([String? extension]) async {
     Directory tempDir = await getApplicationDocumentsDirectory();
     String tempPath = tempDir.path;
+
     var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
-    String newPath = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
+
+    String newPath = '${directory.path}/${Uuid().v4()}${extension ?? ".png"}';
+
     return newPath;
   }
 
@@ -314,6 +352,120 @@ class CommonFunctions {
       await fileToDelete.delete();
     } catch (e) {
       log(e.toString());
+    }
+  }
+
+  static void copyToClipboard(String volunteerId, BuildContext context) {
+    Clipboard.setData(ClipboardData(text: volunteerId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Copied to clipboard')),
+    );
+  }
+
+  Future<String> writeFileInIsolate(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken) async {
+    ReceivePort receivePort = ReceivePort();
+    Completer<String> completer = Completer();
+
+    // Start a new isolate and pass the SendPort and filePath
+    Isolate isolate = await Isolate.spawn(_writeFileTask, {'fileBytes': fileBytes, 'extension': extension, 'sendPort': receivePort.sendPort, "rootIsolateToken": rootIsolateToken});
+
+    // Listen for messages from the isolate
+    receivePort.listen((message) {
+      if (message is String) {
+        completer.complete(message);
+      } else {
+        completer.completeError(message);
+      }
+      receivePort.close(); // Close the port when done
+    });
+
+    return completer.future;
+  }
+
+  static void _writeFileTask(Map<String, dynamic> message) async {
+    SendPort sendPort = message['sendPort'];
+    List<int> fileBytes = message['fileBytes'];
+    String extension = message['extension'];
+    var rootIsolateToken = message['rootIsolateToken'];
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken!);
+    try {
+      String? filePath = await CommonFunctions().getApplicationFilePath(extension);
+      if (filePath != null) {
+        File file = File(filePath);
+        await file.writeAsBytes(fileBytes);
+        sendPort.send(filePath); // Send the contents back to the main isolate
+      } else {
+        sendPort.send(Exception()); // Send the error message back to the main isolate
+      }
+    } catch (e) {
+      sendPort.send(Exception(e)); // Send the error message back to the main isolate
+    }
+  }
+
+  Future<List<int>> readFileInIsolate(String filePath) async {
+    ReceivePort receivePort = ReceivePort();
+    Completer<List<int>> completer = Completer();
+
+    // Start a new isolate and pass the SendPort and filePath
+    Isolate isolate = await Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
+
+    // Listen for messages from the isolate
+    receivePort.listen((message) {
+      if (message is List<int>) {
+        completer.complete(message);
+      } else {
+        completer.completeError(message);
+      }
+      receivePort.close(); // Close the port when done
+    });
+
+    return completer.future;
+  }
+
+  static void _readFileTask(Map<String, dynamic> message) async {
+    SendPort sendPort = message['sendPort'];
+    String filePath = message['filePath'];
+
+    try {
+      File file = File(filePath);
+      List<int> contents = await file.readAsBytes();
+      sendPort.send(contents); // Send the contents back to the main isolate
+    } catch (e) {
+      sendPort.send(e.toString()); // Send the error message back to the main isolate
+    }
+  }
+
+  onStartCRA({required BuildContext context, required String patientId, required bool isCraCompleted, String? caseId, bool withReplace = false}) {
+    if (isCraCompleted) {
+      CommonFunctions.toastMessage(TranslationKeys.craSuccessMessage.translate(context));
+      return;
+    }
+    if (caseId == null) {
+      caseId ??= CommonFunctions.randomNumber(5);
+      Map<String, dynamic> details = {
+        "caseId": caseId,
+        "patientId": patientId,
+        "sectionId": QuestionViewModel.sectionList.first.id,
+      };
+      if (withReplace) {
+        GoRouter.of(context).replace(CriteriaScreen.routerPath, extra: details);
+      } else {
+        GoRouter.of(context).push(CriteriaScreen.routerPath, extra: details);
+      }
+      return;
+    }
+
+    Map<String, dynamic> details = {
+      "caseId": caseId,
+      "patientId": patientId,
+      "sectionId": QuestionViewModel.sectionList.first.id,
+    };
+    //MUST CALL BEFORE TAKING CRA
+    QuestionViewModel.resetViewModel();
+    if (withReplace) {
+      GoRouter.of(context).replace(QuestionScreenView.routerPath, extra: details);
+    } else {
+      GoRouter.of(context).push(QuestionScreenView.routerPath, extra: details);
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +20,7 @@ class CustomSignatureWidget extends StatelessWidget {
   final String? errorText;
   final VoidCallback? onRemoveClick;
   final Key? removeButtonKey;
+  final GlobalKey<FormFieldState> formFieldState;
 
   CustomSignatureWidget({
     super.key,
@@ -28,24 +31,26 @@ class CustomSignatureWidget extends StatelessWidget {
     this.signatureData,
     this.errorText,
     this.removeButtonKey,
+    required this.formFieldState,
   });
 
   @override
   Widget build(BuildContext context) {
     return FormField<Uint8List?>(
+      key: formFieldState,
       initialValue: signatureData,
-      autovalidateMode: AutovalidateMode.always,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: errorText == null
           ? null
           : (value) {
-        if (value == null) {
-          return null;
-        } else if (signatureData == null) {
-          return errorText;
-        }
+              if (value == null) {
+                return errorText;
+              } else if (signatureData == null) {
+                return errorText;
+              }
 
-        return null;
-      },
+              return null;
+            },
       builder: (field) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -100,7 +105,7 @@ class CustomSignatureWidget extends StatelessWidget {
                   ],
                 ),
               ),
-            if (signatureData != null && field.hasError) ...[
+            if (field.hasError) ...[
               const SpaceWidget(),
               Padding(
                 padding: const EdgeInsets.only(left: 12),
