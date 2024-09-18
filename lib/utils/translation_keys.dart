@@ -118,4 +118,5 @@ class TranslationKeys {
   static const String primaryId = "primary_id";
   static const String secondaryId = "secondary_id";
   static const String craSuccessMessage = "cra_success_message";
+   static const String viewDetails = "view_details";
 }

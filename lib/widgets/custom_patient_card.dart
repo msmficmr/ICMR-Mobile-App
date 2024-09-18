@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -8,6 +9,11 @@ import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/widgets/space_widget.dart';
 import 'package:mhealth/widgets/status_widget.dart';
+
+import '../config/theme/outlined_button_theme_style.dart';
+import '../utils/translation_keys.dart';
+import '../views/cra/registration_screen.dart';
+import 'primary_outlined_button.dart';
 
 class CustomPatientCard extends StatelessWidget {
   final String patientName, patientId, age, phoneNumber, widgetKey;
@@ -47,6 +53,7 @@ class CustomPatientCard extends StatelessWidget {
   final String KEY_PATIENT_GENDER = "key_patient_gender";
   final String KEY_PATIENT_AGE = "key_patient_age";
   final String KEY_PATIENT_PHONE_NUMBER = "key_patient_phone_number";
+  final String KEY_VIEW_DETAILS_BUTTON = "key_view_details_button";
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +65,7 @@ class CustomPatientCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: widthSize,
-          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: AppValues.circularBorderRadius10,
             color: AppColorScheme.kGrayColor.shade50,
@@ -130,6 +137,21 @@ class CustomPatientCard extends StatelessWidget {
                     RowTextWidget(widgetKey: KEY_PATIENT_PHONE_NUMBER, image: AppAssetsPath.icPhone, text: phoneNumber.maskPhoneNumber),
                   ],
                 ),
+              ),
+              const SpaceWidget(height: 10),
+              PrimaryOutlinedButton(
+                buttonThemeStyle: OutlinedButtonThemeStyle(
+                    customTextStyle: AppStyles.buttonStyle,
+                    enabledTextColor: AppColorScheme.kGrayColor.shade600,
+                    enabledBorderColor: AppColorScheme.kGrayColor.shade600),
+                buttonTitle: TranslationKeys.viewDetails.translate(context),
+                widgetKey: KEY_VIEW_DETAILS_BUTTON,
+                onPressed: () {
+                  GoRouter.of(context).push(
+                    RegistrationScreen.routerPath,
+                    extra: patientId,
+                  );
+                },
               )
             ],
           ),
