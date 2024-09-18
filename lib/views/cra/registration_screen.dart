@@ -248,7 +248,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ?.data;
       _consentTextNotifier.value = resp.isConsent;
       _isConsentYesButtonActiveNotifier.value = resp.isConsent.toUpperCase() == "YES" ? true : false;
-      _institutionCode.value = institutionNames[institutionIds.indexOf(resp.institutionCodeID)];
+      if (resp.institutionCodeID.isNotEmpty) {
+        _institutionCode.value = institutionNames[institutionIds.indexOf(resp.institutionCodeID)];
+      }
       _studyCode.value = studyNames[studyIds.indexOf(resp.studyCode)];
 
       _occupation.value = occupationNames[occupationIds.indexOf(resp.occupation)];
