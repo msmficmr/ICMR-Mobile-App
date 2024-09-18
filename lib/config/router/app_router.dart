@@ -77,10 +77,18 @@ class AppRouter {
         ),
         GoRoute(
           path: RegistrationScreen.routerPath,
-          pageBuilder: (context, state) => RouterTransition(
-            key: state.pageKey,
-            child: const RegistrationScreen(),
-          ),
+          pageBuilder: (context, state) {
+            final String? patientId = state.extra as String?;
+            bool isEditable = patientId != null ? false : true;
+
+            return RouterTransition(
+              key: state.pageKey,
+              child: RegistrationScreen(
+                patientId: patientId,
+                isEditable: isEditable,
+              ),
+            );
+          },
         ),
         GoRoute(
             path: LanguageSelectionScreen.routerPath,

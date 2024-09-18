@@ -3,7 +3,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -338,7 +338,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                       hintText: TranslationKeys.enterHere.translate(context),
                                       heading: LENGTH_TITLE,
                                       headingKey: Key("${KEY_HEADING_LENGTH}_$index"),
-                                      //validator: AppValidators.requiredField,
+                                      validator: AppValidators.requiredField,
                                     ),
                                     const SizedBox(height: 10),
                                     CustomTextField(
@@ -348,25 +348,48 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                       hintText: TranslationKeys.enterHere.translate(context),
                                       heading: BREADTH_TITLE,
                                       headingKey: Key("${KEY_HEADING_BREADTH}_$index"),
-                                      //validator: AppValidators.requiredField,
+                                      validator: AppValidators.requiredField,
                                     ),
                                     const SizedBox(height: 10),
-                                    ValueListenableBuilder<String?>(
-                                        valueListenable: question.diagnosys,
-                                        builder: (context, _, __) {
-                                          return CustomDropdown<IdTextModel>(
-                                            widgetKey: "${KEY_FIELD_PROVISIONAL_DIAGNOSIS}_$index",
-                                            heading: PROVISIONAL_DIAGNOSIS_TITLE,
-                                            headingKey: Key("${KEY_HEADING_PROVISIONAL_DIAGNOSIS}_$index"),
-                                            hintText: TranslationKeys.select.translate(context),
-                                            onChanged: (val) {
-                                              question.diagnosys.value = val?.id;
-                                            },
-                                            selectedItem: question.diagnosys.value == null ? null : provisionalDiagnosisList.firstWhere((element) => element.id == question.diagnosys.value),
-                                            items: provisionalDiagnosisList,
-                                            compareFn: (p0, p1) => p0.id == p1.id,
-                                          );
-                                        }),
+                                    FormField<String?>(
+                                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                                      validator: (value) {
+                                        if (question.diagnosys.value == null) {
+                                          return "Please select a provisional diagnosis.";
+                                        }
+                                        return null;
+                                      },
+                                      builder: (formState) {
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            ValueListenableBuilder<String?>(
+                                              valueListenable: question.diagnosys,
+                                              builder: (context, _, __) {
+                                                return CustomDropdown<IdTextModel>(
+                                                  widgetKey: "${KEY_FIELD_PROVISIONAL_DIAGNOSIS}_$index",
+                                                  heading: PROVISIONAL_DIAGNOSIS_TITLE,
+                                                  headingKey: Key("${KEY_HEADING_PROVISIONAL_DIAGNOSIS}_$index"),
+                                                  hintText: TranslationKeys.select.translate(context),
+                                                  onChanged: (val) {
+                                                    question.diagnosys.value = val?.id;
+                                                    formState.didChange(val?.id);
+                                                  },
+                                                  selectedItem: question.diagnosys.value == null
+                                                      ? null
+                                                      : provisionalDiagnosisList.firstWhereOrNull(
+                                                          (element) => element.id == question.diagnosys.value,
+                                                        ),
+                                                  items: provisionalDiagnosisList,
+                                                  compareFn: (p0, p1) => p0.id == p1.id,
+                                                );
+                                              },
+                                            ),
+                                            if (formState.hasError) ...[Text(formState.errorText ?? "", style: AppStyles.errorStyle)]
+                                          ],
+                                        );
+                                      },
+                                    ),
                                     const SizedBox(height: 10),
                                     ValueListenableBuilder<String?>(
                                         valueListenable: question.diagnosys,
@@ -378,7 +401,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                               hintText: TranslationKeys.enterHere.translate(context),
                                               heading: OTHER_CLINICAL_TITLE,
                                               headingKey: Key("${KEY_HEADING_OTHER_IMPRESSION}_$index"),
-                                              //validator: AppValidators.requiredField,
+                                              // validator: AppValidators.requiredField,
                                             );
                                           } else {
                                             return const SizedBox();
@@ -405,6 +428,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                   builder: (context, _, __) {
                     return FormField<bool?>(
                       key: _captureState,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
                         if (value == null || value == false) {
                           return "This field is required.";
