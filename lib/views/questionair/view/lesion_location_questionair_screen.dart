@@ -65,9 +65,9 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   final String SITE_TITLE = "Site";
   final String LOCATION_TITLE = "Location";
   final String CAPTURE_IMAGE_TITLE = "Capture Image";
-  final String LENGTH_TITLE = "Length (mm)";
-  final String BREADTH_TITLE = "Breadth (mm)";
-  final String PROVISIONAL_DIAGNOSIS_TITLE = "Diagnosis";
+  final String LENGTH_TITLE = "Length (mm)*";
+  final String BREADTH_TITLE = "Breadth (mm)*";
+  final String PROVISIONAL_DIAGNOSIS_TITLE = "Diagnosis*";
   final String OTHER_CLINICAL_TITLE = "Other";
   final String EMPTY_IMAGES_TITLE = "No oral lesion (mucosal\\benign tumors)";
   final String CAPTURED_IMAGES_TITLE = "I have capture  all the images of lesions";
