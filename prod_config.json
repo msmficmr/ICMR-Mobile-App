@@ -3,5 +3,6 @@
   "ENV" : "live",
   "APP_NAME" : "m-health",
   "APP_SUFFIX" : "",
-  "SOURCE_APP_NAME" : "mhealth"
+  "SOURCE_APP_NAME" : "mhealth",
+  "ENCRYPTION_KEY" : ""
 }

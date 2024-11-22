@@ -18,6 +18,7 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/import_export_util.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
@@ -46,12 +47,14 @@ class MyAccountScreen extends StatefulWidget {
 
 class _MyAccountScreenState extends State<MyAccountScreen> {
   LoginViewModel? loginViewModel;
+  late ImportExportUtil importExportUtil;
 
   ValueNotifier<String?> docName = ValueNotifier<String?>(null);
 
   @override
   void initState() {
     super.initState();
+    importExportUtil = ImportExportUtil(context: context);
     _syncData = ValueNotifier<bool>(false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     checkToSyncData();
@@ -148,7 +151,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     return result ?? false;
   }
 
-  Future showDataSyncLoading(BuildContext context) {
+  Future showDataSyncLoading(BuildContext context, {String? message}) {
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -165,7 +168,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 const CircularProgressIndicator(),
                 const SpaceWidget(height: 10),
                 Text(
-                  'Syncing data Please wait',
+                  message ?? 'Syncing data Please wait',
                   style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryColor),
                 ),
                 const SpaceWidget(height: 10),
@@ -304,6 +307,27 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       }
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
+    }
+  }
+
+  Future<void> importData() async {
+    try {
+      showDataSyncLoading(context, message: "Please Wait");
+      bool? success = await importExportUtil.importPatients();
+      if (success ?? false) {
+        await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
+      }
+    } finally {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> exportData() async {
+    try {
+      showDataSyncLoading(context, message: "Please Wait");
+      await importExportUtil.exportPatients();
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -501,6 +525,24 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                         child: AccountCard(
                           key: Key(KEY_LANGUAGE_CARD),
                           cardTitleText: TranslationKeys.language.translate(context),
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icLanguage,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: exportData,
+                        child: AccountCard(
+                          key: Key(KEY_LANGUAGE_CARD),
+                          cardTitleText: "Export",
+                          trailingIconPath: AppAssetsPath.icChevronRight,
+                          leadingIconPath: AppAssetsPath.icLanguage,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: importData,
+                        child: AccountCard(
+                          key: Key(KEY_LANGUAGE_CARD),
+                          cardTitleText: "Import",
                           trailingIconPath: AppAssetsPath.icChevronRight,
                           leadingIconPath: AppAssetsPath.icLanguage,
                         ),
