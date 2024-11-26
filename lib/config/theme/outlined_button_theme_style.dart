@@ -25,10 +25,10 @@ class OutlinedButtonThemeStyle extends ButtonStyle {
     this.hasBorder = true,
   });
   @override
-  MaterialStateProperty<Color?>? get backgroundColor {
-    return MaterialStateProperty.resolveWith<Color>(
-      (Set<MaterialState> states) {
-        if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<Color?>? get backgroundColor {
+    return WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
           return disabledButtonColor ?? AppColorScheme.kGrayColor.shade50;
         }
 
@@ -38,16 +38,16 @@ class OutlinedButtonThemeStyle extends ButtonStyle {
   }
 
   @override
-  MaterialStateProperty<EdgeInsetsGeometry?>? get padding {
-    return buttonPadding == null ? const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 20, vertical: 10)) : MaterialStatePropertyAll<EdgeInsets>(buttonPadding!);
+  WidgetStateProperty<EdgeInsetsGeometry?>? get padding {
+    return buttonPadding == null ? const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 20, vertical: 10)) : WidgetStatePropertyAll<EdgeInsets>(buttonPadding!);
   }
 
   @override
-  MaterialStateProperty<BorderSide?>? get side {
-    return MaterialStateProperty.resolveWith<BorderSide>(
-      (Set<MaterialState> states) {
+  WidgetStateProperty<BorderSide?>? get side {
+    return WidgetStateProperty.resolveWith<BorderSide>(
+      (Set<WidgetState> states) {
         if (hasBorder) {
-          if (states.contains(MaterialState.disabled)) {
+          if (states.contains(WidgetState.disabled)) {
             return BorderSide(color: disabledBorderColor ?? AppColorScheme.kGrayColor.shade300);
           }
 
@@ -60,17 +60,17 @@ class OutlinedButtonThemeStyle extends ButtonStyle {
   }
 
   @override
-  MaterialStateProperty<OutlinedBorder?>? get shape {
-    return MaterialStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
+  WidgetStateProperty<OutlinedBorder?>? get shape {
+    return WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
       borderRadius: borderRadius ?? BorderRadius.circular(50),
     ));
   }
 
   @override
-  MaterialStateProperty<Color?>? get foregroundColor {
-    return MaterialStateProperty.resolveWith<Color>(
-      (Set<MaterialState> states) {
-        if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<Color?>? get foregroundColor {
+    return WidgetStateProperty.resolveWith<Color>(
+      (Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
           return disabledTextColor ?? AppColorScheme.kGrayColor.shade400;
         }
 
@@ -80,7 +80,7 @@ class OutlinedButtonThemeStyle extends ButtonStyle {
   }
 
   @override
-  MaterialStateProperty<TextStyle?>? get textStyle {
-    return customTextStyle == null ? null : MaterialStatePropertyAll<TextStyle?>(customTextStyle);
+  WidgetStateProperty<TextStyle?>? get textStyle {
+    return customTextStyle == null ? null : WidgetStatePropertyAll<TextStyle?>(customTextStyle);
   }
 }

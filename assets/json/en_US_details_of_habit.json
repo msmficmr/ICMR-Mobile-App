@@ -160,11 +160,11 @@
             "previousQuestionId": null,
             "lastQuestion": false
         },
-        "do_you_smoke_smokeless": {
+        "do_you_chew_smokeless_tobacco": {
             "questionObject": {
                 "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
-                "questionId": "do_you_smoke_smokeless",
-                "questionText": "Do you smoke Smokeless?*",
+                "questionId": "do_you_chew_smokeless_tobacco",
+                "questionText": "Do you chew Smokeless tobacco?*",
                 "required": "true",
                 "validationMessage": null,
                 "regex": null,

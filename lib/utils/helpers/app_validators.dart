@@ -187,7 +187,7 @@ class AppValidators {
 
     try {
       int age = int.parse(value);
-      if (age > 150 || age <= 0) {
+      if (age > 150 || age < 18) {
         return kValidAgeValidator;
       }
     } catch (e) {

@@ -48,24 +48,26 @@ class CustomDropdown<T> extends StatelessWidget {
 
   EdgeInsetsGeometry? contentPadding;
   FocusNode? focusNode;
+  final bool isEnabled;
 
-  CustomDropdown(
-      {super.key,
-      this.hintText,
-      this.heading,
-      this.headingKey,
-      this.searchFieldHintText,
-      this.selectedItem,
-      this.validator,
-      this.filterFn,
-      this.showSearchBox,
-      this.compareFn,
-      required this.widgetKey,
-      required this.items,
-      required this.onChanged,
-      this.contentPadding,
-      this.focusNode})
-      : assert(_getHeadingAssert(heading, headingKey));
+  CustomDropdown({
+    super.key,
+    this.hintText,
+    this.heading,
+    this.headingKey,
+    this.searchFieldHintText,
+    this.selectedItem,
+    this.validator,
+    this.filterFn,
+    this.showSearchBox,
+    this.compareFn,
+    required this.widgetKey,
+    required this.items,
+    required this.onChanged,
+    this.contentPadding,
+    this.focusNode,
+    this.isEnabled = true,
+  }) : assert(_getHeadingAssert(heading, headingKey));
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,7 @@ class CustomDropdown<T> extends StatelessWidget {
           const SpaceWidget(),
         ],
         DropdownSearch<T>(
+           enabled: isEnabled,
           key: Key(widgetKey),
           items: items,
           onChanged: (value) {
