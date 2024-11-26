@@ -90,6 +90,8 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
           }
         }
       }
+    }else{
+       CommonFunctions.toastMessage(AppConstant.SELECT_FILE_BEFORE_SUBMITTING);
     }
   }
 

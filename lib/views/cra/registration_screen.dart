@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -8,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
-import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/model/id_text_model.dart';
@@ -29,7 +27,6 @@ import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/patient_list_view_model.dart';
-import 'package:mhealth/viewModel/questionnaire_view_model.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -45,8 +42,10 @@ import '../../widgets/primary_outlined_button.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String routerPath = "/registration";
+  final String? patientId;
+  final bool isEditable;
 
-  const RegistrationScreen({Key? key}) : super(key: key);
+  const RegistrationScreen({Key? key, this.patientId, this.isEditable = false}) : super(key: key);
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
@@ -95,6 +94,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _documentTypeController = TextEditingController();
   late TextEditingController _consentDateController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
+  final TextEditingController _visitMonthController = TextEditingController();
   final TextEditingController _primaryIdController = TextEditingController();
   final TextEditingController _secondaryIdController = TextEditingController();
 
@@ -226,7 +226,61 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getVisitNumber();
       getVisitMonthList();
+      if (widget.patientId != null) {
+        _bindData();
+      }
     });
+  }
+
+  _bindData() async {
+    PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(widget.patientId ?? "");
+    if (resp != null) {
+      _buttonEnabled.value = false;
+      _visitNumber.value = IdTextModel(
+        id: _visitNumberList.value.firstWhereOrNull((visit) => visit.id == resp.visitNo)?.id ?? '',
+        name: _visitNumberList.value.firstWhereOrNull((visit) => visit.id == resp.visitNo)?.name ?? '',
+      );
+      _visitMonthController.text = resp.visitMonth ?? "";
+      _gender.value = AppConstant.GENDER_LIST
+          .firstWhereOrNull(
+            (gender) => gender.data?.toUpperCase() == resp.gender?.toUpperCase(),
+          )
+          ?.data;
+      _consentTextNotifier.value = resp.isConsent;
+      _isConsentYesButtonActiveNotifier.value = resp.isConsent.toUpperCase() == "YES" ? true : false;
+      if (resp.institutionCodeID.isNotEmpty) {
+        _institutionCode.value = institutionNames[institutionIds.indexOf(resp.institutionCodeID)];
+      }
+      _studyCode.value = studyNames[studyIds.indexOf(resp.studyCode)];
+
+      _occupation.value = occupationNames[occupationIds.indexOf(resp.occupation)];
+      _pincodeController.text = resp.pincode ?? "";
+      _signConsent.value = resp.signedConsent.toUpperCase() == "TRUE" ? AppConstant.BINARY_LIST.first.data : AppConstant.BINARY_LIST.last.data;
+      if (resp.signedConsentNoReason.isNotEmpty) {
+        _signedConsentCopy.value = true;
+        _signedConsentNoReason.value = signedConsentNames[signedConsentIds.indexOf(resp.signedConsentNoReason)];
+      }
+      if (resp.identityProofs != null) {
+        _documentType.value = true;
+        _document.value = documentNames[documentIds.indexOf(resp.identityProofs?.identityType ?? "")];
+        _documentTypeController.text = resp.identityProofs?.value ?? "";
+      }
+
+      _firstNameController.text = resp.firstName;
+      _lastNameController.text = resp.lastName;
+      _ageController.text = resp.age;
+      _alternateNumberFieldController.text = resp.alternatePhoneNumber ?? "";
+      _consentDateController.text = DateFormat('dd/MM/yyyy').format(resp.consentDate);
+      _placeController.text = resp.place;
+      _tempAddressController.text = resp.address ?? "";
+      _districtController.text = resp.district ?? "";
+      _stateController.text = resp.state ?? "";
+      _permanentAddressController.text = resp.permanentAddress ?? "";
+      _mobileFieldController.text = resp.phoneNumber;
+      _primaryIdController.text = resp.primaryId;
+      _secondaryIdController.text = resp.secondaryId;
+      _medicalRecordNumberController.text = resp.medicalRecordNumber ?? "";
+    }
   }
 
   initializeField() {
@@ -352,7 +406,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..createdBy = userId
           ..place = _placeController.text.trim()
           ..visitNo = _visitNumber.value?.id
-          ..visitMonth = _visitMonth.value?.id
+          ..visitMonth = _visitMonthController.text.trim()
           ..primaryId = _generatePrimaryId()
           ..secondaryId = _generateSecondaryId());
 
@@ -437,7 +491,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 enabledBorderColor: isButtonActive ? AppColorScheme.kSuccessStatusColor : AppColorScheme.kGrayColor.shade400),
                             buttonTitle: TranslationKeys.yes.translate(context),
                             widgetKey: KEY_BUTTON_YES_CONSENT,
-                            onPressed: onConsentYesClicked,
+                            onPressed: widget.isEditable ? onConsentYesClicked : () {},
                           );
                         }),
                     const SpaceWidget(width: 10.0),
@@ -452,7 +506,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 enabledBorderColor: isButtonActive ? AppColorScheme.errorTextColor : AppColorScheme.kGrayColor.shade400),
                             buttonTitle: TranslationKeys.no.translate(context),
                             widgetKey: KEY_BUTTON_NO_CONSENT,
-                            onPressed: onConsentNoClicked,
+                            onPressed: widget.isEditable ? onConsentNoClicked : () {},
                           );
                         }),
                   ],
@@ -482,6 +536,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //DATE OF VISIT
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _dateOfVisitController,
                   focusNode: _dovFocusNode,
                   widgetKey: Key(KEY_FIELD_DATE_OF_VISIT),
@@ -503,6 +558,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //PLACE
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _placeController,
                   widgetKey: Key(KEY_TEXTFIELD_PLACE),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -522,6 +578,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         valueListenable: _visitNumber,
                         builder: (context, _, __) {
                           return CustomDropdown<IdTextModel>(
+                            isEnabled: widget.isEditable ? true : false,
                             widgetKey: KEY_FIELD_VISIT_NUMBER,
                             heading: TranslationKeys.visitNumber.translate(context),
                             headingKey: Key(KEY_HEADING_VISIT_NUMBER),
@@ -539,28 +596,38 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
+                CustomTextField(
+                  enabled: widget.isEditable ? true : false,
+                  controller: _visitMonthController,
+                  widgetKey: Key(KEY_FIELD_VISIT_MONTH),
+                  hintText: TranslationKeys.enterHere.translate(context),
+                  heading: TranslationKeys.visitMonth.translate(context),
+                  headingKey: Key(KEY_HEADING_VISIT_MONTH),
+                  keyboardType: TextInputType.number,
+                ),
                 //VISIT MONTH
-                ValueListenableBuilder<List<IdTextModel>>(
-                    valueListenable: _visitMonthList,
-                    builder: (context, map, _) {
-                      return ValueListenableBuilder<IdTextModel?>(
-                        valueListenable: _visitMonth,
-                        builder: (context, _, __) {
-                          return CustomDropdown<IdTextModel>(
-                            widgetKey: KEY_FIELD_VISIT_MONTH,
-                            heading: TranslationKeys.visitMonth.translate(context),
-                            headingKey: Key(KEY_HEADING_VISIT_MONTH),
-                            hintText: TranslationKeys.select.translate(context),
-                            onChanged: (val) {
-                              _visitMonth.value = val;
-                            },
-                            selectedItem: _visitMonth.value,
-                            compareFn: (p0, p1) => p0.id == p1.id,
-                            items: map,
-                          );
-                        },
-                      );
-                    }),
+                // ValueListenableBuilder<List<IdTextModel>>(
+                // valueListenable: _visitMonthList,
+                // builder: (context, map, _) {
+                // return ValueListenableBuilder<IdTextModel?>(
+                // valueListenable: _visitMonth,
+                // builder: (context, _, __) {
+                // return CustomDropdown<IdTextModel>(
+                // isEnabled: widget.isEditable ? true : false,
+                // widgetKey: KEY_FIELD_VISIT_MONTH,
+                // heading: TranslationKeys.visitMonth.translate(context),
+                // headingKey: Key(KEY_HEADING_VISIT_MONTH),
+                // hintText: TranslationKeys.select.translate(context),
+                // onChanged: (val) {
+                // _visitMonth.value = val;
+                // },
+                // selectedItem: _visitMonth.value,
+                // compareFn: (p0, p1) => p0.id == p1.id,
+                // items: map,
+                // );
+                // },
+                // );
+                // }),
                 const SpaceWidget(
                   height: 15,
                 ),
@@ -569,6 +636,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _institutionCode,
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
+                        isEnabled: widget.isEditable ? true : false,
                         widgetKey: KEY_FIELD_INSTITUTION_CODE,
                         heading: TranslationKeys.institutionCodeId.translate(context),
                         headingKey: Key(KEY_HEADING_INSTITUTION_CODE),
@@ -588,6 +656,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _studyCode,
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
+                        isEnabled: widget.isEditable ? true : false,
                         widgetKey: KEY_FIELD_STUDY_PH,
                         heading: TranslationKeys.studyCode.translate(context),
                         headingKey: Key(KEY_HEADING_STUDY_PH),
@@ -606,6 +675,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //First Name Widget
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _firstNameController,
                   widgetKey: Key(KEY_FIELD_FIRST_NAME),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -621,6 +691,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //Last Name Widget
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _lastNameController,
                   widgetKey: Key(KEY_FIELD_LAST_NAME),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -636,6 +707,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //AGE
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _ageController,
                   focusNode: _ageFocusNode,
                   widgetKey: Key(KEY_FIELD_AGE),
@@ -655,9 +727,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return CustomChipWidget<String?>(
                       shouldTranslate: true,
                       chipList: AppConstant.GENDER_LIST,
-                      onChanged: (value) {
-                        _gender.value = value;
-                      },
+                      onChanged: widget.isEditable
+                          ? (value) {
+                              _gender.value = value;
+                            }
+                          : (val) {},
                       validator: AppValidators.validateGender,
                       selectedItem: _gender.value,
                       heading: "${TranslationKeys.gender.translate(context)}*",
@@ -671,6 +745,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //ADDRESS
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _tempAddressController,
                   widgetKey: Key(KEY_FIELD_TEMP_ADDRESS),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -684,6 +759,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //DISTRICT
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _districtController,
                   widgetKey: Key(KEY_FIELD_DISTRICT),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -696,6 +772,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //STATE
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _stateController,
                   widgetKey: Key(KEY_FIELD_STATE),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -708,6 +785,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //PINCODE
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _pincodeController,
                   widgetKey: Key(KEY_FIELD_PINCODE),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -724,6 +802,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //PERMANENT ADDRESS
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _permanentAddressController,
                   widgetKey: Key(KEY_FIELD_PERMANENT_ADDRESS),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -740,6 +819,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _occupation,
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
+                        isEnabled: widget.isEditable ? true : false,
                         widgetKey: KEY_FIELD_OCCUPATION_TYPE,
                         heading: TranslationKeys.occupationType.translate(context),
                         headingKey: Key(KEY_HEADING_OCCUPATION_TYPE),
@@ -757,6 +837,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //MOBILE
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   widgetKey: Key(KEY_FIELD_MOBILE),
                   controller: _mobileFieldController,
                   hasPrefix: true,
@@ -776,6 +857,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //ALTERNATE MOBILE NUMBER
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   widgetKey: Key(KEY_FIELD_ALTERNATE_NUMBER),
                   controller: _alternateNumberFieldController,
                   hasPrefix: true,
@@ -795,6 +877,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //PRIMARY ID
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   widgetKey: Key(KEY_FIELD_PRIMARY_ID),
                   controller: _primaryIdController,
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -817,6 +900,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //SECONDARY ID
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   widgetKey: Key(KEY_FIELD_SECONDARY_ID),
                   controller: _secondaryIdController,
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -839,6 +923,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //MEDICAL RECORD NUMBER
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _medicalRecordNumberController,
                   widgetKey: Key(KEY_FIELD_MEDICAL_RECORD_NUMBER),
                   hintText: TranslationKeys.enterHere.translate(context),
@@ -854,6 +939,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     valueListenable: _document,
                     builder: (context, _, __) {
                       return CustomDropdown<String>(
+                        isEnabled: widget.isEditable ? true : false,
                         widgetKey: KEY_FIELD_DOCUMENT_TYPE,
                         heading: TranslationKeys.aadharVoterPan.translate(context),
                         headingKey: Key(KEY_HEADING_DOCUMENT_TYPE),
@@ -877,6 +963,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     builder: (context, value, __) {
                       if (value ?? false) {
                         return CustomTextField(
+                          enabled: widget.isEditable ? true : false,
                           controller: _documentTypeController,
                           widgetKey: Key(KEY_FIELD_DOCUMENT_TYPE_ID),
                           hintText: TranslationKeys.enterHere.translate(context),
@@ -884,7 +971,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           headingKey: Key(KEY_HEADING_DOCUMENT_ID),
                           validator: getDocumentWidget(),
                           keyboardType: getDocumentKeyboardType(),
-                          inputFormatters: getInputFormatter(),
+                          inputFormatters:widget.isEditable ? getInputFormatter(): null,
                         );
                       } else {
                         return const SizedBox();
@@ -895,6 +982,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 //DATE OF CONSENT OBTAINED
                 CustomTextField(
+                  enabled: widget.isEditable ? true : false,
                   controller: _consentDateController,
                   widgetKey: Key(KEY_FIELD_DATE_OF_VISIT),
                   heading: TranslationKeys.informedConsentDate.translate(context),
@@ -919,15 +1007,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return CustomChipWidget<String?>(
                       shouldTranslate: true,
                       chipList: AppConstant.BINARY_LIST,
-                      onChanged: (value) {
-                        _signConsent.value = value;
-                        if (value == 'no') {
-                          _signedConsentCopy.value = true;
-                        } else {
-                          _signedConsentCopy.value = false;
-                          _signedConsentNoReason.value = null;
-                        }
-                      },
+                      onChanged: widget.isEditable
+                          ? (value) {
+                              _signConsent.value = value;
+                              if (value == 'no') {
+                                _signedConsentCopy.value = true;
+                              } else {
+                                _signedConsentCopy.value = false;
+                                _signedConsentNoReason.value = null;
+                              }
+                            }
+                          : (val) {},
                       validator: AppValidators.validateBinaryQuestion,
                       selectedItem: _signConsent.value,
                       heading: TranslationKeys.copyOfSignedConsentHanded.translate(context),
@@ -947,6 +1037,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               valueListenable: _signedConsentNoReason,
                               builder: (context, _, __) {
                                 return CustomDropdown<String>(
+                                  isEnabled: widget.isEditable ? true : false,
                                   widgetKey: KEY_FIELD_SIGNED_CONSENT_NO,
                                   heading: TranslationKeys.ifNoSpecify.translate(context),
                                   headingKey: Key(KEY_HEADING_SIGNED_CONSENT_NO),
@@ -981,11 +1072,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               buttonTitle: TranslationKeys.continueText.translate(context),
                               widgetKey: KEY_BUTTON_CONTINUE,
                               isLoading: false,
-                              onPressed: !isValid
-                                  ? null
-                                  : () {
-                                      onContinueClick();
-                                    },
+                              onPressed: widget.isEditable
+                                  ? !isValid
+                                      ? null
+                                      : () {
+                                          onContinueClick();
+                                        }
+                                  : null,
                             );
                           },
                         );

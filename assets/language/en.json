@@ -300,5 +300,6 @@
   "primary_id": "Primary Id (only for existing patient)",
   "secondary_id": "Secondary Id (only for existing patient)",
   "visit_month_list":"[{\"id\":\"month_03\",\"name\":\"3\"},{\"id\":\"month_06\",\"name\":\"6\"},{\"id\":\"month_09\",\"name\":\"9\"},{\"id\":\"month_12\",\"name\":\"12\"},{\"id\":\"month_15\",\"name\":\"15\"},{\"id\":\"month_18\",\"name\":\"18\"},{\"id\":\"month_21\",\"name\":\"21\"},{\"id\":\"month_24\",\"name\":\"24\"}]",
-  "cra_success_message":"CRA is completed"
+  "cra_success_message":"CRA is completed",
+  "view_details":"View Details"
 }
