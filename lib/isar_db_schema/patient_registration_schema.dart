@@ -40,6 +40,7 @@ class PatientRegistration {
   bool isCompleted = false;
   String? caseId;
   int totalCompletedSections = 0;
+  bool isSynced = false;
   PatientRegistration();
   factory PatientRegistration.fromJson(Map<String, dynamic> data) {
     //
@@ -76,6 +77,7 @@ class PatientRegistration {
     registration.visitDate = DateTime.fromMillisecondsSinceEpoch(data["visitDate"]);
     registration.visitMonth = data["visitMonth"];
     registration.visitNo = data["visitNo"];
+    registration.isSynced = data["isSynced"];
     return registration;
   }
 
@@ -109,7 +111,7 @@ class PatientRegistration {
       "visitNo": visitNo,
       "visitMonth": visitMonth,
       "primaryId": primaryId,
-      "secondaryId": secondaryId
+      "secondaryId": secondaryId,
     };
   }
 }

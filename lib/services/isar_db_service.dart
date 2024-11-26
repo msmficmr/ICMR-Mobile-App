@@ -140,6 +140,17 @@ class IsarDbService {
     });
   }
 
+  Future<void> markPatientAsSynced(String? patientId) async {
+    Isar? db = await isar;
+    await db.writeTxn(() async {
+      PatientRegistration? registration = await db.patientRegistrations.filter().patientIdEqualTo(patientId!).findFirst();
+      if (registration != null) {
+        registration.isSynced = true;
+        await db.patientRegistrations.put(registration);
+      }
+    });
+  }
+
   Future<void> deleteByCaseId(String? caseId) async {
     Isar? db = await isar;
     await db.writeTxn(() async {

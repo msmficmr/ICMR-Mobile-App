@@ -258,7 +258,12 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         }
         response = await IsarDbService.isarDbService.getListCRAOfflineData();
         patientListResponse = await IsarDbService.isarDbService.getPatientsList();
-
+        /// Taking only those patients which are not synced
+        patientListResponse = patientListResponse
+            .where(
+              (element) => element.isSynced == false,
+            )
+            .toList();
         for (int i = 0; i < patientListResponse.length; i++) {
           List<String> fileDeleteList = [];
           List<dynamic> payLoadObjList = [];

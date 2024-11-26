@@ -76,7 +76,7 @@ class OfflineDataViewModel extends ChangeNotifier {
         if (caseId != null) {
           await IsarDbService.isarDbService.deleteByCaseId(caseId);
         }
-        await IsarDbService.isarDbService.deleteByPatientId(patientId);
+        await IsarDbService.isarDbService.markPatientAsSynced(patientId);
         for (String path in fileDeleteList) {
           await CommonFunctions().deleteFile(path);
         }
