@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:isar/isar.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/encrypt_helper.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
@@ -22,11 +23,14 @@ class ImportExportUtil {
 
   ValueNotifier<bool> isLoading = ValueNotifier(false);
 
+  static bool isEncryptionEnabled = false;
+  static String fileExtension = ".json";
+
   Future<bool> exportPatients() async {
     bool success = false;
     try {
-      PermissionStatus externalStorage = await Permission.manageExternalStorage.request();
-      if (externalStorage.isGranted) {
+      bool storagePermission = await PermissionService.requestStoragePermission(context);
+      if (storagePermission) {
         isLoading.value = true;
         List<Map<String, dynamic>> data = await _runExportIsolate();
 
@@ -48,8 +52,8 @@ class ImportExportUtil {
 
   Future<bool?> importPatients() async {
     try {
-      PermissionStatus externalStorage = await Permission.manageExternalStorage.request();
-      if (externalStorage.isGranted) {
+      bool storagePermission = await PermissionService.requestStoragePermission(context);
+      if (storagePermission) {
         String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
         if (selectedDirectory != null) {
           List<Map<String, dynamic>> data = await _getPatients(selectedDirectory);
@@ -151,12 +155,12 @@ class ImportExportUtil {
     }
     // Print all directories
     for (var dir in directories) {
-      String filePath = "${dir.path}/patient_data.txt";
+      String filePath = "${dir.path}/patient_data${fileExtension}";
       File file = new File(filePath);
       if (file.existsSync()) {
         try {
           String encryptedText = await file.readAsString();
-          String decrypted = EncryptionHelper.decryptText(encryptedText);
+          String decrypted = isEncryptionEnabled ? EncryptionHelper.decryptText(encryptedText) : encryptedText;
           data.add(jsonDecode(decrypted));
         } catch (e) {
           sendPort.send(AppException(null, "Invalid files", null));
@@ -229,30 +233,34 @@ class ImportExportUtil {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken!);
     List<Map<String, dynamic>> data = message['data'];
 
-    for (var jsonData in data) {
-      String primaryId = jsonData["primaryId"];
+    try {
+      for (var jsonData in data) {
+        String primaryId = jsonData["primaryId"];
 
-      String? basePath = await _createFolder(primaryId);
-      if (basePath != null) {
-        String filePath = "";
-        if (basePath.endsWith("/")) {
-          filePath = "${basePath}patient_data.txt";
+        String? basePath = await _createFolder(primaryId);
+        if (basePath != null) {
+          String filePath = "";
+          if (basePath.endsWith("/")) {
+            filePath = "${basePath}patient_data$fileExtension";
+          } else {
+            filePath = "$basePath/patient_data$fileExtension";
+          }
+
+          String jsonString = jsonEncode(jsonData); // Convert to JSON string
+
+          String encryptedData = isEncryptionEnabled ? EncryptionHelper.encryptText(jsonString) : jsonString;
+
+          // Write the data to the file
+          final file = File(filePath);
+          await file.writeAsString(encryptedData);
         } else {
-          filePath = "$basePath/patient_data.txt";
+          sendPort.send(false);
+          break;
         }
-
-        String jsonString = jsonEncode(jsonData); // Convert to JSON string
-
-        String encryptedData = EncryptionHelper.encryptText(jsonString);
-
-        // Write the data to the file
-        final file = File(filePath);
-        await file.writeAsString(encryptedData);
-        sendPort.send(true);
-      } else {
-        sendPort.send(false);
-        break;
       }
+      sendPort.send(true);
+    } catch (e) {
+      sendPort.send(false);
     }
   }
 
