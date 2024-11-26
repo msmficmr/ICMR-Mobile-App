@@ -1,12 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
+import 'package:mhealth/services/directory_db_service.dart';
 import 'package:mhealth/services/isar_db_service.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 
 class PatientListViewModel with ChangeNotifier {
+  final TextEditingController searchFieldController = TextEditingController();
   List<PatientRegistration> _registeredPatients = [];
   List<PatientRegistration> _filteredItems = [];
   bool _isLoading = false;
@@ -14,23 +18,71 @@ class PatientListViewModel with ChangeNotifier {
   String? _currentUser;
   String? get currentUser => _currentUser;
 
+  List<PatientRegistration> get registeredPatients => _registeredPatients;
   List<PatientRegistration> get filteredItems => _filteredItems;
 
   bool get isLoading => _isLoading;
 
+  set isLoading(bool load) {
+    _isLoading = load;
+    notifyListeners();
+  }
+
+  PatientRegistration? getPatientByPatientId(String patientId) {
+    int index = registeredPatients.indexWhere(
+      (element) => element.patientId == patientId,
+    );
+    if (index != -1) {
+      return registeredPatients[index];
+    }
+    return null;
+  }
+
   Future<void> loadRegisteredPatients() async {
+    if (_registeredPatients.isNotEmpty) return;
     try {
-      _isLoading = true;
-      _registeredPatients = await IsarDbService.isarDbService.getPatientsList();
+      isLoading = true;
+      _registeredPatients = await DirectoryDbService().getAllPatients();
       _filteredItems = _registeredPatients;
       updateCraStatus();
     } catch (e) {
       _registeredPatients = [];
       _filteredItems = [];
     } finally {
-      _isLoading = false;
+      isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<bool> registerPatient(PatientRegistration data) async {
+    bool isSuccess = false;
+    int index = _registeredPatients.indexWhere(
+      (element) => element.primaryId == data.primaryId,
+    );
+    if (index == -1) {
+      isSuccess = await DirectoryDbService().savePatient(data);
+      if (isSuccess) {
+        _registeredPatients.add(data);
+        searchPatient(searchFieldController.text);
+        notifyListeners();
+      }
+    } else {
+      CommonFunctions.toastMessage("Patient already registered");
+    }
+    return isSuccess;
+  }
+
+  markPatientAsSynced(String primaryId) async {
+    int orgListIndex = _registeredPatients.indexWhere((element) => element.primaryId == primaryId);
+    int filterIndex = _filteredItems.indexWhere((element) => element.primaryId == primaryId);
+    if (orgListIndex != -1) {
+      _registeredPatients[orgListIndex].isSynced = true;
+    }
+    if (filterIndex != -1) {
+      _filteredItems[filterIndex].isSynced = true;
+    }
+    await DirectoryDbService().markPatientSynced(_registeredPatients[orgListIndex]);
+    notifyListeners();
   }
 
   updateCraStatus() {

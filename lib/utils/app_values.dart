@@ -25,4 +25,7 @@ class AppValues {
   static String dobDateFormat = "dd/MM/yyyy";
   static String idDateTimeFormat = "ddMMyyyyHHmm";
   static TextInputFormatter get idInputFormatter => CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
+  static RegExp primaryIdPattern = RegExp(r'^[A-Za-z]{2}-[A-Za-z]{2}-\d{12}$');
+
 }
+

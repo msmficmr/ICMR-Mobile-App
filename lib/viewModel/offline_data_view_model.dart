@@ -14,11 +14,11 @@ import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 
 class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
-  int? _patientRegistered;
+  //int? _patientRegistered;
   int? _completedCRAcount;
 
   int? get syncedNumbers => _syncNumber;
-  int? get patientRegistered => _patientRegistered;
+  //int? get patientRegistered => _patientRegistered;
   int? get completedCRAcount => _completedCRAcount;
   bool _isPatientCountLoading = false;
   bool get isPatientCountLoading => _isPatientCountLoading;
@@ -36,11 +36,11 @@ class OfflineDataViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchRegisteredPatient() async {
+  /* Future<void> fetchRegisteredPatient() async {
     List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
     _patientRegistered = patientListResponse.length;
     notifyListeners();
-  }
+  } */
 
   Future<void> fetchCompletedCRA() async {
     List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
@@ -69,20 +69,24 @@ class OfflineDataViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> postOfflineData({required String? caseId, required String? patientId, required Map<String, dynamic> payLoadObj, required List<String> fileDeleteList}) async {
+  Future<bool> postOfflineData({required String? caseId, required String? primaryId, required Map<String, dynamic> payLoadObj, required List<String> fileDeleteList}) async {
+    bool isSuccess = false;
     try {
       OfflineSyncResponseModel? response = await OfflineDataService().saveOfflineDataSync(payLoadObj: payLoadObj);
       if (response?.status == 201) {
         if (caseId != null) {
           await IsarDbService.isarDbService.deleteByCaseId(caseId);
         }
-        await IsarDbService.isarDbService.markPatientAsSynced(patientId);
+
+        //await IsarDbService.isarDbService.markPatientAsSynced(primaryId);
         for (String path in fileDeleteList) {
           await CommonFunctions().deleteFile(path);
         }
+        isSuccess=true;
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
     }
+    return isSuccess;
   }
 }

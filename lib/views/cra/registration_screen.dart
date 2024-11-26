@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/model/id_text_model.dart';
+import 'package:mhealth/services/directory_db_service.dart';
 import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -222,6 +224,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager, initialText: _dateOfVisitController.text);
     _consentDateController = TextEditingController(text: CommonFunctions.currentDate());
     registrationViewModel = Provider.of<RegistrationViewModel>(context, listen: false);
+    registrationViewModel.resetScreen();
     initializeField();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getVisitNumber();
@@ -233,7 +236,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   _bindData() async {
-    PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(widget.patientId ?? "");
+    PatientRegistration? resp = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId ?? ""); //await IsarDbService.isarDbService.getPatientDetails(widget.patientId ?? "");
     if (resp != null) {
       _buttonEnabled.value = false;
       _visitNumber.value = IdTextModel(
@@ -380,7 +383,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ..identityType = _document.value != null ? documentIds[documentNames.indexOf(_document.value ?? "")] : ""
             ..value = _documentTypeController.text;
         }
-        await IsarDbService.isarDbService.savePatient(PatientRegistration()
+        PatientRegistration registrationData = PatientRegistration()
           ..isConsent = _consentTextNotifier.value.toUpperCase()
           ..visitDate = CommonFunctions.textToDateTime(_dateOfVisitController.text)
           ..institutionCodeID = _institutionCode.value != null ? institutionIds[institutionNames.indexOf(_institutionCode.value ?? "")] : ""
@@ -408,16 +411,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..visitNo = _visitNumber.value?.id
           ..visitMonth = _visitMonthController.text.trim()
           ..primaryId = _generatePrimaryId()
-          ..secondaryId = _generateSecondaryId());
+          ..secondaryId = _generateSecondaryId();
 
-        ///[COMMENTING BELOW LINE AS it may used in future]
-        // await addConsentImages(patientId);
-        await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
-        await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
-        context.read<PatientListViewModel>().loadRegisteredPatients();
-        if (context.mounted) {
-          registrationViewModel.isLoading = false;
-          GoRouter.of(context).replace(RegistrationSuccessFullScreen.routerPath, extra: {"patientId": patientId});
+        bool isSaved = await context.read<PatientListViewModel>().registerPatient(registrationData);
+        registrationViewModel.isLoading = false;
+        if (isSaved) {
+          //await IsarDbService.isarDbService.savePatient(registrationData);
+
+          ///[COMMENTING BELOW LINE AS it may used in future]
+          // await addConsentImages(patientId);
+          await context.read<PatientListViewModel>().setCurrentUser(_firstNameController.text, _lastNameController.text);
+
+          if (context.mounted) {
+            GoRouter.of(context).replace(RegistrationSuccessFullScreen.routerPath, extra: {"patientId": patientId});
+          }
         }
       }
     }
@@ -971,7 +978,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           headingKey: Key(KEY_HEADING_DOCUMENT_ID),
                           validator: getDocumentWidget(),
                           keyboardType: getDocumentKeyboardType(),
-                          inputFormatters:widget.isEditable ? getInputFormatter(): null,
+                          inputFormatters: widget.isEditable ? getInputFormatter() : null,
                         );
                       } else {
                         return const SizedBox();

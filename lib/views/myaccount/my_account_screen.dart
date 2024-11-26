@@ -22,6 +22,7 @@ import 'package:mhealth/utils/import_export_util.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/doctor/doctor_name_screen.dart';
 import 'package:mhealth/views/myaccount/widgets/card_component_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
@@ -106,7 +107,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   checkToSyncData() async {
     if (networkStatusService.networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      List<PatientRegistration?> patientResponse = await IsarDbService.isarDbService.getPatientsList();
+      List<PatientRegistration?> patientResponse = context
+          .read<PatientListViewModel>()
+          .registeredPatients
+          .where(
+            (element) => element.isSynced == false,
+          )
+          .toList();
       if (response.isNotEmpty || patientResponse.isNotEmpty) {
         _syncData.value = true;
       } else {
@@ -185,79 +192,89 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
     if (networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+      List<PatientRegistration> patientList = context.read<PatientListViewModel>().registeredPatients;
 
-      if (response.isEmpty && patientListResponse.isEmpty) {
+      if (response.isEmpty && patientList.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
         showDataSyncLoading(context);
         //_syncing = true;
 
         for (int i = 0; i < response.length; i++) {
-          List<String> fileDeleteList = [];
-          List<dynamic> payLoadObjList = [];
-          String? patienId = response[i]?.patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId ?? "");
-          Map<String, dynamic>? patientJson = resp?.toJson();
-          Map<String, dynamic> patientData = {"patientData": patientJson};
-          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+          String? patientId = response[i]?.patientId;
+          int patientIndex = patientList.indexWhere(
+            (element) => element.patientId == patientId,
+          );
+          if (patientIndex != -1) {
+            PatientRegistration? resp = patientList[patientIndex];
 
-          try {
-            List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
-            registrationObj['registrationObj']['patientData']['consent'] = [];
-            List<AttachmentDb> consentList = [];
-            for (dynamic pat in pMap) {
-              AttachmentDb fileName = pat;
-              fileDeleteList.add(fileName.dataBytes!);
-              List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-              fileName.dataBytes = base64.encode(content);
-              consentList.add(fileName);
-            }
-            registrationObj['registrationObj']['patientData']['consent'] = consentList;
-          } catch (e) {}
+            List<String> fileDeleteList = [];
+            List<dynamic> payLoadObjList = [];
+            Map<String, dynamic>? patientJson = resp?.toJson();
+            Map<String, dynamic> patientData = {"patientData": patientJson};
+            Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+            Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
 
-          List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+            try {
+              List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
+              registrationObj['registrationObj']['patientData']['consent'] = [];
+              List<AttachmentDb> consentList = [];
+              for (dynamic pat in pMap) {
+                AttachmentDb fileName = pat;
+                fileDeleteList.add(fileName.dataBytes!);
+                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
+                fileName.dataBytes = base64.encode(content);
+                consentList.add(fileName);
+              }
+              registrationObj['registrationObj']['patientData']['consent'] = consentList;
+            } catch (e) {}
 
-          craSectionModel.forEach((element) {
-            element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
-          });
+            List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
 
-          for (int i = 0; i < craSectionModel.length; i++) {
-            if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
-              List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
-              for (int j = 0; j < questionList.length; j++) {
-                AttachmentDb fileName = questionList[j]['file'];
-                try {
-                  fileDeleteList.add(fileName.dataBytes!);
-                  List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-                  fileName.dataBytes = base64.encode(content);
-                  craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
-                } catch (e) {}
+            craSectionModel.forEach((element) {
+              element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
+            });
+
+            for (int i = 0; i < craSectionModel.length; i++) {
+              if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
+                List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
+                for (int j = 0; j < questionList.length; j++) {
+                  AttachmentDb fileName = questionList[j]['file'];
+                  try {
+                    fileDeleteList.add(fileName.dataBytes!);
+                    List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
+                    fileName.dataBytes = base64.encode(content);
+                    craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
+                  } catch (e) {}
+                }
               }
             }
-          }
 
-          Map<String, dynamic> cdrPostObj = {
-            "cdrPostObj": [
-              {response[i]?.caseId: craSectionModel}
-            ]
-          };
-          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-          payLoadObjList.add({response[i]?.patientId: patientDataList});
-          Map<String, dynamic> payLoadObj = {
-            "payloadObj": payLoadObjList,
-            "appVersion": Environment.runningEnv.releaseVersion,
-          };
-          await viewModel.postOfflineData(
-            caseId: response[i]?.caseId,
-            patientId: response[i]?.patientId,
-            payLoadObj: payLoadObj,
-            fileDeleteList: fileDeleteList,
-          );
+            Map<String, dynamic> cdrPostObj = {
+              "cdrPostObj": [
+                {response[i]?.caseId: craSectionModel}
+              ]
+            };
+            List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+            payLoadObjList.add({response[i]?.patientId: patientDataList});
+            Map<String, dynamic> payLoadObj = {
+              "payloadObj": payLoadObjList,
+              "appVersion": Environment.runningEnv.releaseVersion,
+            };
+            bool isPostSuccess = await viewModel.postOfflineData(
+              caseId: response[i]?.caseId,
+              primaryId: resp.primaryId,
+              payLoadObj: payLoadObj,
+              fileDeleteList: fileDeleteList,
+            );
+            if (isPostSuccess) {
+              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId);
+            }
+          }
         }
         response = await IsarDbService.isarDbService.getListCRAOfflineData();
-        patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+        List<PatientRegistration> patientListResponse = context.read<PatientListViewModel>().registeredPatients;
+
         /// Taking only those patients which are not synced
         patientListResponse = patientListResponse
             .where(
@@ -270,7 +287,11 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           String? patientId = patientListResponse[i].patientId;
 
           if (!(response.map((e) => e?.patientId ?? "").contains(patientId))) {
-            PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+            int patientIndex = patientListResponse.indexWhere(
+              (element) => element.patientId == patientId,
+            );
+
+            PatientRegistration? resp = patientListResponse[patientIndex];
             Map<String, dynamic>? patientJson = resp?.toJson();
             Map<String, dynamic> patientData = {"patientData": patientJson};
             Map<String, dynamic> registrationObj = {"registrationObj": patientData};
@@ -296,7 +317,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
             };
-            await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+            bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+            if (isPostSuccess) {
+              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId);
+            }
           }
         }
         if (context.mounted) {
@@ -305,34 +329,12 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
         if (context.mounted) {
-          await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
           await context.read<OfflineDataViewModel>().fetchCompletedCRA();
           GoRouter.of(context).go(DashboardScreen.routerPath);
         }
       }
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
-    }
-  }
-
-  Future<void> importData() async {
-    try {
-      showDataSyncLoading(context, message: "Please Wait");
-      bool? success = await importExportUtil.importPatients();
-      if (success ?? false) {
-        await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
-      }
-    } finally {
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> exportData() async {
-    try {
-      showDataSyncLoading(context, message: "Please Wait");
-      await importExportUtil.exportPatients();
-    } finally {
-      Navigator.pop(context);
     }
   }
 
@@ -530,24 +532,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                         child: AccountCard(
                           key: Key(KEY_LANGUAGE_CARD),
                           cardTitleText: TranslationKeys.language.translate(context),
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icLanguage,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: exportData,
-                        child: AccountCard(
-                          key: Key(KEY_LANGUAGE_CARD),
-                          cardTitleText: "Export",
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icLanguage,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: importData,
-                        child: AccountCard(
-                          key: Key(KEY_LANGUAGE_CARD),
-                          cardTitleText: "Import",
                           trailingIconPath: AppAssetsPath.icChevronRight,
                           leadingIconPath: AppAssetsPath.icLanguage,
                         ),

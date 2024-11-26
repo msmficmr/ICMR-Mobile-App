@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:isar/isar.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
+import 'package:mhealth/utils/exceptions/app_exception.dart';
 part 'patient_registration_schema.g.dart';
 
 @collection
@@ -42,7 +43,57 @@ class PatientRegistration {
   int totalCompletedSections = 0;
   bool isSynced = false;
   PatientRegistration();
+
+  static bool areAllFieldsPresent(Map<String, dynamic> json) {
+    final requiredFields = [
+      "address",
+      "age",
+      "alternatePhoneNumber",
+      "caseId",
+      "consentDate",
+      "createdBy",
+      "district",
+      "firstName",
+      "gender",
+      "id",
+      "identityProofs",
+      "institutionCodeID",
+      "isCompleted",
+      "isConsent",
+      "lastName",
+      "medicalRecordNumber",
+      "occupation",
+      "patientId",
+      "permanentAddress",
+      "phoneNumber",
+      "pincode",
+      "place",
+      "primaryId",
+      "secondaryId",
+      "signedConsent",
+      "signedConsentNoReason",
+      "state",
+      "studyCode",
+      "totalCompletedSections",
+      "visitDate",
+      "visitMonth",
+      "visitNo",
+      "isSynced"
+    ];
+
+    for (String field in requiredFields) {
+      if (!json.containsKey(field)) {
+        return false; // Missing or null field
+      }
+    }
+    return true; // All fields are present and not null
+  }
+
   factory PatientRegistration.fromJson(Map<String, dynamic> data) {
+    bool isValid = areAllFieldsPresent(data);
+    if (!isValid) {
+      throw ServerException(response: null, message: "Some fields are missing", statusCode: null);
+    }
     //
     PatientRegistration registration = PatientRegistration();
     registration.address = data["address"];
@@ -79,6 +130,46 @@ class PatientRegistration {
     registration.visitNo = data["visitNo"];
     registration.isSynced = data["isSynced"];
     return registration;
+  }
+
+  Map<String, dynamic> objectToJson() {
+    Map<String, dynamic> json = {
+      "address": address,
+      "age": age,
+      "alternatePhoneNumber": alternatePhoneNumber,
+      "caseId": caseId,
+      "consentDate": consentDate.millisecondsSinceEpoch,
+      "createdBy": createdBy,
+      "district": district,
+      "firstName": firstName,
+      "gender": gender,
+      "id": id,
+      "identityProofs": identityProofs,
+      "institutionCodeID": institutionCodeID,
+      "isCompleted": isCompleted,
+      "isConsent": isConsent,
+      "lastName": lastName,
+      "medicalRecordNumber": medicalRecordNumber,
+      "occupation": occupation,
+      "patientId": patientId,
+      "permanentAddress": permanentAddress,
+      "phoneNumber": phoneNumber,
+      "pincode": pincode,
+      "place": place,
+      "primaryId": primaryId,
+      "secondaryId": secondaryId,
+      "signedConsent": signedConsent,
+      "signedConsentNoReason": signedConsentNoReason,
+      "state": state,
+      "studyCode": studyCode,
+      "totalCompletedSections": totalCompletedSections,
+      "visitDate": visitDate.millisecondsSinceEpoch,
+      "visitMonth": visitMonth,
+      "visitNo": visitNo,
+      "isSynced": isSynced,
+    };
+
+    return json;
   }
 
   // Add a toJson method to convert the object to JSON

@@ -54,6 +54,21 @@ class PermissionService {
     }
   }
 
+  static Future<bool> hasStoragePermission() async {
+    if (!Platform.isAndroid) return true;
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    int apiLevel = androidInfo.version.sdkInt;
+    bool hasExternalStoragePermission = false;
+    if (apiLevel >= 30) {
+      hasExternalStoragePermission = await Permission.manageExternalStorage.isGranted;
+    } else {
+      hasExternalStoragePermission = await Permission.storage.isGranted;
+    }
+
+    return hasExternalStoragePermission;
+  }
+
   static Future<bool> requestStoragePermission(BuildContext context) async {
     const String ERROR_STORAGE_PERMISSION_DENIED = "We require storage permission to use this feature. Please grant storage permissions in your app settings.";
     const String GRANT_STORAGE_CTA = "Grant Storage Permissions";
@@ -67,41 +82,25 @@ class PermissionService {
       PermissionStatus externalStorage = await Permission.manageExternalStorage.request();
       hasExternalStoragePermission = externalStorage.isGranted;
     } else {
-      hasExternalStoragePermission = true;
+      PermissionStatus storagePermission = await Permission.storage.request();
+      switch (storagePermission) {
+        case PermissionStatus.granted:
+          hasExternalStoragePermission = true;
+        default:
+          if (context.mounted) {
+            CommonFunctions.openDialog(
+              context: context,
+              action: (context) {
+                CommonFunctions.openAppSettings();
+                Navigator.pop(context);
+              },
+              subtitle: ERROR_STORAGE_PERMISSION_DENIED,
+              buttonText: GRANT_STORAGE_CTA,
+            );
+          }
+          break;
+      }
     }
-    if (!hasExternalStoragePermission) {
-      CommonFunctions.openDialog(
-        context: context,
-        action: (context) {
-          CommonFunctions.openAppSettings();
-          Navigator.pop(context);
-        },
-        subtitle: ERROR_STORAGE_PERMISSION_DENIED,
-        buttonText: GRANT_STORAGE_CTA,
-      );
-      return false;
-    }
-
-    bool hasStoragePermission = false;
-
-    PermissionStatus storagePermission = await Permission.storage.request();
-    switch (storagePermission) {
-      case PermissionStatus.granted:
-        hasStoragePermission = true;
-      default:
-        if (context.mounted) {
-          CommonFunctions.openDialog(
-            context: context,
-            action: (context) {
-              CommonFunctions.openAppSettings();
-              Navigator.pop(context);
-            },
-            subtitle: ERROR_STORAGE_PERMISSION_DENIED,
-            buttonText: GRANT_STORAGE_CTA,
-          );
-        }
-        break;
-    }
-    return hasExternalStoragePermission && hasStoragePermission;
+    return hasExternalStoragePermission;
   }
 }

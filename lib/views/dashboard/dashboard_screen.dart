@@ -14,6 +14,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/dashboard/widgets/count_card_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_app_bar.dart';
@@ -25,7 +26,7 @@ import 'package:tuple/tuple.dart';
 class DashboardScreen extends StatefulWidget {
   static const String routerPath = "/dashboard";
 
- const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({Key? key}) : super(key: key);
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -76,7 +77,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     provider = Provider.of<OfflineDataViewModel>(context, listen: false);
     provider.fetchCompletedCRA();
-    provider.fetchRegisteredPatient();
     //checkToSyncData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadInitialData();
@@ -92,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> loadInitialData() async {
-    await Future.wait([provider.fetchCompletedCRA(), provider.fetchRegisteredPatient()]);
+    await Future.wait([provider.fetchCompletedCRA(), context.read<PatientListViewModel>().loadRegisteredPatients()]);
   }
 
   @override
@@ -142,6 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           return DashboardCardWidget(
                             assetPath: AppAssetsPath.icDashboardCra,
                             count: count,
+                            isLoading: false,
                             title: TranslationKeys.totalCRACompleted.translate(context),
                             countKey: Key(KEY_CARD_COUNT),
                             titleKey: Key(KEY_CARD_TITLE),
@@ -151,12 +152,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SpaceWidget(
                         width: 20,
                       ),
-                      Selector<OfflineDataViewModel, int?>(
-                        selector: (context, provider) => (provider.patientRegistered),
-                        builder: (context, count, child) {
+                      Selector<PatientListViewModel, Tuple2<int?, bool>>(
+                        selector: (context, provider) => Tuple2(provider.registeredPatients.length, provider.isLoading),
+                        builder: (context, status, child) {
                           return DashboardCardWidget(
+                            isLoading: status.item2,
                             assetPath: AppAssetsPath.icPatient,
-                            count: (count ?? 0).toString(),
+                            count: (status.item1 ?? 0).toString(),
                             title: TranslationKeys.totalPatientCreated.translate(context),
                             countKey: Key(KEY_CARD_COUNT),
                             titleKey: Key(KEY_CARD_TITLE),
@@ -177,33 +179,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Selector<NetworkStatusService, NetworkStatus>(
                       selector: (p0, p1) => p1.networkStatus,
                       builder: (context, status, __) {
-                        return Selector<OfflineDataViewModel, Tuple2<int, int>>(
-                          selector: (context, provider) => Tuple2(provider.patientRegistered ?? 0, provider.completedCRAcount ?? 0),
-                          builder: (context, syncData, _) {
-                            if (status == NetworkStatus.online && (syncData.item1 > 0 || syncData.item2 > 0)) {
-                              return SizedBox(
-                                width: MediaQuery.of(context).size.width / 1.5,
-                                child: PrimaryFilledIconButton(
-                                    onPressed: () {
-                                      redirectToMyAccountsScreen();
-                                    },
-                                    isLoading: false,
-                                    buttonThemeStyle: const FilledButtonThemeStyle(
-                                      enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                                      enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                                    ),
-                                    icon: SvgPicture.asset(
-                                      AppAssetsPath.icSync,
-                                      colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
-                                    ),
-                                    buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
-                                    widgetKey: KEY_BUTTON_SYNC),
+                        return Selector<PatientListViewModel, int>(
+                            selector: (p0, p1) => p1.registeredPatients.length,
+                            builder: (context, patientLength, _) {
+                              return Selector<OfflineDataViewModel, int>(
+                                selector: (context, provider) => provider.completedCRAcount ?? 0,
+                                builder: (context, syncData, _) {
+                                  int patientNonSyncedCount = context
+                                      .read<PatientListViewModel>()
+                                      .registeredPatients
+                                      .where(
+                                        (element) => element.isSynced == false,
+                                      )
+                                      .length;
+
+                                  if (status == NetworkStatus.online && (patientNonSyncedCount > 0 || syncData > 0)) {
+                                    return SizedBox(
+                                      width: MediaQuery.of(context).size.width / 1.5,
+                                      child: PrimaryFilledIconButton(
+                                          onPressed: () {
+                                            redirectToMyAccountsScreen();
+                                          },
+                                          isLoading: false,
+                                          buttonThemeStyle: const FilledButtonThemeStyle(
+                                            enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                                            enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                                          ),
+                                          icon: SvgPicture.asset(
+                                            AppAssetsPath.icSync,
+                                            colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
+                                          ),
+                                          buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
+                                          widgetKey: KEY_BUTTON_SYNC),
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                },
                               );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          },
-                        );
+                            });
                       }),
                   const SpaceWidget(height: 15),
                   SizedBox(
