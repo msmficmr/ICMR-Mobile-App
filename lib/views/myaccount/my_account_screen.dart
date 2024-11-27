@@ -330,6 +330,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
         if (context.mounted) {
           await context.read<PatientListViewModel>().fetchCompletedCRA();
+          await context.read<PatientListViewModel>().updateCraStatus();
           GoRouter.of(context).go(DashboardScreen.routerPath);
         }
       }

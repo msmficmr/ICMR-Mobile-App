@@ -64,6 +64,9 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
     super.initState();
     patientListViewModel = Provider.of<PatientListViewModel>(context, listen: false);
     patientListViewModel.searchFieldController.text = "";
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      patientListViewModel.bindPatientScreen();
+    });
   }
 
   redirectToDashboard() {

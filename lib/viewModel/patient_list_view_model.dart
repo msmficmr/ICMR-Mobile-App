@@ -52,6 +52,11 @@ class PatientListViewModel with ChangeNotifier {
     return null;
   }
 
+  bindPatientScreen() {
+    _filteredItems = _registeredPatients;
+    updateCraStatus();
+  }
+
   Future<void> loadRegisteredPatients() async {
     if (_registeredPatients.isNotEmpty) return;
     try {
@@ -103,7 +108,7 @@ class PatientListViewModel with ChangeNotifier {
     if (index == -1) {
       isSuccess = await DirectoryDbService().savePatient(data);
       if (isSuccess) {
-        _registeredPatients.add(data);
+        _registeredPatients.insert(0,data);
         searchPatient(searchFieldController.text);
         notifyListeners();
       }
@@ -138,9 +143,9 @@ class PatientListViewModel with ChangeNotifier {
       (element) => element.patientId == patientId,
       orElse: () => PatientRegistration(),
     );
-    if (patientDetails.isCompleted) {
+    /* if (patientDetails.isCompleted) {
       return;
-    }
+    } */
     String? caseId;
     bool isCompleted = false;
     int mySectionFilledCount = 0;
@@ -172,7 +177,9 @@ class PatientListViewModel with ChangeNotifier {
 
   void searchPatient(String name) {
     _filteredItems = _registeredPatients.where((element) {
-      return "${element.firstName} ${element.lastName}".toLowerCase().contains(name.toLowerCase());
+      return ("${element.firstName} ${element.lastName}".toLowerCase().contains(name.toLowerCase())) ||
+          element.primaryId.contains(name.toUpperCase()) ||
+          element.secondaryId.contains(name.toUpperCase());
     }).toList();
     notifyListeners();
   }
