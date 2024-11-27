@@ -76,7 +76,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     provider = Provider.of<OfflineDataViewModel>(context, listen: false);
-    provider.fetchCompletedCRA();
     //checkToSyncData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadInitialData();
@@ -92,7 +91,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> loadInitialData() async {
-    await Future.wait([provider.fetchCompletedCRA(), context.read<PatientListViewModel>().loadRegisteredPatients()]);
+    await context.read<PatientListViewModel>().loadRegisteredPatients();
+    await context.read<PatientListViewModel>().fetchCompletedCRA();
   }
 
   @override
@@ -136,13 +136,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Selector<OfflineDataViewModel, String>(
-                        selector: (context, povider) => (provider.completedCRAcount ?? 0).toString(),
+                      Selector<PatientListViewModel, Tuple2<int,bool>>(
+                        selector: (context, provider) => Tuple2(provider.completedCRAcount, provider.isLoadingCraCount),
                         builder: (context, count, child) {
                           return DashboardCardWidget(
                             assetPath: AppAssetsPath.icDashboardCra,
-                            count: count,
-                            isLoading: false,
+                            count: count.item1.toString(),
+                            isLoading: count.item2,
                             title: TranslationKeys.totalCRACompleted.translate(context),
                             countKey: Key(KEY_CARD_COUNT),
                             titleKey: Key(KEY_CARD_TITLE),
@@ -182,8 +182,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         return Selector<PatientListViewModel, int>(
                             selector: (p0, p1) => p1.registeredPatients.length,
                             builder: (context, patientLength, _) {
-                              return Selector<OfflineDataViewModel, int>(
-                                selector: (context, provider) => provider.completedCRAcount ?? 0,
+                              return Selector<PatientListViewModel, int>(
+                                selector: (context, provider) => provider.completedCRAcount ,
                                 builder: (context, syncData, _) {
                                   int patientNonSyncedCount = context
                                       .read<PatientListViewModel>()

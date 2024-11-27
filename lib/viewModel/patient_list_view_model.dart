@@ -14,14 +14,28 @@ class PatientListViewModel with ChangeNotifier {
   List<PatientRegistration> _registeredPatients = [];
   List<PatientRegistration> _filteredItems = [];
   bool _isLoading = false;
+  int _completedCRAcount = 0;
+  bool _isLoadingCraCount = false;
 
   String? _currentUser;
   String? get currentUser => _currentUser;
 
   List<PatientRegistration> get registeredPatients => _registeredPatients;
   List<PatientRegistration> get filteredItems => _filteredItems;
+  int get completedCRAcount => _completedCRAcount;
+  bool get isLoadingCraCount => _isLoadingCraCount;
 
   bool get isLoading => _isLoading;
+
+  set isLoadingCraCount(bool st) {
+    _isLoadingCraCount = st;
+    notifyListeners();
+  }
+
+  set completedCRAcount(int data) {
+    _completedCRAcount = data;
+    notifyListeners();
+  }
 
   set isLoading(bool load) {
     _isLoading = load;
@@ -51,6 +65,33 @@ class PatientListViewModel with ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> fetchCompletedCRA() async {
+    try {
+      isLoadingCraCount = true;
+      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+
+      ///logic to remove patients
+      response = response.where(
+        (element) {
+          String? patientId = element?.patientId;
+          return _registeredPatients.any(
+            (element) => element.patientId == patientId,
+          );
+        },
+      ).toList();
+
+      completedCRAcount = response
+          .where((element) =>
+              element?.craSectionData?.any(
+                (el) => el.encounterCategoryMapId == QuestionViewModel.sectionList.last.id,
+              ) ??
+              false)
+          .length;
+    } finally {
+      isLoadingCraCount = false;
     }
   }
 
@@ -97,9 +138,6 @@ class PatientListViewModel with ChangeNotifier {
       (element) => element.patientId == patientId,
       orElse: () => PatientRegistration(),
     );
-    if (patientDetails.id == null) {
-      return;
-    }
     if (patientDetails.isCompleted) {
       return;
     }
@@ -128,6 +166,7 @@ class PatientListViewModel with ChangeNotifier {
       _filteredItems[filterPatientIndex].isCompleted = isCompleted;
       _registeredPatients[regPatientIndex].isCompleted = isCompleted;
     }
+
     notifyListeners();
   }
 

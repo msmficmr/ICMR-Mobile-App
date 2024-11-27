@@ -15,21 +15,12 @@ import 'package:mhealth/views/questionair/viewmodel/question_view_model.dart';
 class OfflineDataViewModel extends ChangeNotifier {
   int? _syncNumber;
   //int? _patientRegistered;
-  int? _completedCRAcount;
 
   int? get syncedNumbers => _syncNumber;
   //int? get patientRegistered => _patientRegistered;
-  int? get completedCRAcount => _completedCRAcount;
+
   bool _isPatientCountLoading = false;
   bool get isPatientCountLoading => _isPatientCountLoading;
-
-  bool _isCRAcountLoading = false;
-  bool get isCRAcountLoading => _isCRAcountLoading;
-
-  set isCRAcountLoading(bool value) {
-    _isCRAcountLoading = value;
-    notifyListeners();
-  }
 
   set isPatientCountLoading(bool value) {
     _isPatientCountLoading = value;
@@ -41,18 +32,6 @@ class OfflineDataViewModel extends ChangeNotifier {
     _patientRegistered = patientListResponse.length;
     notifyListeners();
   } */
-
-  Future<void> fetchCompletedCRA() async {
-    List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-    _completedCRAcount = response
-        .where((element) =>
-            element?.craSectionData?.any(
-              (el) => el.encounterCategoryMapId == QuestionViewModel.sectionList.last.id,
-            ) ??
-            false)
-        .length;
-    notifyListeners();
-  }
 
   bool _syncData = false;
   bool get syncData => _syncData;
@@ -82,7 +61,7 @@ class OfflineDataViewModel extends ChangeNotifier {
         for (String path in fileDeleteList) {
           await CommonFunctions().deleteFile(path);
         }
-        isSuccess=true;
+        isSuccess = true;
       }
     } catch (e) {
       CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
