@@ -108,7 +108,7 @@ class PatientListViewModel with ChangeNotifier {
     if (index == -1) {
       isSuccess = await DirectoryDbService().savePatient(data);
       if (isSuccess) {
-        _registeredPatients.insert(0,data);
+        _registeredPatients.insert(0, data);
         searchPatient(searchFieldController.text);
         notifyListeners();
       }
@@ -123,9 +123,11 @@ class PatientListViewModel with ChangeNotifier {
     int filterIndex = _filteredItems.indexWhere((element) => element.primaryId == primaryId);
     if (orgListIndex != -1) {
       _registeredPatients[orgListIndex].isSynced = true;
+      _registeredPatients[orgListIndex].caseId = null;
     }
     if (filterIndex != -1) {
       _filteredItems[filterIndex].isSynced = true;
+      _registeredPatients[orgListIndex].caseId = null;
     }
     await DirectoryDbService().markPatientSynced(_registeredPatients[orgListIndex]);
     notifyListeners();

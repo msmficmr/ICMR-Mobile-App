@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:isar/isar.dart';
 import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
+import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
 part 'patient_registration_schema.g.dart';
 
@@ -196,7 +197,7 @@ class PatientRegistration {
       'consentDate': consentDate.toIso8601String(),
       'signedConsent': signedConsent,
       'signedConsentNoReason': signedConsentNoReason,
-      'patientId': patientId,
+      'patientId': CommonFunctions.randomNumber(6),
       'createdBy': createdBy,
       "place": place,
       "visitNo": visitNo,

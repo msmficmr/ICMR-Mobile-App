@@ -210,7 +210,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
             List<String> fileDeleteList = [];
             List<dynamic> payLoadObjList = [];
-            Map<String, dynamic>? patientJson = resp?.toJson();
+            Map<String, dynamic>? patientJson = resp.toJson();
             Map<String, dynamic> patientData = {"patientData": patientJson};
             Map<String, dynamic> registrationObj = {"registrationObj": patientData};
             Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
@@ -256,7 +256,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ]
             };
             List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({response[i]?.patientId: patientDataList});
+            payLoadObjList.add({patientJson["patientId"]: patientDataList});
             Map<String, dynamic> payLoadObj = {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
@@ -312,7 +312,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             } catch (e) {}
 
             List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
+            payLoadObjList.add({patientJson!["patientId"]: patientDataList});
             Map<String, dynamic> payLoadObj = {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
