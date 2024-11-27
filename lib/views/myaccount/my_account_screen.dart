@@ -211,9 +211,17 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             List<String> fileDeleteList = [];
             List<dynamic> payLoadObjList = [];
             Map<String, dynamic>? patientJson = resp.toJson();
+
+            //Generating new patient id while uploading
+            String newPatientId = patientJson["patientId"];
+
             Map<String, dynamic> patientData = {"patientData": patientJson};
             Map<String, dynamic> registrationObj = {"registrationObj": patientData};
             Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+            //updating new patient id
+            /*----------------- */
+            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
+            /*----------------- */
 
             try {
               List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
@@ -233,6 +241,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
             craSectionModel.forEach((element) {
               element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
+              //updating new patient id
+              /*------------- */
+              element["patientId"] = newPatientId;
+              /*----------*/
             });
 
             for (int i = 0; i < craSectionModel.length; i++) {
@@ -256,11 +268,12 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               ]
             };
             List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({patientJson["patientId"]: patientDataList});
+            payLoadObjList.add({newPatientId: patientDataList});
             Map<String, dynamic> payLoadObj = {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
             };
+
             bool isPostSuccess = await viewModel.postOfflineData(
               caseId: response[i]?.caseId,
               primaryId: resp.primaryId,
@@ -272,6 +285,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             }
           }
         }
+
         response = await IsarDbService.isarDbService.getListCRAOfflineData();
         List<PatientRegistration> patientListResponse = context.read<PatientListViewModel>().registeredPatients;
 
@@ -293,9 +307,18 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
             PatientRegistration? resp = patientListResponse[patientIndex];
             Map<String, dynamic>? patientJson = resp?.toJson();
+
+            //Generating new patient id while uploading
+            String newPatientId = patientJson!["patientId"];
+
             Map<String, dynamic> patientData = {"patientData": patientJson};
             Map<String, dynamic> registrationObj = {"registrationObj": patientData};
             Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
+
+            //updating new patient id
+            /*----------------- */
+            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
+            /*----------------- */
 
             try {
               List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
@@ -312,7 +335,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             } catch (e) {}
 
             List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({patientJson!["patientId"]: patientDataList});
+            payLoadObjList.add({newPatientId: patientDataList});
             Map<String, dynamic> payLoadObj = {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
