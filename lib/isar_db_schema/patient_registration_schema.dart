@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:isar/isar.dart';
-import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
@@ -107,7 +104,7 @@ class PatientRegistration {
     registration.firstName = data["firstName"];
     registration.gender = data["gender"];
     registration.id = data["id"];
-    registration.identityProofs = data["identityProofs"];
+    registration.identityProofs = data["identityProofs"] == null ? null : IdentityProofDb.fromJson(data["identityProofs"]);
     registration.institutionCodeID = data["institutionCodeID"];
     registration.isCompleted = data["isCompleted"];
     registration.isConsent = data["isConsent"];
@@ -145,7 +142,7 @@ class PatientRegistration {
       "firstName": firstName,
       "gender": gender,
       "id": id,
-      "identityProofs": identityProofs,
+      "identityProofs": identityProofs?.toJson(),
       "institutionCodeID": institutionCodeID,
       "isCompleted": isCompleted,
       "isConsent": isConsent,
