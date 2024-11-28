@@ -1,3 +1,9 @@
+// ignore_for_file: constant_identifier_names
+
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../utils/common_functions.dart';
@@ -16,7 +22,7 @@ class PermissionService {
 
     /// checks the current status of camera permission
     PermissionStatus status = await Permission.camera.status;
-     if (status == PermissionStatus.granted) {
+    if (status == PermissionStatus.granted) {
       return true;
     } else {
       /// if current status is other than [PermissionStatus.granted] then we are requesting user to give permission
@@ -46,5 +52,55 @@ class PermissionService {
 
       return false;
     }
+  }
+
+  static Future<bool> hasStoragePermission() async {
+    if (!Platform.isAndroid) return true;
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    int apiLevel = androidInfo.version.sdkInt;
+    bool hasExternalStoragePermission = false;
+    if (apiLevel >= 30) {
+      hasExternalStoragePermission = await Permission.manageExternalStorage.isGranted;
+    } else {
+      hasExternalStoragePermission = await Permission.storage.isGranted;
+    }
+
+    return hasExternalStoragePermission;
+  }
+
+  static Future<bool> requestStoragePermission(BuildContext context) async {
+    const String ERROR_STORAGE_PERMISSION_DENIED = "We require storage permission to use this feature. Please grant storage permissions in your app settings.";
+    const String GRANT_STORAGE_CTA = "Grant Storage Permissions";
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    int apiLevel = androidInfo.version.sdkInt;
+
+    bool hasExternalStoragePermission = false;
+
+    if (apiLevel >= 30) {
+      PermissionStatus externalStorage = await Permission.manageExternalStorage.request();
+      hasExternalStoragePermission = externalStorage.isGranted;
+    } else {
+      PermissionStatus storagePermission = await Permission.storage.request();
+      switch (storagePermission) {
+        case PermissionStatus.granted:
+          hasExternalStoragePermission = true;
+        default:
+          if (context.mounted) {
+            CommonFunctions.openDialog(
+              context: context,
+              action: (context) {
+                CommonFunctions.openAppSettings();
+                Navigator.pop(context);
+              },
+              subtitle: ERROR_STORAGE_PERMISSION_DENIED,
+              buttonText: GRANT_STORAGE_CTA,
+            );
+          }
+          break;
+      }
+    }
+    return hasExternalStoragePermission;
   }
 }

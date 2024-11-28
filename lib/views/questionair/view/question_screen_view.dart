@@ -69,7 +69,7 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
         if (isSaved) {
           //update patient list
           context.read<PatientListViewModel>().checkCraStatus(widget.patientId);
-          context.read<OfflineDataViewModel>().fetchCompletedCRA();
+          await context.read<PatientListViewModel>().fetchCompletedCRA();
 
           /// If all sections are completed then [nextSectionId] will return null
           String? nextSectionId = _questionViewModel.nextSectionId;

@@ -84,93 +84,98 @@ const PatientRegistrationSchema = CollectionSchema(
       name: r'isConsent',
       type: IsarType.string,
     ),
-    r'lastName': PropertySchema(
+    r'isSynced': PropertySchema(
       id: 13,
+      name: r'isSynced',
+      type: IsarType.bool,
+    ),
+    r'lastName': PropertySchema(
+      id: 14,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'medicalRecordNumber': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'medicalRecordNumber',
       type: IsarType.string,
     ),
     r'occupation': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'occupation',
       type: IsarType.string,
     ),
     r'patientId': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'patientId',
       type: IsarType.string,
     ),
     r'permanentAddress': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'permanentAddress',
       type: IsarType.string,
     ),
     r'phoneNumber': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'phoneNumber',
       type: IsarType.string,
     ),
     r'pincode': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'pincode',
       type: IsarType.string,
     ),
     r'place': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'place',
       type: IsarType.string,
     ),
     r'primaryId': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'primaryId',
       type: IsarType.string,
     ),
     r'secondaryId': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'secondaryId',
       type: IsarType.string,
     ),
     r'signedConsent': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'signedConsent',
       type: IsarType.string,
     ),
     r'signedConsentNoReason': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'signedConsentNoReason',
       type: IsarType.string,
     ),
     r'state': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'state',
       type: IsarType.string,
     ),
     r'studyCode': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'studyCode',
       type: IsarType.string,
     ),
     r'totalCompletedSections': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'totalCompletedSections',
       type: IsarType.long,
     ),
     r'visitDate': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'visitDate',
       type: IsarType.dateTime,
     ),
     r'visitMonth': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'visitMonth',
       type: IsarType.string,
     ),
     r'visitNo': PropertySchema(
-      id: 30,
+      id: 31,
       name: r'visitNo',
       type: IsarType.string,
     )
@@ -311,24 +316,25 @@ void _patientRegistrationSerialize(
   writer.writeString(offsets[10], object.institutionCodeID);
   writer.writeBool(offsets[11], object.isCompleted);
   writer.writeString(offsets[12], object.isConsent);
-  writer.writeString(offsets[13], object.lastName);
-  writer.writeString(offsets[14], object.medicalRecordNumber);
-  writer.writeString(offsets[15], object.occupation);
-  writer.writeString(offsets[16], object.patientId);
-  writer.writeString(offsets[17], object.permanentAddress);
-  writer.writeString(offsets[18], object.phoneNumber);
-  writer.writeString(offsets[19], object.pincode);
-  writer.writeString(offsets[20], object.place);
-  writer.writeString(offsets[21], object.primaryId);
-  writer.writeString(offsets[22], object.secondaryId);
-  writer.writeString(offsets[23], object.signedConsent);
-  writer.writeString(offsets[24], object.signedConsentNoReason);
-  writer.writeString(offsets[25], object.state);
-  writer.writeString(offsets[26], object.studyCode);
-  writer.writeLong(offsets[27], object.totalCompletedSections);
-  writer.writeDateTime(offsets[28], object.visitDate);
-  writer.writeString(offsets[29], object.visitMonth);
-  writer.writeString(offsets[30], object.visitNo);
+  writer.writeBool(offsets[13], object.isSynced);
+  writer.writeString(offsets[14], object.lastName);
+  writer.writeString(offsets[15], object.medicalRecordNumber);
+  writer.writeString(offsets[16], object.occupation);
+  writer.writeString(offsets[17], object.patientId);
+  writer.writeString(offsets[18], object.permanentAddress);
+  writer.writeString(offsets[19], object.phoneNumber);
+  writer.writeString(offsets[20], object.pincode);
+  writer.writeString(offsets[21], object.place);
+  writer.writeString(offsets[22], object.primaryId);
+  writer.writeString(offsets[23], object.secondaryId);
+  writer.writeString(offsets[24], object.signedConsent);
+  writer.writeString(offsets[25], object.signedConsentNoReason);
+  writer.writeString(offsets[26], object.state);
+  writer.writeString(offsets[27], object.studyCode);
+  writer.writeLong(offsets[28], object.totalCompletedSections);
+  writer.writeDateTime(offsets[29], object.visitDate);
+  writer.writeString(offsets[30], object.visitMonth);
+  writer.writeString(offsets[31], object.visitNo);
 }
 
 PatientRegistration _patientRegistrationDeserialize(
@@ -356,24 +362,25 @@ PatientRegistration _patientRegistrationDeserialize(
   object.institutionCodeID = reader.readString(offsets[10]);
   object.isCompleted = reader.readBool(offsets[11]);
   object.isConsent = reader.readString(offsets[12]);
-  object.lastName = reader.readString(offsets[13]);
-  object.medicalRecordNumber = reader.readStringOrNull(offsets[14]);
-  object.occupation = reader.readString(offsets[15]);
-  object.patientId = reader.readString(offsets[16]);
-  object.permanentAddress = reader.readStringOrNull(offsets[17]);
-  object.phoneNumber = reader.readString(offsets[18]);
-  object.pincode = reader.readStringOrNull(offsets[19]);
-  object.place = reader.readString(offsets[20]);
-  object.primaryId = reader.readString(offsets[21]);
-  object.secondaryId = reader.readString(offsets[22]);
-  object.signedConsent = reader.readString(offsets[23]);
-  object.signedConsentNoReason = reader.readString(offsets[24]);
-  object.state = reader.readStringOrNull(offsets[25]);
-  object.studyCode = reader.readString(offsets[26]);
-  object.totalCompletedSections = reader.readLong(offsets[27]);
-  object.visitDate = reader.readDateTime(offsets[28]);
-  object.visitMonth = reader.readStringOrNull(offsets[29]);
-  object.visitNo = reader.readStringOrNull(offsets[30]);
+  object.isSynced = reader.readBool(offsets[13]);
+  object.lastName = reader.readString(offsets[14]);
+  object.medicalRecordNumber = reader.readStringOrNull(offsets[15]);
+  object.occupation = reader.readString(offsets[16]);
+  object.patientId = reader.readString(offsets[17]);
+  object.permanentAddress = reader.readStringOrNull(offsets[18]);
+  object.phoneNumber = reader.readString(offsets[19]);
+  object.pincode = reader.readStringOrNull(offsets[20]);
+  object.place = reader.readString(offsets[21]);
+  object.primaryId = reader.readString(offsets[22]);
+  object.secondaryId = reader.readString(offsets[23]);
+  object.signedConsent = reader.readString(offsets[24]);
+  object.signedConsentNoReason = reader.readString(offsets[25]);
+  object.state = reader.readStringOrNull(offsets[26]);
+  object.studyCode = reader.readString(offsets[27]);
+  object.totalCompletedSections = reader.readLong(offsets[28]);
+  object.visitDate = reader.readDateTime(offsets[29]);
+  object.visitMonth = reader.readStringOrNull(offsets[30]);
+  object.visitNo = reader.readStringOrNull(offsets[31]);
   return object;
 }
 
@@ -415,21 +422,21 @@ P _patientRegistrationDeserializeProp<P>(
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
-    case 15:
       return (reader.readString(offset)) as P;
+    case 15:
+      return (reader.readStringOrNull(offset)) as P;
     case 16:
       return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 18:
-      return (reader.readString(offset)) as P;
-    case 19:
       return (reader.readStringOrNull(offset)) as P;
-    case 20:
+    case 19:
       return (reader.readString(offset)) as P;
+    case 20:
+      return (reader.readStringOrNull(offset)) as P;
     case 21:
       return (reader.readString(offset)) as P;
     case 22:
@@ -439,16 +446,18 @@ P _patientRegistrationDeserializeProp<P>(
     case 24:
       return (reader.readString(offset)) as P;
     case 25:
-      return (reader.readStringOrNull(offset)) as P;
-    case 26:
       return (reader.readString(offset)) as P;
-    case 27:
-      return (reader.readLong(offset)) as P;
-    case 28:
-      return (reader.readDateTime(offset)) as P;
-    case 29:
+    case 26:
       return (reader.readStringOrNull(offset)) as P;
+    case 27:
+      return (reader.readString(offset)) as P;
+    case 28:
+      return (reader.readLong(offset)) as P;
+    case 29:
+      return (reader.readDateTime(offset)) as P;
     case 30:
+      return (reader.readStringOrNull(offset)) as P;
+    case 31:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2155,6 +2164,16 @@ extension PatientRegistrationQueryFilter on QueryBuilder<PatientRegistration,
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'isConsent',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterFilterCondition>
+      isSyncedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isSynced',
+        value: value,
       ));
     });
   }
@@ -4741,6 +4760,20 @@ extension PatientRegistrationQuerySortBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      sortByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       sortByLastName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastName', Sort.asc);
@@ -5178,6 +5211,20 @@ extension PatientRegistrationQuerySortThenBy
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
+      thenByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QAfterSortBy>
       thenByLastName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastName', Sort.asc);
@@ -5519,6 +5566,13 @@ extension PatientRegistrationQueryWhereDistinct
   }
 
   QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
+      distinctByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isSynced');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, PatientRegistration, QDistinct>
       distinctByLastName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastName', caseSensitive: caseSensitive);
@@ -5744,6 +5798,12 @@ extension PatientRegistrationQueryProperty
       isConsentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isConsent');
+    });
+  }
+
+  QueryBuilder<PatientRegistration, bool, QQueryOperations> isSyncedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isSynced');
     });
   }
 

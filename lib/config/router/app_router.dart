@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/router/router_transition.dart';
+import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/doctor/doctor_name_screen.dart';
 import 'package:mhealth/views/questionair/view/question_screen_view.dart';
+import 'package:mhealth/views/storage_permission/storage_permission_screen.dart';
 
 class AppRouter {
   LoginViewModel loginViewModel;
@@ -49,11 +51,24 @@ class AppRouter {
             if (!containsDoctorName) {
               return DoctorNameScreen.routerPath;
             }
+
+            bool hasStoragePermission = await PermissionService.hasStoragePermission();
+            if (!hasStoragePermission) {
+              return StoragePermissionScreen.routerPath;
+            }
+
             return null;
           },
           pageBuilder: (context, state) => RouterTransition(
             key: state.pageKey,
             child: DashboardScreen(),
+          ),
+        ),
+        GoRoute(
+          path: StoragePermissionScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const StoragePermissionScreen(),
           ),
         ),
         GoRoute(

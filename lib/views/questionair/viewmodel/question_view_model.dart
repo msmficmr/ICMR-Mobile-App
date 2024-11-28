@@ -109,7 +109,6 @@ class QuestionViewModel extends ChangeNotifier {
     }
   }
 
-
   fetchSectionQuestions() {
     switch (currentSection.type) {
       case "JSON":

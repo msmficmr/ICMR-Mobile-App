@@ -18,9 +18,11 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
+import 'package:mhealth/utils/import_export_util.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/doctor/doctor_name_screen.dart';
 import 'package:mhealth/views/myaccount/widgets/card_component_widget.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
@@ -46,12 +48,14 @@ class MyAccountScreen extends StatefulWidget {
 
 class _MyAccountScreenState extends State<MyAccountScreen> {
   LoginViewModel? loginViewModel;
+  late ImportExportUtil importExportUtil;
 
   ValueNotifier<String?> docName = ValueNotifier<String?>(null);
 
   @override
   void initState() {
     super.initState();
+    importExportUtil = ImportExportUtil(context: context);
     _syncData = ValueNotifier<bool>(false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     checkToSyncData();
@@ -103,7 +107,13 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   checkToSyncData() async {
     if (networkStatusService.networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      List<PatientRegistration?> patientResponse = await IsarDbService.isarDbService.getPatientsList();
+      List<PatientRegistration?> patientResponse = context
+          .read<PatientListViewModel>()
+          .registeredPatients
+          .where(
+            (element) => element.isSynced == false,
+          )
+          .toList();
       if (response.isNotEmpty || patientResponse.isNotEmpty) {
         _syncData.value = true;
       } else {
@@ -148,7 +158,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     return result ?? false;
   }
 
-  Future showDataSyncLoading(BuildContext context) {
+  Future showDataSyncLoading(BuildContext context, {String? message}) {
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -165,7 +175,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                 const CircularProgressIndicator(),
                 const SpaceWidget(height: 10),
                 Text(
-                  'Syncing data Please wait',
+                  message ?? 'Syncing data Please wait',
                   style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryColor),
                 ),
                 const SpaceWidget(height: 10),
@@ -182,91 +192,133 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
     if (networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      List<PatientRegistration> patientListResponse = await IsarDbService.isarDbService.getPatientsList();
+      List<PatientRegistration> patientList = context.read<PatientListViewModel>().registeredPatients;
 
-      if (response.isEmpty && patientListResponse.isEmpty) {
+      if (response.isEmpty && patientList.isEmpty) {
         CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
       } else {
         showDataSyncLoading(context);
         //_syncing = true;
 
         for (int i = 0; i < response.length; i++) {
-          List<String> fileDeleteList = [];
-          List<dynamic> payLoadObjList = [];
-          String? patienId = response[i]?.patientId;
-          PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patienId ?? "");
-          Map<String, dynamic>? patientJson = resp?.toJson();
-          Map<String, dynamic> patientData = {"patientData": patientJson};
-          Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-          Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+          String? patientId = response[i]?.patientId;
+          int patientIndex = patientList.indexWhere(
+            (element) => element.patientId == patientId,
+          );
+          if (patientIndex != -1) {
+            PatientRegistration? resp = patientList[patientIndex];
 
-          try {
-            List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
-            registrationObj['registrationObj']['patientData']['consent'] = [];
-            List<AttachmentDb> consentList = [];
-            for (dynamic pat in pMap) {
-              AttachmentDb fileName = pat;
-              fileDeleteList.add(fileName.dataBytes!);
-              List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-              fileName.dataBytes = base64.encode(content);
-              consentList.add(fileName);
-            }
-            registrationObj['registrationObj']['patientData']['consent'] = consentList;
-          } catch (e) {}
+            List<String> fileDeleteList = [];
+            List<dynamic> payLoadObjList = [];
+            Map<String, dynamic>? patientJson = resp.toJson();
 
-          List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+            //Generating new patient id while uploading
+            String newPatientId = patientJson["patientId"];
 
-          craSectionModel.forEach((element) {
-            element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
-          });
+            Map<String, dynamic> patientData = {"patientData": patientJson};
+            Map<String, dynamic> registrationObj = {"registrationObj": patientData};
+            Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
+            //updating new patient id
+            /*----------------- */
+            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
+            /*----------------- */
 
-          for (int i = 0; i < craSectionModel.length; i++) {
-            if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
-              List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
-              for (int j = 0; j < questionList.length; j++) {
-                AttachmentDb fileName = questionList[j]['file'];
-                try {
-                  fileDeleteList.add(fileName.dataBytes!);
-                  List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-                  fileName.dataBytes = base64.encode(content);
-                  craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
-                } catch (e) {}
+            try {
+              List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
+              registrationObj['registrationObj']['patientData']['consent'] = [];
+              List<AttachmentDb> consentList = [];
+              for (dynamic pat in pMap) {
+                AttachmentDb fileName = pat;
+                fileDeleteList.add(fileName.dataBytes!);
+                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
+                fileName.dataBytes = base64.encode(content);
+                consentList.add(fileName);
+              }
+              registrationObj['registrationObj']['patientData']['consent'] = consentList;
+            } catch (e) {}
+
+            List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
+
+            craSectionModel.forEach((element) {
+              element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
+              //updating new patient id
+              /*------------- */
+              element["patientId"] = newPatientId;
+              /*----------*/
+            });
+
+            for (int i = 0; i < craSectionModel.length; i++) {
+              if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
+                List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
+                for (int j = 0; j < questionList.length; j++) {
+                  AttachmentDb fileName = questionList[j]['file'];
+                  try {
+                    fileDeleteList.add(fileName.dataBytes!);
+                    List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
+                    fileName.dataBytes = base64.encode(content);
+                    craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
+                  } catch (e) {}
+                }
               }
             }
+
+            Map<String, dynamic> cdrPostObj = {
+              "cdrPostObj": [
+                {response[i]?.caseId: craSectionModel}
+              ]
+            };
+            List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
+            payLoadObjList.add({newPatientId: patientDataList});
+            Map<String, dynamic> payLoadObj = {
+              "payloadObj": payLoadObjList,
+              "appVersion": Environment.runningEnv.releaseVersion,
+            };
+
+            bool isPostSuccess = await viewModel.postOfflineData(
+              caseId: response[i]?.caseId,
+              primaryId: resp.primaryId,
+              payLoadObj: payLoadObj,
+              fileDeleteList: fileDeleteList,
+            );
+            if (isPostSuccess) {
+              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId);
+            }
           }
-
-          Map<String, dynamic> cdrPostObj = {
-            "cdrPostObj": [
-              {response[i]?.caseId: craSectionModel}
-            ]
-          };
-          List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-          payLoadObjList.add({response[i]?.patientId: patientDataList});
-          Map<String, dynamic> payLoadObj = {
-            "payloadObj": payLoadObjList,
-            "appVersion": Environment.runningEnv.releaseVersion,
-          };
-          await viewModel.postOfflineData(
-            caseId: response[i]?.caseId,
-            patientId: response[i]?.patientId,
-            payLoadObj: payLoadObj,
-            fileDeleteList: fileDeleteList,
-          );
         }
-        response = await IsarDbService.isarDbService.getListCRAOfflineData();
-        patientListResponse = await IsarDbService.isarDbService.getPatientsList();
 
+        response = await IsarDbService.isarDbService.getListCRAOfflineData();
+        List<PatientRegistration> patientListResponse = context.read<PatientListViewModel>().registeredPatients;
+
+        /// Taking only those patients which are not synced
+        patientListResponse = patientListResponse
+            .where(
+              (element) => element.isSynced == false,
+            )
+            .toList();
         for (int i = 0; i < patientListResponse.length; i++) {
           List<String> fileDeleteList = [];
           List<dynamic> payLoadObjList = [];
           String? patientId = patientListResponse[i].patientId;
 
           if (!(response.map((e) => e?.patientId ?? "").contains(patientId))) {
-            PatientRegistration? resp = await IsarDbService.isarDbService.getPatientDetails(patientId ?? "");
+            int patientIndex = patientListResponse.indexWhere(
+              (element) => element.patientId == patientId,
+            );
+
+            PatientRegistration? resp = patientListResponse[patientIndex];
             Map<String, dynamic>? patientJson = resp?.toJson();
+
+            //Generating new patient id while uploading
+            String newPatientId = patientJson!["patientId"];
+
             Map<String, dynamic> patientData = {"patientData": patientJson};
             Map<String, dynamic> registrationObj = {"registrationObj": patientData};
             Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
+
+            //updating new patient id
+            /*----------------- */
+            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
+            /*----------------- */
 
             try {
               List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
@@ -283,12 +335,15 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             } catch (e) {}
 
             List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({patientListResponse[i].patientId: patientDataList});
+            payLoadObjList.add({newPatientId: patientDataList});
             Map<String, dynamic> payLoadObj = {
               "payloadObj": payLoadObjList,
               "appVersion": Environment.runningEnv.releaseVersion,
             };
-            await viewModel.postOfflineData(caseId: null, patientId: patientListResponse[i].patientId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+            bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
+            if (isPostSuccess) {
+              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId);
+            }
           }
         }
         if (context.mounted) {
@@ -297,8 +352,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
 
         CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
         if (context.mounted) {
-          await context.read<OfflineDataViewModel>().fetchRegisteredPatient();
-          await context.read<OfflineDataViewModel>().fetchCompletedCRA();
+          await context.read<PatientListViewModel>().fetchCompletedCRA();
+          await context.read<PatientListViewModel>().updateCraStatus();
           GoRouter.of(context).go(DashboardScreen.routerPath);
         }
       }
