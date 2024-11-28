@@ -27,7 +27,12 @@ class DirectoryDbService {
     List<PatientRegistration> details = [];
     for (var map in patientMapList) {
       try {
-        details.add(PatientRegistration.fromJson(map));
+        PatientRegistration patientObj = PatientRegistration.fromJson(map);
+        if (details.any((element) => element.primaryId == patientObj.primaryId)) {
+          continue;
+        }
+
+        details.add(patientObj);
       } catch (e) {}
     }
     return details;
