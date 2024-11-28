@@ -4,12 +4,13 @@ import 'package:mhealth/utils/app_constant.dart';
 
 mixin Environment {
   static Environment runningEnv = DEVEnvironment();
-  final String releaseVersion = "0.6.1";
+  final String releaseVersion = "0.6.2";
 
   String get currentEnv => const String.fromEnvironment(AppConstant.ENV_KEY);
   String get appName => const String.fromEnvironment(AppConstant.APP_NAME_KEY);
   String get baseUrl => const String.fromEnvironment(AppConstant.BASE_URL_KEY);
   String get sourceAppName => const String.fromEnvironment(AppConstant.SOURCE_APP_NAME_KEY);
+  String get encryptionKey => const String.fromEnvironment(AppConstant.ENCRYPTION_KEY);
 
   bindServices() async {
     await SharedPreferencesService.init();

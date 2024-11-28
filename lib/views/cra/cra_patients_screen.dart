@@ -34,7 +34,6 @@ class CRAPatientScreen extends StatefulWidget {
 }
 
 class _CRAPatientScreenState extends State<CRAPatientScreen> {
-  final TextEditingController _searchFieldController = TextEditingController();
   late PatientListViewModel patientListViewModel;
 
   //Widget Keys
@@ -64,7 +63,10 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
   void initState() {
     super.initState();
     patientListViewModel = Provider.of<PatientListViewModel>(context, listen: false);
-    patientListViewModel.loadRegisteredPatients();
+    patientListViewModel.searchFieldController.text = "";
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      patientListViewModel.bindPatientScreen();
+    });
   }
 
   redirectToDashboard() {
@@ -109,7 +111,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
             children: [
               CustomTextField(
                 widgetKey: Key(KEY_TEXTFIELD_SEARCH),
-                controller: _searchFieldController,
+                controller: patientListViewModel.searchFieldController,
                 hintText: TranslationKeys.search.translate(context),
                 headingKey: Key(KEY_TITLE_SEARCH),
                 onChanged: onSearchFieldChanged,
@@ -135,7 +137,7 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               itemBuilder: (context, index) {
                                 final patient = items[index];
                                 final fullName = "${patient.firstName} ${patient.lastName}";
-                                return Selector<PatientListViewModel, Tuple2<bool,int>>(
+                                return Selector<PatientListViewModel, Tuple2<bool, int>>(
                                     selector: (p0, p1) => Tuple2(patientListViewModel.filteredItems[index].isCompleted, patientListViewModel.filteredItems[index].totalCompletedSections),
                                     builder: (context, statusData, __) {
                                       return CustomPatientCard(

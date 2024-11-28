@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
 class RegistrationViewModel extends ChangeNotifier {
+  resetScreen() {
+    _isLoading = false;
+    _isConsentOptionSelectedOption = false;
+  }
 
   bool _isConsentOptionSelectedOption = false;
 
@@ -19,5 +23,4 @@ class RegistrationViewModel extends ChangeNotifier {
     _isLoading = value;
     notifyListeners();
   }
-
 }
