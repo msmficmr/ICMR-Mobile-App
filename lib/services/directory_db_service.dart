@@ -100,12 +100,15 @@ class DirectoryDbService {
   static Future<String> _getBasePath() async {
     Directory? dir = Platform.isAndroid ? await getExternalStorageDirectory() : await getApplicationDocumentsDirectory();
 
-    String pattern = Platform.isAndroid ? "/" : "\\";
+    String basePath = dir?.path ?? "";
+
+    /* String pattern = Platform.isAndroid ? "/" : "\\";
 
     String basePath = dir?.path.split(pattern).sublist(0, 4).join("/") ?? "";
     if (basePath.endsWith("/")) {
       basePath = basePath.substring(0, basePath.length - 2);
-    }
+    } */
+
     return "${basePath}/mhealth/";
   }
 

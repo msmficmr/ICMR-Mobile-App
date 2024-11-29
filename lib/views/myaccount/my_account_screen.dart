@@ -18,7 +18,6 @@ import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_styles.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
-import 'package:mhealth/utils/import_export_util.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
@@ -48,14 +47,12 @@ class MyAccountScreen extends StatefulWidget {
 
 class _MyAccountScreenState extends State<MyAccountScreen> {
   LoginViewModel? loginViewModel;
-  late ImportExportUtil importExportUtil;
 
   ValueNotifier<String?> docName = ValueNotifier<String?>(null);
 
   @override
   void initState() {
     super.initState();
-    importExportUtil = ImportExportUtil(context: context);
     _syncData = ValueNotifier<bool>(false);
     networkStatusService = Provider.of<NetworkStatusService>(context, listen: false);
     checkToSyncData();

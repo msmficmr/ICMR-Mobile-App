@@ -52,10 +52,10 @@ class AppRouter {
               return DoctorNameScreen.routerPath;
             }
 
-            bool hasStoragePermission = await PermissionService.hasStoragePermission();
+            /* bool hasStoragePermission = await PermissionService.hasStoragePermission();
             if (!hasStoragePermission) {
               return StoragePermissionScreen.routerPath;
-            }
+            } */
 
             return null;
           },
