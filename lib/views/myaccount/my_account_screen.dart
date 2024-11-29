@@ -104,6 +104,16 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   checkToSyncData() async {
     if (networkStatusService.networkStatus == NetworkStatus.online) {
       List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
+
+      response = response = response.where(
+        (element) {
+          String? patientId = element?.patientId;
+          return context.read<PatientListViewModel>().registeredPatients.any(
+                (element) => element.patientId == patientId,
+              );
+        },
+      ).toList();
+
       List<PatientRegistration?> patientResponse = context
           .read<PatientListViewModel>()
           .registeredPatients
