@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:mhealth/isar_db_schema/identity_proofs_schema.dart';
+import 'package:mhealth/utils/app_values.dart';
 import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/exceptions/app_exception.dart';
 part 'patient_registration_schema.g.dart';
@@ -40,7 +41,7 @@ class PatientRegistration {
   String? caseId;
   int totalCompletedSections = 0;
   bool isSynced = false;
-  int visitCount =0;
+  int visitCount = 0;
   PatientRegistration();
 
   static bool areAllFieldsPresent(Map<String, dynamic> json) {
@@ -93,6 +94,18 @@ class PatientRegistration {
     bool isValid = areAllFieldsPresent(data);
     if (!isValid) {
       throw ServerException(response: null, message: "Some fields are missing", statusCode: null);
+    }
+
+    String primaryId = data["primaryId"];
+    bool hasMatch = AppValues.primaryIdPattern.hasMatch(primaryId);
+    if (!hasMatch) {
+      throw ServerException(response: null, message: "Invalid Primary Id", statusCode: null);
+    }
+
+    String secondaryId = data["secondaryId"];
+    hasMatch = AppValues.primaryIdPattern.hasMatch(secondaryId);
+    if (!hasMatch) {
+      throw ServerException(response: null, message: "Invalid Secondary Id", statusCode: null);
     }
     //
     PatientRegistration registration = PatientRegistration();
@@ -168,7 +181,7 @@ class PatientRegistration {
       "visitMonth": visitMonth,
       "visitNo": visitNo,
       "isSynced": isSynced,
-      "visitCount":visitCount
+      "visitCount": visitCount
     };
 
     return json;
