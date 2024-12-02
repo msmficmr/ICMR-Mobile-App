@@ -40,6 +40,7 @@ class PatientRegistration {
   String? caseId;
   int totalCompletedSections = 0;
   bool isSynced = false;
+  int visitCount =0;
   PatientRegistration();
 
   static bool areAllFieldsPresent(Map<String, dynamic> json) {
@@ -76,7 +77,8 @@ class PatientRegistration {
       "visitDate",
       "visitMonth",
       "visitNo",
-      "isSynced"
+      "isSynced",
+      "visitCount"
     ];
 
     for (String field in requiredFields) {
@@ -127,6 +129,7 @@ class PatientRegistration {
     registration.visitMonth = data["visitMonth"];
     registration.visitNo = data["visitNo"];
     registration.isSynced = data["isSynced"];
+    registration.visitCount = data["visitCount"];
     return registration;
   }
 
@@ -165,6 +168,7 @@ class PatientRegistration {
       "visitMonth": visitMonth,
       "visitNo": visitNo,
       "isSynced": isSynced,
+      "visitCount":visitCount
     };
 
     return json;

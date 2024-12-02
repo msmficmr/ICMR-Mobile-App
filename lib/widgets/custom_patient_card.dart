@@ -27,11 +27,13 @@ class CustomPatientCard extends StatelessWidget {
   final bool isCraCompleted;
   final String primaryId, secondaryId;
   final Key primaryIdKey, secondaryIdKey;
-  final int totalComplted;
+  final int totalCompletedSections;
+  final int visitCount;
 
   const CustomPatientCard({
     Key? key,
-    required this.totalComplted,
+    required this.visitCount,
+    required this.totalCompletedSections,
     required this.isCraCompleted,
     required this.widgetKey,
     required this.patientName,
@@ -54,6 +56,19 @@ class CustomPatientCard extends StatelessWidget {
   final String KEY_PATIENT_AGE = "key_patient_age";
   final String KEY_PATIENT_PHONE_NUMBER = "key_patient_phone_number";
   final String KEY_VIEW_DETAILS_BUTTON = "key_view_details_button";
+
+  String getVisitText() {
+    switch (visitCount) {
+      case 0:
+        return "1st Visit";
+      case 1:
+        return "2nd Visit";
+      case 2:
+        return "3rd Visit";
+      default:
+        return "${visitCount + 1}th visit";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +98,15 @@ class CustomPatientCard extends StatelessWidget {
                     ),
                   ),
                   const SpaceWidget(width: 10),
-                  StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                  StatusTextWidget(
+                    status: getVisitText(),
+                  ),
+                  const SizedBox(width: 5),
+                  if (totalCompletedSections > 0 && !isCraCompleted) ...[
+                    const StatusWidget(status: CRASTATUS.INPROGRESS)
+                  ] else ...[
+                    StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                  ]
                 ],
               ),
               const SpaceWidget(height: 5),
@@ -140,10 +163,8 @@ class CustomPatientCard extends StatelessWidget {
               ),
               const SpaceWidget(height: 10),
               PrimaryOutlinedButton(
-                buttonThemeStyle: OutlinedButtonThemeStyle(
-                    customTextStyle: AppStyles.buttonStyle,
-                    enabledTextColor: AppColorScheme.kGrayColor.shade600,
-                    enabledBorderColor: AppColorScheme.kGrayColor.shade600),
+                buttonThemeStyle:
+                    OutlinedButtonThemeStyle(customTextStyle: AppStyles.buttonStyle, enabledTextColor: AppColorScheme.kGrayColor.shade600, enabledBorderColor: AppColorScheme.kGrayColor.shade600),
                 buttonTitle: TranslationKeys.viewDetails.translate(context),
                 widgetKey: KEY_VIEW_DETAILS_BUTTON,
                 onPressed: () {

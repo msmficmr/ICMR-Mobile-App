@@ -118,15 +118,18 @@ class PatientListViewModel with ChangeNotifier {
     return isSuccess;
   }
 
-  markPatientAsSynced(String primaryId) async {
+  markPatientAsSynced(String primaryId, bool increaseCount) async {
     int orgListIndex = _registeredPatients.indexWhere((element) => element.primaryId == primaryId);
     int filterIndex = _filteredItems.indexWhere((element) => element.primaryId == primaryId);
     if (orgListIndex != -1) {
       _registeredPatients[orgListIndex].isSynced = true;
+      _registeredPatients[orgListIndex].visitCount = _registeredPatients[orgListIndex].visitCount + (increaseCount ? 1 : 0);
       _registeredPatients[orgListIndex].caseId = null;
     }
     if (filterIndex != -1) {
       _filteredItems[filterIndex].isSynced = true;
+      _filteredItems[filterIndex].visitCount = _registeredPatients[orgListIndex].visitCount;
+
       _registeredPatients[orgListIndex].caseId = null;
     }
     await DirectoryDbService().markPatientSynced(_registeredPatients[orgListIndex]);
