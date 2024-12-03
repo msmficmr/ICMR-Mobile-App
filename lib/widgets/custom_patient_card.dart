@@ -59,14 +59,14 @@ class CustomPatientCard extends StatelessWidget {
 
   String getVisitText() {
     switch (visitCount) {
-      case 0:
-        return "1st Visit";
       case 1:
-        return "2nd Visit";
+        return "1st visit done";
       case 2:
-        return "3rd Visit";
+        return "2nd visit done";
+      case 3:
+        return "3rd Visit done";
       default:
-        return "${visitCount + 1}th visit";
+        return "${visitCount}th visit done";
     }
   }
 
@@ -98,14 +98,17 @@ class CustomPatientCard extends StatelessWidget {
                     ),
                   ),
                   const SpaceWidget(width: 10),
-                  StatusTextWidget(
-                    status: getVisitText(),
-                  ),
-                  const SizedBox(width: 5),
-                  if (totalCompletedSections > 0 && !isCraCompleted) ...[
-                    const StatusWidget(status: CRASTATUS.INPROGRESS)
-                  ] else ...[
+                  
+                  if (visitCount == 0) ...[
                     StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                  ] else ...[
+                    if (totalCompletedSections > 0 && !isCraCompleted) ...[
+                      const StatusWidget(status: CRASTATUS.INCOMPLETE)
+                    ] else ...[
+                      StatusTextWidget(
+                        status: getVisitText(),
+                      )
+                    ]
                   ]
                 ],
               ),
