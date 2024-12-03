@@ -27,11 +27,13 @@ class CustomPatientCard extends StatelessWidget {
   final bool isCraCompleted;
   final String primaryId, secondaryId;
   final Key primaryIdKey, secondaryIdKey;
-  final int totalComplted;
+  final int totalCompletedSections;
+  final int visitCount;
 
   const CustomPatientCard({
     Key? key,
-    required this.totalComplted,
+    required this.visitCount,
+    required this.totalCompletedSections,
     required this.isCraCompleted,
     required this.widgetKey,
     required this.patientName,
@@ -54,6 +56,19 @@ class CustomPatientCard extends StatelessWidget {
   final String KEY_PATIENT_AGE = "key_patient_age";
   final String KEY_PATIENT_PHONE_NUMBER = "key_patient_phone_number";
   final String KEY_VIEW_DETAILS_BUTTON = "key_view_details_button";
+
+  String getVisitText() {
+    switch (visitCount) {
+      case 1:
+        return "1st visit done";
+      case 2:
+        return "2nd visit done";
+      case 3:
+        return "3rd Visit done";
+      default:
+        return "${visitCount}th visit done";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +98,18 @@ class CustomPatientCard extends StatelessWidget {
                     ),
                   ),
                   const SpaceWidget(width: 10),
-                  StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                  
+                  if (visitCount == 0) ...[
+                    StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                  ] else ...[
+                    if (totalCompletedSections > 0 ) ...[
+                      StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
+                    ] else ...[
+                      StatusTextWidget(
+                        status: getVisitText(),
+                      )
+                    ]
+                  ]
                 ],
               ),
               const SpaceWidget(height: 5),
@@ -140,10 +166,8 @@ class CustomPatientCard extends StatelessWidget {
               ),
               const SpaceWidget(height: 10),
               PrimaryOutlinedButton(
-                buttonThemeStyle: OutlinedButtonThemeStyle(
-                    customTextStyle: AppStyles.buttonStyle,
-                    enabledTextColor: AppColorScheme.kGrayColor.shade600,
-                    enabledBorderColor: AppColorScheme.kGrayColor.shade600),
+                buttonThemeStyle:
+                    OutlinedButtonThemeStyle(customTextStyle: AppStyles.buttonStyle, enabledTextColor: AppColorScheme.kGrayColor.shade600, enabledBorderColor: AppColorScheme.kGrayColor.shade600),
                 buttonTitle: TranslationKeys.viewDetails.translate(context),
                 widgetKey: KEY_VIEW_DETAILS_BUTTON,
                 onPressed: () {

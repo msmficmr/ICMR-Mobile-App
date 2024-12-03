@@ -4,7 +4,8 @@ import 'package:mhealth/utils/app_styles.dart';
 
 enum CRASTATUS {
   COMPLETED("Completed", AppColorScheme.kSuccessStatusColor),
-  INCOMPLETE("Incomplete", AppColorScheme.errorTextColor);
+  INCOMPLETE("Incomplete", AppColorScheme.errorTextColor),
+  INPROGRESS("Inprogress", AppColorScheme.kBlueColor);
 
   final String text;
   final Color color;
@@ -27,6 +28,27 @@ class StatusWidget extends StatelessWidget {
       child: Text(
         status.text,
         style: AppStyles.bodySmall.copyWith(color: status.color, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+class StatusTextWidget extends StatelessWidget {
+  final String status;
+  const StatusTextWidget({super.key, required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        border: Border.all(color: AppColorScheme.kPrimaryColor),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: Text(
+        status,
+        style: AppStyles.bodySmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
       ),
     );
   }
