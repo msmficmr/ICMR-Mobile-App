@@ -43,12 +43,12 @@ class StatusTextWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: Colors.white,
-        border: Border.all(color: Colors.orange),
+        border: Border.all(color: AppColorScheme.kPrimaryColor),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       child: Text(
         status,
-        style: AppStyles.bodySmall.copyWith(color: Colors.orange, fontWeight: FontWeight.w600),
+        style: AppStyles.bodySmall.copyWith(color: AppColorScheme.kPrimaryColor, fontWeight: FontWeight.w600),
       ),
     );
   }

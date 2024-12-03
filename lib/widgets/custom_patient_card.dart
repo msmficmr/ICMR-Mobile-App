@@ -102,8 +102,8 @@ class CustomPatientCard extends StatelessWidget {
                   if (visitCount == 0) ...[
                     StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
                   ] else ...[
-                    if (totalCompletedSections > 0 && !isCraCompleted) ...[
-                      const StatusWidget(status: CRASTATUS.INCOMPLETE)
+                    if (totalCompletedSections > 0 ) ...[
+                      StatusWidget(status: isCraCompleted ? CRASTATUS.COMPLETED : CRASTATUS.INCOMPLETE)
                     ] else ...[
                       StatusTextWidget(
                         status: getVisitText(),
