@@ -137,13 +137,15 @@ class _CRAPatientScreenState extends State<CRAPatientScreen> {
                               itemBuilder: (context, index) {
                                 final patient = items[index];
                                 final fullName = "${patient.firstName} ${patient.lastName}";
-                                return Selector<PatientListViewModel, Tuple2<bool, int>>(
-                                    selector: (p0, p1) => Tuple2(patientListViewModel.filteredItems[index].isCompleted, patientListViewModel.filteredItems[index].totalCompletedSections),
+                                return Selector<PatientListViewModel, Tuple3<bool, int, int>>(
+                                    selector: (p0, p1) => Tuple3(patientListViewModel.filteredItems[index].isCompleted, patientListViewModel.filteredItems[index].totalCompletedSections,
+                                        patientListViewModel.filteredItems[index].visitCount),
                                     builder: (context, statusData, __) {
                                       return CustomPatientCard(
                                         widgetKey: KEY_PATIENT_CARD,
                                         isCraCompleted: statusData.item1,
-                                        totalComplted: statusData.item2,
+                                        totalCompletedSections: statusData.item2,
+                                        visitCount: statusData.item3,
                                         patientName: fullName,
                                         patientId: patient.patientId,
                                         gender: CommonFunctions.getGender(patient.gender.toString()),

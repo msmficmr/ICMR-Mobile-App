@@ -288,7 +288,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               fileDeleteList: fileDeleteList,
             );
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId);
+              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId,true);
             }
           }
         }
@@ -349,7 +349,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             };
             bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId);
+              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId,false);
             }
           }
         }

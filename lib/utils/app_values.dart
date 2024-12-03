@@ -23,9 +23,9 @@ class AppValues {
   static BorderRadius get circularBorderRadius30 => BorderRadius.circular(30);
 
   static String dobDateFormat = "dd/MM/yyyy";
-  static String idDateTimeFormat = "ddMMyyyyHHmm";
+  static String idDateTimeFormat = "ddMMyyHHmm";
   static TextInputFormatter get idInputFormatter => CustomInputFormatter(regx: r"^[a-zA-Z0-9\-]*$");
-  static RegExp primaryIdPattern = RegExp(r'^[A-Za-z]{2}-[A-Za-z]{2}-\d{12}$');
+  static RegExp primaryIdPattern = RegExp(r'^[A-Za-z]{2}-[A-Za-z]{2}-\d{10}$');
 
 }
 

@@ -60,7 +60,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _consentDateFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
   TextInputFormatter _idInputFormatter = MaskTextInputFormatter(
-    mask: 'AA-AA-#################',
+    mask: 'AA-AA-##########',
     filter: {
       "#": RegExp(r'[0-9]'),
       "A": RegExp(r'[a-zA-Z]'),
@@ -896,7 +896,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (_primaryIdController.text.trim().isEmpty && _secondaryIdController.text.trim().isNotEmpty) {
                       return AppConstant.FIELD_REQUIRED;
                     }
-                    if (_primaryIdController.text.trim().isNotEmpty && _primaryIdController.text.trim().length != 18) {
+                    if (_primaryIdController.text.trim().isNotEmpty && _primaryIdController.text.trim().length != 16) {
                       return AppConstant.ERROR_INVALID_ID;
                     }
                     return null;
@@ -919,7 +919,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     if (_secondaryIdController.text.trim().isEmpty && _primaryIdController.text.trim().isNotEmpty) {
                       return AppConstant.FIELD_REQUIRED;
                     }
-                    if (_secondaryIdController.text.trim().isNotEmpty && _secondaryIdController.text.trim().length != 18) {
+                    if (_secondaryIdController.text.trim().isNotEmpty && _secondaryIdController.text.trim().length != 16) {
                       return AppConstant.ERROR_INVALID_ID;
                     }
                     return null;

@@ -4,7 +4,7 @@ import 'package:mhealth/utils/app_constant.dart';
 
 mixin Environment {
   static Environment runningEnv = DEVEnvironment();
-  final String releaseVersion = "0.6.2";
+  final String releaseVersion = "0.6.3";
 
   String get currentEnv => const String.fromEnvironment(AppConstant.ENV_KEY);
   String get appName => const String.fromEnvironment(AppConstant.APP_NAME_KEY);

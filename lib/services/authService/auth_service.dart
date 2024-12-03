@@ -56,6 +56,7 @@ class AuthService implements IAuthService {
     Response response = await ApiBaseHelper.httpGetRequestForRefreshToken(
       AppEndpoints.refreshTokenUrl,
     );
+    log("refresh token ${response.body}");
     return response;
   }
   
