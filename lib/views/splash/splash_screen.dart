@@ -9,6 +9,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/views/probe_screens/probe_screen.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -55,6 +56,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() async {
+    //
+    GoRouter.of(context).go(ProbeScreen.routerPath);
+    return;
     final userDetails = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
     if (userDetails == null) {
       if (context.mounted) {
