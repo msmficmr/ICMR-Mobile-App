@@ -11,6 +11,26 @@ class WidgetError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (type) {
+      case WidgetEnums.storagePermission:
+        return _ErrorWidget(
+          onRetry: onRetry,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Icon(
+                  Icons.storage,
+                  size: 40,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(child: Text("Storage Permission", style: Theme.of(context).textTheme.titleSmall)),
+              Center(child: Text("Please allow storage permission", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
+            ],
+          ),
+        );
       case WidgetEnums.usbPermission:
         return _ErrorWidget(
           onRetry: onRetry,
@@ -61,12 +81,13 @@ class WidgetError extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Center(
-                  child: SvgPicture.asset(
-                ProbeConstants.icBluetooth,
-                height: 40,
-                width: 40,
-                colorFilter: ColorFilter.mode(Theme.of(context).primaryColor, BlendMode.srcIn),
-              ),),
+                child: SvgPicture.asset(
+                  ProbeConstants.icBluetooth,
+                  height: 40,
+                  width: 40,
+                  colorFilter: ColorFilter.mode(Theme.of(context).primaryColor, BlendMode.srcIn),
+                ),
+              ),
               const SizedBox(height: 10),
               Center(child: Text("Bluetooth Permission", style: Theme.of(context).textTheme.titleSmall)),
               Center(child: Text("Please allow bluetooth permission", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
@@ -154,7 +175,7 @@ class WidgetError extends StatelessWidget {
             ],
           ),
         );
-      case WidgetEnums.storagePermission:
+
       case WidgetEnums.other:
         return _ErrorWidget(
           onRetry: onRetry,

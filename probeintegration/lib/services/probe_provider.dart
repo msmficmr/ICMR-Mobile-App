@@ -196,7 +196,7 @@ class ProbeProvider extends ChangeNotifier {
   _checkCamera() async {
     log("message check camera");
     _usbSubscription?.cancel();
-    _usbSubscription = Probeintegration.usbEvents.listen((event) {
+    _usbSubscription = Probeintegration.usbEvents.listen((event) async{
       switch (event) {
         case "USB_ATTACHED":
         case "USB_DISCONNECTED":
@@ -227,9 +227,7 @@ class ProbeProvider extends ChangeNotifier {
     log("param ");
     ProbeController().setInitialStatus();
     cameraController = UVCCameraController();
-    cameraController?.updateResolution(PreviewSize(width: 1280, height: 960));
-    await cameraController?.initializeCamera();
-    log("param ");
+    log("camera initialized  ");
   }
 
   listenToProbeEvents() {
@@ -416,9 +414,7 @@ class ProbeProvider extends ChangeNotifier {
                                           cameraController: _cameraController!,
                                           width: double.infinity,
                                           height: double.infinity,
-                                          params: const UVCCameraViewParamsEntity(
-                                            frameFormat: 0,
-                                          ),
+                                          
                                         );
                                       }),
                                 ),
