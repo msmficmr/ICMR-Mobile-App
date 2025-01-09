@@ -56,9 +56,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   redirectToNextScreen() async {
-    //
-    GoRouter.of(context).go(ProbeScreen.routerPath);
-    return;
     final userDetails = await SharedPreferencesService.sharedPreferencesService.readData(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS);
     if (userDetails == null) {
       if (context.mounted) {

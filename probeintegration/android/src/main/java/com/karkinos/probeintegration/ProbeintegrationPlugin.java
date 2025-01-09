@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.EventChannel;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -86,7 +87,7 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
 
 
   // Custom action for USB Permission
-  private static final String ACTION_USB_PERMISSION = "com.karkinos.USB_PERMISSION";
+  private static final String ACTION_USB_PERMISSION = "com.karkinos.ACTION_USB_PERMISSION";
 
   String openCVStatus = "Unknown";
 
@@ -110,7 +111,18 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
             filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
             // Register our custom permission action
             filter.addAction(ACTION_USB_PERMISSION);
-            context.registerReceiver(usbReceiver, filter);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              boolean listenToBroadcastsFromOtherApps = false;
+
+              int receiverFlags = listenToBroadcastsFromOtherApps
+                      ? ContextCompat.RECEIVER_EXPORTED
+                      : ContextCompat.RECEIVER_NOT_EXPORTED;
+              ContextCompat.registerReceiver(context, usbReceiver, filter, receiverFlags);
+
+            }
+            else{
+              context.registerReceiver(usbReceiver, filter);
+            }
           }
 
           @Override

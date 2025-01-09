@@ -197,6 +197,7 @@ class ProbeProvider extends ChangeNotifier {
     log("message check camera");
     _usbSubscription?.cancel();
     _usbSubscription = Probeintegration.usbEvents.listen((event) async{
+      log("usb status ${event}");
       switch (event) {
         case "USB_ATTACHED":
         case "USB_DISCONNECTED":
@@ -216,6 +217,7 @@ class ProbeProvider extends ChangeNotifier {
       }
     });
     Map<String, String> devices = await Probeintegration().checkUSBDevice();
+    log("devices ${devices}");
     if (devices.isEmpty) {
       throw USBDeviceNotAvailablePermissionException();
     } else {
