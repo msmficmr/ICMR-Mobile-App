@@ -9,6 +9,7 @@ import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
+import 'package:mhealth/views/probe_screens/probe_screen.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {

@@ -11,6 +11,7 @@ import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/viewModel/offline_data_view_model.dart';
 import 'package:mhealth/viewModel/registration_view_model.dart';
+import 'package:probeintegration/services/probe_provider.dart';
 import 'package:provider/provider.dart';
 
 class MHealthApp extends StatelessWidget {
@@ -27,6 +28,10 @@ class MHealthApp extends StatelessWidget {
         ChangeNotifierProvider<NetworkStatusService>(
           lazy: false,
           create: (BuildContext createContext) => NetworkStatusService(),
+        ),
+        ChangeNotifierProvider<ProbeProvider>(
+          lazy: false,
+          create: (BuildContext createContext) => ProbeProvider(),
         ),
         ChangeNotifierProvider<LanguageViewModel>(
           lazy: false,
