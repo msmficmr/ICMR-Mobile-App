@@ -31,6 +31,9 @@ import 'package:mhealth/widgets/custom_dropdown.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:probeintegration/services/probe_provider.dart';
+import 'package:probeintegration/utils/exceptions.dart';
+import 'package:provider/provider.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
@@ -105,6 +108,97 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   List<IdTextModel> siteLocation = [IdTextModel(id: "left", name: "Left"), IdTextModel(id: "right", name: "Right")];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  void onProbeError(String message, Object e) {
+    switch (e.runtimeType) {
+      case BluetoothPermanentlyPermissionException:
+        CommonFunctions.openDialog(
+          context: context,
+          action: (context) {
+            CommonFunctions.openAppSettings();
+            Navigator.pop(context);
+          },
+          subtitle: "We require bluetooth permission to use this feature. Please grant bluetooth permissions in your app settings.",
+          buttonText: "Grant permission",
+        );
+        break;
+      case CameraPermanentlyPermissionException:
+        CommonFunctions.openDialog(
+          context: context,
+          action: (context) {
+            CommonFunctions.openAppSettings();
+            Navigator.pop(context);
+          },
+          subtitle: "We require camera permission to use this feature. Please grant camera permissions in your app settings.",
+          buttonText: "Grant permission",
+        );
+        break;
+      case StoragePermanentlyPermissionException:
+        CommonFunctions.openDialog(
+          context: context,
+          action: (context) {
+            CommonFunctions.openAppSettings();
+            Navigator.pop(context);
+          },
+          subtitle: "We require storage permission to use this feature. Please grant storage permissions in your app settings.",
+          buttonText: "Grant permission",
+        );
+        break;
+    }
+  }
+
+  _captureProbeImage(Map<String, Uint8List> data) async {
+    try {
+      isLoading.value = true;
+      List<AttachmentModel> modelList = [];
+      for (String key in data.keys) {
+        Uint8List? bytes = data[key];
+        if (bytes != null) {
+          String extension = ".png";
+
+          /// Pass extension in .format ex: .png .jpg .pdf etc
+          ///
+          RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
+          String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken);
+          String fileName = filePath.split("/").last;
+          AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
+          modelList.add(model);
+        }
+      }
+      String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+      LesionLocationQuestion question = LesionLocationQuestion(
+        versionNumber: widget.questioner.versionNumber,
+        questionId: questionId,
+        timeAsked: DateTime.now(),
+      );
+
+      question.locationId = _location.value?.id ?? "";
+      question.siteId = _site.value?.id ?? "";
+      for (var model in modelList) {
+        widget.questioner.addNewQuestion(question, model);
+      }
+
+      _site.value = null;
+      _location.value = null;
+
+      ///ADDED FAKE DELAY SO THAT FORM CAN RESET
+      await Future.delayed(const Duration(milliseconds: 100));
+      _formKey.currentState?.reset();
+      CommonFunctions.toastMessage("Image Captured Successfully");
+    } catch (e) {
+      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  _initProbe() async {
+    try {
+      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+    } catch (e) {
+      log("ERROR");
+    }
+  }
 
   _captureImage() async {
     try {
@@ -216,7 +310,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                       return PrimaryFilledButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            _captureImage();
+                            _initProbe();
                           }
                         },
                         isLoading: isLoading.value,
