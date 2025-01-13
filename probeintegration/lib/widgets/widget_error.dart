@@ -48,7 +48,7 @@ class WidgetError extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Center(child: Text("USB Permission", style: Theme.of(context).textTheme.titleSmall)),
-              Center(child: Text("Please allow usb permission", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
+              Center(child: Text("Please allow USB permission", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
             ],
           ),
         );
@@ -68,7 +68,7 @@ class WidgetError extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Center(child: Text("Bluetooth is tuned off.", style: Theme.of(context).textTheme.titleSmall)),
+              Center(child: Text("Bluetooth is turned off", style: Theme.of(context).textTheme.titleSmall)),
               Center(child: Text("Please turn on bluetooth", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
             ],
           ),
@@ -151,7 +151,7 @@ class WidgetError extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Center(child: Text("USB Disconnected", style: Theme.of(context).textTheme.titleSmall)),
-              Center(child: Text("Please connect probe through usb", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
+              Center(child: Text("Please connect probe through USB", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500)))
             ],
           ),
         );
@@ -171,7 +171,7 @@ class WidgetError extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Center(child: Text("Probe Offline", style: Theme.of(context).textTheme.titleSmall)),
+              Center(child: Text("Probe not found", style: Theme.of(context).textTheme.titleSmall)),
             ],
           ),
         );
