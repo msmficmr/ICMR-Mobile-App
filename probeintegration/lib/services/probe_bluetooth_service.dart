@@ -23,7 +23,6 @@ class ProbeBluetoothService {
   var batteryVoltageHigh = 4;
   var batteryVoltageLow = 3.3;
   String _batteryLevel = 'Unknown';
-
   Future<bool> init() async {
     probeDevice = null;
     if (await FlutterBluePlus.isSupported == false) {
@@ -81,8 +80,10 @@ class ProbeBluetoothService {
     await bluetoothIsScanningSubscription?.cancel();
 
     bluetoothScanResultSubscription = FlutterBluePlus.onScanResults.listen((results) {
+      ProbeController().scanResultStream.sink.add(results);
+
       //
-      bool isResultContains = results.map((e) => e.device.platformName).any(
+      /*bool isResultContains = results.map((e) => e.device.platformName).any(
         (element) {
           return element.contains(ProbeConstants.oralProbeBLEHardwareID);
         },
@@ -91,11 +92,10 @@ class ProbeBluetoothService {
       if (isResultContains) {
         _checkProbeDevice(results.map((e) => e.device).toList());
         bluetoothScanResultSubscription?.cancel();
-      }
+      }*/
     });
 
     bluetoothIsScanningSubscription = FlutterBluePlus.isScanning.listen((bool event) {
-      log("message $event");
       ProbeController().scanningStream.sink.add(event);
     });
 
@@ -104,12 +104,16 @@ class ProbeBluetoothService {
     );
   }
 
+  getLastScannedDevices() {
+    return FlutterBluePlus.lastScanResults;
+  }
+
   bool _checkProbeDevice(List<BluetoothDevice> results) {
     bool isFound = false;
     for (int i = 0; i < results.length; i++) {
       String deviceName = results[i].platformName;
       if (deviceName.contains(ProbeConstants.oralProbeBLEHardwareID)) {
-        _connect(results[i]);
+        connect(results[i]);
         isFound = true;
         break;
       }
@@ -117,7 +121,7 @@ class ProbeBluetoothService {
     return isFound;
   }
 
-  _connect(BluetoothDevice device) async {
+  connect(BluetoothDevice device) async {
     probeDeviceSubscription?.cancel();
 
     probeDeviceSubscription = device.connectionState.listen((BluetoothConnectionState event) {
