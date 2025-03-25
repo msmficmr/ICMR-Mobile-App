@@ -11,6 +11,7 @@ import 'package:probeintegration/services/probe_bluetooth_service.dart';
 import 'package:probeintegration/services/probe_controller.dart';
 import 'package:probeintegration/probeintegration.dart';
 import 'package:probeintegration/utils/exceptions.dart';
+import 'package:probeintegration/utils/probe_constants.dart';
 import 'package:probeintegration/utils/probe_enums.dart';
 import 'package:probeintegration/utils/probe_methods.dart';
 import 'package:probeintegration/widgets/widget_error.dart';
@@ -24,6 +25,7 @@ enum ProbeNewEnum {
   deviceNotConnected,
   deviceConnected,
   scanningDevice,
+  scanDone,
   bluetoothPermissionDenied,
   cameraPermissionDenied,
   storagePermissionDenied,
@@ -47,6 +49,7 @@ class ProbeProvider extends ChangeNotifier {
   bool _UVStatus = false;
   String _batteryLevel = "";
   bool _isCapturing = false;
+  bool _isConnecting = false;
 
   UVCCameraController? get cameraController => _cameraController;
   BluetoothAdapterState get bluetooth => _bluetooth;
@@ -55,6 +58,12 @@ class ProbeProvider extends ChangeNotifier {
   bool get UVStatus => _UVStatus;
   String get batteryLevel => _batteryLevel;
   bool get isCapturing => _isCapturing;
+  bool get isConnecting => _isConnecting;
+
+  set isConnecting(bool val) {
+    _isConnecting = val;
+    notifyListeners();
+  }
 
   set isCapturing(bool status) {
     _isCapturing = status;
@@ -161,6 +170,7 @@ class ProbeProvider extends ChangeNotifier {
   _checkBluetoothPermission() async {
     try {
       PermissionStatus bluetoothConnectStatus = await Permission.bluetoothConnect.request();
+
       if (bluetoothConnectStatus.isDenied) {
         throw BluetoothPermissionException();
       }
@@ -170,6 +180,12 @@ class ProbeProvider extends ChangeNotifier {
     } catch (e) {
       rethrow;
     }
+  }
+
+  connectDevice(BluetoothDevice device) async {
+    isConnecting = true;
+    await ProbeController().connectDevice(device);
+    isConnecting = false;
   }
 
   _checkCameraPermission() async {
@@ -194,9 +210,12 @@ class ProbeProvider extends ChangeNotifier {
   }
 
   _checkCamera() async {
+    initCamera();
+    state = ProbeNewEnum.deviceConnected;
+    return;
     log("message check camera");
     _usbSubscription?.cancel();
-    _usbSubscription = Probeintegration.usbEvents.listen((event) async{
+    _usbSubscription = Probeintegration.usbEvents.listen((event) async {
       log("usb status ${event}");
       switch (event) {
         case "USB_ATTACHED":
@@ -257,6 +276,7 @@ class ProbeProvider extends ChangeNotifier {
       }
     });
     ProbeController().scanningStream.stream.listen((event) async {
+      log("scanningStream ${event}");
       if (event) {
         if (ProbeBluetoothService().probeDevice == null) {
           state = ProbeNewEnum.scanningDevice;
@@ -364,6 +384,93 @@ class ProbeProvider extends ChangeNotifier {
     isCapturing = false;
   }
 
+  Widget getScanListWidget(BuildContext context, List<ScanResult> result, {bool isDone = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 10, right: 16.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Available devices", style: Theme.of(context).textTheme.titleSmall),
+              if (!isDone)
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    backgroundColor: Color(0xffF4CF70),
+                    strokeWidth: 2,
+                  ),
+                )
+            ],
+          ),
+          Expanded(
+            child: Selector<ProbeProvider, bool>(
+                selector: (p0, p1) => p1.isConnecting,
+                builder: (context, connecting, _) {
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: SingleChildScrollView(child: Builder(builder: (
+                          context,
+                        ) {
+                          result = result
+                              .where(
+                                (element) => element.device.platformName.contains(ProbeConstants.oralProbeBLEHardwareID),
+                              )
+                              .toList();
+                          if (result.isEmpty) {
+                            return SizedBox(
+                              height: 300,
+                              width: 200,
+                              child: WidgetError(
+                                type: isDone ? WidgetEnums.probeOffline : WidgetEnums.scanning,
+                                onRetry: isDone ? retry : null,
+                              ),
+                            );
+                          }
+                          return Column(
+                            children: result.map(
+                              (e) {
+                                return ListTile(
+                                  onTap: () {
+                                    connectDevice(e.device);
+                                  },
+                                  title: Text(
+                                    "${e.device.platformName}",
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                );
+                              },
+                            ).toList(),
+                          );
+                        })),
+                      ),
+                      if (connecting)
+                        Positioned.fill(
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            child: const SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Color(0xffF4CF70),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                }),
+          ),
+        ],
+      ),
+    );
+  }
+
   showProbeDialog() async {
     await showDialog(
       context: theContext,
@@ -416,7 +523,6 @@ class ProbeProvider extends ChangeNotifier {
                                           cameraController: _cameraController!,
                                           width: double.infinity,
                                           height: double.infinity,
-                                          
                                         );
                                       }),
                                 ),
@@ -504,9 +610,21 @@ class ProbeProvider extends ChangeNotifier {
                               ],
                             );
                           case ProbeNewEnum.scanningDevice:
-                            return const WidgetError(
-                              type: WidgetEnums.scanning,
-                            );
+                            return Column(children: [
+                              Expanded(
+                                child: StreamBuilder(
+                                  stream: ProbeController().scanResultStream.stream,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      var result = (snapshot.data ?? []).where((element) => element.advertisementData.connectable).toList();
+                                      return getScanListWidget(context, result);
+                                    } else {
+                                      return const Text("Please try after sometime");
+                                    }
+                                  },
+                                ),
+                              ),
+                            ]);
 
                           case ProbeNewEnum.bluetoothOff:
                             return WidgetError(
@@ -520,10 +638,16 @@ class ProbeProvider extends ChangeNotifier {
                             );
 
                           case ProbeNewEnum.deviceNotConnected:
-                            return WidgetError(
-                              type: WidgetEnums.probeOffline,
-                              onRetry: retry,
-                            );
+                            List<ScanResult> result = ProbeController().getLastScanResult();
+                            result = result.where((element) => element.advertisementData.connectable).toList();
+                            if (result.isEmpty) {
+                              return WidgetError(
+                                type: WidgetEnums.probeOffline,
+                                onRetry: retry,
+                              );
+                            } else {
+                              return getScanListWidget(context, result, isDone: true);
+                            }
 
                           default:
                             return WidgetError(
