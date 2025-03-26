@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
       (Timer timer) {
         if (_start == 0) {
           cancelTimer();
-          //redirectToNextScreen();
+          redirectToNextScreen();
         } else {
           _start--;
         }
@@ -90,13 +90,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            IconButton(onPressed: init, icon: Icon(Icons.add)),
-            Center(
-              child: SvgPicture.asset(AppAssetsPath.appLogo, height: MediaQuery.of(context).size.height / 6),
-            ),
-          ],
+        body: Center(
+          child: SvgPicture.asset(AppAssetsPath.appLogo, height: MediaQuery.of(context).size.height / 6),
         ),
       ),
     );

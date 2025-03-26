@@ -210,9 +210,9 @@ class ProbeProvider extends ChangeNotifier {
   }
 
   _checkCamera() async {
-    initCamera();
-    state = ProbeNewEnum.deviceConnected;
-    return;
+    //initCamera();
+    //state = ProbeNewEnum.deviceConnected;
+    //return;
     log("message check camera");
     _usbSubscription?.cancel();
     _usbSubscription = Probeintegration.usbEvents.listen((event) async {
