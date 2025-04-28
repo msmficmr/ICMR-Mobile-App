@@ -1,0 +1,554 @@
+{
+    "uiTemplateId": "community_risk_assessment_details_of_habits",
+    "templateName": "COMMUNITY_RISK_ASSESSMENT_DETAILS_OF_HABITS",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "do_you_smoke_cigarette",
+    "fields": {
+        "do_you_smoke_cigarette": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_smoke_cigarette",
+                "questionText": "Do you smoke Cigarette?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_smoke_pipe_cigars": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_smoke_pipe_cigars",
+                "questionText": "Do you smoke Pipe/Cigars?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_chew_smokeless_tobacco": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_chew_smokeless_tobacco",
+                "questionText": "Do you chew Smokeless tobacco?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_chew_gutka": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_chew_gutka",
+                "questionText": "Do you chew Gutka?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_chew_betelnut": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_chew_betelnut",
+                "questionText": "Do you chew Betelnut?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_drink_spirit": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_drink_spirit",
+                "questionText": "Do you drink Spirit?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "do_you_drink_beer_wine": {
+            "questionObject": {
+                "type": "CHIP_WITH_MULTISELECT_TEXTFORM",
+                "questionId": "do_you_drink_beer_wine",
+                "questionText": "Do you drink Beer/Wine?*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "never",
+                        "displayText": "Never"
+                    },
+                    {
+                        "id": "quit",
+                        "displayText": "Quit"
+                    },
+                    {
+                        "id": "current",
+                        "displayText": "Current"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [
+                    {
+                        "inputId": "if_quit_since_years",
+                        "inputText": "If Quit, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "quit",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_times_days",
+                        "inputText": "If current, times/day",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    },
+                    {
+                        "inputId": "if_current_since_years",
+                        "inputText": "If current, From how many years",
+                        "required": "false",
+                        "options": null,
+                        "regex": "^([a-zA-Z0-9 ]+)$",
+                        "minValidator": "1",
+                        "maxValidator": "1,999",
+                        "type": null,
+                        "followup": null,
+                        "forOptionKey": "current",
+                        "placeholder": null,
+                        "rangeValidator": null
+                    }
+                ],
+                "prevQuestionId": null,
+                "nextQuestionId": null
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}

@@ -1,0 +1,280 @@
+{
+    "uiTemplateId": "community_risk_assessment_baseline_signs_or_symptoms",
+    "templateName": "COMMUNITY_RISK_ASSESSMENT_BASELINE_SIGNS_OR_SYMPTOMS",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "do_you_have_family_history_of_hypertension",
+    "fields": {
+        "burning_sensation": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "burning_sensation",
+                "questionText": "Burning sensation*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "pain": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "pain",
+                "questionText": "Pain*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "swelling_or_growth": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "swelling_or_growth",
+                "questionText": "Swelling/Growth*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "difficulty_in_mouth_opening": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "difficulty_in_mouth_opening",
+                "questionText": "Difficulty in mouth opening*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "white_or_red_patch_in_the_oral_cavity": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "white_or_red_patch_in_the_oral_cavity",
+                "questionText": "White/red patch in the oral cavity*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "multiple_ulcers": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "multiple_ulcers",
+                "questionText": "Multiple ulcers*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "non_healing_under_3_weeks": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "non_healing_under_3_weeks",
+                "questionText": "Non-healing ulcer >3 weeks*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "induration": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "induration",
+                "questionText": "Induration*",
+                "required": "true",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "other_symptoms": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "other_symptoms",
+                "questionText": "Others ( specify ) ",
+                "required": "false",
+                "validationMessage": null,
+                "regex": "^([a-zA-Z0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}

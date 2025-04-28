@@ -1,0 +1,224 @@
+{
+    "uiTemplateId": "community_risk_assessment_investigation",
+    "templateName": "COMMUNITY_RISK_ASSESSMENT_INVESTIGATION",
+    "versionNumber": "V1.0",
+    "firstQuestionId": "imaging",
+    "fields": {
+        "imaging": {
+            "questionObject": {
+                "type": "CHECKBOX",
+                "questionId": "imaging",
+                "questionText": "Imaging",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "afi",
+                        "displayText": "AFI"
+                    },
+                    {
+                        "id": "wli",
+                        "displayText": "WLI"
+                    },
+                    {
+                        "id": "whole_mouth",
+                        "displayText": "Whole mouth"
+                    },
+                    {
+                        "id": "probe",
+                        "displayText": "Probe"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "saliva_collected": {
+            "questionObject": {
+                "type": "CHECKBOX",
+                "questionId": "saliva_collected",
+                "questionText": "Saliva collected",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    },
+                    {
+                        "id": "rna",
+                        "displayText": "RNA"
+                    },
+                    {
+                        "id": "not_in_rna",
+                        "displayText": "Not in RNA"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "cytology_collected": {
+            "questionObject": {
+                "type": "CHECKBOX",
+                "questionId": "cytology_collected",
+                "questionText": "Cytology collected",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    },
+                    {
+                        "id": "rna",
+                        "displayText": "RNA"
+                    },
+                    {
+                        "id": "not_in_rna",
+                        "displayText": "Not in RNA"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "biopsy": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "biopsy",
+                "questionText": "Biopsy",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "tissue_collected_for_repository": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "tissue_collected_for_repository",
+                "questionText": "Tissue collected for repository",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "blood_collection": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "blood_collection",
+                "questionText": "Blood collection",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        }
+    }
+}

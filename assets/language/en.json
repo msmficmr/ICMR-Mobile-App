@@ -1,0 +1,305 @@
+{
+  "enter_your_mobile_number_title": "Enter your mobile number",
+  "continue": "Continue",
+  "enter_6_digit_otp": "Enter the 6-digit OTP sent to",
+  "enter_your_email_id": "Enter your Email ID",
+  "dashboard": "Dashboard",
+  "total_cra_completed": "CRA Completed",
+  "total_patient_created": "Patient Registered",
+  "total_cra_sync": "Total CRA sync",
+  "you_are_online_sync_data": "You are online, Sync data",
+  "take_cra": "Take CRA",
+  "cra_patient_list": "CRA patient list",
+  "search": "Search",
+  "my_account": "My account",
+  "language": "Language",
+  "data_sync": "Data Sync",
+  "version": "Version",
+  "please_take_consent_from_citizen": "Please take consent from citizen*",
+  "informed_consent_obtained": "Informed Consent obtained*",
+  "resend_otp_heading": "Didn't receive the OTP?  ",
+  "resend_otp_title": "Resend",
+  "consent": "Consent",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "date_of_birth": "Date Of Birth",
+  "age": "Age",
+  "aadhar_id": "Aadhar ID",
+  "medical_id": "Medical Record Number",
+  "mobile_number": "Mobile number",
+  "district": "District",
+  "state": "State",
+  "pincode": "Pincode",
+  "was_a_copy_of_signed_consent": "Was a copy of the signed consent form handed over to the patient?*",
+  "yes": "Yes",
+  "no": "No",
+  "patient_disclosed_income": "Patient disclosed income*",
+  "income": "Income",
+  "please_enter_monthly_income": "Please enter monthly income",
+  "occupation_type": "Occupation*",
+  "unemployed": "Unemployed",
+  "student": "Student",
+  "self_employed": "Self employed (Shop owner, Vegetable, Fruit service)",
+  "service": "Service",
+  "retired": "Retired",
+  "manual_labour": "Manual labour (Cycle rikshaw, construction)",
+  "skilled_labour": "Skilled labour (Plumber, Electrician, Painter)",
+  "home_maker": "Home maker",
+  "remove_response": "Remove response",
+  "occupation_in_industry": "Occupation in any of the industry*",
+  "rubber_industry": "Rubber Industry",
+  "paint_industry": "Paint Industry",
+  "chemical_industry": "Chemical Industry",
+  "radiation": "Radiation",
+  "explosives": "Explosives",
+  "construction_and_cement": "Construction & Cement",
+  "pesticide_use_for_farming": "Pesticide Use For Farming",
+  "none": "None",
+  "enter_here": "Enter here",
+  "select": "Select",
+  "cra": "CRA",
+  "informed_consent": "Informed Consent",
+  "upload_consent": "Upload Consent",
+  "camera": "Camera",
+  "browse": "Browse",
+  "upload_file": "Upload file",
+  "registration": "Registration",
+  "registration_successful": "Registration Successful",
+  "new_registration": "New Registration",
+  "your_next_step": "Your Next Step",
+  "thank_you": "Thank you",
+  "registered_successfully": "You are successfully registered with mHealth",
+  "date": "Date",
+  "submit": "Submit",
+  "this_field_is_mandatory": "This field is mandatory",
+  "enter_valid_input_text": "Enter Valid Input text",
+  "date_of_visit": "Date Of Visit",
+  "institution_code_id": "Institution Code ID",
+  "study_code": "Study Code*",
+  "address": "Address",
+  "permanent_address": "Permanent Address",
+  "alternate_phone_number": "Alternate Phone number",
+  "aadhar_voter_pan": "Aadhar number/ Voter ID/ PAN number",
+  "informed_consent_date": "Date on which informed consent obtained",
+  "copy_of_signed_consent_handed": "Was a copy of the signed consent form handed over to the patient?*",
+  "if_no_specify": "If no, specify why:",
+  "occupation_types": [
+    {
+      "id": "unemployed",
+      "name": "Unemployed"
+    },
+    {
+      "id": "student",
+      "name": "Student"
+    },
+    {
+      "id": "self_employed",
+      "name": "Self Employed(Shop owner, Vegetable, Fruit Service)"
+    },
+    {
+      "id": "service",
+      "name": "Service"
+    },
+    {
+      "id": "retired",
+      "name": "Retired"
+    },
+    {
+      "id": "manual_labour",
+      "name": "Manual Labour(Cycle rikshaw, Construction)"
+    },
+    {
+      "id": "skilled_labour",
+      "name": "Skilled Labour(Painter, Electrician, Plumber)"
+    },
+    {
+      "id": "home_maker",
+      "name": "Home maker"
+    },
+    {
+      "id": "remove_response",
+      "name": "Remove response"
+    }
+  ],
+  "criteria_section": "Criteria",
+  "inclusion_criteria": "Inclusion Criteria",
+  "exclusion_criteria": "Exclusion Criteria",
+  "inclusion_criteria_description": [
+    "1. Individuals aged more than or equal to 18 years",
+    "2. Individuals having a history of risk habits (Smoking/chewing tobacco, betel leaf/nut/, alcohol) or individuals having any oral lesion"
+  ],
+  "exclusion_criteria_description": [
+    "1. Individuals who present with acute illness",
+    "2. Individuals diagnosed with oral cancer/currently undergoing treatment for malignancy",
+    "3. Pregnancy",
+    "4. Under treatment for tuberculosis"
+  ],
+  "periodontal_section": "Periodontal Status",
+  "cpitn_codes": "CPITN Codes",
+  "healthy": "Healthy",
+  "bleeding_on_probing": "Bleeding on probing",
+  "calculus_or_plaque_retention_factor": "Calculus or plaque retention factor",
+  "shallow_pocket": "Shallow pocket 4 or 5mm",
+  "deep_pocket": "Deep pocket 6mm or more",
+  "doctor_name": "Doctor Name",
+  "changeDocName": "Change doctor name",
+  "cpitn_codes_description": [
+    "0 = Healthy",
+    "1 = Bleeding on probing",
+    "2 = Calculus or plaque retention factor",
+    "3 = Shallow pocket 4 or 5mm",
+    "4 = Deep pocket 6mm or more",
+    "x = No teeth"
+  ],
+  "risk_assessment": "Risk Assessment",
+  "institution_codes": [
+    {
+      "id": "msmf_01",
+      "name": "MSMF 01"
+    },
+    {
+      "id": "aiims_02",
+      "name": "AIIMS 02"
+    },
+    {
+      "id": "hbch_03",
+      "name": "HBCH 03"
+    },
+    {
+      "id": "kle_04",
+      "name": "KLE 04"
+    }
+  ],
+  "study_codes": [
+    {
+      "id": "oral_cancer_atlas",
+      "name": "Oral cancer_Atlas"
+    }
+  ],
+  "signed_consent_reason_codes": [
+    {
+      "id": "not_willing_not_interested_for_photography",
+      "name": "Not willing/ not interested for photography"
+    },
+    {
+      "id": "not_willing_to_provide_my_sample",
+      "name": "Not willing to provide my sample"
+    },
+    {
+      "id": "not_willing_to_come_for_long_term_follow_up",
+      "name": "Not willing to come for long term follow up"
+    },
+    {
+      "id": "any_other",
+      "name": "Any other"
+    }
+  ],
+  "visit_types": [
+    {
+      "id": "1st_visit",
+      "name": "1st Visit"
+    },
+    {
+      "id": "2nd_visit",
+      "name": "2nd Visit"
+    },
+    {
+      "id": "3rd_visit",
+      "name": "3rd Visit"
+    },
+    {
+      "id": "4th_visit",
+      "name": "4th Visit"
+    },
+    {
+      "id": "5th_visit",
+      "name": "5th Visit"
+    },
+    {
+      "id": "6th_visit",
+      "name": "6th Visit"
+    },
+    {
+      "id": "7th_visit",
+      "name": "7th Visit"
+    },
+    {
+      "id": "8th_visit",
+      "name": "8th Visit"
+    },
+    {
+      "id": "9th_visit",
+      "name": "9th Visit"
+    },
+    {
+      "id": "10th_visit",
+      "name": "10th Visit"
+    },
+    {
+      "id": "11th_visit",
+      "name": "11th Visit"
+    },
+    {
+      "id": "12th_visit",
+      "name": "12th Visit"
+    },
+    {
+      "id": "13th_visit",
+      "name": "13th Visit"
+    },
+    {
+      "id": "14th_visit",
+      "name": "14th Visit"
+    },
+    {
+      "id": "15th_visit",
+      "name": "15th Visit"
+    },
+    {
+      "id": "16th_visit",
+      "name": "16th Visit"
+    },
+    {
+      "id": "17th_visit",
+      "name": "17th Visit"
+    },
+    {
+      "id": "18th_visit",
+      "name": "18th Visit"
+    },
+    {
+      "id": "19th_visit",
+      "name": "19th Visit"
+    },
+    {
+      "id": "20th_visit",
+      "name": "20th Visit"
+    }
+  ],
+  "documents": [
+    {
+      "id": "aadhar_number",
+      "name": "Aadhar number"
+    },
+    {
+      "id": "voter_id",
+      "name": "Voter ID"
+    },
+    {
+      "id": "pan_number",
+      "name": "PAN number"
+    }
+  ],
+  "visit_number": "Visit Number",
+  "visit_month": "Visit Month",
+  "place": "Place",
+  "primary_id": "Primary Id (only for existing patient)",
+  "secondary_id": "Secondary Id (only for existing patient)",
+  "visit_month_list":"[{\"id\":\"month_03\",\"name\":\"3\"},{\"id\":\"month_06\",\"name\":\"6\"},{\"id\":\"month_09\",\"name\":\"9\"},{\"id\":\"month_12\",\"name\":\"12\"},{\"id\":\"month_15\",\"name\":\"15\"},{\"id\":\"month_18\",\"name\":\"18\"},{\"id\":\"month_21\",\"name\":\"21\"},{\"id\":\"month_24\",\"name\":\"24\"}]",
+  "cra_success_message":"CRA is completed",
+  "view_details":"View Details"
+}

@@ -1,0 +1,304 @@
+{
+  "enter_your_mobile_number_title": "अपना मोबाइल संख्या दर्ज करे",
+  "continue": "जारी रखना",
+  "enter_6_digit_otp": "पर भेजा गया 6 अंकों का ओटीपी दर्ज करें",
+  "enter_your_email_id": "अपना ईमेल आईडी दर्ज करें",
+  "dashboard": "डैशबोर्ड",
+  "total_cra_completed": "कुल सामुदायिक जोखिम आकलान पूरा हुआ",
+  "total_cra_sync": "कुल सामुदायिक जोखिम आकलान सिंक",
+  "you_are_online_sync_data": "आप ऑनलाइन हैं, डेटा सिंक करें",
+  "take_cra": "सामुदायिक आकलन मूल्यांकन लें",
+  "cra_patient_list": "सामुदायिक जोखिम आकलन सूची",
+  "search": "खोज",
+  "my_account": "मेरा खाता",
+  "language": "भाषा",
+  "data_sync": "डेटा सिंक",
+  "version": "संस्करण",
+  "please_take_consent_from_citizen": "कृपया नागरिक से अनुमति लें*",
+  "informed_consent_obtained": "सूचित अनुमति प्राप्त की गई*",
+  "resend_otp_heading": "ओटीपी प्राप्त नहीं हुआ? ",
+  "resend_otp_title": "पुन: भेजें",
+  "consent": "अनुमति",
+  "first_name": "पहला नाम",
+  "last_name": "उपनाम",
+  "gender": "लिंग",
+  "male": "पुरुष",
+  "female": "महिला",
+  "other": "ट्रांसजेंडर",
+  "date_of_birth": "जन्म तिथि",
+  "age": "आयु",
+  "aadhar_id": "आधार आईडी",
+  "medical_id": "मेडिकल आईडी",
+  "mobile_number": "मोबाइल नंबर",
+  "district": "पता",
+  "state": "राज्य",
+  "pincode": "पिन कोड",
+  "was_a_copy_of_signed_consent": "क्या हस्ताक्षरित सहमति प्रपत्र की एक प्रति रोगी को सौंपी गई थी?*",
+  "yes": "हाँ",
+  "no": "नहीं",
+  "patient_disclosed_income": "क्या रोगी ने अपनी आय बतायी है*",
+  "income": "आय",
+  "please_enter_monthly_income": "कृपया मासिक आय दर्ज करें",
+  "occupation_type": "अपना व्यवसाय प्रकार बतायें*",
+  "unemployed": "बेरोजगार",
+  "student": "विद्यार्थी",
+  "self_employed": "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)",
+  "service": "सेवा",
+  "retired": "सेवानिवृत्त",
+  "manual_labour": "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)",
+  "skilled_labour": "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)",
+  "home_maker": "गृह निर्माता",
+  "remove_response": "प्रतिक्रिया हटाएँ",
+  "occupation_in_industry": "किसी भी उद्योग में व्यवसाय*",
+  "rubber_industry": "रबर उद्योग",
+  "paint_industry": "पेंट उद्योग",
+  "chemical_industry": "रासायनिक उद्योग",
+  "radiation": "विकिरण",
+  "explosives": "विस्फोटक",
+  "construction_and_cement": "निर्माण एवं सीमेंट",
+  "pesticide_use_for_farming": "खेती के लिए कीटनाशकों का उपयोग",
+  "none": "कोई नहीं",
+  "enter_here": "दर्ज करें",
+  "select": "चयन करें",
+  "cra": "सामुदायिक जोखिम आकलन ",
+  "informed_consent": "सूचित अनुमति",
+  "upload_consent": "अनुमति पत्र अपलोड करें",
+  "camera": "कैमरा",
+  "browse": "ब्राउज़",
+  "upload_file": "फ़ाइल अपलोड करें",
+  "registration": "पंजीकरण",
+  "registration_successful": "सफल पंजीकरण",
+  "new_registration": "नया पंजीकरण करे",
+  "your_next_step": "अगला चरण",
+  "thank_you": "धन्यवाद",
+  "registered_successfully": "आप mHealth के साथ सफलतापूर्वक पंजीकृत हो गए हैं",
+  "date": "दिनांक",
+  "submit": "जमा करे",
+  "this_field_is_mandatory": "यह फील्ड अनिवार्य है",
+  "enter_valid_input_text": "मान्य इनपुट टेक्स्ट दर्ज करें",
+  "date_of_visit": "विज़िट की तारीख़",
+  "institution_code_id": "संस्थान कोड आईडी",
+  "study_code": "अध्ययन कोड*",
+  "address": "पता",
+  "permanent_address": "स्थायी पता",
+  "alternate_phone_number": "वैकल्पिक फ़ोन नंबर",
+  "aadhar_voter_pan": "आधार नंबर/वोटर आईडी/पैन नंबर",
+  "informed_consent_date": "तारीख जिस दिन सूचित अनुमति प्राप्त की गई",
+  "copy_of_signed_consent_handed": "क्या हस्ताक्षरित सहमति प्रपत्र की एक प्रति रोगी को सौंपी गई थी*",
+  "if_no_specify": "यदि नहीं, तो कारण बताएं:",
+  "doctor_name": "डॉक्टर का नाम",
+  "changeDocName": "डॉक्टर का नाम बदलें",
+  "occupation_types": [
+    {
+      "id": "unemployed",
+      "name": "बेरोजगार"
+    },
+    {
+      "id": "student",
+      "name": "विद्यार्थी"
+    },
+    {
+      "id": "self_employed",
+      "name": "स्व-रोज़गार (दुकान मालिक, सब्जी, फल सेवा)"
+    },
+    {
+      "id": "service",
+      "name": "सेवा"
+    },
+    {
+      "id": "retired",
+      "name": "सेवानिवृत्त"
+    },
+    {
+      "id": "manual_labour",
+      "name": "शारीरिक श्रम (साइकिल रिक्शा, निर्माण)"
+    },
+    {
+      "id": "skilled_labour",
+      "name": "कुशल श्रमिक (प्लंबर, इलेक्ट्रीशियन, पेंटर)"
+    },
+    {
+      "id": "home_maker",
+      "name": "गृह निर्माता"
+    },
+    {
+      "id": "remove_response",
+      "name": "प्रतिक्रिया हटाएँ"
+    }
+  ],
+  "criteria_section": "Criteria",
+  "inclusion_criteria": "Inclusion Criteria",
+  "exclusion_criteria": "Exclusion Criteria",
+  "inclusion_criteria_description": [
+    "1. Individuals aged more than or equal to 18 years",
+    "2. Individuals having a history of risk habits (Smoking/chewing tobacco, betel leaf/nut/, alcohol) or individuals having any oral lesion"
+  ],
+  "exclusion_criteria_description": [
+    "1. Individuals who present with acute illness",
+    "2. Individuals diagnosed with oral cancer/currently undergoing treatment for malignancy",
+    "3. Pregnancy",
+    "4. Under treatment for tuberculosis"
+  ],
+  "periodontal_section": "Periodontal Status",
+  "cpitn_codes": "CPITN Codes",
+  "healthy": "Healthy",
+  "bleeding_on_probing": "Bleeding on probing",
+  "calculus_or_plaque_retention_factor": "Calculus or plaque retention factor",
+  "shallow_pocket": "Shallow pocket 4 or 5mm",
+  "deep_pocket": "Deep pocket 6mm or more",
+  "cpitn_codes_description": [
+    "0 = Healthy",
+    "1 = Bleeding on probing",
+    "2 = Calculus or plaque retention factor",
+    "3 = Shallow pocket 4 or 5mm",
+    "4 = Deep pocket 6mm or more",
+    "x = No teeth"
+  ],
+  "risk_assessment": "Risk Assessment",
+  "institution_codes": [
+    {
+      "id": "msmf_01",
+      "name": "MSMF 01"
+    },
+    {
+      "id": "aiims_02",
+      "name": "AIIMS 02"
+    },
+    {
+      "id": "hbch_03",
+      "name": "HBCH 03"
+    },
+    {
+      "id": "kle_04",
+      "name": "KLE 04"
+    }
+  ],
+  "study_codes": [
+    {
+      "id": "oral_cancer_atlas",
+      "name": "Oral cancer_Atlas"
+    }
+  ],
+  "signed_consent_reason_codes": [
+    {
+      "id": "not_willing_not_interested_for_photography",
+      "name": "Not willing/ not interested for photography"
+    },
+    {
+      "id": "not_willing_to_provide_my_sample",
+      "name": "Not willing to provide my sample"
+    },
+    {
+      "id": "not_willing_to_come_for_long_term_follow_up",
+      "name": "Not willing to come for long term follow up"
+    },
+    {
+      "id": "any_other",
+      "name": "Any other"
+    }
+  ],
+  "visit_types": [
+    {
+      "id": "1st_visit",
+      "name": "1st Visit"
+    },
+    {
+      "id": "2nd_visit",
+      "name": "2nd Visit"
+    },
+    {
+      "id": "3rd_visit",
+      "name": "3rd Visit"
+    },
+    {
+      "id": "4th_visit",
+      "name": "4th Visit"
+    },
+    {
+      "id": "5th_visit",
+      "name": "5th Visit"
+    },
+    {
+      "id": "6th_visit",
+      "name": "6th Visit"
+    },
+    {
+      "id": "7th_visit",
+      "name": "7th Visit"
+    },
+    {
+      "id": "8th_visit",
+      "name": "8th Visit"
+    },
+    {
+      "id": "9th_visit",
+      "name": "9th Visit"
+    },
+    {
+      "id": "10th_visit",
+      "name": "10th Visit"
+    },
+    {
+      "id": "11th_visit",
+      "name": "11th Visit"
+    },
+    {
+      "id": "12th_visit",
+      "name": "12th Visit"
+    },
+    {
+      "id": "13th_visit",
+      "name": "13th Visit"
+    },
+    {
+      "id": "14th_visit",
+      "name": "14th Visit"
+    },
+    {
+      "id": "15th_visit",
+      "name": "15th Visit"
+    },
+    {
+      "id": "16th_visit",
+      "name": "16th Visit"
+    },
+    {
+      "id": "17th_visit",
+      "name": "17th Visit"
+    },
+    {
+      "id": "18th_visit",
+      "name": "18th Visit"
+    },
+    {
+      "id": "19th_visit",
+      "name": "19th Visit"
+    },
+    {
+      "id": "20th_visit",
+      "name": "20th Visit"
+    }
+  ],
+  "documents": [
+    {
+      "id": "aadhar_number",
+      "name": "Aadhar number"
+    },
+    {
+      "id": "voter_id",
+      "name": "Voter ID"
+    },
+    {
+      "id": "pan_number",
+      "name": "PAN number"
+    }
+  ],
+  "visit_number": "विज़िट नंबर",
+  "visit_month": "विज़िट माह",
+  "place": "जगह",
+  "primary_id": "प्राथमिक आईडी (केवल मौजूदा मरीज़ के लिए)",
+  "secondary_id": "माध्यमिक आईडी (केवल मौजूदा मरीज़ के लिए)",
+  "visit_month_list":"[{\"id\":\"month_03\",\"name\":\"3\"},{\"id\":\"month_06\",\"name\":\"6\"},{\"id\":\"month_09\",\"name\":\"9\"},{\"id\":\"month_12\",\"name\":\"12\"},{\"id\":\"month_15\",\"name\":\"15\"},{\"id\":\"month_18\",\"name\":\"18\"},{\"id\":\"month_21\",\"name\":\"21\"},{\"id\":\"month_24\",\"name\":\"24\"}]",
+  "cra_success_message":"सी.आर.ए. पूरा हो गया है",
+   "view_details":"विवरण देखें"
+}
