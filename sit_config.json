@@ -1,5 +1,5 @@
 {
-  "BASE_URL" : "https://91473e39ced2.ngrok-free.app",
+  "BASE_URL" : "https://edge-mhealth.sit.karkinos.in",
   "ENV" : "sit",
   "APP_NAME" : "SIT m-health",
   "APP_SUFFIX" : ".sit",
