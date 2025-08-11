@@ -102,6 +102,7 @@ class PatientListViewModel with ChangeNotifier {
 
   Future<bool> registerPatient(PatientRegistration data) async {
     bool isSuccess = false;
+    print(data.toJson());
     int index = _registeredPatients.indexWhere(
       (element) => element.primaryId == data.primaryId,
     );
