@@ -207,7 +207,7 @@ class PatientRegistration {
       'phoneNumber': '', //phoneNumber,
       'alternatePhoneNumber': '', //alternatePhoneNumber,
       'medicalRecordNumber': '', //medicalRecordNumber,
-      'identityProofs': '', //identityProofs,
+      'identityProofs': null, //identityProofs,
       'consentDate': consentDate.toIso8601String(),
       'signedConsent': signedConsent,
       'signedConsentNoReason': signedConsentNoReason,
