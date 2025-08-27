@@ -961,11 +961,14 @@ class QuestionnaireOption {
   String optionId;
   String optionText;
   List<Questionnaire> onClick;
+  bool isVisible; // New property to control visibility
 
   QuestionnaireOption(
     this.onClick, {
     required this.optionId,
     required this.optionText,
+    this.isVisible = true, // Default to true
+
   });
 
   bool isValid() {
