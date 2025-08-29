@@ -549,6 +549,38 @@
             "nextQuestionId": null,
             "previousQuestionId": null,
             "lastQuestion": false
+        },
+        "visit_number": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "visit_number",
+                "questionText": "Visit Number",
+                "required": "true",
+                "validationMessage": null,
+                "regex": "^([0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
+        "visit_month": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "visit_month",
+                "questionText": "Visit Month",
+                "required": "true",
+                "validationMessage": null,
+                "regex": "^([0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
         }
     }
 }
