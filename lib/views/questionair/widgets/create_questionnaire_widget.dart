@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -524,6 +525,10 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
             textFieldQuestionnaire.userEnteredInput = text;
             textFieldQuestionnaire.shouldShowError = false;
           },
+          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? TextInputType.number : null,
+          inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly, // Only allows digits
+          ] : null,
           cursorColor: AppColorScheme.kPrimaryColor,
           decoration: const InputDecoration(
             errorBorder: OutlineInputBorder(),
