@@ -11,6 +11,8 @@ import 'package:mhealth/views/questionair/view/lesion_location_questionair_scree
 import 'package:mhealth/views/questionair/view/periodontal_screen.dart';
 import 'package:mhealth/views/questionair/view/verification_questionair_screen.dart';
 import 'package:mhealth/widgets/custom_check_box.dart';
+import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/enums.dart';
 
 Widget _getWidgetForQuestionnaire(
   BuildContext context,
@@ -504,6 +506,8 @@ Widget _getWidgetForMultiSelectionSubQuestionnaire(BuildContext context, MultiSe
 }
 
 Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuestionnaire textFieldQuestionnaire, double height) {
+    TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+
   return Padding(
     padding: const EdgeInsets.only(right: 20),
     child: Column(
@@ -525,10 +529,10 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
             textFieldQuestionnaire.userEnteredInput = text;
             textFieldQuestionnaire.shouldShowError = false;
           },
-          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? TextInputType.number : null,
+          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month" || textFieldQuestionnaire.getId().toString().trim() == "visit_date") ? TextInputType.number : null,
           inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
             FilteringTextInputFormatter.digitsOnly, // Only allows digits
-          ] : null,
+          ] : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
           cursorColor: AppColorScheme.kPrimaryColor,
           decoration: const InputDecoration(
             errorBorder: OutlineInputBorder(),

@@ -581,6 +581,22 @@
             "nextQuestionId": null,
             "previousQuestionId": null,
             "lastQuestion": false
+        },
+        "visit_date": {
+            "questionObject": {
+                "type": "TEXT_AREA",
+                "questionId": "visit_date",
+                "questionText": "Visit Date",
+                "required": "true",
+                "validationMessage": null,
+                "regex": "^([0-9 ]+)$",
+                "hintText": null,
+                "minvalidator": 1,
+                "maxValidator": 1999
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
         }
     }
 }

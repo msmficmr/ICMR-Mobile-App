@@ -4,6 +4,38 @@
     "versionNumber": "V1.0",
     "firstQuestionId": "lymph_node_examination",
     "fields": {
+        "oral_cavity": {
+            "questionObject": {
+                "type": "CHIP_OPTIONS",
+                "questionId": "oral_cavity",
+                "questionText": "Oral Cavity",
+                "required": "false",
+                "validationMessage": null,
+                "regex": null,
+                "hintText": null,
+                "minvalidator": null,
+                "maxValidator": null,
+                "filter": null,
+                "options": [
+                    {
+                        "id": "yes",
+                        "displayText": "Yes"
+                    },
+                    {
+                        "id": "no",
+                        "displayText": "No"
+                    }
+                ],
+                "placeholder": null,
+                "followup": [],
+                "nextQuestionId": null,
+                "previousQuestionId": null,
+                "lastQuestion": false
+            },
+            "nextQuestionId": null,
+            "previousQuestionId": null,
+            "lastQuestion": false
+        },
         "lymph_node_examination": {
             "questionObject": {
                 "type": "TEXT_AREA",
