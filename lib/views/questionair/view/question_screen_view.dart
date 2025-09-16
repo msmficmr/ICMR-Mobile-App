@@ -103,7 +103,7 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
       builder: (context, child) {
         _questionViewModel = Provider.of<QuestionViewModel>(context, listen: false);
 
-        _questionViewModel.questionList.forEach((element) => print('good=${element.toJson()}'));
+
         return Scaffold(
           appBar: CustomAppBar(
             onLeadingClick: onBackPress,

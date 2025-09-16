@@ -194,16 +194,53 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
   _initProbe() async {
     try {
-      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      // await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      await _captureImage();
     } catch (e) {
       log("ERROR");
     }
   }
+Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  final ImageSource? source = await showDialog<ImageSource>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Select Image Source"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Camera"),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text("Gallery"),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+XFile? file ;
+  if (source != null) {
+    file = await CommonFunctions.getImage(
+      context: context,
+      imageSource: source,
+    );
 
+    if (file != null) {
+      debugPrint("Selected file path: ${file.path}");
+    }
+  }
+  return file;
+}
   _captureImage() async {
     try {
       isLoading.value = true;
-      XFile? file = await CommonFunctions.getImage(context: context, imageSource: Platform.isAndroid ? ImageSource.camera : ImageSource.gallery);
+      XFile? file = await showImageSourceDialog(context);
       if (file != null) {
         Uint8List bytes = await file.readAsBytes();
 
@@ -310,30 +347,30 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                       return PrimaryFilledButton(
                         onPressed: () async{
                           if (_formKey.currentState!.validate()) {
-                            // _initProbe();
-                            String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
-                            AttachmentModel model = AttachmentModel(fileName: "fileName", filePath: "filePath");
-                            LesionLocationQuestion question = LesionLocationQuestion(
-                              versionNumber: widget.questioner.versionNumber,
-                              questionId: questionId,
-                              timeAsked: DateTime.now(),
-                            );
+                            _initProbe();
+                            // String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+                            // AttachmentModel model = AttachmentModel(fileName: "fileName", filePath: "filePath");
+                            // LesionLocationQuestion question = LesionLocationQuestion(
+                            //   versionNumber: widget.questioner.versionNumber,
+                            //   questionId: questionId,
+                            //   timeAsked: DateTime.now(),
+                            // );
 
-                            question.locationId = _location.value?.id ?? "";
-                            question.siteId = _site.value?.id ?? "";
+                            // question.locationId = _location.value?.id ?? "";
+                            // question.siteId = _site.value?.id ?? "";
 
-                            widget.questioner.addNewQuestion(question, model);
+                            // widget.questioner.addNewQuestion(question, model);
 
-                            _site.value = null;
-                            _location.value = null;
+                            // _site.value = null;
+                            // _location.value = null;
 
-                            ///ADDED FAKE DELAY SO THAT FORM CAN RESET
-                            await Future.delayed(const Duration(milliseconds: 100));
-                            _formKey.currentState?.reset();
-                            CommonFunctions.toastMessage("Image Captured Successfully");
+                            // ///ADDED FAKE DELAY SO THAT FORM CAN RESET
+                            // await Future.delayed(const Duration(milliseconds: 100));
+                            // _formKey.currentState?.reset();
+                            // CommonFunctions.toastMessage("Image Captured Successfully");
                           }
                         },
-                        isLoading: isLoading.value,
+                        // isLoading: isLoading.value,
                         buttonThemeStyle: const FilledButtonThemeStyle(
                           enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
                           enabledButtonColor: AppColorScheme.kEnabledButtonColor,

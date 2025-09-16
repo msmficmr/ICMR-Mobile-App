@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -10,6 +11,8 @@ import 'package:mhealth/views/questionair/view/lesion_location_questionair_scree
 import 'package:mhealth/views/questionair/view/periodontal_screen.dart';
 import 'package:mhealth/views/questionair/view/verification_questionair_screen.dart';
 import 'package:mhealth/widgets/custom_check_box.dart';
+import 'package:mhealth/utils/helpers/mask_text_input_formatter.dart';
+import 'package:mhealth/utils/enums.dart';
 
 Widget _getWidgetForQuestionnaire(
   BuildContext context,
@@ -151,64 +154,298 @@ Widget _getWidgetForSingleSelectionSubQuestionnaire(BuildContext context, Single
   );
 }
 
-Widget _getWidgetForCheckBoxQuestionnaire(BuildContext context, CheckboxQuestionnaire checkboxSubQuestionnaire, double height, Function globalOnClick) {
-  Function onClick = (QuestionnaireOption questionnaireOption) {
-    int selectedOptionIndex = checkboxSubQuestionnaire.selectedOptions.indexWhere((element) => element.optionId == questionnaireOption.optionId);
-    if (selectedOptionIndex < 0) {
-      checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
-      checkboxSubQuestionnaire.shouldShowError = false;
+// Widget _getWidgetForCheckBoxQuestionnaire(BuildContext context, CheckboxQuestionnaire checkboxSubQuestionnaire, double height, Function globalOnClick) {
+//   // Function onClick = (QuestionnaireOption questionnaireOption) {
+//   //   int selectedOptionIndex = checkboxSubQuestionnaire.selectedOptions.indexWhere((element) => element.optionId == questionnaireOption.optionId);
+//   //   if (selectedOptionIndex < 0) {
+//   //     checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
+//   //     checkboxSubQuestionnaire.shouldShowError = false;
+//   //   } else {
+//   //     checkboxSubQuestionnaire.selectedOptions.removeAt(selectedOptionIndex);
+//   //   }
+//   //   globalOnClick();
+//   // };
+
+//   Function onClick = (QuestionnaireOption questionnaireOption) {
+//   String qId = checkboxSubQuestionnaire.getId().toString().trim();
+
+//   // Handle special case only for saliva_collected or cytology_collected
+//   if (qId == 'saliva_collected' || qId == 'cytology_collected') {
+//     if (questionnaireOption.optionText.toLowerCase() == "yes") {
+//       // Remove "No" if it was selected before
+//       checkboxSubQuestionnaire.selectedOptions.removeWhere(
+//         (element) => element.optionText.toLowerCase() == "no",
+//       );
+
+//       // Allow adding/removing Yes, RNA, NOT RNA
+//       int idx = checkboxSubQuestionnaire.selectedOptions.indexWhere(
+//           (element) => element.optionId == questionnaireOption.optionId);
+//       if (idx < 0) {
+//         checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
+//       } else {
+//         checkboxSubQuestionnaire.selectedOptions.removeAt(idx);
+//       }
+//     } else if (questionnaireOption.optionText.toLowerCase() == "no") {
+//       // If "No" selected → clear all others and keep only "No"
+//       checkboxSubQuestionnaire.selectedOptions.clear();
+//       checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
+//     } else {
+//       // Handle other options (RNA, NOT RNA, etc.)
+//       bool yesSelected = checkboxSubQuestionnaire.selectedOptions.any(
+//         (element) => element.optionText.toLowerCase() == "yes",
+//       );
+
+//       if (yesSelected) {
+//         // Only allow RNA and NOT RNA with Yes
+//         int idx = checkboxSubQuestionnaire.selectedOptions.indexWhere(
+//             (element) => element.optionId == questionnaireOption.optionId);
+//         if (idx < 0) {
+//           checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
+//         } else {
+//           checkboxSubQuestionnaire.selectedOptions.removeAt(idx);
+//         }
+//       } else {
+//         // If Yes not selected → ignore click on these
+//         return;
+//       }
+//     }
+//   } else {
+//     // Normal behavior for other checkboxes
+//     int selectedOptionIndex = checkboxSubQuestionnaire.selectedOptions
+//         .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+//     if (selectedOptionIndex < 0) {
+//       checkboxSubQuestionnaire.selectedOptions.add(questionnaireOption);
+//       checkboxSubQuestionnaire.shouldShowError = false;
+//     } else {
+//       checkboxSubQuestionnaire.selectedOptions.removeAt(selectedOptionIndex);
+//     }
+//   }
+
+//   globalOnClick();
+// };
+
+  
+//   return SizedBox(
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         SizedBox(
+//           height: 10,
+//         ),
+//         Text(
+//           checkboxSubQuestionnaire.questionText,
+//           style: AppStyles.bodyMedium,
+//         ),
+//         SizedBox(
+//           height: 10,
+//         ),
+//         ...List.generate(
+//   checkboxSubQuestionnaire.optionsList.length,
+//   (optionIndex) {
+//     final option = checkboxSubQuestionnaire.optionsList[optionIndex];
+//     final qId = checkboxSubQuestionnaire.getId().toString().trim();
+
+//     // For saliva_collected and cytology_collected
+//     if (qId == 'saliva_collected' || qId == 'cytology_collected') {
+//       bool yesSelected = checkboxSubQuestionnaire.selectedOptions
+//           .any((element) => element.optionId.toLowerCase() == "yes");
+//       bool noSelected = checkboxSubQuestionnaire.selectedOptions
+//           .any((element) => element.optionId.toLowerCase() == "no");
+
+//       // If NO is selected → hide RNA/NOT RNA
+//       if (noSelected &&
+//           (option.optionId.toLowerCase() == "rna" ||
+//            option.optionId.toLowerCase() == "not_in_rna")) {
+//         return const SizedBox.shrink();
+//       }
+
+//       // If YES not selected yet → hide RNA/NOT RNA
+//       if (!yesSelected &&
+//           (option.optionId.toLowerCase() == "rna" ||
+//            option.optionId.toLowerCase() == "not_in_rna")) {
+//         return const SizedBox.shrink();
+//       }
+//     }
+
+//     // Default visible option
+//     return CustomCheckBox(
+//       widgetKey: UniqueKey(),
+//       onChanged: (p0) {
+//         onClick(option);
+//       },
+//       value: checkboxSubQuestionnaire.selectedOptions
+//               .indexWhere((element) =>
+//                   element.optionId == option.optionId) >=
+//           0,
+//       children: [
+//         TextSpan(
+//           text: option.optionText,
+//           style: AppStyles.bodyMedium.copyWith(
+//             color: AppColorScheme.kGrayColor,
+//           ),
+//         )
+//       ],
+//     );
+//   },
+// ),
+
+//         SizedBox(
+//           height: 10,
+//         ),
+//         Visibility(
+//           visible: checkboxSubQuestionnaire.shouldShowError,
+//           child: Text(
+//             TranslationKeys.thisFieldIsMandatory.translate(context),
+//             style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+Widget _getWidgetForCheckBoxQuestionnaire(
+  BuildContext context,
+  CheckboxQuestionnaire checkboxSubQuestionnaire,
+  double height,
+  Function globalOnClick,
+) {
+  // 🔹 Initialize ValueNotifier here
+  final ValueNotifier<List<QuestionnaireOption>> valueNotifier =
+      ValueNotifier<List<QuestionnaireOption>>(
+    List.from(checkboxSubQuestionnaire.selectedOptions), // start with saved state
+  );
+
+  onClick(QuestionnaireOption questionnaireOption) {
+    String qId = checkboxSubQuestionnaire.getId().toString().trim();
+    List<QuestionnaireOption> updatedSelections = List.from(valueNotifier.value);
+
+    if (qId == 'saliva_collected' || qId == 'cytology_collected') {
+      if (questionnaireOption.optionText.toLowerCase() == "yes") {
+        updatedSelections.removeWhere(
+          (element) => element.optionText.toLowerCase() == "no",
+        );
+
+        int idx = updatedSelections
+            .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+        if (idx < 0) {
+          updatedSelections.add(questionnaireOption);
+        } else {
+          updatedSelections.removeAt(idx);
+        }
+      } else if (questionnaireOption.optionText.toLowerCase() == "no") {
+        updatedSelections.clear();
+        updatedSelections.add(questionnaireOption);
+      } else {
+        bool yesSelected = updatedSelections.any(
+          (element) => element.optionText.toLowerCase() == "yes",
+        );
+
+        if (yesSelected) {
+          int idx = updatedSelections
+              .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+          if (idx < 0) {
+            updatedSelections.add(questionnaireOption);
+          } else {
+            updatedSelections.removeAt(idx);
+          }
+        } else {
+          return; // ignore RNA/NOT RNA if Yes not selected
+        }
+      }
     } else {
-      checkboxSubQuestionnaire.selectedOptions.removeAt(selectedOptionIndex);
+      int selectedOptionIndex = updatedSelections
+          .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+      if (selectedOptionIndex < 0) {
+        updatedSelections.add(questionnaireOption);
+        checkboxSubQuestionnaire.shouldShowError = false;
+      } else {
+        updatedSelections.removeAt(selectedOptionIndex);
+      }
     }
+
+    // 🔹 Update ValueNotifier to trigger rebuild
+    valueNotifier.value = List.from(updatedSelections);
+
+    // 🔹 Also update model, so backend gets correct values
+    checkboxSubQuestionnaire.selectedOptions = List.from(updatedSelections);
+
     globalOnClick();
-  };
-  return SizedBox(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: 10,
+  }
+
+  return ValueListenableBuilder<List<QuestionnaireOption>>(
+    valueListenable: valueNotifier,
+    builder: (context, selectedOptions, _) {
+      return SizedBox(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 10),
+            Text(
+              checkboxSubQuestionnaire.questionText,
+              style: AppStyles.bodyMedium,
+            ),
+            SizedBox(height: 10),
+            ...List.generate(
+              checkboxSubQuestionnaire.optionsList.length,
+              (optionIndex) {
+                final option = checkboxSubQuestionnaire.optionsList[optionIndex];
+                final qId = checkboxSubQuestionnaire.getId().toString().trim();
+
+                if (qId == 'saliva_collected' || qId == 'cytology_collected') {
+                  bool yesSelected = selectedOptions
+                      .any((element) => element.optionText.toLowerCase() == "yes");
+                  bool noSelected = selectedOptions
+                      .any((element) => element.optionText.toLowerCase() == "no");
+
+                  if (noSelected &&
+                      (option.optionText.toLowerCase() == "rna" ||
+                          option.optionText.toLowerCase() == "not in rna")) {
+                    return const SizedBox.shrink();
+                  }
+
+                  if (!yesSelected &&
+                      (option.optionText.toLowerCase() == "rna" ||
+                          option.optionText.toLowerCase() == "not in rna")) {
+                    return const SizedBox.shrink();
+                  }
+                }
+
+                return CustomCheckBox(
+                  widgetKey: UniqueKey(),
+                  onChanged: (p0) {
+                    onClick(option);
+                  },
+                  value: selectedOptions
+                          .indexWhere((element) =>
+                              element.optionId == option.optionId) >=
+                      0,
+                  children: [
+                    TextSpan(
+                      text: option.optionText,
+                      style: AppStyles.bodyMedium.copyWith(
+                        color: AppColorScheme.kGrayColor,
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
+            SizedBox(height: 10),
+            Visibility(
+              visible: checkboxSubQuestionnaire.shouldShowError,
+              child: Text(
+                TranslationKeys.thisFieldIsMandatory.translate(context),
+                style: AppStyles.bodySmall
+                    .copyWith(color: AppColorScheme.errorTextColor),
+              ),
+            ),
+          ],
         ),
-        Text(
-          checkboxSubQuestionnaire.questionText,
-          style: AppStyles.bodyMedium,
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        ...List.generate(
-          checkboxSubQuestionnaire.optionsList.length,
-          (optionIndex) => CustomCheckBox(
-            widgetKey: UniqueKey(),
-            onChanged: (p0) {
-              onClick(checkboxSubQuestionnaire.optionsList[optionIndex]);
-            },
-            value: checkboxSubQuestionnaire.selectedOptions.indexWhere(( // ignore: unrelated_type_equality_checks
-                        element) =>
-                    // ignore: unrelated_type_equality_checks
-                    element.optionId == checkboxSubQuestionnaire.optionsList[optionIndex].optionId) >=
-                0,
-            children: [
-              TextSpan(
-                text: checkboxSubQuestionnaire.optionsList[optionIndex].optionText,
-                style: AppStyles.bodyMedium.copyWith(color: AppColorScheme.kGrayColor),
-              )
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Visibility(
-          visible: checkboxSubQuestionnaire.shouldShowError,
-          child: Text(
-            TranslationKeys.thisFieldIsMandatory.translate(context),
-            style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
-          ),
-        ),
-      ],
-    ),
+      );
+    },
   );
 }
 
@@ -269,6 +506,8 @@ Widget _getWidgetForMultiSelectionSubQuestionnaire(BuildContext context, MultiSe
 }
 
 Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuestionnaire textFieldQuestionnaire, double height) {
+    TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+
   return Padding(
     padding: const EdgeInsets.only(right: 20),
     child: Column(
@@ -290,6 +529,10 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
             textFieldQuestionnaire.userEnteredInput = text;
             textFieldQuestionnaire.shouldShowError = false;
           },
+          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month" || textFieldQuestionnaire.getId().toString().trim() == "visit_date") ? TextInputType.number : null,
+          inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly, // Only allows digits
+          ] : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
           cursorColor: AppColorScheme.kPrimaryColor,
           decoration: const InputDecoration(
             errorBorder: OutlineInputBorder(),
