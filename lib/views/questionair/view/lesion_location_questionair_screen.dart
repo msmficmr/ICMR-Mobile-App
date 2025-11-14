@@ -194,8 +194,8 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
   _initProbe() async {
     try {
-      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
-      // await _captureImage();
+      // await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      await _captureImage();
     } catch (e) {
       log("ERROR");
     }
