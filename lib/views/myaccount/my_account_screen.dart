@@ -96,6 +96,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   OfflineDataViewModel viewModel = OfflineDataViewModel();
 
   bool _syncing = false;
+  bool _isClicked = false;
 
   late NetworkStatusService networkStatusService;
 
@@ -367,6 +368,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
     }
+
+    _isClicked=false;
   }
 
   @override
@@ -578,7 +581,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                                     CommonFunctions.toastMessage("Session expired! Login to Continue");
                                     await loginViewModel?.logout();
                                   } else {
+                                    if(!_isClicked){
+                                      _isClicked=true;
                                     onSyncClick();
+                                    }
                                   }
                                 },
                                 child: AccountCard(
