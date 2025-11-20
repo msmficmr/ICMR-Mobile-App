@@ -356,7 +356,7 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
       }
 
       Bitmap greenChannelBitmap = BitmapFactory.decodeFile(fileToMoveFL.getAbsolutePath());
-      greenChannelBitmap = Bitmap.createScaledBitmap(greenChannelBitmap, 996, 1770, false);
+//      greenChannelBitmap = Bitmap.createScaledBitmap(greenChannelBitmap, 996, 1770, false);
 
       int width = greenChannelBitmap.getWidth();
       int height = greenChannelBitmap.getHeight();
@@ -387,7 +387,7 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
       gBitmap.setPixels(g_pix, 0, width, 0, 0, width, height);
 
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      gBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+      gBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
       imageData = stream.toByteArray();
       stream.close();
       imageMap.put("originalFLImage", originalImageData);
@@ -411,10 +411,10 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
 
       // Decode and process the image
       Bitmap colorCorrectBitmap = BitmapFactory.decodeFile(fileToMoveWL.getAbsolutePath());
-      colorCorrectBitmap = Bitmap.createScaledBitmap(colorCorrectBitmap, 996, 1770, false);
+//      colorCorrectBitmap = Bitmap.createScaledBitmap(colorCorrectBitmap, 996, 1770, false);
 
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      colorCorrectBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+      colorCorrectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
       byte[] processedImageData = stream.toByteArray();
       stream.close();
 
