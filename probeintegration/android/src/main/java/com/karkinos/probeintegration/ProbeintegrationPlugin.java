@@ -208,15 +208,23 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
   private void requestUsbPermission(UsbDevice device) {
     Log.d(TAG, "requestUsbPermission: " + device.getDeviceId());
     UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-    // PendingIntent flag depends on your target SDK. For newer APIs you may need
-    // FLAG_MUTABLE or FLAG_IMMUTABLE.
+
+    // Make the Intent explicit to our own app
+    Intent intent = new Intent(ACTION_USB_PERMISSION);
+    intent.setPackage(context.getPackageName());  // important for U+
+
+    int flags = PendingIntent.FLAG_IMMUTABLE;
+
     PendingIntent permissionIntent = PendingIntent.getBroadcast(
-        context,
-        0,
-        new Intent(ACTION_USB_PERMISSION),
-        PendingIntent.FLAG_MUTABLE);
+            context,
+            0,
+            intent,
+            flags
+    );
+
     usbManager.requestPermission(device, permissionIntent);
   }
+
 
   private boolean hasUsbDevicesPermission() {
     UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
