@@ -154,12 +154,17 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       for (String key in data.keys) {
         Uint8List? bytes = data[key];
         if (bytes != null) {
-          String extension = ".png";
+          String extension = "png";
 
           /// Pass extension in .format ex: .png .jpg .pdf etc
           ///
           RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-          String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken);
+          String filePath = await CommonFunctions().writeFileInIsolate(
+            bytes.toList(),
+            ".$extension",
+            rootIsolateToken,
+            key,
+          );
           String fileName = filePath.split("/").last;
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
@@ -194,49 +199,51 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
   _initProbe() async {
     try {
-     await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
       // await _captureImage();
     } catch (e) {
       log("ERROR");
     }
   }
-Future<XFile?> showImageSourceDialog(BuildContext context) async {
-  final ImageSource? source = await showDialog<ImageSource>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Select Image Source"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text("Camera"),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text("Gallery"),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-XFile? file ;
-  if (source != null) {
-    file = await CommonFunctions.getImage(
-      context: context,
-      imageSource: source,
-    );
 
-    if (file != null) {
-      debugPrint("Selected file path: ${file.path}");
+  Future<XFile?> showImageSourceDialog(BuildContext context) async {
+    final ImageSource? source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Select Image Source"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Camera"),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Gallery"),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    XFile? file;
+    if (source != null) {
+      file = await CommonFunctions.getImage(
+        context: context,
+        imageSource: source,
+      );
+
+      if (file != null) {
+        debugPrint("Selected file path: ${file.path}");
+      }
     }
+    return file;
   }
-  return file;
-}
+
   _captureImage() async {
     try {
       isLoading.value = true;
@@ -249,7 +256,7 @@ XFile? file ;
         /// Pass extension in .format ex: .png .jpg .pdf etc
         ///
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken);
+        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, "image");
         String fileName = filePath.split("/").last;
 
         String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
@@ -345,7 +352,7 @@ XFile? file ;
                     valueListenable: isLoading,
                     builder: (context, _, __) {
                       return PrimaryFilledButton(
-                        onPressed: () async{
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _initProbe();
                             // String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();

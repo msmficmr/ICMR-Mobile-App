@@ -289,7 +289,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               fileDeleteList: fileDeleteList,
             );
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId,true);
+              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId, true);
             }
           }
         }
@@ -350,7 +350,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             };
             bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId,false);
+              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId, false);
             }
           }
         }
@@ -369,7 +369,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
     }
 
-    _isClicked=false;
+    _isClicked = false;
   }
 
   @override
@@ -581,9 +581,9 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                                     CommonFunctions.toastMessage("Session expired! Login to Continue");
                                     await loginViewModel?.logout();
                                   } else {
-                                    if(!_isClicked){
-                                      _isClicked=true;
-                                    onSyncClick();
+                                    if (!_isClicked) {
+                                      _isClicked = true;
+                                      onSyncClick();
                                     }
                                   }
                                 },

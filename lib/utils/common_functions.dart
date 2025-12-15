@@ -335,13 +335,13 @@ class CommonFunctions {
     } catch (e) {}
   } */
 
-  Future<String?> getApplicationFilePath([String? extension]) async {
+  Future<String?> getApplicationFilePath(String fileName, String? extension) async {
     Directory tempDir = await getApplicationDocumentsDirectory();
     String tempPath = tempDir.path;
 
     var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
 
-    String newPath = '${directory.path}/${Uuid().v4()}${extension ?? ".png"}';
+    String newPath = '${directory.path}/${fileName}_${Uuid().v4()}${extension ?? ".png"}';
 
     return newPath;
   }
@@ -362,12 +362,18 @@ class CommonFunctions {
     );
   }
 
-  Future<String> writeFileInIsolate(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken) async {
+  Future<String> writeFileInIsolate(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken, String fileName) async {
     ReceivePort receivePort = ReceivePort();
     Completer<String> completer = Completer();
 
     // Start a new isolate and pass the SendPort and filePath
-    Isolate isolate = await Isolate.spawn(_writeFileTask, {'fileBytes': fileBytes, 'extension': extension, 'sendPort': receivePort.sendPort, "rootIsolateToken": rootIsolateToken});
+    Isolate isolate = await Isolate.spawn(_writeFileTask, {
+      'fileBytes': fileBytes,
+      'extension': extension,
+      'sendPort': receivePort.sendPort,
+      "rootIsolateToken": rootIsolateToken,
+      "fileName": fileName,
+    });
 
     // Listen for messages from the isolate
     receivePort.listen((message) {
@@ -387,9 +393,10 @@ class CommonFunctions {
     List<int> fileBytes = message['fileBytes'];
     String extension = message['extension'];
     var rootIsolateToken = message['rootIsolateToken'];
+    String fileName = message['fileName'];
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken!);
     try {
-      String? filePath = await CommonFunctions().getApplicationFilePath(extension);
+      String? filePath = await CommonFunctions().getApplicationFilePath(fileName, extension);
       if (filePath != null) {
         File file = File(filePath);
         await file.writeAsBytes(fileBytes);

@@ -73,7 +73,7 @@ class _VerificationQuestionnaireScreenState extends State<VerificationQuestionna
       try {
         /// Pass extension in .format ex: .png .jpg .pdf etc
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(result.toList(), ".png", rootIsolateToken);
+        String filePath = await CommonFunctions().writeFileInIsolate(result.toList(), ".png", rootIsolateToken, "sign");
         _signatureData.value = result;
         String fileName = filePath.split("/").last;
         widget.questioner.signature.value = AttachmentModel(fileName: fileName, filePath: filePath);
