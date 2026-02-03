@@ -109,7 +109,7 @@ class QuestionViewModel extends ChangeNotifier {
     }
   }
 
-  fetchSectionQuestions() {
+Future<void> fetchSectionQuestions() async {
     switch (currentSection.type) {
       case "JSON":
         QuestionnairesModel sectionDetails = _templateList.firstWhere((element) => element.uiTemplateId == sectionId);
