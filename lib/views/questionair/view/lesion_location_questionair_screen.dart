@@ -291,6 +291,27 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     return "${siteLocation.firstWhere((element) => element.id == location).name} ${siteMap.firstWhere((element) => element.id == site).name}";
   }
 
+IdTextModel getSiteModel(String? siteId) {
+  return siteMap.firstWhere(
+    (e) => e.id == siteId,
+    orElse: () => IdTextModel(
+      id: 'unknown',
+      name: 'Unknown Site',
+    ),
+  );
+}
+
+IdTextModel getSiteLocationModel(String? id) {
+  return siteLocation.firstWhere(
+    (e) => e.id == id,
+    orElse: () => IdTextModel(
+      id: 'unknown',
+      name: 'Unknown',
+    ),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -451,7 +472,22 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                     width: 24,
                                   ),
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 7),
+                                InkWell(
+                                  onTap: () {
+                                    
+                              _site.value=getSiteModel(question.siteId);
+                            _location.value=getSiteLocationModel(question.locationId);
+                            _initProbe();
+                          
+                                  },
+                                  child: SvgPicture.asset(
+                                    AppAssetsPath.icAddCircular,
+                                    height: 24,
+                                    width: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
                                 ValueListenableBuilder(
                                   valueListenable: question.attachments,
                                   builder: (context, attachmentList, child) {
