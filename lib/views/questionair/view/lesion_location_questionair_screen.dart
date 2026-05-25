@@ -36,6 +36,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:probeintegration/services/probe_provider.dart';
 import 'package:probeintegration/utils/exceptions.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
@@ -107,7 +108,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     IdTextModel(id: "other", name: "Other"),
   ];
 
-  List<IdTextModel> siteLocation = [IdTextModel(id: "left", name: "Left"), IdTextModel(id: "right", name: "Right"),IdTextModel(id: "center", name: "Center"),];
+  List<IdTextModel> siteLocation = [
+    IdTextModel(id: "left", name: "Left"),
+    IdTextModel(id: "right", name: "Right"),
+    IdTextModel(id: "center", name: "Center"),
+  ];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -148,65 +153,61 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         break;
     }
   }
+
   Future<bool> _isAndroid13OrAbove() async {
-  if (!Platform.isAndroid) return false;
+    if (!Platform.isAndroid) return false;
 
-  // Android 13 = SDK 33
-  return (await _getAndroidSdkInt()) >= 33;
-}
-
-Future<int> _getAndroidSdkInt() async {
-  try {
-    return int.parse(
-      (await Process.run('getprop', ['ro.build.version.sdk']))
-          .stdout
-          .toString()
-          .trim(),
-    );
-  } catch (_) {
-    return 0;
+    // Android 13 = SDK 33
+    return (await _getAndroidSdkInt()) >= 33;
   }
-}
 
-Future<String?> saveFile(Uint8List bytes,String fileName) async {
-  try {
-    // ✅ Get app-specific external storage directory
-    final directory = await getExternalStorageDirectory();
+  Future<int> _getAndroidSdkInt() async {
+    try {
+      return int.parse(
+        (await Process.run('getprop', ['ro.build.version.sdk'])).stdout.toString().trim(),
+      );
+    } catch (_) {
+      return 0;
+    }
+  }
 
-    if (directory == null) {
-      CommonFunctions.toastMessage("Storage not available");
+  Future<String?> saveFile(Uint8List bytes, String fileName) async {
+    try {
+      // ✅ Get app-specific external storage directory
+      final directory = await getExternalStorageDirectory();
+
+      if (directory == null) {
+        CommonFunctions.toastMessage("Storage not available");
+        return null;
+      }
+
+      // ✅ Create custom folder inside app storage
+      final folder = Directory("${directory.path}/LesionImages");
+
+      log("${folder.path}");
+
+      if (!await folder.exists()) {
+        await folder.create(recursive: true);
+      }
+
+      // ✅ File path
+      final filePath = "${folder.path}/${fileName}";
+
+      final file = File(filePath);
+
+      await file.writeAsBytes(bytes);
+
+      // ✅ Success toast
+      CommonFunctions.toastMessage("Saved successfully");
+
+      log("Saved at: $filePath");
+
+      return filePath;
+    } catch (e, s) {
+      CommonFunctions.toastMessage("Failed to save image");
       return null;
     }
-
-    // ✅ Create custom folder inside app storage
-    final folder = Directory("${directory.path}/LesionImages");
-
-    if (!await folder.exists()) {
-      await folder.create(recursive: true);
-    }
-
-    // ✅ File path
-    final filePath =
-        "${folder.path}/${fileName}";
-
-    final file = File(filePath);
-
-    await file.writeAsBytes(bytes);
-
-    // ✅ Success toast
-    CommonFunctions.toastMessage("Saved successfully");
-
-    print("Saved at: $filePath");
-
-    return filePath;
-  } catch (e, s) {
-    print("ERROR: $e");
-    print("STACK: $s");
-    CommonFunctions.toastMessage("Failed to save image");
-    return null;
   }
-}
-
 
   _captureProbeImage(Map<String, Uint8List> data) async {
     try {
@@ -227,7 +228,7 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
             key,
           );
           String fileName = filePath.split("/").last;
-              await saveFile(bytes,fileName.toString());
+          await saveFile(bytes, fileName.toString());
 
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
@@ -260,10 +261,10 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
     }
   }
 
-  _initProbe() async {
+  _initProbe({String? questionId}) async {
     try {
       // await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
-      await _captureImage();
+      await _captureImage(questionId);
     } catch (e) {
       log("ERROR");
     }
@@ -309,49 +310,48 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
   // }
 
   Future<XFile?> showImageSourceDialog(BuildContext context) async {
-  final String? selection = await showDialog<String>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Select Image Source"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: const Text("Camera Capture"),
-              onTap: () => Navigator.pop(context, "camera"),
-            ),
-            const Divider(), // Added a divider for better UI
-            ListTile(
-              title: const Text("Probe Capture"),
-              onTap: () => Navigator.pop(context, "probe"),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-
-  if (selection == "camera") {
-    return await CommonFunctions.getImage(
+    final String? selection = await showDialog<String>(
       context: context,
-      imageSource: ImageSource.camera,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Select Image Source"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Camera Capture"),
+                onTap: () => Navigator.pop(context, "camera"),
+              ),
+              const Divider(), // Added a divider for better UI
+              ListTile(
+                title: const Text("Probe Capture"),
+                onTap: () => Navigator.pop(context, "probe"),
+              ),
+            ],
+          ),
+        );
+      },
     );
-  } else if (selection == "probe") {
-    // This calls your existing probe provider logic
-    await context.read<ProbeProvider>().initialize(
-      context,
-      onProbeError,
-      _captureProbeImage,
-    );
-    return null; 
+
+    if (selection == "camera") {
+      return await CommonFunctions.getImage(
+        context: context,
+        imageSource: ImageSource.camera,
+      );
+    } else if (selection == "probe") {
+      // This calls your existing probe provider logic
+      await context.read<ProbeProvider>().initialize(
+            context,
+            onProbeError,
+            _captureProbeImage,
+          );
+      return null;
+    }
+
+    return null;
   }
 
-  return null;
-}
-
-
-  _captureImage() async {
+  _captureImage(String? oldQuestionId) async {
     try {
       isLoading.value = true;
       XFile? file = await showImageSourceDialog(context);
@@ -366,9 +366,9 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
         String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, "image");
         String fileName = filePath.split("/").last;
 
-await saveFile(bytes,fileName);
+        await saveFile(bytes, fileName);
 
-        String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+        String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
         LesionLocationQuestion question = LesionLocationQuestion(
           versionNumber: widget.questioner.versionNumber,
@@ -400,26 +400,25 @@ await saveFile(bytes,fileName);
     return "${siteLocation.firstWhere((element) => element.id == location).name} ${siteMap.firstWhere((element) => element.id == site).name}";
   }
 
-IdTextModel getSiteModel(String? siteId) {
-  return siteMap.firstWhere(
-    (e) => e.id == siteId,
-    orElse: () => IdTextModel(
-      id: 'unknown',
-      name: 'Unknown Site',
-    ),
-  );
-}
+  IdTextModel getSiteModel(String? siteId) {
+    return siteMap.firstWhere(
+      (e) => e.id == siteId,
+      orElse: () => IdTextModel(
+        id: 'unknown',
+        name: 'Unknown Site',
+      ),
+    );
+  }
 
-IdTextModel getSiteLocationModel(String? id) {
-  return siteLocation.firstWhere(
-    (e) => e.id == id,
-    orElse: () => IdTextModel(
-      id: 'unknown',
-      name: 'Unknown',
-    ),
-  );
-}
-
+  IdTextModel getSiteLocationModel(String? id) {
+    return siteLocation.firstWhere(
+      (e) => e.id == id,
+      orElse: () => IdTextModel(
+        id: 'unknown',
+        name: 'Unknown',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -584,11 +583,9 @@ IdTextModel getSiteLocationModel(String? id) {
                                 const SizedBox(width: 7),
                                 InkWell(
                                   onTap: () {
-                                    
-                              _site.value=getSiteModel(question.siteId);
-                            _location.value=getSiteLocationModel(question.locationId);
-                            _initProbe();
-                          
+                                    _site.value = getSiteModel(question.siteId);
+                                    _location.value = getSiteLocationModel(question.locationId);
+                                    _initProbe(questionId: question.questionId);
                                   },
                                   child: SvgPicture.asset(
                                     AppAssetsPath.icAddCircular,
