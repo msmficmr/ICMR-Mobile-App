@@ -283,6 +283,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _primaryIdController.text = resp.primaryId;
       _secondaryIdController.text = resp.secondaryId;
       _medicalRecordNumberController.text = resp.medicalRecordNumber ?? "";
+      // Check if visitDate is not null before attempting to format it
+      if(resp.visitDate!=null && resp.visitDate.toString().isNotEmpty){
+  _dateOfVisitController.text = DateFormat('dd/MM/yyyy').format(resp.visitDate);
+
+      }
+
+    _signConsent.value = resp.signedConsent.toString().toUpperCase() == "YES" 
+    ? AppConstant.BINARY_LIST.first.data 
+    : AppConstant.BINARY_LIST.last.data;
     }
   }
 

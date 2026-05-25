@@ -31,6 +31,8 @@ import 'package:mhealth/widgets/custom_dropdown.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:probeintegration/services/probe_provider.dart';
 import 'package:probeintegration/utils/exceptions.dart';
 import 'package:provider/provider.dart';
@@ -105,7 +107,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     IdTextModel(id: "other", name: "Other"),
   ];
 
-  List<IdTextModel> siteLocation = [IdTextModel(id: "left", name: "Left"), IdTextModel(id: "right", name: "Right")];
+  List<IdTextModel> siteLocation = [IdTextModel(id: "left", name: "Left"), IdTextModel(id: "right", name: "Right"),IdTextModel(id: "center", name: "Center"),];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -146,6 +148,65 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         break;
     }
   }
+  Future<bool> _isAndroid13OrAbove() async {
+  if (!Platform.isAndroid) return false;
+
+  // Android 13 = SDK 33
+  return (await _getAndroidSdkInt()) >= 33;
+}
+
+Future<int> _getAndroidSdkInt() async {
+  try {
+    return int.parse(
+      (await Process.run('getprop', ['ro.build.version.sdk']))
+          .stdout
+          .toString()
+          .trim(),
+    );
+  } catch (_) {
+    return 0;
+  }
+}
+
+Future<String?> saveFile(Uint8List bytes,String fileName) async {
+  try {
+    // ✅ Get app-specific external storage directory
+    final directory = await getExternalStorageDirectory();
+
+    if (directory == null) {
+      CommonFunctions.toastMessage("Storage not available");
+      return null;
+    }
+
+    // ✅ Create custom folder inside app storage
+    final folder = Directory("${directory.path}/LesionImages");
+
+    if (!await folder.exists()) {
+      await folder.create(recursive: true);
+    }
+
+    // ✅ File path
+    final filePath =
+        "${folder.path}/${fileName}";
+
+    final file = File(filePath);
+
+    await file.writeAsBytes(bytes);
+
+    // ✅ Success toast
+    CommonFunctions.toastMessage("Saved successfully");
+
+    print("Saved at: $filePath");
+
+    return filePath;
+  } catch (e, s) {
+    print("ERROR: $e");
+    print("STACK: $s");
+    CommonFunctions.toastMessage("Failed to save image");
+    return null;
+  }
+}
+
 
   _captureProbeImage(Map<String, Uint8List> data) async {
     try {
@@ -166,6 +227,8 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
             key,
           );
           String fileName = filePath.split("/").last;
+              await saveFile(bytes,fileName.toString());
+
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
         }
@@ -199,50 +262,94 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
   _initProbe() async {
     try {
-      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
-      // await _captureImage();
+      // await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      await _captureImage();
     } catch (e) {
       log("ERROR");
     }
   }
 
-  Future<XFile?> showImageSourceDialog(BuildContext context) async {
-    final ImageSource? source = await showDialog<ImageSource>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Select Image Source"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text("Camera"),
-                onTap: () => Navigator.pop(context, ImageSource.camera),
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text("Gallery"),
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-    XFile? file;
-    if (source != null) {
-      file = await CommonFunctions.getImage(
-        context: context,
-        imageSource: source,
-      );
+  // Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  //   final ImageSource? source = await showDialog<ImageSource>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("Select Image Source"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             ListTile(
+  //               leading: const Icon(Icons.camera_alt),
+  //               title: const Text("Camera"),
+  //               onTap: () => Navigator.pop(context, ImageSource.camera),
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.photo_library),
+  //               title: const Text("Gallery"),
+  //               // onTap: () => Navigator.pop(context, ImageSource.gallery),
+  //               onTap: () => Navigator.pop(context, ImageSource.gallery),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   XFile? file;
+  //   if (source != null) {
+  //     file = await CommonFunctions.getImage(
+  //       context: context,
+  //       imageSource: source,
+  //     );
 
-      if (file != null) {
-        debugPrint("Selected file path: ${file.path}");
-      }
-    }
-    return file;
+  //     if (file != null) {
+  //       debugPrint("Selected file path: ${file.path}");
+  //     }
+  //   }
+  //   return file;
+  // }
+
+  Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  final String? selection = await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Select Image Source"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text("Camera Capture"),
+              onTap: () => Navigator.pop(context, "camera"),
+            ),
+            const Divider(), // Added a divider for better UI
+            ListTile(
+              title: const Text("Probe Capture"),
+              onTap: () => Navigator.pop(context, "probe"),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  if (selection == "camera") {
+    return await CommonFunctions.getImage(
+      context: context,
+      imageSource: ImageSource.camera,
+    );
+  } else if (selection == "probe") {
+    // This calls your existing probe provider logic
+    await context.read<ProbeProvider>().initialize(
+      context,
+      onProbeError,
+      _captureProbeImage,
+    );
+    return null; 
   }
+
+  return null;
+}
+
 
   _captureImage() async {
     try {
@@ -258,6 +365,8 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
         String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, "image");
         String fileName = filePath.split("/").last;
+
+await saveFile(bytes,fileName);
 
         String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);

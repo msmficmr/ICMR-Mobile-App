@@ -28,7 +28,7 @@ dependencies:
 
 
   shared_preferences: ^2.0.8
-  skeletonizer: ^2.0.1
+  skeletonizer: ^1.4.3
   permission_handler: ^11.3.1
   image_picker: ^1.0.1
   dotted_border: ^2.0.0+3
@@ -52,6 +52,8 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   isar_generator: ^3.1.0+1
   build_runner: ^2.4.6
+dependency_overrides:
+  intl: ^0.20.2
 flutter:
 
   uses-material-design: true
