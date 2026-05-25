@@ -504,9 +504,48 @@ Widget _getWidgetForMultiSelectionSubQuestionnaire(BuildContext context, MultiSe
     ),
   );
 }
+String convertToFutureFullYear(String? input) {
+  try {
+    // ✅ Null or empty check
+    if (input == null || input.trim().isEmpty) {
+      return '';
+    }
+
+    final parts = input.split('/');
+
+    // ✅ Invalid format check
+    if (parts.length != 3) return input;
+
+    int? day = int.tryParse(parts[0]);
+    int? month = int.tryParse(parts[1]);
+    int? year = int.tryParse(parts[2]);
+
+    // ✅ Invalid number check
+    if (day == null || month == null || year == null) {
+      return input;
+    }
+
+    // Optional: basic range validation
+    if (day <= 0 || day > 31 || month <= 0 || month > 12) {
+      return input;
+    }
+
+    // Get current century (e.g., 2026 → 2000)
+    int currentYear = DateTime.now().year;
+    int century = (currentYear ~/ 100) * 100;
+
+    int fullYear = century + year;
+
+    return "${day.toString().padLeft(2, '0')}/"
+           "${month.toString().padLeft(2, '0')}/"
+           "$fullYear";
+  } catch (e) {
+    return input ?? '';
+  }
+}
 
 Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuestionnaire textFieldQuestionnaire, double height) {
-    TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/####', type: MaskAutoCompletionType.eager);
+    TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/##', type: MaskAutoCompletionType.eager);
 
   return Padding(
     padding: const EdgeInsets.only(right: 20),
@@ -526,13 +565,38 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
         TextFormField(
           controller: TextEditingController(text: textFieldQuestionnaire.userEnteredInput ?? ""),
           onChanged: (text) {
-            textFieldQuestionnaire.userEnteredInput = text;
+            // textFieldQuestionnaire.userEnteredInput = text;
+            if (text.length == 8) {
+      // textFieldQuestionnaire.userEnteredInput =
+      //     convertToFutureFullYear(text);
+      String formattedDate = convertToFutureFullYear(text);
+
+      // 👉 Get current time
+      final now = DateTime.now();
+      final time =
+          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+
+      textFieldQuestionnaire.userEnteredInput = "$formattedDate $time";
+    } else {
+      textFieldQuestionnaire.userEnteredInput = text;
+    }
             textFieldQuestionnaire.shouldShowError = false;
           },
           keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month" || textFieldQuestionnaire.getId().toString().trim() == "visit_date") ? TextInputType.number : null,
-          inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
-            FilteringTextInputFormatter.digitsOnly, // Only allows digits
-          ] : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
+          // inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
+          //   FilteringTextInputFormatter.digitsOnly, // Only allows digits
+          // ] : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
+          inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number")
+    ? <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(3), // This MUST be inside the list
+      ]
+    : (textFieldQuestionnaire.getId().toString().trim() == "visit_month")
+        ? <TextInputFormatter>[
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(2), // Added here as well for consistency
+          ]
+        :  (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
           cursorColor: AppColorScheme.kPrimaryColor,
           decoration: const InputDecoration(
             errorBorder: OutlineInputBorder(),
