@@ -227,7 +227,7 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
             key,
           );
           String fileName = filePath.split("/").last;
-              // await saveFile(bytes,fileName.toString());
+              await saveFile(bytes,fileName.toString());
 
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
@@ -366,7 +366,7 @@ Future<String?> saveFile(Uint8List bytes,String fileName) async {
         String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, "image");
         String fileName = filePath.split("/").last;
 
-// await saveFile(bytes,fileName);
+await saveFile(bytes,fileName);
 
         String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
