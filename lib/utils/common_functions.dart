@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:mhealth/services/permission_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_values.dart';
@@ -308,7 +309,7 @@ class CommonFunctions {
     return result;
   }
 
-  Future<String?> saveFileToLocal(String path) async {
+  /*Future<String?> saveFileToLocal(String path) async {
     try {
       Directory tempDir = await getApplicationDocumentsDirectory();
       String tempPath = tempDir.path;
@@ -320,7 +321,7 @@ class CommonFunctions {
       newFile.copy(newPath);
       return newPath;
     } catch (e) {}
-  }
+  }*/
 
   /* Future<String?> createFileToLocal(List<int> bytes, String extension) async {
     try {
@@ -335,21 +336,26 @@ class CommonFunctions {
     } catch (e) {}
   } */
 
+  // Staging path inside app-private storage. The file written here is published
+  // to MediaStore by writeFileInIsolate on Android; on iOS this is the final path.
   Future<String?> getApplicationFilePath(String fileName, String? extension) async {
-    Directory tempDir = await getApplicationDocumentsDirectory();
-    String tempPath = tempDir.path;
+    Directory baseDir = (await getExternalStorageDirectory()) ?? await getApplicationDocumentsDirectory();
 
-    var directory = await Directory('${tempPath}/imagesFile').create(recursive: true);
+    var directory = await Directory('${baseDir.path}/LesionImages').create(recursive: true);
 
-    String newPath = '${directory.path}/${fileName}_${Uuid().v4()}${extension ?? ".png"}';
-
-    return newPath;
+    return '${directory.path}/${fileName}_${const Uuid().v4()}${extension ?? ".png"}';
   }
 
-  Future<String?> deleteFile(String file) async {
+  Future<void> deleteFile(String fileOrUri) async {
     try {
-      File fileToDelete = File(file);
-      await fileToDelete.delete();
+      if (fileOrUri.startsWith('content://')) {
+        await MediaStore().deleteFileUsingUri(uriString: fileOrUri);
+        return;
+      }
+      File fileToDelete = File(fileOrUri);
+      if (await fileToDelete.exists()) {
+        await fileToDelete.delete();
+      }
     } catch (e) {
       log(e.toString());
     }
@@ -363,26 +369,52 @@ class CommonFunctions {
   }
 
   Future<String> writeFileInIsolate(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken, String fileName) async {
+    final tempPath = await _writeBytesToTempFile(fileBytes, extension, rootIsolateToken, fileName);
+
+    if (!Platform.isAndroid) {
+      return tempPath;
+    }
+
+    try {
+      final saveInfo = await MediaStore().saveFile(
+        tempFilePath: tempPath,
+        dirType: DirType.photo,
+        dirName: DirName.pictures,
+      );
+      // On API <= 29, saveFile copies and leaves the temp file behind.
+      try {
+        final tempFile = File(tempPath);
+        if (await tempFile.exists()) await tempFile.delete();
+      } catch (_) {}
+      if (saveInfo != null) {
+        return saveInfo.uri.toString();
+      }
+    } catch (e) {
+      log('MediaStore.saveFile failed: $e');
+    }
+    // Publish failed (permission denied, etc.) — keep the app-private copy.
+    return tempPath;
+  }
+
+  Future<String> _writeBytesToTempFile(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken, String fileName) {
     ReceivePort receivePort = ReceivePort();
     Completer<String> completer = Completer();
 
-    // Start a new isolate and pass the SendPort and filePath
-    Isolate isolate = await Isolate.spawn(_writeFileTask, {
+    Isolate.spawn(_writeFileTask, {
       'fileBytes': fileBytes,
       'extension': extension,
       'sendPort': receivePort.sendPort,
-      "rootIsolateToken": rootIsolateToken,
-      "fileName": fileName,
+      'rootIsolateToken': rootIsolateToken,
+      'fileName': fileName,
     });
 
-    // Listen for messages from the isolate
     receivePort.listen((message) {
       if (message is String) {
         completer.complete(message);
       } else {
         completer.completeError(message);
       }
-      receivePort.close(); // Close the port when done
+      receivePort.close();
     });
 
     return completer.future;
@@ -400,33 +432,54 @@ class CommonFunctions {
       if (filePath != null) {
         File file = File(filePath);
         await file.writeAsBytes(fileBytes);
-        sendPort.send(filePath); // Send the contents back to the main isolate
+        sendPort.send(filePath);
       } else {
-        sendPort.send(Exception()); // Send the error message back to the main isolate
+        sendPort.send(Exception());
       }
     } catch (e) {
-      sendPort.send(Exception(e)); // Send the error message back to the main isolate
+      sendPort.send(Exception(e));
     }
   }
 
   Future<List<int>> readFileInIsolate(String filePath) async {
+    log("filePath: $filePath");
+
+    if (filePath.startsWith('content://')) {
+      return _readMediaStoreUri(filePath);
+    }
+
     ReceivePort receivePort = ReceivePort();
     Completer<List<int>> completer = Completer();
 
-    // Start a new isolate and pass the SendPort and filePath
-    Isolate isolate = await Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
+    Isolate.spawn(_readFileTask, {'filePath': filePath, 'sendPort': receivePort.sendPort});
 
-    // Listen for messages from the isolate
     receivePort.listen((message) {
       if (message is List<int>) {
         completer.complete(message);
       } else {
         completer.completeError(message);
       }
-      receivePort.close(); // Close the port when done
+      receivePort.close();
     });
 
     return completer.future;
+  }
+
+  Future<List<int>> _readMediaStoreUri(String uri) async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = '${tempDir.path}/mediastore_read_${const Uuid().v4()}';
+    try {
+      final ok = await MediaStore().readFileUsingUri(uriString: uri, tempFilePath: tempPath);
+      if (!ok) {
+        throw Exception('MediaStore.readFileUsingUri returned false for $uri');
+      }
+      return await File(tempPath).readAsBytes();
+    } finally {
+      try {
+        final f = File(tempPath);
+        if (await f.exists()) await f.delete();
+      } catch (_) {}
+    }
   }
 
   static void _readFileTask(Map<String, dynamic> message) async {
@@ -436,9 +489,9 @@ class CommonFunctions {
     try {
       File file = File(filePath);
       List<int> contents = await file.readAsBytes();
-      sendPort.send(contents); // Send the contents back to the main isolate
+      sendPort.send(contents);
     } catch (e) {
-      sendPort.send(e.toString()); // Send the error message back to the main isolate
+      sendPort.send(e.toString());
     }
   }
 

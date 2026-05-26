@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
@@ -11,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/model/id_text_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -24,6 +26,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/questionair/view/gallery_view.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_check_box.dart';
@@ -40,7 +43,8 @@ import 'package:uuid/uuid.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
-  const LesionLocationQuestionnaireScreen({super.key, required this.questioner});
+  final String patientId;
+  const LesionLocationQuestionnaireScreen({super.key, required this.questioner, required this.patientId});
 
   @override
   State<LesionLocationQuestionnaireScreen> createState() => _LesionLocationQuestionnaireScreenState();
@@ -171,44 +175,6 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     }
   }
 
-  Future<String?> saveFile(Uint8List bytes, String fileName) async {
-    try {
-      // ✅ Get app-specific external storage directory
-      final directory = await getExternalStorageDirectory();
-
-      if (directory == null) {
-        CommonFunctions.toastMessage("Storage not available");
-        return null;
-      }
-
-      // ✅ Create custom folder inside app storage
-      final folder = Directory("${directory.path}/LesionImages");
-
-      log("${folder.path}");
-
-      if (!await folder.exists()) {
-        await folder.create(recursive: true);
-      }
-
-      // ✅ File path
-      final filePath = "${folder.path}/${fileName}";
-
-      final file = File(filePath);
-
-      await file.writeAsBytes(bytes);
-
-      // ✅ Success toast
-      CommonFunctions.toastMessage("Saved successfully");
-
-      log("Saved at: $filePath");
-
-      return filePath;
-    } catch (e, s) {
-      CommonFunctions.toastMessage("Failed to save image");
-      return null;
-    }
-  }
-
   _captureProbeImage(Map<String, Uint8List> data) async {
     try {
       isLoading.value = true;
@@ -220,15 +186,19 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
           /// Pass extension in .format ex: .png .jpg .pdf etc
           ///
+          ///
+          PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+          //
+          log("patientData: ${jsonEncode(patientData?.toJson())}");
+
+          String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+
           RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
           String filePath = await CommonFunctions().writeFileInIsolate(
-            bytes.toList(),
-            ".$extension",
-            rootIsolateToken,
-            key,
+            bytes.toList(), ".$extension", rootIsolateToken, newFileName, //key,
           );
           String fileName = filePath.split("/").last;
-          await saveFile(bytes, fileName.toString());
+          //await saveFile(bytes, fileName.toString());
 
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
@@ -361,12 +331,19 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         String extension = file.name.split(".").last;
 
         /// Pass extension in .format ex: .png .jpg .pdf etc
+
         ///
+        PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+        //
+        log("patientData: ${jsonEncode(patientData?.toJson())}");
+
+        String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, "image");
+        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, newFileName);
         String fileName = filePath.split("/").last;
 
-        await saveFile(bytes, fileName);
+        //await saveFile(bytes, fileName);
 
         String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
@@ -426,6 +403,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(widget.patientId),
         Form(
           key: _formKey,
           child: Column(
