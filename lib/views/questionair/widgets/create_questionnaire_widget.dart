@@ -35,7 +35,7 @@ Widget _getWidgetForQuestionnaire(
     case PeriodontalStatusQuestionnaire:
       return PeriodontalScreen(questioner: questionnaire as PeriodontalStatusQuestionnaire);
     case LesionLocationQuestionnaire:
-      return LesionLocationQuestionnaireScreen(questioner: questionnaire as LesionLocationQuestionnaire);
+      return LesionLocationQuestionnaireScreen(questioner: questionnaire as LesionLocationQuestionnaire, patientId: patientId);
     case VerificationFormQuestionnaire:
       return VerificationQuestionnaireScreen(questioner: questionnaire as VerificationFormQuestionnaire);
     default:
@@ -224,7 +224,6 @@ Widget _getWidgetForSingleSelectionSubQuestionnaire(BuildContext context, Single
 //   globalOnClick();
 // };
 
-  
 //   return SizedBox(
 //     child: Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,8 +311,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
   Function globalOnClick,
 ) {
   // 🔹 Initialize ValueNotifier here
-  final ValueNotifier<List<QuestionnaireOption>> valueNotifier =
-      ValueNotifier<List<QuestionnaireOption>>(
+  final ValueNotifier<List<QuestionnaireOption>> valueNotifier = ValueNotifier<List<QuestionnaireOption>>(
     List.from(checkboxSubQuestionnaire.selectedOptions), // start with saved state
   );
 
@@ -327,8 +325,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
           (element) => element.optionText.toLowerCase() == "no",
         );
 
-        int idx = updatedSelections
-            .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+        int idx = updatedSelections.indexWhere((element) => element.optionId == questionnaireOption.optionId);
         if (idx < 0) {
           updatedSelections.add(questionnaireOption);
         } else {
@@ -343,8 +340,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
         );
 
         if (yesSelected) {
-          int idx = updatedSelections
-              .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+          int idx = updatedSelections.indexWhere((element) => element.optionId == questionnaireOption.optionId);
           if (idx < 0) {
             updatedSelections.add(questionnaireOption);
           } else {
@@ -355,8 +351,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
         }
       }
     } else {
-      int selectedOptionIndex = updatedSelections
-          .indexWhere((element) => element.optionId == questionnaireOption.optionId);
+      int selectedOptionIndex = updatedSelections.indexWhere((element) => element.optionId == questionnaireOption.optionId);
       if (selectedOptionIndex < 0) {
         updatedSelections.add(questionnaireOption);
         checkboxSubQuestionnaire.shouldShowError = false;
@@ -395,20 +390,14 @@ Widget _getWidgetForCheckBoxQuestionnaire(
                 final qId = checkboxSubQuestionnaire.getId().toString().trim();
 
                 if (qId == 'saliva_collected' || qId == 'cytology_collected') {
-                  bool yesSelected = selectedOptions
-                      .any((element) => element.optionText.toLowerCase() == "yes");
-                  bool noSelected = selectedOptions
-                      .any((element) => element.optionText.toLowerCase() == "no");
+                  bool yesSelected = selectedOptions.any((element) => element.optionText.toLowerCase() == "yes");
+                  bool noSelected = selectedOptions.any((element) => element.optionText.toLowerCase() == "no");
 
-                  if (noSelected &&
-                      (option.optionText.toLowerCase() == "rna" ||
-                          option.optionText.toLowerCase() == "not in rna")) {
+                  if (noSelected && (option.optionText.toLowerCase() == "rna" || option.optionText.toLowerCase() == "not in rna")) {
                     return const SizedBox.shrink();
                   }
 
-                  if (!yesSelected &&
-                      (option.optionText.toLowerCase() == "rna" ||
-                          option.optionText.toLowerCase() == "not in rna")) {
+                  if (!yesSelected && (option.optionText.toLowerCase() == "rna" || option.optionText.toLowerCase() == "not in rna")) {
                     return const SizedBox.shrink();
                   }
                 }
@@ -418,10 +407,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
                   onChanged: (p0) {
                     onClick(option);
                   },
-                  value: selectedOptions
-                          .indexWhere((element) =>
-                              element.optionId == option.optionId) >=
-                      0,
+                  value: selectedOptions.indexWhere((element) => element.optionId == option.optionId) >= 0,
                   children: [
                     TextSpan(
                       text: option.optionText,
@@ -438,8 +424,7 @@ Widget _getWidgetForCheckBoxQuestionnaire(
               visible: checkboxSubQuestionnaire.shouldShowError,
               child: Text(
                 TranslationKeys.thisFieldIsMandatory.translate(context),
-                style: AppStyles.bodySmall
-                    .copyWith(color: AppColorScheme.errorTextColor),
+                style: AppStyles.bodySmall.copyWith(color: AppColorScheme.errorTextColor),
               ),
             ),
           ],
@@ -504,6 +489,7 @@ Widget _getWidgetForMultiSelectionSubQuestionnaire(BuildContext context, MultiSe
     ),
   );
 }
+
 String convertToFutureFullYear(String? input) {
   try {
     // ✅ Null or empty check
@@ -537,15 +523,15 @@ String convertToFutureFullYear(String? input) {
     int fullYear = century + year;
 
     return "${day.toString().padLeft(2, '0')}/"
-           "${month.toString().padLeft(2, '0')}/"
-           "$fullYear";
+        "${month.toString().padLeft(2, '0')}/"
+        "$fullYear";
   } catch (e) {
     return input ?? '';
   }
 }
 
 Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuestionnaire textFieldQuestionnaire, double height) {
-    TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/##', type: MaskAutoCompletionType.eager);
+  TextInputFormatter _dateOfVisitFormatter = MaskTextInputFormatter(mask: '##/##/##', type: MaskAutoCompletionType.eager);
 
   return Padding(
     padding: const EdgeInsets.only(right: 20),
@@ -567,36 +553,39 @@ Widget _getWidgetForTextFieldQuestionnaire(BuildContext context, TextFieldQuesti
           onChanged: (text) {
             // textFieldQuestionnaire.userEnteredInput = text;
             if (text.length == 8) {
-      // textFieldQuestionnaire.userEnteredInput =
-      //     convertToFutureFullYear(text);
-      String formattedDate = convertToFutureFullYear(text);
+              // textFieldQuestionnaire.userEnteredInput =
+              //     convertToFutureFullYear(text);
+              String formattedDate = convertToFutureFullYear(text);
 
-      // 👉 Get current time
-      final now = DateTime.now();
-      final time =
-          "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+              // 👉 Get current time
+              final now = DateTime.now();
+              final time = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
 
-      textFieldQuestionnaire.userEnteredInput = "$formattedDate $time";
-    } else {
-      textFieldQuestionnaire.userEnteredInput = text;
-    }
+              textFieldQuestionnaire.userEnteredInput = "$formattedDate $time";
+            } else {
+              textFieldQuestionnaire.userEnteredInput = text;
+            }
             textFieldQuestionnaire.shouldShowError = false;
           },
-          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month" || textFieldQuestionnaire.getId().toString().trim() == "visit_date") ? TextInputType.number : null,
+          keyboardType: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" ||
+                  textFieldQuestionnaire.getId().toString().trim() == "visit_month" ||
+                  textFieldQuestionnaire.getId().toString().trim() == "visit_date")
+              ? TextInputType.number
+              : null,
           // inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number" || textFieldQuestionnaire.getId().toString().trim() == "visit_month") ? <TextInputFormatter>[
           //   FilteringTextInputFormatter.digitsOnly, // Only allows digits
           // ] : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
           inputFormatters: (textFieldQuestionnaire.getId().toString().trim() == "visit_number")
-    ? <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(3), // This MUST be inside the list
-      ]
-    : (textFieldQuestionnaire.getId().toString().trim() == "visit_month")
-        ? <TextInputFormatter>[
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(2), // Added here as well for consistency
-          ]
-        :  (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] :null),
+              ? <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3), // This MUST be inside the list
+                ]
+              : (textFieldQuestionnaire.getId().toString().trim() == "visit_month")
+                  ? <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(2), // Added here as well for consistency
+                    ]
+                  : (textFieldQuestionnaire.getId().toString().trim() == "visit_date" ? [_dateOfVisitFormatter] : null),
           cursorColor: AppColorScheme.kPrimaryColor,
           decoration: const InputDecoration(
             errorBorder: OutlineInputBorder(),
