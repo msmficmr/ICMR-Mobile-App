@@ -179,6 +179,7 @@ class AppRouter {
 
         /// if user is not logged in and current navigation is not listed as unProtected we are forcefully
         /// navigating to login screen
+        /// 
         if (!loginViewModel.isLoggedIn) {
           return unProtectedRoutes.contains(navigationRoute) ? null : LoginHome.routerPath;
         }

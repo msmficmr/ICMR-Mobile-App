@@ -96,6 +96,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   OfflineDataViewModel viewModel = OfflineDataViewModel();
 
   bool _syncing = false;
+  bool _isClicked = false;
 
   late NetworkStatusService networkStatusService;
 
@@ -288,7 +289,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
               fileDeleteList: fileDeleteList,
             );
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId,true);
+              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId, true);
             }
           }
         }
@@ -349,7 +350,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
             };
             bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
             if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId,false);
+              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId, false);
             }
           }
         }
@@ -367,6 +368,8 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     } else {
       CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
     }
+
+    _isClicked = false;
   }
 
   @override
@@ -578,7 +581,10 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                                     CommonFunctions.toastMessage("Session expired! Login to Continue");
                                     await loginViewModel?.logout();
                                   } else {
-                                    onSyncClick();
+                                    if (!_isClicked) {
+                                      _isClicked = true;
+                                      onSyncClick();
+                                    }
                                   }
                                 },
                                 child: AccountCard(

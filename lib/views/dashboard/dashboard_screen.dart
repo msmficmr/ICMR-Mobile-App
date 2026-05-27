@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/services/lesion_image_cleanup_service.dart';
 import 'package:mhealth/services/network_status_service.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -38,6 +41,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late OfflineDataViewModel provider;
 
   late ValueNotifier<bool> _syncData;
+
+  // Run lesion-image cleanup at most once per app session.
+  static bool _cleanupRanThisSession = false;
 
   //Keys
   final String KEY_DASHBOARD_APPBAR = "key_dashboard_appbar";
@@ -79,7 +85,140 @@ class _DashboardScreenState extends State<DashboardScreen> {
     //checkToSyncData();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadInitialData();
+      _maybeRunLesionImageCleanup();
     });
+  }
+
+  Future<void> _maybeRunLesionImageCleanup() async {
+    log("message: maybeRunLesionImageCleanup");
+    final scanProgress = ValueNotifier<double?>(null);
+    _showProgressDialog(
+      title: 'Cleaning up old images',
+      message: 'Scanning saved lesion images…',
+      progress: scanProgress,
+    );
+
+    List<LesionImageInfo> oldFiles = const [];
+    try {
+      final all = await LesionImageCleanupService.instance.listAllImages();
+      oldFiles = LesionImageCleanupService.instance.filterOlderThanRetention(all);
+    } catch (_) {
+      // Swallow scan errors — cleanup is best-effort.
+    }
+
+    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pop();
+    scanProgress.dispose();
+
+    if (oldFiles.isEmpty) return;
+
+    final confirmed = await _showConfirmDeleteDialog(oldFiles.length);
+    if (!mounted || confirmed != true) return;
+
+    final deleteProgress = ValueNotifier<double?>(0.0);
+    _showProgressDialog(
+      title: 'Deleting old images',
+      message: '0 / ${oldFiles.length}',
+      progress: deleteProgress,
+    );
+
+    final deleted = await LesionImageCleanupService.instance.deleteFiles(
+      oldFiles,
+      onProgress: (done, total) {
+        deleteProgress.value = total == 0 ? 1.0 : done / total;
+      },
+    );
+
+    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pop();
+    deleteProgress.dispose();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Deleted $deleted of ${oldFiles.length} old image(s).')),
+    );
+  }
+
+  void _showProgressDialog({
+    required String title,
+    required String message,
+    required ValueNotifier<double?> progress,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PopScope(
+        canPop: false,
+        child: Dialog(
+          insetPadding: const EdgeInsets.all(24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: AppColorScheme.kPrimaryColor),
+                ),
+                const SizedBox(height: 12),
+                ValueListenableBuilder<double?>(
+                  valueListenable: progress,
+                  builder: (_, value, __) {
+                    final pct = value == null ? null : (value * 100).clamp(0, 100).toInt();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pct == null ? message : '$message  ($pct%)',
+                          style: AppStyles.titleMedium,
+                        ),
+                        const SizedBox(height: 14),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: value,
+                            minHeight: 6,
+                            backgroundColor: AppColorScheme.kPrimaryColor.shade50,
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColorScheme.kPrimaryColor),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _showConfirmDeleteDialog(int count) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          'Old lesion images',
+          style: AppStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: AppColorScheme.kPrimaryColor),
+        ),
+        content: Text(
+          '$count image(s) saved more than 2 weeks ago were found. Delete them to free up space?',
+          style: AppStyles.titleMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Keep'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -136,7 +275,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Selector<PatientListViewModel, Tuple2<int,bool>>(
+                      Selector<PatientListViewModel, Tuple2<int, bool>>(
                         selector: (context, provider) => Tuple2(provider.completedCRAcount, provider.isLoadingCraCount),
                         builder: (context, count, child) {
                           return DashboardCardWidget(
@@ -183,7 +322,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             selector: (p0, p1) => p1.registeredPatients.length,
                             builder: (context, patientLength, _) {
                               return Selector<PatientListViewModel, int>(
-                                selector: (context, provider) => provider.completedCRAcount ,
+                                selector: (context, provider) => provider.completedCRAcount,
                                 builder: (context, syncData, _) {
                                   int patientNonSyncedCount = context
                                       .read<PatientListViewModel>()

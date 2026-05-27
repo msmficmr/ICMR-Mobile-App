@@ -24,7 +24,7 @@ class AppTheme {
       secondary: AppColorScheme.kPrimaryColor,
       error: Colors.red,
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),

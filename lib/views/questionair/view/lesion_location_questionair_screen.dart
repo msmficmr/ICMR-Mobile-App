@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
@@ -11,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/model/id_text_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
@@ -24,6 +26,7 @@ import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/helpers/app_validators.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/questionair/view/gallery_view.dart';
 import 'package:mhealth/widgets/circular_avatar_widget.dart';
 import 'package:mhealth/widgets/custom_check_box.dart';
@@ -31,13 +34,17 @@ import 'package:mhealth/widgets/custom_dropdown.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/primary_filled_button.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:probeintegration/services/probe_provider.dart';
 import 'package:probeintegration/utils/exceptions.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
-  const LesionLocationQuestionnaireScreen({super.key, required this.questioner});
+  final String patientId;
+  const LesionLocationQuestionnaireScreen({super.key, required this.questioner, required this.patientId});
 
   @override
   State<LesionLocationQuestionnaireScreen> createState() => _LesionLocationQuestionnaireScreenState();
@@ -105,7 +112,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     IdTextModel(id: "other", name: "Other"),
   ];
 
-  List<IdTextModel> siteLocation = [IdTextModel(id: "left", name: "Left"), IdTextModel(id: "right", name: "Right")];
+  List<IdTextModel> siteLocation = [
+    IdTextModel(id: "left", name: "Left"),
+    IdTextModel(id: "right", name: "Right"),
+    IdTextModel(id: "center", name: "Center"),
+  ];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -147,6 +158,23 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     }
   }
 
+  Future<bool> _isAndroid13OrAbove() async {
+    if (!Platform.isAndroid) return false;
+
+    // Android 13 = SDK 33
+    return (await _getAndroidSdkInt()) >= 33;
+  }
+
+  Future<int> _getAndroidSdkInt() async {
+    try {
+      return int.parse(
+        (await Process.run('getprop', ['ro.build.version.sdk'])).stdout.toString().trim(),
+      );
+    } catch (_) {
+      return 0;
+    }
+  }
+
   _captureProbeImage(Map<String, Uint8List> data) async {
     try {
       isLoading.value = true;
@@ -154,13 +182,24 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       for (String key in data.keys) {
         Uint8List? bytes = data[key];
         if (bytes != null) {
-          String extension = ".png";
+          String extension = "png";
 
           /// Pass extension in .format ex: .png .jpg .pdf etc
           ///
+          ///
+          PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+          //
+          log("patientData: ${jsonEncode(patientData?.toJson())}");
+
+          String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+
           RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-          String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken);
+          String filePath = await CommonFunctions().writeFileInIsolate(
+            bytes.toList(), ".$extension", rootIsolateToken, newFileName, //key,
+          );
           String fileName = filePath.split("/").last;
+          //await saveFile(bytes, fileName.toString());
+
           AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
           modelList.add(model);
         }
@@ -192,30 +231,121 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     }
   }
 
-  _initProbe() async {
+  _initProbe({String? questionId}) async {
     try {
-      await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      // await context.read<ProbeProvider>().initialize(context, onProbeError, _captureProbeImage);
+      await _captureImage(questionId);
     } catch (e) {
       log("ERROR");
     }
   }
 
-  _captureImage() async {
+  // Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  //   final ImageSource? source = await showDialog<ImageSource>(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("Select Image Source"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             ListTile(
+  //               leading: const Icon(Icons.camera_alt),
+  //               title: const Text("Camera"),
+  //               onTap: () => Navigator.pop(context, ImageSource.camera),
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.photo_library),
+  //               title: const Text("Gallery"),
+  //               // onTap: () => Navigator.pop(context, ImageSource.gallery),
+  //               onTap: () => Navigator.pop(context, ImageSource.gallery),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  //   XFile? file;
+  //   if (source != null) {
+  //     file = await CommonFunctions.getImage(
+  //       context: context,
+  //       imageSource: source,
+  //     );
+
+  //     if (file != null) {
+  //       debugPrint("Selected file path: ${file.path}");
+  //     }
+  //   }
+  //   return file;
+  // }
+
+  Future<XFile?> showImageSourceDialog(BuildContext context) async {
+    final String? selection = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Select Image Source"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Camera Capture"),
+                onTap: () => Navigator.pop(context, "camera"),
+              ),
+              const Divider(), // Added a divider for better UI
+              ListTile(
+                title: const Text("Probe Capture"),
+                onTap: () => Navigator.pop(context, "probe"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selection == "camera") {
+      return await CommonFunctions.getImage(
+        context: context,
+        imageSource: ImageSource.camera,
+      );
+    } else if (selection == "probe") {
+      // This calls your existing probe provider logic
+      await context.read<ProbeProvider>().initialize(
+            context,
+            onProbeError,
+            _captureProbeImage,
+          );
+      return null;
+    }
+
+    return null;
+  }
+
+  _captureImage(String? oldQuestionId) async {
     try {
       isLoading.value = true;
-      XFile? file = await CommonFunctions.getImage(context: context, imageSource: Platform.isAndroid ? ImageSource.camera : ImageSource.gallery);
+      XFile? file = await showImageSourceDialog(context);
       if (file != null) {
         Uint8List bytes = await file.readAsBytes();
 
         String extension = file.name.split(".").last;
 
         /// Pass extension in .format ex: .png .jpg .pdf etc
+
         ///
+        PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+        //
+        log("patientData: ${jsonEncode(patientData?.toJson())}");
+
+        String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken);
+        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, newFileName);
         String fileName = filePath.split("/").last;
 
-        String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+        //await saveFile(bytes, fileName);
+
+        String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
         LesionLocationQuestion question = LesionLocationQuestion(
           versionNumber: widget.questioner.versionNumber,
@@ -247,12 +377,33 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     return "${siteLocation.firstWhere((element) => element.id == location).name} ${siteMap.firstWhere((element) => element.id == site).name}";
   }
 
+  IdTextModel getSiteModel(String? siteId) {
+    return siteMap.firstWhere(
+      (e) => e.id == siteId,
+      orElse: () => IdTextModel(
+        id: 'unknown',
+        name: 'Unknown Site',
+      ),
+    );
+  }
+
+  IdTextModel getSiteLocationModel(String? id) {
+    return siteLocation.firstWhere(
+      (e) => e.id == id,
+      orElse: () => IdTextModel(
+        id: 'unknown',
+        name: 'Unknown',
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(widget.patientId),
         Form(
           key: _formKey,
           child: Column(
@@ -308,12 +459,32 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                     valueListenable: isLoading,
                     builder: (context, _, __) {
                       return PrimaryFilledButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _initProbe();
+                            // String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+                            // AttachmentModel model = AttachmentModel(fileName: "fileName", filePath: "filePath");
+                            // LesionLocationQuestion question = LesionLocationQuestion(
+                            //   versionNumber: widget.questioner.versionNumber,
+                            //   questionId: questionId,
+                            //   timeAsked: DateTime.now(),
+                            // );
+
+                            // question.locationId = _location.value?.id ?? "";
+                            // question.siteId = _site.value?.id ?? "";
+
+                            // widget.questioner.addNewQuestion(question, model);
+
+                            // _site.value = null;
+                            // _location.value = null;
+
+                            // ///ADDED FAKE DELAY SO THAT FORM CAN RESET
+                            // await Future.delayed(const Duration(milliseconds: 100));
+                            // _formKey.currentState?.reset();
+                            // CommonFunctions.toastMessage("Image Captured Successfully");
                           }
                         },
-                        isLoading: isLoading.value,
+                        // isLoading: isLoading.value,
                         buttonThemeStyle: const FilledButtonThemeStyle(
                           enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
                           enabledButtonColor: AppColorScheme.kEnabledButtonColor,
@@ -387,7 +558,20 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
                                     width: 24,
                                   ),
                                 ),
-                                const SizedBox(width: 5),
+                                const SizedBox(width: 7),
+                                InkWell(
+                                  onTap: () {
+                                    _site.value = getSiteModel(question.siteId);
+                                    _location.value = getSiteLocationModel(question.locationId);
+                                    _initProbe(questionId: question.questionId);
+                                  },
+                                  child: SvgPicture.asset(
+                                    AppAssetsPath.icAddCircular,
+                                    height: 24,
+                                    width: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
                                 ValueListenableBuilder(
                                   valueListenable: question.attachments,
                                   builder: (context, attachmentList, child) {

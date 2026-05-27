@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,6 @@ import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
 import 'package:mhealth/viewModel/login_view_model.dart';
 import 'package:mhealth/views/probe_screens/probe_screen.dart';
-import 'package:probeintegration/services/probe_provider.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -76,14 +74,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void dispose() {
     cancelTimer();
     super.dispose();
-  }
-
-  init() async {
-    try {
-      await context.read<ProbeProvider>().initialize(context, (s, d) {}, (s) {});
-    } catch (e) {
-      log("ERROR");
-    }
   }
 
   @override

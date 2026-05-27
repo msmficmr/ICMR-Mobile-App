@@ -283,6 +283,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _primaryIdController.text = resp.primaryId;
       _secondaryIdController.text = resp.secondaryId;
       _medicalRecordNumberController.text = resp.medicalRecordNumber ?? "";
+      // Check if visitDate is not null before attempting to format it
+      if(resp.visitDate!=null && resp.visitDate.toString().isNotEmpty){
+  _dateOfVisitController.text = DateFormat('dd/MM/yyyy').format(resp.visitDate);
+
+      }
+
+    _signConsent.value = resp.signedConsent.toString().toUpperCase() == "YES" 
+    ? AppConstant.BINARY_LIST.first.data 
+    : AppConstant.BINARY_LIST.last.data;
     }
   }
 
@@ -408,8 +417,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ..patientId = patientId
           ..createdBy = userId
           ..place = _placeController.text.trim()
-          ..visitNo = _visitNumber.value?.id
-          ..visitMonth = _visitMonthController.text.trim()
+          ..visitNo = ''
+          ..visitMonth = ''
           ..primaryId = _generatePrimaryId()
           ..secondaryId = _generateSecondaryId();
 
@@ -577,41 +586,42 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 const SpaceWidget(
                   height: 15,
                 ),
-                //VISIT NO
-                ValueListenableBuilder<List<IdTextModel>>(
-                    valueListenable: _visitNumberList,
-                    builder: (context, map, _) {
-                      return ValueListenableBuilder<IdTextModel?>(
-                        valueListenable: _visitNumber,
-                        builder: (context, _, __) {
-                          return CustomDropdown<IdTextModel>(
-                            isEnabled: widget.isEditable ? true : false,
-                            widgetKey: KEY_FIELD_VISIT_NUMBER,
-                            heading: TranslationKeys.visitNumber.translate(context),
-                            headingKey: Key(KEY_HEADING_VISIT_NUMBER),
-                            hintText: TranslationKeys.select.translate(context),
-                            onChanged: (val) {
-                              _visitNumber.value = val;
-                            },
-                            selectedItem: _visitNumber.value,
-                            compareFn: (p0, p1) => p0.id == p1.id,
-                            items: map,
-                          );
-                        },
-                      );
-                    }),
-                const SpaceWidget(
-                  height: 15,
-                ),
-                CustomTextField(
-                  enabled: widget.isEditable ? true : false,
-                  controller: _visitMonthController,
-                  widgetKey: Key(KEY_FIELD_VISIT_MONTH),
-                  hintText: TranslationKeys.enterHere.translate(context),
-                  heading: TranslationKeys.visitMonth.translate(context),
-                  headingKey: Key(KEY_HEADING_VISIT_MONTH),
-                  keyboardType: TextInputType.number,
-                ),
+                ///TODO:THIS CODE WILL BE USE FULL IN FUTURE
+                // //VISIT NO
+                // ValueListenableBuilder<List<IdTextModel>>(
+                //     valueListenable: _visitNumberList,
+                //     builder: (context, map, _) {
+                //       return ValueListenableBuilder<IdTextModel?>(
+                //         valueListenable: _visitNumber,
+                //         builder: (context, _, __) {
+                //           return CustomDropdown<IdTextModel>(
+                //             isEnabled: widget.isEditable ? true : false,
+                //             widgetKey: KEY_FIELD_VISIT_NUMBER,
+                //             heading: TranslationKeys.visitNumber.translate(context),
+                //             headingKey: Key(KEY_HEADING_VISIT_NUMBER),
+                //             hintText: TranslationKeys.select.translate(context),
+                //             onChanged: (val) {
+                //               _visitNumber.value = val;
+                //             },
+                //             selectedItem: _visitNumber.value,
+                //             compareFn: (p0, p1) => p0.id == p1.id,
+                //             items: map,
+                //           );
+                //         },
+                //       );
+                //     }),
+                // const SpaceWidget(
+                //   height: 15,
+                // ),
+                // CustomTextField(
+                //   enabled: widget.isEditable ? true : false,
+                //   controller: _visitMonthController,
+                //   widgetKey: Key(KEY_FIELD_VISIT_MONTH),
+                //   hintText: TranslationKeys.enterHere.translate(context),
+                //   heading: TranslationKeys.visitMonth.translate(context),
+                //   headingKey: Key(KEY_HEADING_VISIT_MONTH),
+                //   keyboardType: TextInputType.number,
+                // ),
                 //VISIT MONTH
                 // ValueListenableBuilder<List<IdTextModel>>(
                 // valueListenable: _visitMonthList,
