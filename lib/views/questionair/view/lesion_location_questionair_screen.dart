@@ -403,7 +403,6 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.patientId),
         Form(
           key: _formKey,
           child: Column(
