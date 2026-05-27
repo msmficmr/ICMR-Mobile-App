@@ -88,8 +88,7 @@
         "--flavor",
         "prod",
         "--target",
-        "lib/main_prod.dart",
-        "-v"
+        "lib/main_prod.dart"
       ]
     },
     {
