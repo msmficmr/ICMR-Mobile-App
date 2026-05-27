@@ -69,6 +69,14 @@ android {
                     
                 }
             }
+    /*signingConfigs {
+        create("release") {
+            storeFile = keystoreProperties["storeFile"]?.let { rootProject.file(it) }
+            storePassword = keystoreProperties["storePassword"] as String?
+            keyAlias = keystoreProperties["keyAlias"] as String?
+            keyPassword = keystoreProperties["keyPassword"] as String?
+        }
+    }*/
 
     buildTypes {
         release {
@@ -81,6 +89,12 @@ android {
                         "proguard-rules.pro"
                     )
         }
+    }
+     packagingOptions {
+        pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
+        pickFirsts.add("lib/x86_64/libc++_shared.so")
+        pickFirsts.add("lib/x86/libc++_shared.so")
+        pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
     }
 }
 dependencies {
