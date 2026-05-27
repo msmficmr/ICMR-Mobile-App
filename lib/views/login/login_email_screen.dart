@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
+import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/enums.dart';
@@ -72,7 +75,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     if (formKey.currentState?.validate() ?? false) {
       loginViewModel.isEmailLogin = true;
       loginViewModel.authFlow = LoginScreenTypes.EMAIL;
-      await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text,authType: AuthType.email);
+      await loginViewModel.sendOtp(mobileNumberOrEmailText: _emailFieldController.text, authType: AuthType.email);
     }
   }
 
@@ -99,6 +102,52 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    TextButton(
+                      onPressed: () async {
+                        Map<String, dynamic> response = {
+                          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlZJRC0xMzI5NjgyNSIsImlhdCI6MTc3OTgwMzIzMSwiZXhwIjoxNzc5ODQ2NDMxfQ.EILAhLffa2pqGfDVSK4psDvp1J7k5175Z5HPuLhEaLM",
+                          "accessTokenExpiresIn": "43200s",
+                          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlZJRC0xMzI5NjgyNSIsImlhdCI6MTc3OTgwMzIzMSwiZXhwIjoxNzgyMzk1MjMxfQ.sTvYPGWc4z35D2yg37_u3kS1l73uZkkrsKbqCvDMw_E",
+                          "refreshTokenExpiresIn": "2592000s",
+                          "status": "Login successful",
+                          "statusCode": 20000,
+                          "user": {
+                            "_id": "6943ae5e4c0b539a37299168",
+                            "userId": "VID-13296825",
+                            "version": 0,
+                            "userName": "mogalhussainbaig246@gmail.com",
+                            "salutation": "Mr.",
+                            "firstName": "Khaja",
+                            "middleName": null,
+                            "lastName": "Baig",
+                            "email": "mogalhussainbaig246@gmail.com",
+                            "mobileNumber": "9912688719",
+                            "gender": "MALE",
+                            "roles": ["fhw"],
+                            "dob": "1994-02-22T00:00:00.000Z",
+                            "age": "31",
+                            "organizations": "MSMF",
+                            "locations": [
+                              {"locationId": "LOC-MSMF", "locationName": "MSMF"}
+                            ],
+                            "isDeleted": false,
+                            "createdBy": "VID-22012949",
+                            "createdOn": "2025-12-18T07:33:50.104Z",
+                            "lastModifiedBy": "VID-22012949",
+                            "lastModifiedOn": "2025-12-18T07:33:50.104Z",
+                            "profileName": null,
+                            "fullNameSearchable": "Khaja Baig",
+                            "fullName": "Khaja Baig",
+                            "__v": 0
+                          }
+                        };
+                        String userDetails = jsonEncode(response);
+                        await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_USER_DETAILS, value: userDetails);
+                        await SharedPreferencesService.sharedPreferencesService.writeString(key: AppConstant.SHARED_PREFERENCE_LOGIN_TIME, value: DateTime.now().toIso8601String());
+                        loginViewModel.loginUser(jsonEncode(response));
+                      },
+                      child: Text("Login with dummy data"),
+                    ),
                     CustomTextField(
                       widgetKey: Key(KEY_TEXTFIELD_MOBILE),
                       controller: _emailFieldController,
@@ -145,26 +194,25 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: Selector<LoginViewModel, bool>(
-                      selector: (_, provider) => provider.isLoading,
-                      builder: (context, isLoading, __) {
-                        return ValueListenableBuilder<bool>(
-                          valueListenable: _buttonEnabled,
-                          builder: (context, isValid, _) {
-                            return PrimaryFilledButton(
-                              buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
-                              buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
-                              widgetKey: KEY_BUTTON_CONTINUE,
-                              isLoading: isLoading,
-                              onPressed: !isValid
-                                  ? null
-                                  : () {
-                                      onContinueClick();
-                                    },
-                            );
-                          },
-                        );
-                      }
-                    ),
+                        selector: (_, provider) => provider.isLoading,
+                        builder: (context, isLoading, __) {
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: _buttonEnabled,
+                            builder: (context, isValid, _) {
+                              return PrimaryFilledButton(
+                                buttonThemeStyle: const FilledButtonThemeStyle(disabledTextColor: Colors.white),
+                                buttonTitle: AppConstant.CONTINUE_BUTTON_TITLE,
+                                widgetKey: KEY_BUTTON_CONTINUE,
+                                isLoading: isLoading,
+                                onPressed: !isValid
+                                    ? null
+                                    : () {
+                                        onContinueClick();
+                                      },
+                              );
+                            },
+                          );
+                        }),
                   ),
                 ],
               ),

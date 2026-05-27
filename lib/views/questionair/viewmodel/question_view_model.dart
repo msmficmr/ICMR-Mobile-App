@@ -109,7 +109,7 @@ class QuestionViewModel extends ChangeNotifier {
     }
   }
 
-  fetchSectionQuestions() {
+Future<void> fetchSectionQuestions() async {
     switch (currentSection.type) {
       case "JSON":
         QuestionnairesModel sectionDetails = _templateList.firstWhere((element) => element.uiTemplateId == sectionId);
@@ -229,6 +229,7 @@ class QuestionViewModel extends ChangeNotifier {
     EHRNotes ehrNotes = EHRNotes();
     ehrNotes.versionNumber = currentSection.version;
     ehrNotes.questions = myQuestionsList;
+
 
     CRASectionModel craSectionModel = CRASectionModel();
     craSectionModel.caseId = caseId;

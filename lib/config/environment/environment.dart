@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:mhealth/config/environment/dev_environment.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:mhealth/utils/app_constant.dart';
@@ -14,5 +17,9 @@ mixin Environment {
 
   bindServices() async {
     await SharedPreferencesService.init();
+    if (Platform.isAndroid) {
+      MediaStore.appFolder = "LesionImages";
+      await MediaStore.ensureInitialized();
+    }
   }
 }

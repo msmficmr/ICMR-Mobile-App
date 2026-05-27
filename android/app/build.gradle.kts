@@ -25,7 +25,7 @@ val envVariables: Map<String, String> = if (project.hasProperty("dart-defines"))
 
 android {
     namespace = "com.mhealth.mhealth"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -44,7 +44,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -54,25 +54,19 @@ android {
                     dimension = "default"
                     resValue("string", "app_name", envVariables["APP_NAME"] ?: "Dev Mhealth")
                     applicationIdSuffix = envVariables["APP_SUFFIX"] ?: ".dev"
-                    project.extensions.findByType(FlutterExtension::class.java)?.let {
-                        it.setTarget("lib/main_dev.dart")
-                    }
+                    
                 }
                 create("qa") {
                     dimension = "default"
                     resValue("string", "app_name", envVariables["APP_NAME"] ?: "QA Mhealth")
                     applicationIdSuffix = envVariables["APP_SUFFIX"] ?: ".qa"
-                    project.extensions.findByType(FlutterExtension::class.java)?.let {
-                        it.setTarget("lib/main_qa.dart")
-                    }
+                    
                 }
                 create("prod") {
                     dimension = "default"
                     resValue("string", "app_name", envVariables["APP_NAME"] ?: "Mhealth")
                     applicationIdSuffix = envVariables["APP_SUFFIX"] ?: ""
-                    project.extensions.findByType(FlutterExtension::class.java)?.let {
-                        it.setTarget("lib/main_qa.dart")
-                    }
+                    
                 }
             }
 
@@ -81,6 +75,11 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
         }
     }
 }
