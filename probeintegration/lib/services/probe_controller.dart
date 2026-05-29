@@ -15,7 +15,6 @@ class ProbeController {
 
   StreamController<BluetoothAdapterState> bluetoothAdapterStateStream = StreamController.broadcast();
   StreamController<BluetoothConnectionState> probeStateStream = StreamController.broadcast();
-  StreamController<List<ScanResult>> scanResultStream = StreamController.broadcast();
   StreamController<bool> scanningStream = StreamController.broadcast();
   StreamController<bool> LEDStream = StreamController.broadcast();
   StreamController<bool> UVStream = StreamController.broadcast();
@@ -26,10 +25,6 @@ class ProbeController {
   late BluetoothCharacteristic oralProbeBleTxCharacteristic;
   BluetoothCharacteristic? oralProbeBleRxCharacteristic;
 
-  getLastScanResult() {
-    return ProbeBluetoothService().getLastScannedDevices();
-  }
-
   init() {
     ProbeBluetoothService().init();
   }
@@ -37,10 +32,6 @@ class ProbeController {
   dispose() {
     setInitialStatus();
     ProbeBluetoothService().dispose();
-  }
-
-  connectDevice(BluetoothDevice device) async {
-    await ProbeBluetoothService().connect(device);
   }
 
   Future<void> turnOnTorch() async {

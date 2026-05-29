@@ -208,15 +208,23 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
   private void requestUsbPermission(UsbDevice device) {
     Log.d(TAG, "requestUsbPermission: " + device.getDeviceId());
     UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-    // PendingIntent flag depends on your target SDK. For newer APIs you may need
-    // FLAG_MUTABLE or FLAG_IMMUTABLE.
+
+    // Make the Intent explicit to our own app
+    Intent intent = new Intent(ACTION_USB_PERMISSION);
+    intent.setPackage(context.getPackageName());  // important for U+
+
+    int flags = PendingIntent.FLAG_IMMUTABLE;
+
     PendingIntent permissionIntent = PendingIntent.getBroadcast(
-        context,
-        0,
-        new Intent(ACTION_USB_PERMISSION),
-        PendingIntent.FLAG_MUTABLE);
+            context,
+            0,
+            intent,
+            flags
+    );
+
     usbManager.requestPermission(device, permissionIntent);
   }
+
 
   private boolean hasUsbDevicesPermission() {
     UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -356,7 +364,7 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
       }
 
       Bitmap greenChannelBitmap = BitmapFactory.decodeFile(fileToMoveFL.getAbsolutePath());
-      greenChannelBitmap = Bitmap.createScaledBitmap(greenChannelBitmap, 996, 1770, false);
+//      greenChannelBitmap = Bitmap.createScaledBitmap(greenChannelBitmap, 996, 1770, false);
 
       int width = greenChannelBitmap.getWidth();
       int height = greenChannelBitmap.getHeight();
@@ -387,7 +395,7 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
       gBitmap.setPixels(g_pix, 0, width, 0, 0, width, height);
 
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      gBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+      gBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
       imageData = stream.toByteArray();
       stream.close();
       imageMap.put("originalFLImage", originalImageData);
@@ -411,10 +419,10 @@ public class ProbeintegrationPlugin implements FlutterPlugin, MethodCallHandler 
 
       // Decode and process the image
       Bitmap colorCorrectBitmap = BitmapFactory.decodeFile(fileToMoveWL.getAbsolutePath());
-      colorCorrectBitmap = Bitmap.createScaledBitmap(colorCorrectBitmap, 996, 1770, false);
+//      colorCorrectBitmap = Bitmap.createScaledBitmap(colorCorrectBitmap, 996, 1770, false);
 
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      colorCorrectBitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
+      colorCorrectBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
       byte[] processedImageData = stream.toByteArray();
       stream.close();
 
