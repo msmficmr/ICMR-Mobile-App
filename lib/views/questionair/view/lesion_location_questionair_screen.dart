@@ -175,7 +175,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     }
   }
 
-  _captureProbeImage(Map<String, Uint8List> data) async {
+  _captureProbeImage(Map<String, Uint8List> data, String? oldQuestionId) async {
     try {
       isLoading.value = true;
       List<AttachmentModel> modelList = [];
@@ -204,7 +204,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
           modelList.add(model);
         }
       }
-      String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+      String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
       LesionLocationQuestion question = LesionLocationQuestion(
         versionNumber: widget.questioner.versionNumber,
         questionId: questionId,
@@ -279,7 +279,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   //   return file;
   // }
 
-  Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  Future<XFile?> showImageSourceDialog(BuildContext context, String? oldQuestionId) async {
     final String? selection = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -313,7 +313,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       await context.read<ProbeProvider>().initialize(
             context,
             onProbeError,
-            _captureProbeImage,
+            (data) => _captureProbeImage(data, oldQuestionId),
           );
       return null;
     }
@@ -324,7 +324,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   _captureImage(String? oldQuestionId) async {
     try {
       isLoading.value = true;
-      XFile? file = await showImageSourceDialog(context);
+      XFile? file = await showImageSourceDialog(context, oldQuestionId);
       if (file != null) {
         Uint8List bytes = await file.readAsBytes();
 
