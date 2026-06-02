@@ -38,3 +38,22 @@
   -keep class com.jiangdg.uvc.IStatusCallback {
   *;
   }
+
+# media_store_plus — plugin uses Gson to serialize SaveInfo/SaveStatus across the
+# method channel. R8 was renaming the data-class fields and enum constants, so the
+# JSON returned to Dart no longer contained "uri"/"name"/"save_status" and saveFile()
+# silently failed in release builds.
+-keep class com.snnafi.media_store_plus.** { *; }
+-keepclassmembers class com.snnafi.media_store_plus.** { *; }
+
+# Gson — keep annotations and the members it reflects on.
+-keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
+-keep class com.google.gson.** { *; }
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+-keepclassmembers,allowobfuscation,allowshrinking enum * {
+    @com.google.gson.annotations.SerializedName *;
+}

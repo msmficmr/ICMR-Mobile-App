@@ -20,6 +20,7 @@ Widget _getWidgetForQuestionnaire(
   double height,
   Function globalOnClick,
   String patientId,
+  String caseId,
 ) {
   switch (questionnaire.runtimeType) {
     case SingleSelectionQuestionnaire:
@@ -35,7 +36,7 @@ Widget _getWidgetForQuestionnaire(
     case PeriodontalStatusQuestionnaire:
       return PeriodontalScreen(questioner: questionnaire as PeriodontalStatusQuestionnaire);
     case LesionLocationQuestionnaire:
-      return LesionLocationQuestionnaireScreen(questioner: questionnaire as LesionLocationQuestionnaire, patientId: patientId);
+      return LesionLocationQuestionnaireScreen(questioner: questionnaire as LesionLocationQuestionnaire, patientId: patientId, caseId: caseId);
     case VerificationFormQuestionnaire:
       return VerificationQuestionnaireScreen(questioner: questionnaire as VerificationFormQuestionnaire);
     default:
@@ -643,8 +644,9 @@ Widget getWidgetForQuestionnaireAndFollowupQuestionnaire(
   double height,
   Function globalOnClick,
   String patientId,
+  String caseId,
 ) {
-  List<Widget> widgetList = _getQuestionnaireWidgetList(context, [], questionnaire, height, globalOnClick, patientId);
+  List<Widget> widgetList = _getQuestionnaireWidgetList(context, [], questionnaire, height, globalOnClick, patientId, caseId);
 
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
@@ -660,6 +662,7 @@ List<Widget> _getQuestionnaireWidgetList(
   double height,
   Function globalOnClick,
   String patientId,
+  String caseId,
 ) {
   widgetList.add(_getWidgetForQuestionnaire(
     context,
@@ -667,6 +670,7 @@ List<Widget> _getQuestionnaireWidgetList(
     height,
     globalOnClick,
     patientId,
+    caseId,
   ));
 
   questionnaire.getFollowupQuestionnaires().forEach((element) {
@@ -677,6 +681,7 @@ List<Widget> _getQuestionnaireWidgetList(
       height,
       globalOnClick,
       patientId,
+      caseId,
     );
   });
   return widgetList;
