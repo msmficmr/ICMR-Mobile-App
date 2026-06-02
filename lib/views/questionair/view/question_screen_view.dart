@@ -225,6 +225,7 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
                                       height,
                                       () => setState(() {}),
                                       widget.patientId,
+                                      widget.caseId,
                                     );
                                   }).toList(),
                                   const SizedBox(height: 20),

@@ -11,10 +11,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:mhealth/config/theme/filled_button_theme_style.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
+import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/model/id_text_model.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
+import 'package:mhealth/services/isar_db_service.dart';
 import 'package:mhealth/utils/app_assets_path.dart';
 import 'package:mhealth/utils/app_color_scheme.dart';
 import 'package:mhealth/utils/app_constant.dart';
@@ -44,7 +47,8 @@ import 'package:uuid/uuid.dart';
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
   final String patientId;
-  const LesionLocationQuestionnaireScreen({super.key, required this.questioner, required this.patientId});
+  final String caseId;
+  const LesionLocationQuestionnaireScreen({super.key, required this.questioner, required this.patientId, required this.caseId});
 
   @override
   State<LesionLocationQuestionnaireScreen> createState() => _LesionLocationQuestionnaireScreenState();
@@ -175,7 +179,16 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     }
   }
 
-  _captureProbeImage(Map<String, Uint8List> data) async {
+  CRAOfflineData? _patientEhrDetails;
+  Future<void> fetchPatientEhrDetails() async {
+    if (_patientEhrDetails != null) return; // don't load Details if already loaded
+
+    try {
+      _patientEhrDetails = await IsarDbService.isarDbService.getCRAByPatientAndCase(widget.patientId, widget.caseId);
+    } catch (e) {}
+  }
+
+  _captureProbeImage(Map<String, Uint8List> data, String? oldQuestionId) async {
     try {
       isLoading.value = true;
       List<AttachmentModel> modelList = [];
@@ -191,7 +204,9 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
           //
           log("patientData: ${jsonEncode(patientData?.toJson())}");
 
-          String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+          String timeStamp = await getCaptureTimeStamp();
+
+          String newFileName = "${patientData?.primaryId ?? ""}_${timeStamp}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${key}";
 
           RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
           String filePath = await CommonFunctions().writeFileInIsolate(
@@ -204,7 +219,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
           modelList.add(model);
         }
       }
-      String questionId = "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}".trim();
+      String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
       LesionLocationQuestion question = LesionLocationQuestion(
         versionNumber: widget.questioner.versionNumber,
         questionId: questionId,
@@ -279,7 +294,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
   //   return file;
   // }
 
-  Future<XFile?> showImageSourceDialog(BuildContext context) async {
+  Future<XFile?> showImageSourceDialog(BuildContext context, String? oldQuestionId) async {
     final String? selection = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -313,7 +328,7 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       await context.read<ProbeProvider>().initialize(
             context,
             onProbeError,
-            _captureProbeImage,
+            (data) => _captureProbeImage(data, oldQuestionId),
           );
       return null;
     }
@@ -321,10 +336,37 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     return null;
   }
 
+  Future<String> getCaptureTimeStamp() async {
+    await fetchPatientEhrDetails();
+
+    int? ehrIndex = _patientEhrDetails?.craSectionData?.indexWhere((element) => element.encounterCategoryMapId == QuestionnaireTemplateIds.community_risk_assessment_details_of_habits.name);
+
+    String captureTimeStamp = DateFormat("ddMMyyyyHHmm").format(DateTime.now()); //DateTime.now().millisecondsSinceEpoch.toString();
+
+    if (ehrIndex != null && ehrIndex != -1) {
+      //
+      EHRNotes? ehrNotes = _patientEhrDetails?.craSectionData?[ehrIndex].ehrNotes;
+      int index = ehrNotes?.questions?.indexWhere((element) => element.questionId == "visit_date") ?? -1;
+      if (index != -1) {
+        //
+        CRAQuestionnaire? question = ehrNotes?.questions?[index];
+        if (question != null) {
+          //
+          String val = question.value ?? "";
+          DateTime? visitDate = DateFormat("dd/MM/yyyy HH:mm").tryParse(val);
+          if (visitDate != null) {
+            captureTimeStamp = DateFormat("ddMMyyyyHHmm").format(visitDate);
+          }
+        }
+      }
+    }
+    return captureTimeStamp;
+  }
+
   _captureImage(String? oldQuestionId) async {
     try {
       isLoading.value = true;
-      XFile? file = await showImageSourceDialog(context);
+      XFile? file = await showImageSourceDialog(context, oldQuestionId);
       if (file != null) {
         Uint8List bytes = await file.readAsBytes();
 
@@ -334,10 +376,15 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
 
         ///
         PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+
         //
         log("patientData: ${jsonEncode(patientData?.toJson())}");
 
-        String newFileName = "${patientData?.primaryId ?? ""}_${DateTime.now().millisecondsSinceEpoch}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+        String timeStamp = await getCaptureTimeStamp();
+
+        String newFileName = "${patientData?.primaryId ?? ""}_${timeStamp}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+
+        log("newFileName: $newFileName");
 
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
         String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, newFileName);
@@ -403,7 +450,6 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.patientId),
         Form(
           key: _formKey,
           child: Column(
