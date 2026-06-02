@@ -192,7 +192,7 @@ class WidgetError extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Center(child: Text("Please wait.", style: Theme.of(context).textTheme.titleSmall)),
+              Center(child: Text("Something went wrong", style: Theme.of(context).textTheme.titleSmall)),
             ],
           ),
         );

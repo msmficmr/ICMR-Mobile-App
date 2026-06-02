@@ -102,7 +102,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextButton(
+                    /*TextButton(
                       onPressed: () async {
                         Map<String, dynamic> response = {
                           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlZJRC0xMzI5NjgyNSIsImlhdCI6MTc3OTgwMzIzMSwiZXhwIjoxNzc5ODQ2NDMxfQ.EILAhLffa2pqGfDVSK4psDvp1J7k5175Z5HPuLhEaLM",
@@ -148,6 +148,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                       },
                       child: Text("Login with dummy data"),
                     ),
+                    */
                     CustomTextField(
                       widgetKey: Key(KEY_TEXTFIELD_MOBILE),
                       controller: _emailFieldController,

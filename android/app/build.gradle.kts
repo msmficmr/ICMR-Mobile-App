@@ -26,7 +26,7 @@ val envVariables: Map<String, String> = if (project.hasProperty("dart-defines"))
 android {
     namespace = "com.mhealth.mhealth"
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -343,7 +343,7 @@ class CommonFunctions {
 
     var directory = await Directory('${baseDir.path}/LesionImages').create(recursive: true);
 
-    return '${directory.path}/${fileName}_${const Uuid().v4()}${extension ?? ".png"}';
+    return '${directory.path}/${fileName}_${const Uuid().v1()}${extension ?? ".png"}';
   }
 
   Future<void> deleteFile(String fileOrUri) async {
