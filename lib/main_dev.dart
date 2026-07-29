@@ -5,7 +5,7 @@ import 'package:mhealth/MHealthApp.dart';
 import 'package:mhealth/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> main()async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Environment.runningEnv = DEVEnvironment();
   await Environment.runningEnv.bindServices();

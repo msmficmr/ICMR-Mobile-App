@@ -255,128 +255,130 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    TranslationKeys.dashboard.translate(context),
-                    style: AppStyles.headlineMedium.copyWith(
-                      color: AppColorScheme.kGrayColor.shade900,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      TranslationKeys.dashboard.translate(context),
+                      style: AppStyles.headlineMedium.copyWith(
+                        color: AppColorScheme.kGrayColor.shade900,
+                      ),
                     ),
-                  ),
-                  const SpaceWidget(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Selector<PatientListViewModel, Tuple2<int, bool>>(
-                        selector: (context, provider) => Tuple2(provider.completedCRAcount, provider.isLoadingCraCount),
-                        builder: (context, count, child) {
-                          return DashboardCardWidget(
-                            assetPath: AppAssetsPath.icDashboardCra,
-                            count: count.item1.toString(),
-                            isLoading: count.item2,
-                            title: TranslationKeys.totalCRACompleted.translate(context),
-                            countKey: Key(KEY_CARD_COUNT),
-                            titleKey: Key(KEY_CARD_TITLE),
-                          );
-                        },
-                      ),
-                      const SpaceWidget(
-                        width: 20,
-                      ),
-                      Selector<PatientListViewModel, Tuple2<int?, bool>>(
-                        selector: (context, provider) => Tuple2(provider.registeredPatients.length, provider.isLoading),
-                        builder: (context, status, child) {
-                          return DashboardCardWidget(
-                            isLoading: status.item2,
-                            assetPath: AppAssetsPath.icPatient,
-                            count: (status.item1 ?? 0).toString(),
-                            title: TranslationKeys.totalPatientCreated.translate(context),
-                            countKey: Key(KEY_CARD_COUNT),
-                            titleKey: Key(KEY_CARD_TITLE),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                    const SpaceWidget(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Selector<PatientListViewModel, Tuple2<int, bool>>(
+                          selector: (context, provider) => Tuple2(provider.completedCRAcount, provider.isLoadingCraCount),
+                          builder: (context, count, child) {
+                            return DashboardCardWidget(
+                              assetPath: AppAssetsPath.icDashboardCra,
+                              count: count.item1.toString(),
+                              isLoading: count.item2,
+                              title: TranslationKeys.totalCRACompleted.translate(context),
+                              countKey: Key(KEY_CARD_COUNT),
+                              titleKey: Key(KEY_CARD_TITLE),
+                            );
+                          },
+                        ),
+                        const SpaceWidget(
+                          width: 20,
+                        ),
+                        Selector<PatientListViewModel, Tuple2<int?, bool>>(
+                          selector: (context, provider) => Tuple2(provider.registeredPatients.length, provider.isLoading),
+                          builder: (context, status, child) {
+                            return DashboardCardWidget(
+                              isLoading: status.item2,
+                              assetPath: AppAssetsPath.icPatient,
+                              count: (status.item1 ?? 0).toString(),
+                              title: TranslationKeys.totalPatientCreated.translate(context),
+                              countKey: Key(KEY_CARD_COUNT),
+                              titleKey: Key(KEY_CARD_TITLE),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Column(
-                children: [
-                  Selector<NetworkStatusService, NetworkStatus>(
-                      selector: (p0, p1) => p1.networkStatus,
-                      builder: (context, status, __) {
-                        return Selector<PatientListViewModel, int>(
-                            selector: (p0, p1) => p1.registeredPatients.length,
-                            builder: (context, patientLength, _) {
-                              return Selector<PatientListViewModel, int>(
-                                selector: (context, provider) => provider.completedCRAcount,
-                                builder: (context, syncData, _) {
-                                  int patientNonSyncedCount = context
-                                      .read<PatientListViewModel>()
-                                      .registeredPatients
-                                      .where(
-                                        (element) => element.isSynced == false,
-                                      )
-                                      .length;
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Column(
+                  children: [
+                    Selector<NetworkStatusService, NetworkStatus>(
+                        selector: (p0, p1) => p1.networkStatus,
+                        builder: (context, status, __) {
+                          return Selector<PatientListViewModel, int>(
+                              selector: (p0, p1) => p1.registeredPatients.length,
+                              builder: (context, patientLength, _) {
+                                return Selector<PatientListViewModel, int>(
+                                  selector: (context, provider) => provider.completedCRAcount,
+                                  builder: (context, syncData, _) {
+                                    int patientNonSyncedCount = context
+                                        .read<PatientListViewModel>()
+                                        .registeredPatients
+                                        .where(
+                                          (element) => element.isSynced == false,
+                                        )
+                                        .length;
 
-                                  if (status == NetworkStatus.online && (patientNonSyncedCount > 0 || syncData > 0)) {
-                                    return SizedBox(
-                                      width: MediaQuery.of(context).size.width / 1.5,
-                                      child: PrimaryFilledIconButton(
-                                          onPressed: () {
-                                            redirectToMyAccountsScreen();
-                                          },
-                                          isLoading: false,
-                                          buttonThemeStyle: const FilledButtonThemeStyle(
-                                            enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
-                                            enabledButtonColor: AppColorScheme.kEnabledButtonColor,
-                                          ),
-                                          icon: SvgPicture.asset(
-                                            AppAssetsPath.icSync,
-                                            colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
-                                          ),
-                                          buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
-                                          widgetKey: KEY_BUTTON_SYNC),
-                                    );
-                                  } else {
-                                    return const SizedBox.shrink();
-                                  }
-                                },
-                              );
-                            });
-                      }),
-                  const SpaceWidget(height: 15),
-                  SizedBox(
-                    width: double.infinity,
-                    child: PrimaryFilledIconButton(
-                      buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
-                      buttonTitle: TranslationKeys.takeCRA.translate(context),
-                      widgetKey: KEY_BUTTON_TAKE_CRA,
-                      isLoading: false,
-                      onPressed: () => redirectToCRAScreen(),
-                      icon: SvgPicture.asset(
-                        AppAssetsPath.icCRA,
-                        colorFilter: ColorFilter.mode(AppColorScheme.kPrimaryIconColor, BlendMode.srcIn),
+                                    if (status == NetworkStatus.online && (patientNonSyncedCount > 0 || syncData > 0)) {
+                                      return SizedBox(
+                                        width: MediaQuery.of(context).size.width / 1.5,
+                                        child: PrimaryFilledIconButton(
+                                            onPressed: () {
+                                              redirectToMyAccountsScreen();
+                                            },
+                                            isLoading: false,
+                                            buttonThemeStyle: const FilledButtonThemeStyle(
+                                              enabledTextColor: AppColorScheme.kEnabledButtonTextColor,
+                                              enabledButtonColor: AppColorScheme.kEnabledButtonColor,
+                                            ),
+                                            icon: SvgPicture.asset(
+                                              AppAssetsPath.icSync,
+                                              colorFilter: const ColorFilter.mode(AppColorScheme.kPrimaryColor, BlendMode.srcIn),
+                                            ),
+                                            buttonTitle: TranslationKeys.youAreOnlineSyncData.translate(context),
+                                            widgetKey: KEY_BUTTON_SYNC),
+                                      );
+                                    } else {
+                                      return const SizedBox.shrink();
+                                    }
+                                  },
+                                );
+                              });
+                        }),
+                    const SpaceWidget(height: 15),
+                    SizedBox(
+                      width: double.infinity,
+                      child: PrimaryFilledIconButton(
+                        buttonThemeStyle: FilledButtonThemeStyle(disabledTextColor: AppColorScheme.kPrimaryIconColor),
+                        buttonTitle: TranslationKeys.takeCRA.translate(context),
+                        widgetKey: KEY_BUTTON_TAKE_CRA,
+                        isLoading: false,
+                        onPressed: () => redirectToCRAScreen(),
+                        icon: SvgPicture.asset(
+                          AppAssetsPath.icCRA,
+                          colorFilter: ColorFilter.mode(AppColorScheme.kPrimaryIconColor, BlendMode.srcIn),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

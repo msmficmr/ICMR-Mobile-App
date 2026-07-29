@@ -34,14 +34,15 @@ class LesionImageCleanupService {
 
     final entries = <LesionImageInfo>[];
     try {
-      await for (final entity in dir.list()) {
+      // Images live in per-patient subfolders: <root>/<primaryId>/.
+      await for (final entity in dir.list(recursive: true)) {
         if (entity is! File) continue;
         final name = entity.uri.pathSegments.last;
         final stat = await entity.stat();
         entries.add(LesionImageInfo(
           path: entity.path,
           name: name,
-          timestamp: _timestampFromName(name) ?? stat.modified,
+          timestamp: stat.modified,
           size: stat.size,
         ));
       }
@@ -57,23 +58,6 @@ class LesionImageCleanupService {
     }
     final base = await getApplicationDocumentsDirectory();
     return Directory('${base.path}/$_folderName');
-  }
-
-  // Files are saved as `{patientId}_{epochMillis}_{locationId}_{siteId}_{uuid}.{ext}`.
-  // The epoch-millis segment is the second token when split by `_`.
-  DateTime? _timestampFromName(String name) {
-    final parts = name.split('_');
-    for (final part in parts) {
-      // 13 digits = a millis-since-epoch timestamp in the 2000s+. Skip short numeric IDs.
-      if (part.length >= 12 && part.length <= 14) {
-        final n = int.tryParse(part);
-        if (n != null && n > 946684800000) {
-          // Sanity: after 2000-01-01.
-          return DateTime.fromMillisecondsSinceEpoch(n);
-        }
-      }
-    }
-    return null;
   }
 
   List<LesionImageInfo> filterOlderThanRetention(List<LesionImageInfo> files, {DateTime? now}) {
@@ -94,6 +78,17 @@ class LesionImageCleanupService {
     return deleted;
   }
 
+  // MediaStore path of the file's folder, relative to Pictures/.
+  // /storage/emulated/0/Pictures/LesionImages/P1/2/x.jpg -> LesionImages/P1/2
+  String _relativePathOf(String path) {
+    const marker = '/Pictures/';
+    final at = path.indexOf(marker);
+    if (at == -1) return _folderName;
+
+    final segments = path.substring(at + marker.length).split('/')..removeLast();
+    return segments.isEmpty ? _folderName : segments.join('/');
+  }
+
   Future<bool> _deleteOne(LesionImageInfo file) async {
     try {
       if (Platform.isAndroid) {
@@ -102,6 +97,7 @@ class LesionImageCleanupService {
           fileName: file.name,
           dirType: DirType.photo,
           dirName: DirName.pictures,
+          relativePath: _relativePathOf(file.path),
         );
         if (ok) return true;
       }

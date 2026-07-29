@@ -338,12 +338,22 @@ class CommonFunctions {
 
   // Staging path inside app-private storage. The file written here is published
   // to MediaStore by writeFileInIsolate on Android; on iOS this is the final path.
-  Future<String?> getApplicationFilePath(String fileName, String? extension) async {
+  /// [subPath] is appended under LesionImages, e.g. "<primaryId>".
+  /// When [useExactFileName] is true the name is used as given (the caller
+  /// guarantees uniqueness); otherwise a uuid suffix is appended.
+  Future<String?> getApplicationFilePath(
+    String fileName,
+    String? extension, {
+    String? subPath,
+    bool useExactFileName = false,
+  }) async {
     Directory baseDir = (await getExternalStorageDirectory()) ?? await getApplicationDocumentsDirectory();
 
-    var directory = await Directory('${baseDir.path}/LesionImages').create(recursive: true);
+    String relativeDir = (subPath == null || subPath.isEmpty) ? 'LesionImages' : 'LesionImages/$subPath';
+    var directory = await Directory('${baseDir.path}/$relativeDir').create(recursive: true);
 
-    return '${directory.path}/${fileName}_${const Uuid().v1()}${extension ?? ".png"}';
+    String name = useExactFileName ? fileName : '${fileName}_${const Uuid().v1()}';
+    return '${directory.path}/$name${extension ?? ".png"}';
   }
 
   Future<void> deleteFile(String fileOrUri) async {
@@ -368,19 +378,38 @@ class CommonFunctions {
     );
   }
 
-  Future<String> writeFileInIsolate(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken, String fileName) async {
-    final tempPath = await _writeBytesToTempFile(fileBytes, extension, rootIsolateToken, fileName);
+  Future<String> writeFileInIsolate(
+    List<int> fileBytes,
+    String extension,
+    RootIsolateToken rootIsolateToken,
+    String fileName, {
+    String? subPath,
+    bool useExactFileName = false,
+  }) async {
+    final tempPath = await _writeBytesToTempFile(
+      fileBytes,
+      extension,
+      rootIsolateToken,
+      fileName,
+      subPath: subPath,
+      useExactFileName: useExactFileName,
+    );
 
     if (!Platform.isAndroid) {
       return tempPath;
     }
+
+    final relativePath = mediaStoreRelativePath(subPath);
+    log('writeFileInIsolate: temp=$tempPath relativePath=$relativePath');
 
     try {
       final saveInfo = await MediaStore().saveFile(
         tempFilePath: tempPath,
         dirType: DirType.photo,
         dirName: DirName.pictures,
+        relativePath: relativePath,
       );
+      log('writeFileInIsolate: saved uri=${saveInfo?.uri} name=${saveInfo?.name} status=${saveInfo?.saveStatus}');
       // On API <= 29, saveFile copies and leaves the temp file behind.
       try {
         final tempFile = File(tempPath);
@@ -396,7 +425,27 @@ class CommonFunctions {
     return tempPath;
   }
 
-  Future<String> _writeBytesToTempFile(List<int> fileBytes, String extension, RootIsolateToken rootIsolateToken, String fileName) {
+  /// Keeps a value usable as a single folder segment.
+  static String sanitizePathSegment(String value) {
+    final cleaned = value.replaceAll(RegExp(r'[^A-Za-z0-9_\-]'), '');
+    return cleaned.isEmpty ? "unknown" : cleaned;
+  }
+
+  /// Public MediaStore folder the images are published to, relative to Pictures/.
+  /// Mirrors the app-private layout: LesionImages/<primaryId>.
+  static String mediaStoreRelativePath(String? subPath) {
+    if (subPath == null || subPath.isEmpty) return MediaStore.appFolder;
+    return '${MediaStore.appFolder}/$subPath';
+  }
+
+  Future<String> _writeBytesToTempFile(
+    List<int> fileBytes,
+    String extension,
+    RootIsolateToken rootIsolateToken,
+    String fileName, {
+    String? subPath,
+    bool useExactFileName = false,
+  }) {
     ReceivePort receivePort = ReceivePort();
     Completer<String> completer = Completer();
 
@@ -406,6 +455,8 @@ class CommonFunctions {
       'sendPort': receivePort.sendPort,
       'rootIsolateToken': rootIsolateToken,
       'fileName': fileName,
+      'subPath': subPath,
+      'useExactFileName': useExactFileName,
     });
 
     receivePort.listen((message) {
@@ -426,9 +477,16 @@ class CommonFunctions {
     String extension = message['extension'];
     var rootIsolateToken = message['rootIsolateToken'];
     String fileName = message['fileName'];
+    String? subPath = message['subPath'];
+    bool useExactFileName = message['useExactFileName'] ?? false;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken!);
     try {
-      String? filePath = await CommonFunctions().getApplicationFilePath(fileName, extension);
+      String? filePath = await CommonFunctions().getApplicationFilePath(
+        fileName,
+        extension,
+        subPath: subPath,
+        useExactFileName: useExactFileName,
+      );
       if (filePath != null) {
         File file = File(filePath);
         await file.writeAsBytes(fileBytes);
