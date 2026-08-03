@@ -100,8 +100,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     List<LesionImageInfo> oldFiles = const [];
     try {
+      // Never offer to delete images belonging to patients that still have to sync.
+      final Set<String> unsynced = context
+          .read<PatientListViewModel>()
+          .registeredPatients
+          .where((patient) => patient.isSynced == false)
+          .map((patient) => patient.primaryId)
+          .toSet();
+
       final all = await LesionImageCleanupService.instance.listAllImages();
-      oldFiles = LesionImageCleanupService.instance.filterOlderThanRetention(all);
+      oldFiles = LesionImageCleanupService.instance.filterOlderThanRetention(all, protectedPrimaryIds: unsynced);
     } catch (_) {
       // Swallow scan errors — cleanup is best-effort.
     }

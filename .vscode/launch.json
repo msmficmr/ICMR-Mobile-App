@@ -92,6 +92,20 @@
       ]
     },
     {
+      "name": "Launch LOCAL",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_qa.dart",
+      "args": [
+        "--dart-define-from-file",
+        "local_config.json",
+        "--flavor",
+        "qa",
+        "--target",
+        "lib/main_qa.dart"
+      ]
+    },
+    {
       "name": "Launch TEST",
       "request": "launch",
       "type": "dart",

@@ -67,10 +67,11 @@ class _SignatureScreenState extends State<SignatureScreen> {
           GoRouter.of(context).pop();
         },
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
-        child: Column(
-          children: [
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
+          child: Column(
+            children: [
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -128,6 +129,7 @@ class _SignatureScreenState extends State<SignatureScreen> {
               height: 20,
             ),
           ],
+          ),
         ),
       ),
     );

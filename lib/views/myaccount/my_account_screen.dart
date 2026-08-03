@@ -1,15 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mhealth/config/router/app_screens.dart';
-import 'package:mhealth/isar_db_schema/attachment_db_schema.dart';
 import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/isar_db_schema/questionnaire_db_schema.dart';
 import 'package:mhealth/services/isar_db_service.dart';
@@ -96,7 +91,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
   OfflineDataViewModel viewModel = OfflineDataViewModel();
 
   bool _syncing = false;
-  bool _isClicked = false;
 
   late NetworkStatusService networkStatusService;
 
@@ -166,212 +160,6 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
     return result ?? false;
   }
 
-  Future showDataSyncLoading(BuildContext context, {String? message}) {
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => Center(
-        child: WillPopScope(
-          onWillPop: () async {
-            return false;
-          },
-          child: Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SpaceWidget(height: 10),
-                const CircularProgressIndicator(),
-                const SpaceWidget(height: 10),
-                Text(
-                  message ?? 'Syncing data Please wait',
-                  style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryColor),
-                ),
-                const SpaceWidget(height: 10),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  onSyncClick() async {
-    NetworkStatus networkStatus = context.read<NetworkStatusService>().networkStatus;
-
-    if (networkStatus == NetworkStatus.online) {
-      List<CRAOfflineData?> response = await IsarDbService.isarDbService.getListCRAOfflineData();
-      List<PatientRegistration> patientList = context.read<PatientListViewModel>().registeredPatients;
-
-      if (response.isEmpty && patientList.isEmpty) {
-        CommonFunctions.toastMessage(AppConstant.NO_DATA_TO_SYNC_COMPLETED);
-      } else {
-        showDataSyncLoading(context);
-        //_syncing = true;
-
-        for (int i = 0; i < response.length; i++) {
-          String? patientId = response[i]?.patientId;
-          int patientIndex = patientList.indexWhere(
-            (element) => element.patientId == patientId,
-          );
-          if (patientIndex != -1) {
-            PatientRegistration? resp = patientList[patientIndex];
-
-            List<String> fileDeleteList = [];
-            List<dynamic> payLoadObjList = [];
-            Map<String, dynamic>? patientJson = resp.toJson();
-
-            //Generating new patient id while uploading
-            String newPatientId = patientJson["patientId"];
-
-            Map<String, dynamic> patientData = {"patientData": patientJson};
-            Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-            Map<String, dynamic>? craOfflineDataJson = response[i]?.toJson();
-            //updating new patient id
-            /*----------------- */
-            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
-            /*----------------- */
-
-            try {
-              List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
-              registrationObj['registrationObj']['patientData']['consent'] = [];
-              List<AttachmentDb> consentList = [];
-              for (dynamic pat in pMap) {
-                AttachmentDb fileName = pat;
-                fileDeleteList.add(fileName.dataBytes!);
-                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-                fileName.dataBytes = base64.encode(content);
-                consentList.add(fileName);
-              }
-              registrationObj['registrationObj']['patientData']['consent'] = consentList;
-            } catch (e) {}
-
-            List<dynamic> craSectionModel = craOfflineDataJson?['craSectionModel'];
-
-            craSectionModel.forEach((element) {
-              element["extension"] = {"doctorDetails": craOfflineDataJson?["docDetails"]};
-              //updating new patient id
-              /*------------- */
-              element["patientId"] = newPatientId;
-              /*----------*/
-            });
-
-            for (int i = 0; i < craSectionModel.length; i++) {
-              if (craSectionModel[i]['encounterEhrDiagnosisReports'] != null) {
-                List<dynamic> questionList = craSectionModel[i]['encounterEhrDiagnosisReports']["questions"];
-                for (int j = 0; j < questionList.length; j++) {
-                  AttachmentDb fileName = questionList[j]['file'];
-                  try {
-                    fileDeleteList.add(fileName.dataBytes!);
-                    List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-                    fileName.dataBytes = base64.encode(content);
-                    craSectionModel[i]['encounterEhrDiagnosisReports']["questions"][j]["file"] = fileName;
-                  } catch (e) {}
-                }
-              }
-            }
-
-            Map<String, dynamic> cdrPostObj = {
-              "cdrPostObj": [
-                {response[i]?.caseId: craSectionModel}
-              ]
-            };
-            List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({newPatientId: patientDataList});
-            Map<String, dynamic> payLoadObj = {
-              "payloadObj": payLoadObjList,
-              "appVersion": Environment.runningEnv.releaseVersion,
-            };
-
-            bool isPostSuccess = await viewModel.postOfflineData(
-              caseId: response[i]?.caseId,
-              primaryId: resp.primaryId,
-              payLoadObj: payLoadObj,
-              fileDeleteList: fileDeleteList,
-            );
-            if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(resp.primaryId, true);
-            }
-          }
-        }
-
-        response = await IsarDbService.isarDbService.getListCRAOfflineData();
-        List<PatientRegistration> patientListResponse = context.read<PatientListViewModel>().registeredPatients;
-
-        /// Taking only those patients which are not synced
-        patientListResponse = patientListResponse
-            .where(
-              (element) => element.isSynced == false,
-            )
-            .toList();
-        for (int i = 0; i < patientListResponse.length; i++) {
-          List<String> fileDeleteList = [];
-          List<dynamic> payLoadObjList = [];
-          String? patientId = patientListResponse[i].patientId;
-
-          if (!(response.map((e) => e?.patientId ?? "").contains(patientId))) {
-            int patientIndex = patientListResponse.indexWhere(
-              (element) => element.patientId == patientId,
-            );
-
-            PatientRegistration? resp = patientListResponse[patientIndex];
-            Map<String, dynamic>? patientJson = resp?.toJson();
-
-            //Generating new patient id while uploading
-            String newPatientId = patientJson!["patientId"];
-
-            Map<String, dynamic> patientData = {"patientData": patientJson};
-            Map<String, dynamic> registrationObj = {"registrationObj": patientData};
-            Map<String, dynamic> cdrPostObj = {"cdrPostObj": []};
-
-            //updating new patient id
-            /*----------------- */
-            registrationObj['registrationObj']['patientData']['patientId'] = newPatientId;
-            /*----------------- */
-
-            try {
-              List<dynamic> pMap = registrationObj['registrationObj']['patientData']['consent'];
-              registrationObj['registrationObj']['patientData']['consent'] = [];
-              List<AttachmentDb> consentList = [];
-              for (dynamic pat in pMap) {
-                AttachmentDb fileName = pat;
-                fileDeleteList.add(fileName.dataBytes!);
-                List<int> content = await CommonFunctions().readFileInIsolate(fileName.dataBytes!);
-                fileName.dataBytes = base64.encode(content);
-                consentList.add(fileName);
-              }
-              registrationObj['registrationObj']['patientData']['consent'] = consentList;
-            } catch (e) {}
-
-            List<Map<String, dynamic>> patientDataList = [registrationObj, cdrPostObj];
-            payLoadObjList.add({newPatientId: patientDataList});
-            Map<String, dynamic> payLoadObj = {
-              "payloadObj": payLoadObjList,
-              "appVersion": Environment.runningEnv.releaseVersion,
-            };
-            bool isPostSuccess = await viewModel.postOfflineData(caseId: null, primaryId: patientListResponse[i].primaryId, payLoadObj: payLoadObj, fileDeleteList: fileDeleteList);
-            if (isPostSuccess) {
-              context.read<PatientListViewModel>().markPatientAsSynced(patientListResponse[i].primaryId, false);
-            }
-          }
-        }
-        if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-
-        CommonFunctions.toastMessage(AppConstant.SYNC_COMPLETED);
-        if (context.mounted) {
-          await context.read<PatientListViewModel>().fetchCompletedCRA();
-          await context.read<PatientListViewModel>().updateCraStatus();
-          GoRouter.of(context).go(DashboardScreen.routerPath);
-        }
-      }
-    } else {
-      CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
-    }
-
-    _isClicked = false;
-  }
-
   @override
   Widget build(BuildContext context) {
     loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
@@ -412,217 +200,247 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
           ),
           titleText: TranslationKeys.myAccount.translate(context),
         ),
-        body: SizedBox(
-          height: double.infinity,
-          child: LayoutBuilder(builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      Container(
-                        color: AppColorScheme.kGrayColor.shade50,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                children: [
-                                  CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
-                                  SpaceWidget(width: isSmallScreen ? 12 : 16),
-                                  Expanded(
-                                    child: Column(
+        body: SafeArea(
+          child: SizedBox(
+            height: double.infinity,
+            child: LayoutBuilder(builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: AppColorScheme.kGrayColor.shade50,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
+                                  children: [
+                                    CircularAvatar(childType: CircularAvatarFieldChildType.TEXT, childData: "${firstName.substring(0, 1)} ${lastName.substring(0, 1)}", radius: 30),
+                                    SpaceWidget(width: isSmallScreen ? 12 : 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: AppColorScheme.kPrimaryColor,
+                                              borderRadius: BorderRadius.circular(24),
+                                            ),
+                                            child: Text(
+                                              patientRelation,
+                                              style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
+                                            ),
+                                          ),
+                                          const SpaceWidget(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            "$firstName $lastName",
+                                            key: Key(KEY_PATIENT_NAME),
+                                            style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: AppColorScheme.kPrimaryColor,
-                                            borderRadius: BorderRadius.circular(24),
-                                          ),
-                                          child: Text(
-                                            patientRelation,
-                                            style: AppStyles.titleSmall.copyWith(fontSize: 10, color: AppColorScheme.kPrimaryIconColor),
-                                          ),
-                                        ),
-                                        const SpaceWidget(
-                                          height: 5,
-                                        ),
+                                        Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
+                                        const SpaceWidget(width: 2),
                                         Text(
-                                          "$firstName $lastName",
-                                          key: Key(KEY_PATIENT_NAME),
-                                          style: AppStyles.hintStyle.copyWith(color: AppColorScheme.kGrayColor.shade700, fontWeight: FontWeight.w600, fontFamily: AppConstant.FONT_FAMILY),
+                                          volunteerId,
+                                          key: Key(KEY_VOLUNTEER_ID),
+                                          style: AppStyles.bodySmall,
+                                        ),
+                                        const SpaceWidget(width: 5),
+                                        InkWell(
+                                          onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
+                                          child: SvgPicture.asset(AppAssetsPath.icCopy),
                                         )
                                       ],
                                     ),
-                                  ),
-                                ],
+                                    const SpaceWidget(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
+                                        Text(emailId, style: AppStyles.bodySmall),
+                                      ],
+                                    ),
+                                    const SpaceWidget(
+                                      height: 10,
+                                    ),
+                                    Text('$location : $locationName', style: AppStyles.bodySmall),
+                                    const SpaceWidget(
+                                      height: 10,
+                                    ),
+                                    ValueListenableBuilder(
+                                      valueListenable: docName,
+                                      builder: (context, value, child) {
+                                        if (value == null) return const SizedBox.shrink();
+                                        return Text('Doctor Name : $value', style: AppStyles.bodySmall);
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('$VOLUNTEER_ID :', style: AppStyles.bodySmall),
-                                      const SpaceWidget(width: 2),
-                                      Text(
-                                        volunteerId,
-                                        key: Key(KEY_VOLUNTEER_ID),
-                                        style: AppStyles.bodySmall,
-                                      ),
-                                      const SpaceWidget(width: 5),
-                                      InkWell(
-                                        onTap: () => CommonFunctions.copyToClipboard(volunteerId, context),
-                                        child: SvgPicture.asset(AppAssetsPath.icCopy),
-                                      )
-                                    ],
-                                  ),
-                                  const SpaceWidget(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('${gender.capitalize()} - $age | ', style: AppStyles.bodySmall),
-                                      Text(emailId, style: AppStyles.bodySmall),
-                                    ],
-                                  ),
-                                  const SpaceWidget(
-                                    height: 10,
-                                  ),
-                                  Text('$location : $locationName', style: AppStyles.bodySmall),
-                                  const SpaceWidget(
-                                    height: 10,
-                                  ),
-                                  ValueListenableBuilder(
-                                    valueListenable: docName,
-                                    builder: (context, value, child) {
-                                      if (value == null) return const SizedBox.shrink();
-                                      return Text('Doctor Name : $value', style: AppStyles.bodySmall);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SpaceWidget(height: 20),
-                          ],
+                              const SpaceWidget(height: 20),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SpaceWidget(height: 20),
-                      InkWell(
-                        onTap: () {
-                          onLogoutClick();
-                        },
-                        child: Builder(
-                          builder: (context) {
-                            int expireIn = loginViewModel!.checkLoginTimestamp();
-                            String text = "";
-                            if (expireIn == 0) {
-                              text = "Login will expire today";
-                            } else if (expireIn < 0) {
-                              text = "Login is expired";
-                            } else {
-                              text = "Login will expire in ${expireIn} days";
-                            }
-
-                            return Visibility(
-                              visible: (expireIn < 16) ? true : false,
-                              child: AccountCard(
-                                key: Key(KEY_LOGIN_EXPIRE),
-                                cardTitleText: text,
-                                textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
-                                trailingIconPath: AppAssetsPath.icChevronRight,
-                                leadingIconPath: AppAssetsPath.icWarning,
-                                iconColor: AppColorScheme.errorTextColor,
-                              ),
-                            );
+                        const SpaceWidget(height: 20),
+                        InkWell(
+                          onTap: () {
+                            onLogoutClick();
                           },
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
-                          if (result != null && result) {
-                            bindDocName();
-                          }
-                        },
-                        child: AccountCard(
-                          key: Key(KEY_DOCTOR_CARD),
-                          cardTitleText: TranslationKeys.changeDocName.translate(context),
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icPerson,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
-                        },
-                        child: AccountCard(
-                          key: Key(KEY_LANGUAGE_CARD),
-                          cardTitleText: TranslationKeys.language.translate(context),
-                          trailingIconPath: AppAssetsPath.icChevronRight,
-                          leadingIconPath: AppAssetsPath.icLanguage,
-                        ),
-                      ),
-                      ValueListenableBuilder(
-                          valueListenable: _syncData,
-                          builder: (context, syncData, _) {
-                            if (syncData) {
-                              return InkWell(
-                                onTap: () async {
-                                  final appVersion = await getAppVersion();
-                                  if (appVersion.isEmpty) {
-                                    CommonFunctions.toastMessage("Session expired! Login to Continue");
-                                    await loginViewModel?.logout();
-                                  } else {
-                                    if (!_isClicked) {
-                                      _isClicked = true;
-                                      onSyncClick();
-                                    }
-                                  }
-                                },
+                          child: Builder(
+                            builder: (context) {
+                              int expireIn = loginViewModel!.checkLoginTimestamp();
+                              String text = "";
+                              if (expireIn == 0) {
+                                text = "Login will expire today";
+                              } else if (expireIn < 0) {
+                                text = "Login is expired";
+                              } else {
+                                text = "Login will expire in ${expireIn} days";
+                              }
+
+                              return Visibility(
+                                visible: (expireIn < 16) ? true : false,
                                 child: AccountCard(
-                                  key: Key(KEY_DATA_SYNC_CARD),
-                                  cardTitleText: TranslationKeys.dataSync.translate(context),
+                                  key: Key(KEY_LOGIN_EXPIRE),
+                                  cardTitleText: text,
+                                  textStyle: AppStyles.errorStyle.copyWith(fontSize: 15, fontWeight: FontWeight.w400),
                                   trailingIconPath: AppAssetsPath.icChevronRight,
-                                  leadingIconPath: AppAssetsPath.icSync,
+                                  leadingIconPath: AppAssetsPath.icWarning,
+                                  iconColor: AppColorScheme.errorTextColor,
                                 ),
                               );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: Center(
-                          child: Column(children: [
-                            SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
-                            Text(
-                              "${TranslationKeys.version.translate(context)}: $appVersion",
-                              style: AppStyles.bodySmall,
-                            )
-                          ]),
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                        InkWell(
+                          onTap: () async {
+                            bool? result = await GoRouter.of(context).push(DoctorNameScreen.routerPath, extra: true);
+                            if (result != null && result) {
+                              bindDocName();
+                            }
+                          },
+                          child: AccountCard(
+                            key: Key(KEY_DOCTOR_CARD),
+                            cardTitleText: TranslationKeys.changeDocName.translate(context),
+                            trailingIconPath: AppAssetsPath.icChevronRight,
+                            leadingIconPath: AppAssetsPath.icPerson,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            GoRouter.of(context).push(LanguageSelectionScreen.routerPath, extra: true);
+                          },
+                          child: AccountCard(
+                            key: Key(KEY_LANGUAGE_CARD),
+                            cardTitleText: TranslationKeys.language.translate(context),
+                            trailingIconPath: AppAssetsPath.icChevronRight,
+                            leadingIconPath: AppAssetsPath.icLanguage,
+                          ),
+                        ),
+                        ValueListenableBuilder(
+                            valueListenable: _syncData,
+                            builder: (context, syncData, _) {
+                              if (syncData) {
+                                return InkWell(
+                                  onTap: () async {
+                                    // getAppVersion() is a network call; show a
+                                    // blocking loader so the screen doesn't look
+                                    // frozen on a slow connection.
+                                    _showBlockingLoader(context);
+                                    String appVersion = '';
+                                    try {
+                                      appVersion = await getAppVersion();
+                                    } finally {
+                                      if (context.mounted) {
+                                        Navigator.of(context, rootNavigator: true).pop();
+                                      }
+                                    }
+                                    if (appVersion.isEmpty) {
+                                      CommonFunctions.toastMessage("Session expired! Login to Continue");
+                                      await loginViewModel?.logout();
+                                      return;
+                                    }
+                                    if (networkStatusService.networkStatus != NetworkStatus.online) {
+                                      CommonFunctions.toastMessage(AppConstant.NO_INTERNET_MESSAGE);
+                                      return;
+                                    }
+                                    if (!context.mounted) return;
+                                    await GoRouter.of(context).push(DataSyncScreen.routerPath);
+                                    if (!context.mounted) return;
+                                    await checkToSyncData();
+                                    await context.read<PatientListViewModel>().fetchCompletedCRA();
+                                  },
+                                  child: AccountCard(
+                                    key: Key(KEY_DATA_SYNC_CARD),
+                                    cardTitleText: TranslationKeys.dataSync.translate(context),
+                                    trailingIconPath: AppAssetsPath.icChevronRight,
+                                    leadingIconPath: AppAssetsPath.icSync,
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Center(
+                            child: Column(children: [
+                              SvgPicture.asset(AppAssetsPath.appHorizontalIcon),
+                              Text(
+                                "${TranslationKeys.version.translate(context)}: $appVersion",
+                                style: AppStyles.bodySmall,
+                              )
+                            ]),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ),
       ),
     );
   }
 
   /// Checking if the token has been expired or not
+  /// A dismiss-proof spinner shown while a pre-navigation network call runs.
+  void _showBlockingLoader(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
   Future<String> getAppVersion() async {
     final response = await LoginViewModel.loginViewModel.getAppVersion();
     if (response.statusCode == 200) {

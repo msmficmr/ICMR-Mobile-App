@@ -132,11 +132,12 @@ class CommonFunctions {
   }
 
   static Future<XFile?> getImage({required BuildContext context, required ImageSource imageSource}) async {
-    bool hasCameraPermission = await PermissionService.permissionService.checkCameraPermission(context);
-    if (hasCameraPermission) {
-      XFile? file = await ImagePicker().pickImage(source: imageSource);
-      return file;
+    if (imageSource == ImageSource.camera) {
+      bool hasCameraPermission = await PermissionService.permissionService.checkCameraPermission(context);
+      if (!hasCameraPermission) return null;
     }
+    XFile? file = await ImagePicker().pickImage(source: imageSource);
+    return file;
   }
 
   static Future<XFile?> getAttachment({required BuildContext context, List<String> extensions = const ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"]}) async {

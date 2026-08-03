@@ -42,7 +42,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:probeintegration/services/probe_provider.dart';
 import 'package:probeintegration/utils/exceptions.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
@@ -227,7 +226,9 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
           modelList.add(model);
         }
       }
-      String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
+      String locationId = _location.value?.id ?? "";
+      String siteId = _site.value?.id ?? "";
+      String questionId = oldQuestionId ?? "${locationId}_${siteId}_${_nextQuestionIndex(locationId, siteId)}";
       LesionLocationQuestion question = LesionLocationQuestion(
         versionNumber: widget.questioner.versionNumber,
         questionId: questionId,
@@ -318,6 +319,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
               ),
               const Divider(), // Added a divider for better UI
               ListTile(
+                title: const Text("Choose from Gallery"),
+                onTap: () => Navigator.pop(context, "gallery"),
+              ),
+              const Divider(), // Added a divider for better UI
+              ListTile(
                 title: const Text("Probe Capture"),
                 onTap: () => Navigator.pop(context, "probe"),
               ),
@@ -331,6 +337,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       return await CommonFunctions.getImage(
         context: context,
         imageSource: ImageSource.camera,
+      );
+    } else if (selection == "gallery") {
+      return await CommonFunctions.getImage(
+        context: context,
+        imageSource: ImageSource.gallery,
       );
     } else if (selection == "probe") {
       // This calls your existing probe provider logic
@@ -397,6 +408,22 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     return highest + 1;
   }
 
+  /// Next question index for a `<location>_<site>` combination.
+  /// Question ids are `<location>_<site>_<n>`; when the same location and site
+  /// are captured again we reuse that prefix and bump the trailing index
+  /// (0, 1, 2, … n) instead of appending a random UUID.
+  int _nextQuestionIndex(String location, String site) {
+    String prefix = "${location}_${site}_";
+    int next = 0;
+    for (LesionLocationQuestion question in widget.questioner.questionsList.value) {
+      String id = question.questionId;
+      if (!id.startsWith(prefix)) continue;
+      int? index = int.tryParse(id.substring(prefix.length));
+      if (index != null && index >= next) next = index + 1;
+    }
+    return next;
+  }
+
   _captureImage(String? oldQuestionId) async {
     try {
       isLoading.value = true;
@@ -431,7 +458,9 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         );
         String fileName = "$newFileName.$extension";
 
-        String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
+        String locationId = _location.value?.id ?? "";
+        String siteId = _site.value?.id ?? "";
+        String questionId = oldQuestionId ?? "${locationId}_${siteId}_${_nextQuestionIndex(locationId, siteId)}";
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
         LesionLocationQuestion question = LesionLocationQuestion(
           versionNumber: widget.questioner.versionNumber,

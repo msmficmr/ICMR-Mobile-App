@@ -12,3 +12,4 @@ export 'package:mhealth/views/myaccount/my_account_screen.dart';
 export 'package:mhealth/views/questionair/view/periodontal_screen.dart';
 export 'package:mhealth/views/questionair/view/criteria_screen.dart';
 export 'package:mhealth/views/questionair/view/signature_screen.dart';
+export 'package:mhealth/views/sync/data_sync_screen.dart';

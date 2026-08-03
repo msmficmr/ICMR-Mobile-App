@@ -60,9 +60,27 @@ class LesionImageCleanupService {
     return Directory('${base.path}/$_folderName');
   }
 
-  List<LesionImageInfo> filterOlderThanRetention(List<LesionImageInfo> files, {DateTime? now}) {
+  /// [protectedPrimaryIds] are patients whose data hasn't reached the server
+  /// yet. Their images live in LesionImages/<primaryId>/ and must survive the
+  /// retention sweep, otherwise a delayed sync has nothing left to upload.
+  List<LesionImageInfo> filterOlderThanRetention(
+    List<LesionImageInfo> files, {
+    DateTime? now,
+    Set<String> protectedPrimaryIds = const {},
+  }) {
     final cutoff = (now ?? DateTime.now()).subtract(retention);
-    return files.where((f) => f.timestamp.isBefore(cutoff)).toList();
+    return files.where((f) {
+      if (!f.timestamp.isBefore(cutoff)) return false;
+      return !protectedPrimaryIds.contains(_primaryIdOf(f.path));
+    }).toList();
+  }
+
+  // .../LesionImages/<primaryId>/<file> -> <primaryId>
+  String _primaryIdOf(String path) {
+    final segments = path.split('/');
+    final index = segments.lastIndexOf(_folderName);
+    if (index == -1 || index + 1 >= segments.length - 1) return "";
+    return segments[index + 1];
   }
 
   Future<int> deleteFiles(
