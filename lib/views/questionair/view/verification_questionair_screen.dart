@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mhealth/isar_db_schema/patient_registration_schema.dart';
 import 'package:mhealth/model/questionnaire_form_model.dart';
 import 'package:mhealth/utils/app_constant.dart';
 import 'package:mhealth/utils/app_styles.dart';
@@ -13,16 +14,20 @@ import 'package:mhealth/utils/common_functions.dart';
 import 'package:mhealth/utils/extensions/string_extension.dart';
 import 'package:mhealth/utils/translation_keys.dart';
 import 'package:mhealth/viewModel/language_view_model.dart';
+import 'package:mhealth/viewModel/patient_list_view_model.dart';
 import 'package:mhealth/views/questionair/view/signature_screen.dart';
 import 'package:mhealth/widgets/custom_check_box.dart';
 import 'package:mhealth/widgets/custom_signature_widget.dart';
 import 'package:mhealth/widgets/custom_textfield.dart';
 import 'package:mhealth/widgets/space_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:uuid/uuid.dart';
 
 class VerificationQuestionnaireScreen extends StatefulWidget {
   final VerificationFormQuestionnaire questioner;
-  const VerificationQuestionnaireScreen({super.key, required this.questioner});
+  final String patientId;
+  const VerificationQuestionnaireScreen({super.key, required this.questioner, required this.patientId});
 
   @override
   State<VerificationQuestionnaireScreen> createState() => _VerificationQuestionnaireScreenState();
@@ -71,12 +76,23 @@ class _VerificationQuestionnaireScreenState extends State<VerificationQuestionna
     if (result != null) {
       _isLoading.value = true;
       try {
+        /// Signatures sit next to the patient's lesion images: LesionImages/<primaryId>.
+        PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+        String subPath = CommonFunctions.sanitizePathSegment(patientData?.primaryId ?? "unknown");
+        String newFileName = "${patientData?.primaryId ?? ""}_sign_${const Uuid().v1()}";
+
         /// Pass extension in .format ex: .png .jpg .pdf etc
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(result.toList(), ".png", rootIsolateToken, "sign");
+        String filePath = await CommonFunctions().writeFileInIsolate(
+          result.toList(),
+          ".png",
+          rootIsolateToken,
+          newFileName,
+          subPath: subPath,
+          useExactFileName: true,
+        );
         _signatureData.value = result;
-        String fileName = filePath.split("/").last;
-        widget.questioner.signature.value = AttachmentModel(fileName: fileName, filePath: filePath);
+        widget.questioner.signature.value = AttachmentModel(fileName: "$newFileName.png", filePath: filePath);
         _signatureState.currentState?.didChange(result);
       } finally {
         _isLoading.value = false;

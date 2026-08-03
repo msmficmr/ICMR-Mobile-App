@@ -153,100 +153,102 @@ class _QuestionScreenViewState extends State<QuestionScreenView> {
               appBarTitleType: CustomAppBarTitleType.TEXT,
               titleText: AppConstant.RISK_ASSESSMENT,
             ),
-            body: Selector<QuestionViewModel, ApiStatus>(
-              selector: (_, p) => p.fetchQuestionsApiStatus,
-              builder: (context, status, _) {
-                switch (status) {
-                  case ApiStatus.loading:
-                    return const Center(child: CircularProgressIndicator());
+            body: SafeArea(
+              child: Selector<QuestionViewModel, ApiStatus>(
+                selector: (_, p) => p.fetchQuestionsApiStatus,
+                builder: (context, status, _) {
+                  switch (status) {
+                    case ApiStatus.loading:
+                      return const Center(child: CircularProgressIndicator());
 
-                  case ApiStatus.error:
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text("Something Went Wrong"),
-                          const SizedBox(height: 12),
-                          PrimaryFilledButton(
-                            buttonTitle: "Retry",
-                            onPressed: () {
-                              vm.fetchEncounterDetails().then((_) async {
-                                await vm.fetchPatientEhrDetails();
-                                await vm.fetchSectionQuestions();
-                              });
-                            },
-                            widgetKey: 'retry',
-                          ),
-                        ],
-                      ),
-                    );
-
-                  case ApiStatus.success:
-                    return Selector<QuestionViewModel, List<Questionnaire>>(
-                      selector: (_, p) => p.questionList,
-                      builder: (context, questions, _) {
-                        if (questions.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text("Something Went Wrong"),
-                                const SizedBox(height: 12),
-                                PrimaryFilledButton(
-                                  buttonTitle: "Retry",
-                                  onPressed: () {
-                                    vm.fetchEncounterDetails().then((_) async {
-                                      await vm.fetchPatientEhrDetails();
-                                      await vm.fetchSectionQuestions();
-                                    });
-                                  },
-                                  widgetKey: 'retry',
-                                ),
-                              ],
+                    case ApiStatus.error:
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text("Something Went Wrong"),
+                            const SizedBox(height: 12),
+                            PrimaryFilledButton(
+                              buttonTitle: "Retry",
+                              onPressed: () {
+                                vm.fetchEncounterDetails().then((_) async {
+                                  await vm.fetchPatientEhrDetails();
+                                  await vm.fetchSectionQuestions();
+                                });
+                              },
+                              widgetKey: 'retry',
                             ),
-                          );
-                        }
+                          ],
+                        ),
+                      );
 
-                        return SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Form(
-                              key: _formKey,
+                    case ApiStatus.success:
+                      return Selector<QuestionViewModel, List<Questionnaire>>(
+                        selector: (_, p) => p.questionList,
+                        builder: (context, questions, _) {
+                          if (questions.isEmpty) {
+                            return Center(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  SectionNameWidget(
-                                    sectionName: vm.currentSection.name,
+                                  const Text("Something Went Wrong"),
+                                  const SizedBox(height: 12),
+                                  PrimaryFilledButton(
+                                    buttonTitle: "Retry",
+                                    onPressed: () {
+                                      vm.fetchEncounterDetails().then((_) async {
+                                        await vm.fetchPatientEhrDetails();
+                                        await vm.fetchSectionQuestions();
+                                      });
+                                    },
+                                    widgetKey: 'retry',
                                   ),
-                                  ...questions.map((question) {
-                                    return getWidgetForQuestionnaireAndFollowupQuestionnaire(
-                                      context,
-                                      question,
-                                      height,
-                                      () => setState(() {}),
-                                      widget.patientId,
-                                      widget.caseId,
-                                    );
-                                  }).toList(),
-                                  const SizedBox(height: 20),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: PrimaryFilledButton(
-                                      widgetKey: KEY_BUTTON_CONTINUE,
-                                      onPressed: () => goToNextSection(vm),
-                                      buttonTitle: widget.sectionId == QuestionViewModel.sectionList.last.id ? TranslationKeys.submit.capitalize() : TranslationKeys.continueText.capitalize(),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
                                 ],
                               ),
+                            );
+                          }
+
+                          return SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SectionNameWidget(
+                                      sectionName: vm.currentSection.name,
+                                    ),
+                                    ...questions.map((question) {
+                                      return getWidgetForQuestionnaireAndFollowupQuestionnaire(
+                                        context,
+                                        question,
+                                        height,
+                                        () => setState(() {}),
+                                        widget.patientId,
+                                        widget.caseId,
+                                      );
+                                    }).toList(),
+                                    const SizedBox(height: 20),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: PrimaryFilledButton(
+                                        widgetKey: KEY_BUTTON_CONTINUE,
+                                        onPressed: () => goToNextSection(vm),
+                                        buttonTitle: widget.sectionId == QuestionViewModel.sectionList.last.id ? TranslationKeys.submit.capitalize() : TranslationKeys.continueText.capitalize(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                }
-              },
+                          );
+                        },
+                      );
+                  }
+                },
+              ),
             ),
           );
         },

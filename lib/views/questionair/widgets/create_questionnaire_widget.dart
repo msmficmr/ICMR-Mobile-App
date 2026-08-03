@@ -38,7 +38,7 @@ Widget _getWidgetForQuestionnaire(
     case LesionLocationQuestionnaire:
       return LesionLocationQuestionnaireScreen(questioner: questionnaire as LesionLocationQuestionnaire, patientId: patientId, caseId: caseId);
     case VerificationFormQuestionnaire:
-      return VerificationQuestionnaireScreen(questioner: questionnaire as VerificationFormQuestionnaire);
+      return VerificationQuestionnaireScreen(questioner: questionnaire as VerificationFormQuestionnaire, patientId: patientId);
     default:
       log("${questionnaire.runtimeType}");
       return Container(

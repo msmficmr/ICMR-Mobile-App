@@ -123,6 +123,13 @@ class AppRouter {
           ),
         ),
         GoRoute(
+          path: DataSyncScreen.routerPath,
+          pageBuilder: (context, state) => RouterTransition(
+            key: state.pageKey,
+            child: const DataSyncScreen(),
+          ),
+        ),
+        GoRoute(
           path: RegistrationSuccessFullScreen.routerPath,
           pageBuilder: (context, state) {
             Map<String, dynamic> extra = state.extra as Map<String, dynamic>;

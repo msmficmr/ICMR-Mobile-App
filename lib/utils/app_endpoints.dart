@@ -10,6 +10,7 @@ class AppEndpoints {
   static String get syncNumber => "/sync/offline-data";
   static String get logoutUrl => "/logout";
   static String get syncData => "/sync/offline-data";
+  static String get uploadImageChunk => "/sync/upload-image-chunk";
   static String get refreshTokenUrl => "/refresh-token";
   static String get appVersionUrl => '/store/app-version/${Environment.runningEnv.sourceAppName}';
 }

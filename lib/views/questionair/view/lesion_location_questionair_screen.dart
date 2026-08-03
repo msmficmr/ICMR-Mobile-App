@@ -42,7 +42,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:probeintegration/services/probe_provider.dart';
 import 'package:probeintegration/utils/exceptions.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class LesionLocationQuestionnaireScreen extends StatefulWidget {
   final LesionLocationQuestionnaire questioner;
@@ -192,34 +191,44 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     try {
       isLoading.value = true;
       List<AttachmentModel> modelList = [];
+
+      PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
+      log("patientData: ${jsonEncode(patientData?.toJson())}");
+
+      String timeStamp = await getCaptureTimeStamp();
+      String subPath = getPatientFolder(patientData);
+
+      String prefix = "${patientData?.primaryId ?? ""}_${timeStamp}_${_site.value?.id ?? ""}_${_location.value?.id ?? ""}";
+
+      /// One probe capture yields several images (WL/FL, original/processed);
+      /// they all belong to the same capture, so they share one count.
+      int count = _nextCaptureCount(prefix);
+
       for (String key in data.keys) {
         Uint8List? bytes = data[key];
         if (bytes != null) {
           String extension = "png";
 
           /// Pass extension in .format ex: .png .jpg .pdf etc
-          ///
-          ///
-          PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
-          //
-          log("patientData: ${jsonEncode(patientData?.toJson())}");
-
-          String timeStamp = await getCaptureTimeStamp();
-
-          String newFileName = "${patientData?.primaryId ?? ""}_${timeStamp}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${key}";
+          String newFileName = "${prefix}_${key}_$count";
 
           RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
           String filePath = await CommonFunctions().writeFileInIsolate(
-            bytes.toList(), ".$extension", rootIsolateToken, newFileName, //key,
+            bytes.toList(),
+            ".$extension",
+            rootIsolateToken,
+            newFileName,
+            subPath: subPath,
+            useExactFileName: true,
           );
-          String fileName = filePath.split("/").last;
-          //await saveFile(bytes, fileName.toString());
 
-          AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
+          AttachmentModel model = AttachmentModel(fileName: "$newFileName.$extension", filePath: filePath);
           modelList.add(model);
         }
       }
-      String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
+      String locationId = _location.value?.id ?? "";
+      String siteId = _site.value?.id ?? "";
+      String questionId = oldQuestionId ?? "${locationId}_${siteId}_${_nextQuestionIndex(locationId, siteId)}";
       LesionLocationQuestion question = LesionLocationQuestion(
         versionNumber: widget.questioner.versionNumber,
         questionId: questionId,
@@ -238,9 +247,10 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
       ///ADDED FAKE DELAY SO THAT FORM CAN RESET
       await Future.delayed(const Duration(milliseconds: 100));
       _formKey.currentState?.reset();
-      CommonFunctions.toastMessage("Image Captured Successfully");
+      // TEMP DIAGNOSTIC: shows the folder the images were written to.
+      CommonFunctions.toastMessage("Saved to LesionImages/$subPath\n${modelList.first.filePath}");
     } catch (e) {
-      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      CommonFunctions.toastMessage("$e");
     } finally {
       isLoading.value = false;
     }
@@ -309,6 +319,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
               ),
               const Divider(), // Added a divider for better UI
               ListTile(
+                title: const Text("Choose from Gallery"),
+                onTap: () => Navigator.pop(context, "gallery"),
+              ),
+              const Divider(), // Added a divider for better UI
+              ListTile(
                 title: const Text("Probe Capture"),
                 onTap: () => Navigator.pop(context, "probe"),
               ),
@@ -323,6 +338,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         context: context,
         imageSource: ImageSource.camera,
       );
+    } else if (selection == "gallery") {
+      return await CommonFunctions.getImage(
+        context: context,
+        imageSource: ImageSource.gallery,
+      );
     } else if (selection == "probe") {
       // This calls your existing probe provider logic
       await context.read<ProbeProvider>().initialize(
@@ -336,31 +356,72 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
     return null;
   }
 
-  Future<String> getCaptureTimeStamp() async {
+  /// Answer of [questionId] in the "details of habits" CRA section, or null.
+  Future<String?> _habitsAnswer(String questionId) async {
     await fetchPatientEhrDetails();
 
     int? ehrIndex = _patientEhrDetails?.craSectionData?.indexWhere((element) => element.encounterCategoryMapId == QuestionnaireTemplateIds.community_risk_assessment_details_of_habits.name);
+    if (ehrIndex == null || ehrIndex == -1) return null;
 
-    String captureTimeStamp = DateFormat("ddMMyyyyHHmm").format(DateTime.now()); //DateTime.now().millisecondsSinceEpoch.toString();
+    EHRNotes? ehrNotes = _patientEhrDetails?.craSectionData?[ehrIndex].ehrNotes;
+    int index = ehrNotes?.questions?.indexWhere((element) => element.questionId == questionId) ?? -1;
+    if (index == -1) return null;
 
-    if (ehrIndex != null && ehrIndex != -1) {
-      //
-      EHRNotes? ehrNotes = _patientEhrDetails?.craSectionData?[ehrIndex].ehrNotes;
-      int index = ehrNotes?.questions?.indexWhere((element) => element.questionId == "visit_date") ?? -1;
-      if (index != -1) {
-        //
-        CRAQuestionnaire? question = ehrNotes?.questions?[index];
-        if (question != null) {
-          //
-          String val = question.value ?? "";
-          DateTime? visitDate = DateFormat("dd/MM/yyyy HH:mm").tryParse(val);
-          if (visitDate != null) {
-            captureTimeStamp = DateFormat("ddMMyyyyHHmm").format(visitDate);
-          }
-        }
+    String? value = ehrNotes?.questions?[index].value;
+    return (value == null || value.trim().isEmpty) ? null : value.trim();
+  }
+
+  /// HHmm of the visit, falling back to the time of capture.
+  Future<String> getCaptureTimeStamp() async {
+    String captureTimeStamp = DateFormat("HHmm").format(DateTime.now());
+
+    String? val = await _habitsAnswer("visit_date");
+    if (val != null) {
+      DateTime? visitDate = DateFormat("dd/MM/yyyy HH:mm").tryParse(val);
+      if (visitDate != null) {
+        captureTimeStamp = DateFormat("HHmm").format(visitDate);
       }
     }
     return captureTimeStamp;
+  }
+
+  /// Folder the images are written to: LesionImages/<primaryId>.
+  String getPatientFolder(PatientRegistration? patientData) {
+    return CommonFunctions.sanitizePathSegment(patientData?.primaryId ?? "unknown");
+  }
+
+  /// Next capture index for [prefix] (`<primaryId>_<HHmm>_<site>_<location>`).
+  /// A probe capture writes several files under one index, so the count is read
+  /// back from the trailing token of every already-attached image.
+  int _nextCaptureCount(String prefix) {
+    int highest = 0;
+    for (LesionLocationQuestion question in widget.questioner.questionsList.value) {
+      for (AttachmentModel attachment in question.attachments.value) {
+        String name = attachment.fileName;
+        if (!name.startsWith("${prefix}_")) continue;
+
+        String base = name.contains(".") ? name.substring(0, name.lastIndexOf(".")) : name;
+        int? count = int.tryParse(base.split("_").last);
+        if (count != null && count > highest) highest = count;
+      }
+    }
+    return highest + 1;
+  }
+
+  /// Next question index for a `<location>_<site>` combination.
+  /// Question ids are `<location>_<site>_<n>`; when the same location and site
+  /// are captured again we reuse that prefix and bump the trailing index
+  /// (0, 1, 2, … n) instead of appending a random UUID.
+  int _nextQuestionIndex(String location, String site) {
+    String prefix = "${location}_${site}_";
+    int next = 0;
+    for (LesionLocationQuestion question in widget.questioner.questionsList.value) {
+      String id = question.questionId;
+      if (!id.startsWith(prefix)) continue;
+      int? index = int.tryParse(id.substring(prefix.length));
+      if (index != null && index >= next) next = index + 1;
+    }
+    return next;
   }
 
   _captureImage(String? oldQuestionId) async {
@@ -373,26 +434,33 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         String extension = file.name.split(".").last;
 
         /// Pass extension in .format ex: .png .jpg .pdf etc
-
-        ///
         PatientRegistration? patientData = context.read<PatientListViewModel>().getPatientByPatientId(widget.patientId);
 
         //
         log("patientData: ${jsonEncode(patientData?.toJson())}");
 
         String timeStamp = await getCaptureTimeStamp();
+        String subPath = getPatientFolder(patientData);
 
-        String newFileName = "${patientData?.primaryId ?? ""}_${timeStamp}_${_location.value?.id ?? ""}_${_site.value?.id ?? ""}";
+        String prefix = "${patientData?.primaryId ?? ""}_${timeStamp}_${_site.value?.id ?? ""}_${_location.value?.id ?? ""}";
+        String newFileName = "${prefix}_${_nextCaptureCount(prefix)}";
 
         log("newFileName: $newFileName");
 
         RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-        String filePath = await CommonFunctions().writeFileInIsolate(bytes.toList(), ".$extension", rootIsolateToken, newFileName);
-        String fileName = filePath.split("/").last;
+        String filePath = await CommonFunctions().writeFileInIsolate(
+          bytes.toList(),
+          ".$extension",
+          rootIsolateToken,
+          newFileName,
+          subPath: subPath,
+          useExactFileName: true,
+        );
+        String fileName = "$newFileName.$extension";
 
-        //await saveFile(bytes, fileName);
-
-        String questionId = oldQuestionId ?? "${_location.value?.id ?? ""}_${_site.value?.id ?? ""}_${Uuid().v4()}".trim();
+        String locationId = _location.value?.id ?? "";
+        String siteId = _site.value?.id ?? "";
+        String questionId = oldQuestionId ?? "${locationId}_${siteId}_${_nextQuestionIndex(locationId, siteId)}";
         AttachmentModel model = AttachmentModel(fileName: fileName, filePath: filePath);
         LesionLocationQuestion question = LesionLocationQuestion(
           versionNumber: widget.questioner.versionNumber,
@@ -411,10 +479,11 @@ class _LesionLocationQuestionnaireScreenState extends State<LesionLocationQuesti
         ///ADDED FAKE DELAY SO THAT FORM CAN RESET
         await Future.delayed(const Duration(milliseconds: 100));
         _formKey.currentState?.reset();
-        CommonFunctions.toastMessage("Image Captured Successfully");
+        // TEMP DIAGNOSTIC: shows the folder the image was written to.
+        CommonFunctions.toastMessage("Saved to LesionImages/$subPath\n$filePath");
       }
     } catch (e) {
-      CommonFunctions.toastMessage(AppConstant.ERROR_SOMETHING_WENT_WRONG);
+      CommonFunctions.toastMessage("$e");
     } finally {
       isLoading.value = false;
     }

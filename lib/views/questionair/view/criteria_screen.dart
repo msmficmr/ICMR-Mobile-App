@@ -53,7 +53,8 @@ class CriteriaScreen extends StatelessWidget {
           appBarTitleType: CustomAppBarTitleType.TEXT,
           titleText: AppConstant.RISK_ASSESSMENT,
         ),
-        body: SizedBox(
+        body: SafeArea(
+          child: SizedBox(
           height: double.infinity,
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -99,6 +100,7 @@ class CriteriaScreen extends StatelessWidget {
               );
             },
           ),
+        ),
         ),
       ),
     );

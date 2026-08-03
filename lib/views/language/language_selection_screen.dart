@@ -78,9 +78,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           GoRouter.of(context).pop();
         },
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppValues.kAppPadding),
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SpaceWidget(
             height: 15,
           ),
@@ -169,6 +170,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
             height: 10,
           ),
         ]),
+        ),
       ),
     );
   }
